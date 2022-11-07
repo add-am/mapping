@@ -13,7 +13,7 @@
 
 #Install the "remotes" package (no need to load it as we only use one function 
 #from the package and can just call it specifically.
-install.packages("remotes")
+#install.packages("remotes")
 
 #download and install Rtools. Note Rtools is not an R package and must be 
 #downloaded externally to R. Google Rtools and follow the prompts.
@@ -57,8 +57,8 @@ library(ggplot2) #M
 
 #-----------------------------------------------------------------------------------Up to here. Run through a low res matrix to practice hq render
 #Use raster function to read elevation data as a raster. Take either the 100m
-# data set or the 30m data set
-gbr <- raster("input/elevation/gbr_30m_2020.tif")
+#data set or the 30m data set
+gbr <- raster("input/elevation/gbr_100m_2020.tif")
 #gbr <- raster("input/elevation/gbr_30m_2020.tif")
 
 #set the project crs. Use the global EPSG:4326 unless specified otherwise
@@ -94,30 +94,33 @@ dry_tropics_cu <- c(-19.7095, -18.8700, 146.1625, 147.1008)
 Ross <- c(-19.6912, -19.0700, 146.5864, 147.0743)
 
 maggie <- c(-19.1862, -19.0999, 146.7653, 146.8971)
-wet_tropics_full <- c(-18.9261, -15.1562, 144.1714, 148.1798)
-mwi_full <- c(-22.3223, -19.1173, 147.2343, 152.1236)
+wet_tropics_full <- c(-17.0255, -16.4495, 145.3150, 145.9838)
+mwi_full <- c(-21.1833, -19.8456, 148.0714, 149.3335)
 
 #Overlay these onto a leaflet map to get an idea of how big each region is and
 #how they overlap one another. These can be adjusted as required. Just pipe
 #to repeat as many times as needed
 leaflet() %>% 
   addTiles() %>% 
-  addRectangles(lng1 = dry_tropics_full[3], lat1 = dry_tropics_full[1],
-                lng2 = dry_tropics_full[4], lat2 = dry_tropics_full[2],
-                fillColor = "transparent") %>%
   addRectangles(lng1 = dry_tropics_cu[3], lat1 = dry_tropics_cu[1],
                 lng2 = dry_tropics_cu[4], lat2 = dry_tropics_cu[2],
+                fillColor = "transparent") %>%
+  addRectangles(lng1 = wet_tropics_full[3], lat1 = wet_tropics_full[1],
+                lng2 = wet_tropics_full[4], lat2 = wet_tropics_full[2],
+                fillColor = "transparent") %>% 
+  addRectangles(lng1 = mwi_full[3], lat1 = mwi_full[1],
+                lng2 = mwi_full[4], lat2 = mwi_full[2],
                 fillColor = "transparent")
 
 #Pick out the boundaries of the region you would like to look at. This is where
 #all subsequent lines get their extent/boundary/region from. swap in different
 #values here to update everything else.
-lat_range = c(Ross[1],Ross[2])
-long_range = c(Ross[3],Ross[4])
+lat_range = c(wet_tropics_full[1], wet_tropics_full[2])
+long_range = c(wet_tropics_full[3], wet_tropics_full[4])
 
 #load a custom function that serves to convert the CRS of the coordinates 
 #provided by Google (listed above) into the CRS of the data set (e.g. GBR)
-source("src/convert_coords.R")
+source("convert_coords.R")
 
 #Create bounding box for our chosen region using coords above and CRS from data.
 location_extent <- extent(convert_coords(lat = lat_range, 
@@ -128,7 +131,7 @@ location_extent
 
 #Use crop to cut down the gbr data set to the region specified above. Run extent
 #to check the output
-gbr_cropped <- crop(gbr, location_extent)
+gbr_cropped <- raster::crop(gbr, location_extent)
 extent(gbr_cropped)
 
 #Convert the raster to a matrix. (matrix are more digestible by rayshader)
@@ -140,12 +143,14 @@ gbr_cropped_matrix <- raster_to_matrix(gbr_cropped)
 
 #create simple overlays:
 #create a ray shade matrix. zscale affects shadows. Smaller num = bigger shadow
-raymat <- ray_shade(gbr_cropped_matrix, zscale = 10, lambert = TRUE)
+raymat <- ray_shade(heightmap = gbr_cropped_matrix, zscale = 10, lambert = TRUE)
 #create an ambient shade matrix. zscale affects shadows as above.
 ambmat <- ambient_shade(gbr_cropped_matrix, zscale = 10)
 #create a texture map for additional shadows and increased detail.
 texturemat <- texture_shade(gbr_cropped_matrix, detail = 1, contrast = 10, 
                             brightness = 10)
+
+
 
 #create more complex overlays:
 #bathymetry; copy original matrix to new matrix
@@ -309,7 +314,7 @@ dev.off()
 #zscale affects height. It is relative to x,y,z ratio and resolution. E.g. if 
 #original DEM is at 30m res, then using zscale = 30 will render accurately, and
 #zscale = 15 will render heights and bathymetry twice as large.
-plot_3d(overlay_map, gbr_cropped_matrix, zscale = 25, soliddepth = -100, #use -1500 solid depth for bigger maps
+plot_3d(base_map, gbr_cropped_matrix, zscale = 25, soliddepth = -100, #use -1500 solid depth for bigger maps
         water = F, background = "grey50", shadowcolor = "white", 
         shadowdepth = -150, theta = 0, phi = 45, fov = 0, zoom = 1, #use -2500 shadow depth for bigger maps
         windowsize = c(200, 200, 2160, 2160)) #normal 3840 2160 # square 2160 2160
@@ -353,7 +358,7 @@ rm(temp, temp1)
 #render labels from the town_names df. With the [] system, the row index is the 
 #first number. Lat is always 3, long is always 2, and name is always 1. 
 render_label(gbr_cropped_matrix, lat = town_names[1,3], long = town_names[1,2], 
-             extent = location_extent, altitude=100, zscale=50, 
+             extent = location_extent, altitude=5000, zscale=50, 
              text = town_names[1,1])
 
 #to get the row index use this or open the df and look them up
@@ -411,3 +416,12 @@ render_highquality(light = FALSE,
                    scene_elements = sphere(y = 150, radius = 30,
                                            material = diffuse(lightintensity = 40,
                                                               implicit_sample = TRUE)))
+
+
+#------------------------------------------------------------------------------------------------- Create some examples for WT and MWI
+
+town <- cropped_location_point %>% 
+  filter(!is.na(name)) %>% 
+  filter(place %in% c("city","town")) #%>% 
+  filter(name == "Cairns") #here to show additional filter options
+
