@@ -1,0 +1,478 @@
+---
+title: "Northern Three Mapping (Digital Elevation Models)"
+author: "Adam Shand"
+date: "`r format(Sys.time(), '%d, %B, %Y')`" 
+format: html
+editor: visual
+params:
+  dataset_resolution: 100
+  disagg_factor: 1
+  project_crs: "EPSG:4326"
+---
+
+A script to create "easily" customisable 3D maps of the Northern Three region using 
+digital elevation model (DEM) data.
+
+# Initial Setup
+
+The setup for this script can be difficult and may require additional troubleshooting 
+as several of the dependencies are still in "alpha development" and change frequently.
+
+First install the remotes package if not already installed:
+
+``` {r}
+#| label: get remotes package
+#| output: false
+
+#create list of packages to check
+package_list <- c("remotes")
+
+#check if packages are installed
+new_packages <- package_list[!(package_list %in% installed.packages()[,"Package"])]
+
+#if length is anything but zero, install
+if(length(new_packages)) install.packages(new_packages)
+
+#cleanup
+rm(package_list, new_packages)
+
+
+```
+
+Then using the remotes package install the alpha packages using the install_github()
+function and following the prompts. Alpha packages include:
+
+- rayshader
+- rayrender
+- rayimage
+
+``` {r}
+#| label: install ray... packages
+#| output: false
+
+remotes::install_github("tylermorganwall/rayshader")
+remotes::install_github("tylermorganwall/rayrender")
+remotes::install_github("tylermorganwall/rayimage")
+
+```
+
+Once these packages are install and up to date the remaining packages can be
+installed and loaded the normal way.
+
+``` {r}
+#| label: install and load remaining packages
+#| output: false
+
+#mapping
+library(rayshader)
+library(raster)
+library(sf)
+library(osmdata)
+library(ggplot2)
+
+#extra utils
+library(glue)
+library(tmap)
+library(tidyverse)
+#library(av) #Y
+#library(gifski) #Y
+#library(leaflet) #Y
+#library(stringr) #Y
+#library(maptools) #Y
+#library(rayrender) #Y
+#library(tidyverse) #Y
+#library(rgdal) #M
+
+#library(dplyr) #Y
+
+
+#above packages are used in script. Below packages might be used in future.
+#library(ambient) #M
+#library(magick) #M
+#library(rgdal) #M
+
+
+
+
+```
+
+# Global Controls
+
+As always, we then need to assign the global controls. Our project coordinate 
+reference system (CRS) is set to `r params$project_crs`. While our project interpolation 
+factor is set to `r params$disagg_factor`. Higher interpolation factors increase 
+data resolution and create a more detailed map, however will dramatically increase 
+processing time. The resolution of the DEM data is good enough that no additional 
+increase is needed. Speaking of resolution, two DEM data sets can be used, either
+the 30m data or 100m data. Thisrefers to the cell size of the data (smaller is 
+higher resolution). This script is currently using the `r params$dataset_resolution` 
+data.
+
+``` {r}
+#| label: establish global controls and settings
+#| output: false
+
+#set project variables: crs factor and data to use
+proj_crs <- params$project_crs
+fac <- params$disagg_factor
+data_set <- params$dataset_resolution
+
+#format the date for the path below and to be used as a variable in naming later
+date <- format(Sys.time(), "%Y-%m-%d")
+
+#create a file path to help with saving things
+save_path <- glue("output/{date}_n3-dem_factor-{fac}/")
+
+#bring that path to life
+dir.create(save_path)
+
+#initilize with static mapping
+tmap_mode("plot")
+
+#set global theme for plots
+theme_set(theme_bw())
+
+```
+
+# Data Source
+
+The data used for this script is provided by AUS SEABED free of charge as a GeoTIFF
+and can be found [here](https://portal.ga.gov.au/persona/marine). To find the data:
+
+- Select "Layers" from the toolbar at the top of the page
+- Select "Elevation and Depth" and then "Bathymetry - Compilations"
+- Scroll/search for "Great Barrier Reef Bathymetry 2020 30m"
+- Click the "i" icon and click "More Details" (The download here button sometimes does not work)
+- On the new page download the data from the link under "Description"
+
+It would be a good idea to also download the GBR 100m dataset, this is a courser
+version of the 30m dataset and can be useful to create example/trial maps at a 
+much faster rate.
+
+Once the data has been downloaded extract the folder and save it under data/raw/
+**Don't change the name of the folder**. The 100m dataset can also be saved in 
+the same place.
+
+if you inspect the 30m data you might notice that the data is split into 4 GeoTIFFs,
+this is due to the large size of the files. Below is a short chunk to combine the
+files into one large file if the large file does not already exist.
+
+The combined file will be saved under data/elevation/
+
+``` {r}
+#| label: merge dataset
+
+#path to file
+path <- "data/elevation/gbr_30m_2020.tif"
+
+#loop
+if (file.exists(path)) {
+  
+  print("File already exists in elevation folder")
+
+} else {
+  
+  #read in each file from raw folder
+  gbr30mA <- raster("data/raw/Great Barrier Reef Bathymetry 2020 30m/
+                    Great_Barrier_Reef_A_2020_30m_MSL_cog.tif")
+  gbr30mB <- raster("data/raw/Great Barrier Reef Bathymetry 2020 30m/
+                    Great_Barrier_Reef_B_2020_30m_MSL_cog.tif")
+  gbr30mC <- raster("data/raw/Great Barrier Reef Bathymetry 2020 30m/
+                    Great_Barrier_Reef_C_2020_30m_MSL_cog.tif")
+  gbr30mD <- raster("data/raw/Great Barrier Reef Bathymetry 2020 30m/
+                    Great_Barrier_Reef_D_2020_30m_MSL_cog.tif")
+
+  #change the origins of each to match (changing from values such as 0.00015 to
+  #have all origins as 0). This allows the merge function to combine the rasters
+  origin(gbr30mA) <- 0
+  origin(gbr30mB) <- 0
+  origin(gbr30mC) <- 0
+  origin(gbr30mD) <- 0
+
+  #merge the four rasters
+  gbr30m_merge <- raster::merge(gbr30mA, gbr30mB, gbr30mC, gbr30mD)
+
+  #save the merged output - note this take along time. Don't run unless necessary
+  writeRaster(gbr30m_merge, filename = "data/elevation/gbr_30m_2020.tif",
+              format = "GTiff", overwrite = TRUE)
+  
+}
+
+#clean up
+rm(path)
+
+```
+
+Although the 100m data does not need to be combined we will still keep the original
+data over in the raw folder and make a copy in the data/elevation/ folder. The 
+chunk below does this if a copy does not already exist.
+
+``` {r}
+#| label: copy over 100m dataset
+
+#path to file
+path_old <- "data/raw/Great Barrier Reef Bathymetry 2020 100m/Great_Barrier_Reef_2020_100m_MSL_cog.tif"
+path_new <- "data/elevation/gbr_100m_2020.tif"
+
+#loop
+if (file.exists(path_new)) {
+  
+  print("File already exists in elevation folder")
+
+} else {
+  
+  file.copy(from = path_old, 
+            to = path_new)
+}
+
+#clean up
+rm(path_old, path_new)
+
+
+
+```
+Once the data is organised we can then load in the dataset as specified by the
+dataset_resolution parameter.
+
+``` {r}
+#| label: read in data
+
+#read the DEM based on dataset resolution
+gbr <- raster::raster(glue("data/elevation/gbr_{data_set}m_2020.tif"))
+
+```
+
+# Basin Data Source
+
+The Northern Three reporting regions are broken into multiple basins and sub-basins 
+and stored as gpkg files. **Note: These gpkg files should already be present in 
+the data/shapefiles folder, Don't change the name if they are.**
+
+Should the files not be present, they can be found on QSpatial
+[here](https://qldspatial.information.qld.gov.au/catalogue/custom/index.page).
+Search and download:
+
+-   Drainage basins - Queensland
+-   Drainage basins sub areas - Queensland
+
+Data should be downloaded in the following format:
+
+-   GeoPackage 1.2 - GEOPACKAGE_1.2 - .gpkg
+-   WGS84 geographic 2D (EPSG:4326)
+
+Once downloaded save the files in under **data/shapefiles/** make sure to update 
+the names of the .gpkg files to **Drainage_basins** and **Drainage_basins_sub_areas** 
+respectively.
+
+Below are each of the basins - you might recognise your region.
+
+```{r}
+#| label: Read and Prep Basin Shapefiles
+#| output: false
+#| fig-cap: Northern three basins
+
+#read the drainage basins and drainage basin sub areas
+basins <- st_read(dsn = "data/shapefiles/Drainage_basins.gpkg")
+sub_basins <- st_read(dsn = "data/shapefiles/Drainage_basin_sub_areas.gpkg")
+
+#update crs
+basins <- st_transform(basins, proj_crs)
+sub_basins <- st_transform(sub_basins, proj_crs)
+
+#select northern three basins based on list of names
+n3_basins <- basins %>% 
+  filter(BASIN_NAME %in% c("Ross", "Black", "Don", "Proserpine", "O'Connell", 
+                           "Pioneer", "Plane", "Daintree", "Mossman", "Barron", 
+                           "Johnstone", "Tully", "Murray", "Herbert"))
+
+#wet tropics split mulgrave-russell into two separate sub basins.
+#get Russell and Mulgrave River from sub_basins
+temp <- sub_basins %>% 
+  filter(SUB_NAME %in% c("Russell River", "Mulgrave River")) %>% 
+  mutate(SUB_NAME = case_when(SUB_NAME == "Russell River" ~ "Russell",
+                              SUB_NAME == "Mulgrave River" ~ "Mulgrave")) %>% 
+  rename(BASIN_NAME = SUB_NAME, BASIN_NUMBER = SUB_NUMBER)
+
+#add the two basins onto main
+n3_basins <- rbind(n3_basins, temp)
+
+#clean up
+rm(temp, basins, sub_basins)
+
+#remove unwanted vars and add regional context
+n3_basins <- n3_basins %>% 
+  select(BASIN_NAME) %>% 
+  rename(basin = BASIN_NAME) %>% 
+  mutate(region = case_when(
+    str_detect(basin, "Ross|Black") ~ "Dry Tropics",
+    str_detect(basin, "Dain|Moss|Barr|John|Tull|Murr|Herb|Mulg|Russ") ~ "Wet Tropics",
+    str_detect(basin, "Don|Proser|O'|Pio|Plane") ~ "Mackay Whitsunday Isaac"
+    ), .after = basin)
+
+#plot to show
+tm_shape(n3_basins) +
+  tm_polygons() +
+  tm_facets(by = "basin")
+
+```
+
+# Creating Base Maps
+
+The DEM dataset covers the entire span of the GBR and coastline of Australia.
+Creating a single map of the entire area would crash a standard computer so this
+section covers selecting a specific region and creating the base map. Additional
+customization of the map then follow.
+
+A function has been created to handle the base map creation. **Note that creating
+3D maps will take a significant amount of time, even for smaller maps at lower
+resolutions - please give the script time to run.**
+
+``` {r}
+#| label: Create base map
+#| output: false
+
+#load the function to create the base map
+source("functions/n3_dem_base_map.R")
+
+#create a shapefile that contains only the region of interest. Combine all polygons
+region <- n3_basins %>% 
+  filter(str_detect(region, "Dry Tropics")) %>% 
+  st_union(by_feature = F) %>% st_combine() %>%
+  nngeo::st_remove_holes() %>% 
+  st_sf() %>% 
+  mutate(region = "Dry Tropics", .before = geometry)
+
+#run the function using the DEM data and the shapefile, will return a var called 
+#base_map, and a height matrix called dem_matrix
+n3_dem_base_map(dem = gbr, region = region)
+
+```
+The 2d version looks like this:
+
+``` {r}
+#| label: view 2d plot
+
+plot_map(base_map)
+
+```
+And the 3D version has been saved under the outputs folder.
+
+## Customizing the Base Map
+
+Additional customization can now be done to the 2D base map, including adding place 
+names and rivers. The 2D map can then be remapped into 3D and saved with the new
+features.
+
+``` {r}
+#| label: Get list of available places/towns/etc.
+
+#get the bounding box of the focus region
+bbox <- st_bbox(region)
+
+#convert the bbox to osm friendly coords
+osm_bbox = c(bbox[1],bbox[2], bbox[3],bbox[4])
+
+#use bbox to query osm database
+places <- opq(osm_bbox, timeout = 100) %>% 
+  add_osm_feature("place") %>% 
+  osmdata_sf()
+
+#transform data and filter for point data
+places <- st_transform(places$osm_points, crs = crs(proj_crs))
+
+#filter to remove NAs and smaller places
+places <- places %>% 
+  select(name, place, geometry) %>% 
+  filter(!is.na(name) & !is.na(place))
+
+#extract the coordinates from the sf data as a data frame
+town_names <- as.data.frame(sf::st_coordinates(places)) %>% 
+  rename("long" = "X", "lat" = "Y")
+
+#extract the names for each as a data frame
+temp <- as.data.frame(places) %>% 
+  dplyr::select(name)
+
+#combine the coordinates and the names - this probably can be done in one pipe
+town_names <- cbind(temp, town_names)
+
+#fix up the index numbers
+row.names(town_names) <- 1:nrow(town_names)
+
+#remove the temp files
+rm(temp)
+
+
+```
+
+
+``` {r}
+#| label: Get list of available rivers in region
+
+#convert coords, set crs, and make into an extent object
+location_extent <- extent(region)
+
+#using the bbox from earlier
+waterway <- opq(osm_bbox, timeout = 100) %>% 
+  add_osm_feature("waterway") %>% 
+  osmdata_sf()
+
+#transform and filter data to only get line data
+waterway <- st_transform(waterway$osm_lines, crs = crs(proj_crs))
+
+#filter to remove columns and NAs
+waterway <- waterway %>% 
+  select(name, alt_name, intermittent, note, tunnel, waterway, geometry) %>% 
+  filter(!is.na(name) & !is.na(waterway))
+
+#get a list of unique waterway types
+way_type <- unique(waterway$waterway)
+
+river_overlay1 <- generate_line_overlay(waterway, 
+                                        extent = location_extent,
+                                        linewidth = 6, color = "darkblue",
+                                        heightmap = dem_matrix)
+
+
+#pull out various aspects of the data, such as only specific rivers and streams
+named_river <- waterway_line %>% 
+  filter(str_detect(name, "Ross|Bohle|Alligator|Crocodile|Black|Alice|Ollera|
+  Althaus|Rollingstone|Crystal|Sleeper|Camp|Deep|Lorna|Salt|Bluew|Leichhardt|Hencamp")) %>% 
+  filter(is.na(note))
+
+test <- base_map %>% add_overlay(river_overlay1, alphalayer = 1)
+
+plot_3d(base_map, dem_matrix, zscale = 20, soliddepth = -300,
+        water = F, background = "white", shadowcolor = "grey50",
+        shadowdepth = -550, theta = 0, phi = 22, fov = 16.16, zoom = 0.59,
+        windowsize = c(50, 50, 2160, 2160))
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

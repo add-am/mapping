@@ -1,6 +1,8 @@
-input/
 output/
-raw_data/
+data/elevation/
+data/raw/
+data/shapefiles/
+
 
 # History files
 .Rhistory
