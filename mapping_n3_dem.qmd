@@ -340,11 +340,12 @@ region <- n3_basins %>%
   st_union(by_feature = F) %>% st_combine() %>%
   nngeo::st_remove_holes() %>% 
   st_sf() %>% 
-  mutate(region = "Dry Tropics", .before = geometry)
+  mutate(region = "Dry-Tropics", .before = geometry)
 
 #run the function using the DEM data and the shapefile, will return a var called 
-#base_map, and a height matrix called dem_matrix
-n3_dem_base_map(dem = gbr, region = region)
+#base_map, and a height matrix called dem_matrix. It will also save the base_map
+#as an array and as a 3d model. The array can be loaded back in anytime.
+n3_dem_base_map(dem = gbr, region = region, highlight = T, rivers = T)
 
 ```
 The 2d version looks like this:
@@ -359,12 +360,26 @@ And the 3D version has been saved under the outputs folder.
 
 ## Customizing the Base Map
 
-Additional customization can now be done to the 2D base map, including adding place 
-names and rivers. The 2D map can then be remapped into 3D and saved with the new
-features.
+Using the function above, basic customization can be done. For instance:
+
+- Sea level can be changed to any height (in meters)
+- Basin outlines and highlights can be toggled on and off
+- Major rivers (top 50 by length) can be toggled on and off
+
+Additional customization can also be done after the function has run. For instance:
+
+- City/Town/POI labels can be added.
+- Camera position
+- Image ratio
+
+Please note that the initially saved 3D version may not be in the correct orientation,
+and image ratio for the specific location. These must be adjusted post base map 
+creation as they vary on a case by case basis.
+
+The code chunks below runs through these customisations.
 
 ``` {r}
-#| label: Get list of available places/towns/etc.
+#| label: Get list of available places in region
 
 #get the bounding box of the focus region
 bbox <- st_bbox(region)
@@ -386,66 +401,51 @@ places <- places %>%
   filter(!is.na(name) & !is.na(place))
 
 #extract the coordinates from the sf data as a data frame
-town_names <- as.data.frame(sf::st_coordinates(places)) %>% 
+town_names <- as_tibble(sf::st_coordinates(places)) %>% 
   rename("long" = "X", "lat" = "Y")
 
 #extract the names for each as a data frame
-temp <- as.data.frame(places) %>% 
+temp <- as_tibble(places) %>% 
   dplyr::select(name)
 
-#combine the coordinates and the names - this probably can be done in one pipe
+#combine the coordinates and the names
 town_names <- cbind(temp, town_names)
-
-#fix up the index numbers
-row.names(town_names) <- 1:nrow(town_names)
 
 #remove the temp files
 rm(temp)
-
 
 ```
 
 
 ``` {r}
-#| label: Get list of available rivers in region
+#| label: Customizing the 3D map further
 
-#convert coords, set crs, and make into an extent object
-location_extent <- extent(region)
-
-#using the bbox from earlier
-waterway <- opq(osm_bbox, timeout = 100) %>% 
-  add_osm_feature("waterway") %>% 
-  osmdata_sf()
-
-#transform and filter data to only get line data
-waterway <- st_transform(waterway$osm_lines, crs = crs(proj_crs))
-
-#filter to remove columns and NAs
-waterway <- waterway %>% 
-  select(name, alt_name, intermittent, note, tunnel, waterway, geometry) %>% 
-  filter(!is.na(name) & !is.na(waterway))
-
-#get a list of unique waterway types
-way_type <- unique(waterway$waterway)
-
-river_overlay1 <- generate_line_overlay(waterway, 
-                                        extent = location_extent,
-                                        linewidth = 6, color = "darkblue",
-                                        heightmap = dem_matrix)
+#pull up the rgl window again
+plot_3d(base_map, dem_matrix, zscale = 10, soliddepth = min(dem_matrix)-200,
+        water = F, background = "white", shadowcolor = "grey50", 
+        shadowdepth = min(dem_matrix)-400, theta = 180, phi = 35, fov = 16, zoom = 0.6,
+        windowsize = c(50, 50, 1920, 1080))
 
 
-#pull out various aspects of the data, such as only specific rivers and streams
-named_river <- waterway_line %>% 
-  filter(str_detect(name, "Ross|Bohle|Alligator|Crocodile|Black|Alice|Ollera|
-  Althaus|Rollingstone|Crystal|Sleeper|Camp|Deep|Lorna|Salt|Bluew|Leichhardt|Hencamp")) %>% 
-  filter(is.na(note))
+#use this to clear label
+render_label(clear_previous = TRUE)
 
-test <- base_map %>% add_overlay(river_overlay1, alphalayer = 1)
+#render labels from the town_names df. With the [] system, the row index is the 
+#first number. Lat is always 3, long is always 2, and name is always 1. 
+render_label(gbr_cropped_matrix, lat = town_names[1,3], long = town_names[1,2], 
+             extent = location_extent, altitude=1000, zscale=10, 
+             linewidth = 3, linecolor = "white", textsize = 1.5, text = town_names[1,1])
+#labels come in sets of 2 to create a black outline on the markers
+render_label(gbr_cropped_matrix, lat = town_names[1,3], long = town_names[1,2], 
+             extent = location_extent, altitude=1000, zscale=10, 
+             text = town_names[1,1], textalpha = 0, linewidth = 6)
 
-plot_3d(base_map, dem_matrix, zscale = 20, soliddepth = -300,
-        water = F, background = "white", shadowcolor = "grey50",
-        shadowdepth = -550, theta = 0, phi = 22, fov = 16.16, zoom = 0.59,
-        windowsize = c(50, 50, 2160, 2160))
+
+
+
+
+
+
 
 
 ```
