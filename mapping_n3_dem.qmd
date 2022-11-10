@@ -3,7 +3,6 @@ title: "Northern Three Mapping (Digital Elevation Models)"
 author: "Adam Shand"
 date: "`r format(Sys.time(), '%d, %B, %Y')`" 
 format: html
-editor: visual
 params:
   dataset_resolution: 100
   disagg_factor: 1
@@ -16,11 +15,11 @@ digital elevation model (DEM) data.
 # Initial Setup
 
 The setup for this script can be difficult and may require additional troubleshooting 
-as several of the dependencies are still in "alpha development" and change frequently.
+as several of the dependencies are still in alpha development and change frequently.
 
 First install the remotes package if not already installed:
 
-``` {r}
+```{r}
 #| label: get remotes package
 #| output: false
 
@@ -39,14 +38,14 @@ rm(package_list, new_packages)
 
 ```
 
-Then using the remotes package install the alpha packages using the install_github()
+Then using the remotes package install the alpha packages using the install_github() 
 function and following the prompts. Alpha packages include:
 
-- rayshader
-- rayrender
-- rayimage
+-   rayshader
+-   rayrender
+-   rayimage
 
-``` {r}
+```{r}
 #| label: install ray... packages
 #| output: false
 
@@ -56,10 +55,10 @@ remotes::install_github("tylermorganwall/rayimage")
 
 ```
 
-Once these packages are install and up to date the remaining packages can be
-installed and loaded the normal way.
+Once these packages are installed and up to date the remaining packages can be installed 
+and loaded the normal way.
 
-``` {r}
+```{r}
 #| label: install and load remaining packages
 #| output: false
 
@@ -77,22 +76,6 @@ library(tidyverse)
 #library(av) #Y
 #library(gifski) #Y
 #library(leaflet) #Y
-#library(stringr) #Y
-#library(maptools) #Y
-#library(rayrender) #Y
-#library(tidyverse) #Y
-#library(rgdal) #M
-
-#library(dplyr) #Y
-
-
-#above packages are used in script. Below packages might be used in future.
-#library(ambient) #M
-#library(magick) #M
-#library(rgdal) #M
-
-
-
 
 ```
 
@@ -103,12 +86,12 @@ reference system (CRS) is set to `r params$project_crs`. While our project inter
 factor is set to `r params$disagg_factor`. Higher interpolation factors increase 
 data resolution and create a more detailed map, however will dramatically increase 
 processing time. The resolution of the DEM data is good enough that no additional 
-increase is needed. Speaking of resolution, two DEM data sets can be used, either
+increase is needed. Speaking of resolution, two DEM data sets can be used, either 
 the 30m data or 100m data. Thisrefers to the cell size of the data (smaller is 
 higher resolution). This script is currently using the `r params$dataset_resolution` 
 data.
 
-``` {r}
+```{r}
 #| label: establish global controls and settings
 #| output: false
 
@@ -132,34 +115,38 @@ tmap_mode("plot")
 #set global theme for plots
 theme_set(theme_bw())
 
+#turn of spherical geometry
+sf_use_s2(FALSE)
+
 ```
 
 # Data Source
 
-The data used for this script is provided by AUS SEABED free of charge as a GeoTIFF
+The data used for this script is provided by AUS SEABED free of charge as a GeoTIFF 
 and can be found [here](https://portal.ga.gov.au/persona/marine). To find the data:
 
-- Select "Layers" from the toolbar at the top of the page
-- Select "Elevation and Depth" and then "Bathymetry - Compilations"
-- Scroll/search for "Great Barrier Reef Bathymetry 2020 30m"
-- Click the "i" icon and click "More Details" (The download here button sometimes does not work)
-- On the new page download the data from the link under "Description"
+-   Select "Layers" from the toolbar at the top of the page
+-   Select "Elevation and Depth" and then "Bathymetry - Compilations"
+-   Scroll/search for "Great Barrier Reef Bathymetry 2020 30m"
+-   Click the "i" icon and click "More Details" (The download here button sometimes 
+does not work)
+-   On the new page download the data from the link under "Description"
 
-It would be a good idea to also download the GBR 100m dataset, this is a courser
-version of the 30m dataset and can be useful to create example/trial maps at a 
-much faster rate.
+It would be a good idea to also download the GBR 100m dataset, this is a courser 
+version of the 30m dataset and can be useful to create example/trial maps at a much 
+faster rate.
 
-Once the data has been downloaded extract the folder and save it under data/raw/
-**Don't change the name of the folder**. The 100m dataset can also be saved in 
-the same place.
+Once the data has been downloaded extract the folder and save it under data/raw/ 
+**Don't change the name of the folder**. The 100m dataset can also be saved in the 
+same place.
 
-if you inspect the 30m data you might notice that the data is split into 4 GeoTIFFs,
-this is due to the large size of the files. Below is a short chunk to combine the
+if you inspect the 30m data you might notice that the data is split into 4 GeoTIFFs, 
+this is due to the large size of the files. Below is a short chunk to combine the 
 files into one large file if the large file does not already exist.
 
 The combined file will be saved under data/elevation/
 
-``` {r}
+```{r}
 #| label: merge dataset
 
 #path to file
@@ -203,11 +190,11 @@ rm(path)
 
 ```
 
-Although the 100m data does not need to be combined we will still keep the original
+Although the 100m data does not need to be combined we will still keep the original 
 data over in the raw folder and make a copy in the data/elevation/ folder. The 
 chunk below does this if a copy does not already exist.
 
-``` {r}
+```{r}
 #| label: copy over 100m dataset
 
 #path to file
@@ -228,13 +215,12 @@ if (file.exists(path_new)) {
 #clean up
 rm(path_old, path_new)
 
-
-
 ```
-Once the data is organised we can then load in the dataset as specified by the
+
+Once the data is organised we can then load in the dataset as specified by the 
 dataset_resolution parameter.
 
-``` {r}
+```{r}
 #| label: read in data
 
 #read the DEM based on dataset resolution
@@ -248,9 +234,8 @@ The Northern Three reporting regions are broken into multiple basins and sub-bas
 and stored as gpkg files. **Note: These gpkg files should already be present in 
 the data/shapefiles folder, Don't change the name if they are.**
 
-Should the files not be present, they can be found on QSpatial
-[here](https://qldspatial.information.qld.gov.au/catalogue/custom/index.page).
-Search and download:
+Should the files not be present, they can be found on QSpatial 
+[here](https://qldspatial.information.qld.gov.au/catalogue/custom/index.page). Search and download:
 
 -   Drainage basins - Queensland
 -   Drainage basins sub areas - Queensland
@@ -318,161 +303,167 @@ tm_shape(n3_basins) +
 
 # Creating Base Maps
 
-The DEM dataset covers the entire span of the GBR and coastline of Australia.
-Creating a single map of the entire area would crash a standard computer so this
-section covers selecting a specific region and creating the base map. Additional
+The DEM dataset covers the entire span of the GBR and coastline of Australia. 
+Creating a single map of the entire area would crash a standard computer so this 
+section covers selecting a specific region and creating the base map. Additional 
 customization of the map then follow.
 
-A function has been created to handle the base map creation. **Note that creating
-3D maps will take a significant amount of time, even for smaller maps at lower
-resolutions - please give the script time to run.**
+A function has been created to handle the base map creation. **Note that creating 
+3D maps will take a significant amount of time, even for smaller maps at lower 
+resolutions - please give the script time to run.** Therefore, when the function
+is run, a 3D matrix and 3D array are also saved. These can be loaded back in to
+skip the high intensity processing step if needed by using the "preload = T" option
+in the function.
 
-``` {r}
+```{r}
 #| label: Create base map
-#| output: false
+#| include: false
 
 #load the function to create the base map
 source("functions/n3_dem_base_map.R")
 
-#create a shapefile that contains only the region of interest. Combine all polygons
-region <- n3_basins %>% 
-  filter(str_detect(region, "Dry Tropics")) %>% 
-  st_union(by_feature = F) %>% st_combine() %>%
-  nngeo::st_remove_holes() %>% 
-  st_sf() %>% 
-  mutate(region = "Dry-Tropics", .before = geometry)
+#create a table of the variables created for easy tracking
+key_tbl <- tibble()
 
-#run the function using the DEM data and the shapefile, will return a var called 
-#base_map, and a height matrix called dem_matrix. It will also save the base_map
-#as an array and as a 3d model. The array can be loaded back in anytime.
-n3_dem_base_map(dem = gbr, region = region, highlight = T, rivers = T)
+#get unique target names
+names <- unique(n3_basins$basin)
+
+for (i in 1:length(names)){
+  
+  #mutate name for save file
+  names1 <- gsub(" ", "-", names[i])
+  
+  #mutate again for key table (look inside the function below)
+  names2 <- gsub(" ", "_", names[i])
+  
+  #create a shapefile that contains only the region of interest. Combine all polygons
+  target <- n3_basins %>% 
+    filter(str_detect(basin, names[i])) %>% 
+    st_union(by_feature = F) %>% st_combine() %>%
+    nngeo::st_remove_holes() %>% 
+    st_sf() %>% 
+    mutate(basin = names1, .before = geometry)
+  
+  #run the function using the DEM data and the shapefile, will return a var called 
+  #base_map, and a height matrix called dem_matrix. It will also save the base_map
+  #as an array, matrix and image. The array and matrix can be loaded back in anytime
+  #to avoid the high intensity processing step. A table of town names within the 
+  #region is also created.
+  n3_dem_base_map(dem = gbr, region = target, highlight = T, rivers = T, preload = T)
+  
+  #track variables
+  key_tbl <- rbind(key_tbl, global_list)
+  
+}
+
+#rename tbl columns
+key_tbl <- key_tbl %>% 
+  rename("base_map" = 1, "dem" = 2, "town_names" = 3, "location_extent" = 4)
+
+
 
 ```
-The 2d version looks like this:
+
+The 2d base map looks like this:
+
+::: {#fig-2D layout-ncol=3}
+
+![2D Map DT](images/DT 2D example.png)
+
+![2D Map DT](images/WT 2D example.png)
+
+![2D Map DT](images/MWI 2D example.png)
+
+2D Maps
+:::
+
+The list of available towns that can be added to the 3D model, like this:
 
 ``` {r}
-#| label: view 2d plot
 
-plot_map(base_map)
+head(town_names_Dry_Tropics)
 
 ```
-And the 3D version has been saved under the outputs folder.
+The key table that summarises what variables have been created and can now be 
+used for the following steps, like this:
+
+``` {r}
+
+head(key_tbl)
+
+```
+And the 3D base maps, like this: 
+
+::: {#fig-3D layout-ncol=3}
+
+![3D Map DT](images/DT example.png)
+
+![3D Map WT](images/WT example.png)
+
+![3D Map MWI](images/MWI example.png)
+
+3D Maps
+:::
+
 
 ## Customizing the Base Map
 
-Using the function above, basic customization can be done. For instance:
+Using the function above, customization of the base map can be done. For instance:
 
-- Sea level can be changed to any height (in meters)
-- Basin outlines and highlights can be toggled on and off
-- Major rivers (top 50 by length) can be toggled on and off
+-   Sea level can be changed to any height (in meters)
+-   Basin outlines and highlights can be toggled on and off
+-   Major rivers (top 50 by length) can be toggled on and off
 
 Additional customization can also be done after the function has run. For instance:
 
-- City/Town/POI labels can be added.
-- Camera position
-- Image ratio
+-   City/Town/POI labels can be added.
+-   Camera position can be changed.
+-   Image ratio can be adjusted.
 
-Please note that the initially saved 3D version may not be in the correct orientation,
-and image ratio for the specific location. These must be adjusted post base map 
-creation as they vary on a case by case basis.
+Please note that the initially saved 3D version may not be in the correct orientation, 
+and image ratio for the specific location. These must be adjusted post creation 
+as they vary on a case by case basis.
 
-The code chunks below runs through these customisations.
+The code chunk below runs through these customisations. Make sure to refer to the
+key_tbl to see what variables are available, what their names are, and what group
+they belong to.
 
-``` {r}
-#| label: Get list of available places in region
-
-#get the bounding box of the focus region
-bbox <- st_bbox(region)
-
-#convert the bbox to osm friendly coords
-osm_bbox = c(bbox[1],bbox[2], bbox[3],bbox[4])
-
-#use bbox to query osm database
-places <- opq(osm_bbox, timeout = 100) %>% 
-  add_osm_feature("place") %>% 
-  osmdata_sf()
-
-#transform data and filter for point data
-places <- st_transform(places$osm_points, crs = crs(proj_crs))
-
-#filter to remove NAs and smaller places
-places <- places %>% 
-  select(name, place, geometry) %>% 
-  filter(!is.na(name) & !is.na(place))
-
-#extract the coordinates from the sf data as a data frame
-town_names <- as_tibble(sf::st_coordinates(places)) %>% 
-  rename("long" = "X", "lat" = "Y")
-
-#extract the names for each as a data frame
-temp <- as_tibble(places) %>% 
-  dplyr::select(name)
-
-#combine the coordinates and the names
-town_names <- cbind(temp, town_names)
-
-#remove the temp files
-rm(temp)
-
-```
-
-
-``` {r}
+```{r}
 #| label: Customizing the 3D map further
 
 #pull up the rgl window again
-plot_3d(base_map, dem_matrix, zscale = 10, soliddepth = min(dem_matrix)-200,
+plot_3d(base_map_Dry_Tropics, dem_matrix_Dry_Tropics, zscale = 10, soliddepth = min(dem_matrix_Dry_Tropics)-200,
         water = F, background = "white", shadowcolor = "grey50", 
-        shadowdepth = min(dem_matrix)-400, theta = 180, phi = 35, fov = 16, zoom = 0.6,
+        shadowdepth = min(dem_matrix_Dry_Tropics)-400, theta = 180, phi = 35, fov = 16, zoom = 0.6,
         windowsize = c(50, 50, 1920, 1080))
-
 
 #use this to clear label
 render_label(clear_previous = TRUE)
 
 #render labels from the town_names df. With the [] system, the row index is the 
 #first number. Lat is always 3, long is always 2, and name is always 1. 
-render_label(gbr_cropped_matrix, lat = town_names[1,3], long = town_names[1,2], 
-             extent = location_extent, altitude=1000, zscale=10, 
-             linewidth = 3, linecolor = "white", textsize = 1.5, text = town_names[1,1])
+render_label(dem_matrix_Dry_Tropics, lat = town_names_Dry_Tropics[1,3], long = town_names_Dry_Tropics[1,2], 
+             extent = location_extent_Dry_Tropics, altitude=5000, zscale=10, 
+             linewidth = 3, linecolor = "white", textsize = 1.5, text = town_names_Dry_Tropics[1,1])
 #labels come in sets of 2 to create a black outline on the markers
-render_label(gbr_cropped_matrix, lat = town_names[1,3], long = town_names[1,2], 
-             extent = location_extent, altitude=1000, zscale=10, 
-             text = town_names[1,1], textalpha = 0, linewidth = 6)
-
-
-
-
-
-
-
+render_label(dem_matrix_Dry_Tropics, lat = town_names_Dry_Tropics[1,3], long = town_names_Dry_Tropics[1,2], 
+             extent = location_extent_Dry_Tropics, altitude=5000, zscale=10, 
+             text = town_names_Dry_Tropics[1,1], textalpha = 0, linewidth = 6)
 
 
 ```
 
+Once any additional features have been added, the camera can then be positioned 
+as required and the map saved as an image.
+
+``` {r}
+#| label: save final image
+
+#Basic snapshot render of the current RGL view.
+render_snapshot(filename = glue("{save_path}_Dry-Tropics_3D-final-map"))
+
+#close the rgl window
+rgl::close3d()
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+```

@@ -125,6 +125,14 @@ source("src/convert_coords.R")
 location_extent <- extent(convert_coords(lat = lat_range, 
                                          long = long_range,
                                          to = crs(proj_crs)))
+
+#Specify the area in which we are working. 
+#buff <- st_buffer(region, units::set_units(0.01, degree))
+
+#take extent of the slightly bigger polygon (don't accidentally cut things off)
+#location_extent <- extent(buff)
+
+
 #Visual confirmation
 location_extent
 

@@ -33,36 +33,6 @@ library(stringr) #Y
 library(rgdal) #M
 library(dplyr) #Y
 
-# Merging GBR 30m Elevation Data -----------------------------------------------
-#The raw elevation data for the gbr at a 30m resolution is too large to be 
-#downloaded in a single file. Each file must be combined then saved.
-#data source here: https://ecat.ga.gov.au/geonetwork/srv/eng/catalog.search#/metadata/115066
-#or from the Aus Seabed data portal: https://portal.ga.gov.au/persona/marine
-
-#read in each file from raw_data folder
-gbr30mA <- raster("raw_data/Great Barrier Reef Bathymetry 2020 30m/
-                  Great_Barrier_Reef_A_2020_30m_MSL_cog.tif")
-gbr30mB <- raster("raw_data/Great Barrier Reef Bathymetry 2020 30m/
-                  Great_Barrier_Reef_B_2020_30m_MSL_cog.tif")
-gbr30mC <- raster("raw_data/Great Barrier Reef Bathymetry 2020 30m/
-                  Great_Barrier_Reef_C_2020_30m_MSL_cog.tif")
-gbr30mD <- raster("raw_data/Great Barrier Reef Bathymetry 2020 30m/
-                  Great_Barrier_Reef_D_2020_30m_MSL_cog.tif")
-
-#change the origins of each to match (changing from values such as 0.00015 to
-#have all origins as 0). This allows the merge function to combine the rasters
-origin(gbr30mA) <- 0
-origin(gbr30mB) <- 0
-origin(gbr30mC) <- 0
-origin(gbr30mD) <- 0
-
-#merge the four rasters
-gbr30m_merge <- raster::merge(gbr30mA, gbr30mB, gbr30mC, gbr30mD)
-
-#save the merged output - note this take along time. Don't run unless necessary
-writeRaster(gbr30m_merge, filename = "input/elevation/gbr_30m_2020",
-            format = "GTiff", overwrite = TRUE)
-
 # Set Project CRS and turn of spherical Geometry -------------------------------
 #NOTE
 #The inshore and offshore zones for the dry tropic region are hand crafted. No
