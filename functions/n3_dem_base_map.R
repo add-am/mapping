@@ -18,12 +18,15 @@ n3_dem_base_map <- function(dem, region, zscale = 10, sealevel = 0, highlight = 
   
   #mutate name for globalenv
   regi <- gsub("-", "_", regi_name)
-  
-  #get paths to files
-  array <- glue("{save_path}_{regi_name}_3D-base-map-array_sea-level-{sealevel}m")
-  matrix <- glue("{save_path}_{regi_name}_3D-base-map-matrix_sea-level-{sealevel}m")
-  map <- glue("{save_path}_{regi_name}_3D-base-map_sea-level-{sealevel}m")
 
+  #get paths to files
+  array <- glue("{save_path}matrixes_and_arrays/{regi_name}_3D-base-map-array_sea-level-{sealevel}m_resolution-{data_set}m")
+  matrix <- glue("{save_path}matrixes_and_arrays/{regi_name}_3D-base-map-matrix_sea-level-{sealevel}m_resolution-{data_set}m")
+  map <- glue("{save_path}{regi_name}_3D-base-map_sea-level-{sealevel}m_resolution-{data_set}m")
+  
+  #bring the new path to life
+  dir.create(glue("{save_path}matrixes_and_arrays/"))
+  
   if (preload == T && file.exists(array) && file.exists(matrix)){
     
     #read the files from save and put them in the global environment
@@ -95,7 +98,7 @@ n3_dem_base_map <- function(dem, region, zscale = 10, sealevel = 0, highlight = 
         islands <- st_read(dsn = "data/shapefiles/Drainage_basins.gpkg")
         
         #assume that the qld dataset is freely available
-        qld <- st_read(dsn = "data/shapefiles/qld_polygon.shp")
+        qld <- st_read(dsn = "data/shapefiles/qld.gpkg")
         
         #match crs
         islands <- st_transform(islands, proj_crs)
@@ -108,15 +111,18 @@ n3_dem_base_map <- function(dem, region, zscale = 10, sealevel = 0, highlight = 
         #crop to the region
         islands <- st_crop(islands, location_extent)
         
-        #merge islands
-        islands <- islands %>% 
-          st_union(by_feature = F) %>% st_combine() %>%
-          nngeo::st_remove_holes() %>% 
-          st_sf() %>% 
-          mutate("{colnames(region)[1]}" := "Islands", .before = geometry)
+        if (nrow(islands) != 0){
         
-        #add these islands to the region
-        region <- rbind(region, islands)
+          #merge islands
+          islands <- islands %>% 
+            st_union(by_feature = F) %>% st_combine() %>%
+            nngeo::st_remove_holes() %>% 
+            st_sf() %>% 
+            mutate("{colnames(region)[1]}" := "Islands", .before = geometry)
+          
+          #add these islands to the region
+          region <- rbind(region, islands)
+        }
         
         #merge everything again
         region <- region %>% 

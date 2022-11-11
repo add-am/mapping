@@ -249,6 +249,10 @@ Once downloaded save the files in under **data/shapefiles/** make sure to update
 the names of the .gpkg files to **Drainage_basins** and **Drainage_basins_sub_areas** 
 respectively.
 
+A second important file is the Queensland outline polygon. **Note: This file 
+should also already be present in the data folder, Don't change the name.** If 
+required, you can find qld polygons online, the exact source does not matter.
+
 Below are each of the basins - you might recognise your region.
 
 ```{r}
@@ -396,11 +400,11 @@ And the 3D base maps, like this:
 
 ::: {#fig-3D layout-ncol=3}
 
-![3D Map DT](images/DT example.png)
+![3D Map DT](images/DT 3D example.png)
 
-![3D Map WT](images/WT example.png)
+![3D Map WT](images/WT 3D example.png)
 
-![3D Map MWI](images/MWI example.png)
+![3D Map MWI](images/MWI 3D example.png)
 
 3D Maps
 :::
