@@ -1,0 +1,6 @@
+see here for introduction
+https://open-aims.github.io/gisaimsr/index.html
+see here for guide
+https://open-aims.github.io/gisaimsr/articles/examples.html
+see here for metadata
+httpsopen-aims.github.iogisaimsrreferencewbodies.html

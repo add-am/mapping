@@ -1,0 +1,391 @@
+
+
+
+
+  
+
+
+
+
+
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+	
+	
+	<html lang="en">
+<head>
+</head>
+<body>
+	<div id="gptMainWrap">
+		<div id="gptBody">
+			
+			<table id="cmPlPgdPageBody" class="pageBody" cellpadding="0" cellspacing="0" summary="This table is for design purposes only.">
+<tbody>
+<tr>
+<td><span id="cmPlPgpPageBody">
+					
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+  var gptMapConfig = new GptMapConfig();
+  gptMapConfig.mapServiceURL = "https://server.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer";
+  gptMapConfig.mapServiceType = "dynamic";
+  gptMapConfig.geometryServiceURL = "https://gisservices.information.qld.gov.au/arcgis/rest/services/Geometry/GeometryServer";
+  gptMapConfig.locatorURL = "https://gisservices.information.qld.gov.au/arcgis/rest/services/Location/QldAddressComposite/GeocodeServer";
+  gptMapConfig.locatorSingleFieldParameter = "SingleLine";
+  gptMapConfig.locatorGraphicURL = "/catalogue/catalog/images/pushpin_red.gif";
+  gptMapConfig.mapVisibleLayers = "[]";
+</script>
+
+
+<form id="mdDetails" name="mdDetails" method="post" action="/catalogue/custom/viewMetadataDetails.page;jsessionid=85614FD7ABCD94A46DD9C01DA06DE78E" class="mdDetails" enctype="application/x-www-form-urlencoded">
+<input type="hidden" name="mdDetails" value="mdDetails" />
+
+
+<script type="text/javascript">
+
+function MddMap() {
+  var _gptMap = null;
+  var _gptInpEnv = null;
+  
+  this.initialize = function initialize() {
+    var config = gptMapConfig;
+    config.mapElementId = "interactiveMap";
+    config.mapToolbarId = "mdDetails:mapToolbar";
+        
+    var elForm = mddFindForm();
+    if ((elForm != null) && (typeof(mdeEnvelopeIds) != 'undefined') && (mdeEnvelopeIds != null)) {
+      var sPfx = elForm.id+":";
+      config.inputEnvelopeXMinId = sPfx+mdeEnvelopeIds[0];
+      config.inputEnvelopeYMinId = sPfx+mdeEnvelopeIds[1];
+      config.inputEnvelopeXMaxId = sPfx+mdeEnvelopeIds[2];
+      config.inputEnvelopeYMaxId = sPfx+mdeEnvelopeIds[3];
+      var el = document.getElementById(config.inputEnvelopeXMinId);
+      if (el != null) el.value = el.innerHTML;
+      el = document.getElementById(config.inputEnvelopeYMinId);
+      if (el != null) el.value = el.innerHTML;
+      el = document.getElementById(config.inputEnvelopeXMaxId);
+      if (el != null) el.value = el.innerHTML;
+      el = document.getElementById(config.inputEnvelopeYMaxId);
+      if (el != null) el.value = el.innerHTML;
+    }
+      
+    _gptMap = new GptMap();
+    dojo.connect(_gptMap,"onMapLoaded",this,"onMapLoaded");
+
+    _gptInpEnv = new GptInputEnvelope();
+    _gptInpEnv.initialize(config,_gptMap);
+
+    _gptMap.initialize(config);
+  }
+
+  this.onMapLoaded = function() {
+      if (_gptInpEnv != null) {
+        _gptInpEnv.highlightInputEnvelope();
+        setTimeout(dojo.hitch(_gptInpEnv,"zoomToInputEnvelope"),1000);
+        _gptMap.getAgsMap().disableMapNavigation();
+        _gptMap.getAgsMap().disablePan();
+        _gptMap.getAgsMap().disableClickRecenter();
+        _gptMap.getAgsMap().disableDoubleClickZoom();
+        _gptMap.getAgsMap().disableRubberBandZoom();
+        _gptMap.getAgsMap().disableScrollWheelZoom();
+        _gptMap.getAgsMap().disableShiftDoubleClickZoom();
+        _gptMap.getAgsMap().hidePanArrows();
+        _gptMap.getAgsMap().hideZoomSlider();
+      }
+  }
+  
+  this.reposition = function reposition() {
+    if (_gptMap != null) _gptMap.reposition();
+  }
+};
+
+
+function mddFindForm(sBaseName) {
+  var elForm = null;
+  var aForms = document.getElementsByTagName("form");
+  if (aForms != null) {
+    if (sBaseName == null) sBaseName = "mdDetails";
+    for (var i=0;i<aForms.length;i++) {
+      var el = aForms[i];
+      if (el && el.id && (el.id.indexOf(sBaseName) != -1)) {
+        elForm = el;
+        break;
+      }
+    }
+  }
+  return elForm;
+};
+
+
+var mddMap = new MddMap();;
+if (typeof(dojo) != 'undefined') {
+  dojo.addOnLoad(mddMapInit);
+}
+
+function mddMapInit() {
+  var toolbar = dojo.byId("mdDetails:mapToolbar");
+  if (toolbar!=null) toolbar.style.display="none";
+  var elMap = document.getElementById("interactiveMap");
+  if (elMap != null) mddMap.initialize();
+  dojo.connect(window,"onresize",mddMap,"reposition");
+};
+
+
+function mddOnSectionClicked(sSectionId) {
+  var elForm = mddFindForm();
+  if (elForm != null) {
+    var bDisplay = true;
+    var sFolder = "/catalogue/catalog/images/";
+    var sSrc = sFolder+"section_open.gif";
+    var elImg = document.getElementById(elForm.id+":"+sSectionId+"-img");
+    if (elImg != null) {
+      if (elImg.src.indexOf("section_open.gif") != -1) {
+        sSrc = sFolder+"section_closed.gif";
+        bDisplay = false;
+      }
+      elImg.src = sSrc;
+      var elChk = document.getElementById(elForm.id+":"+sSectionId+"-chk");
+      if (elChk != null) elChk.checked = bDisplay;
+    }
+    var el = document.getElementById(elForm.id+":"+sSectionId+"-body");
+
+	if (el != null) {
+	  if (bDisplay) el.style.display = "block"; else el.style.display = "none";
+	  mddMap.reposition();
+	}      
+  }
+}
+
+</script>
+
+
+<span id="mdDetails:xsltBasedDetails"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>Drainage basin sub areas - Queensland</title><meta content="text/html; charset=UTF-8" http-equiv="Content-type"/><style type="text/css">
+                            h1{
+                                font-family:Arial, Verdana, Helvetica, sans-serif;
+                                font-weight:bold;
+                                color:#333333;
+                                font-size:140%;
+                                border-bottom:2px solid #CCCCCC;
+                            }
+                            h2{
+                                font-family:Arial, Verdana, Helvetica, sans-serif;
+                                font-weight:bold;
+                                color:#333333;
+                                font-size:120%;
+                            }
+                            h3{
+                                font-family:Arial, Verdana, Helvetica, sans-serif;
+                                font-weight:bold;
+                                color:#333333;
+                                font-size:110%;
+                            }
+                            
+                            body{
+                                font-family:Verdana, Arial, Helvetica, sans-serif;
+                                font-size:10pt;
+                                line-height:16pt;
+                                color:#333333;
+                                padding-right:10%;
+                            }
+                            
+                            em{
+                                font-family:Arial;
+                                font-style:normal;
+                                font-weight:bold;
+                            }
+                            em.rawContent{
+                                font-style:normal;
+                                font-weight:bold;
+                                font-style:italic;
+                            }
+                            
+                            div{
+                                padding-left:40px;
+                                margin-top:0;
+                                margin-bottom:0;
+                            }</style></head><body><h1>Drainage basin sub areas - Queensland</h1><h2 class="headTitle">Identification</h2><div>
+                <em>Title: </em>Drainage basin sub areas - Queensland<br/><em>Alternative title: </em>Drainage basin sub-areas<br/><em>Date: </em>
+                                2022-10-20
+                             (publication) <br/>
+                        <em>Presentation form code: </em>mapDigital<br/>
+                    
+            
+                                        <em>Online resource:</em><div><em>Website: </em><a href="https://www.resources.qld.gov.au/data-mapping"><small>https://www.resources.qld.gov.au/data-mapping</small></a><br/></div>
+                                    
+										<em>Online resource:</em><div><em>Website: </em></div>
+									<em>Related resource:</em><div><em>Identifier: </em>PROP.QLD_DRNCATCHMENT_100K\PROP.QLD_BASINSUBAREA_100K<br/><em>Relationship to related resource: </em>source<br/></div></div><h2 class="headTitle">Description</h2><div><em>Abstract / Description: </em><div>This dataset contains the extent, name and unique ID number of the Basin Sub Areas (subdivisions of major drainage basins) in the State of Queensland.</div><em>Purpose: </em><div>To provide an authorative single point of truth for the extent of Basin Sub Areas in the State Queensland. It is suitable for use in land administration, emergency and water management, monitoring of climate change, hydrological modelling, topographic and vegetation mapping and in the production of navigational and web based mapping applications.</div><em>Additional Information: </em><div>The dataset's original purpose was to implant some location identifier into the numbering system of bores and gauging stations. For example all bore numbers were prefixed with a four-digit number. The first three were used to locate the bore into a specific major river basin .The forth digit was used to locate the bore into a subdivision of that major river basin as shown in the Basin Sub Areas - Queensland coverage. This coverage is now only used as a means of numbering bores and gauging stations.<br/><br/>The dataset was captured at 1:100 000.<br/><br/>The seaward edge of this data aligns with the Coastline and State Border - Queensland dataset.<br/><br/>Feature Types: <br/>BASIN SUB AREA - A sub division of a major drainage basin <br/><br/>Attributes: <br/>SUB_NAME - The name of the Basin Sub Area<br/>SUB_NUMBER - A unique number allocated to the Basin Sub Area<br/><br/>This dataset is stored in an ESRI Geodatabase. Some columns names may be shortened if downloaded in the ESRI shape format.</div><em>Language: </em>eng<br/><em>Character set: </em>unknown<br/></div><h2 class="headTitle">Topic</h2><div><em>ISO topic category codes: </em>inlandWaters<br/></div><h2 class="headTitle">Spatial Data Information</h2><div>
+                <em>Spatial representation type: </em>vector<br/>
+            
+            <em>Coordinate Reference System EPSG code: </em>EPSG:4283<br/><div><em>Title: </em>EPSG Geodetic Parameter<br/>                                Dataset<br/><em>Date: </em>
+                                        2007-07-16
+                                     (revision) <br/><em>Edition: </em>Version 6.13<br/></div>
+        <em>Spatial resolution: </em><div><em>Equivalent scale:</em>  1 : 
+                                100000
+                            </div></div><h2 class="headTitle">Contacts</h2><div><em>Point of contact: </em><br/><div><em>Organisation: </em>Department of Resources<br/>
+                        <em>Address:</em><br/><div>
+                                    <em>Delivery point: </em>1  William Street<br/>
+                                    <em>City: </em>Brisbane<br/>
+                                    <em>State: </em>Queensland<br/>
+                                    <em>Postcode: </em>4000<br/>
+                                    <em>Country: </em>Australia<br/>
+                                    <em>Email: </em> <a href="mailto:support@spatial-qld-support.atlassian.net">support@spatial-qld-support.atlassian.net</a> 
+                                </div>
+                    </div><em>Owner: </em><br/><div><em>Organisation: </em>Department of Resources<br/></div></div><h2 class="headTitle">Status</h2><div>
+                <em>Progress status: </em>completed<br/>
+            
+                        <em>Maintenance and update frequency: </em>asNeeded<br/>
+                    </div><h2 class="headTitle">Data / Resource Constraints</h2><div><em>Resource Access Level:</em>
+                         --&gt;
+                        
+                    <div>
+                        <em>Security classification (ISO 19115): </em>unclassified<br/>
+                    <em>Use limitation: </em>Unrestricted to all levels of government and community.<br/></div><em>Copyright: </em> (as use constraint)<br/><div>&copy State of Queensland (Department of Resources) 2022</div><em>Licence: </em> (as use constraint)<br/><div>This material is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons - Attribution 4.0 International</a> licence.<br /> <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" title="Creative Commons - Attribution 4.0 International License" style="border: 0;" src="https://licensebuttons.net/l/by/4.0/88x31.png" /></a><br /> Department of Resources requests attribution in the following manner:<br /> &copy State of Queensland (Department of Resources) 2022. Updated data available at http://qldspatial.information.qld.gov.au/catalogue//.</div></div><h2 class="headTitle">Temporal and Spatial extents:</h2><div>
+                
+                    
+                        <em>Bounding box: </em><div><em>West bounding longitude: </em>138.000<br/><em>East bounding longitude: </em>155.000<br/><em>South bounding latitude: </em>-29.500<br/><em>North bounding latitude: </em>-16.000<br/></div>
+                    
+                    
+                    
+                    <em>Temporal extent: </em><div>
+                            <em> Start: </em> 2009-01-01<em> End: </em> 2022-10-20<br/>
+                        </div>
+                
+            </div><h2 class="headTitle">Data Quality</h2><div>
+            
+                <em>Data quality scope:</em><div>
+                    
+                        <em>Level: </em>dataset<br/>
+                    
+                    
+                </div>
+            
+            
+                <em>Completeness (omission):</em><div>
+                    
+                        <br/>                                Capture is complete. However new Basin Sub Areas may be added in the future.<br/>                            
+                    
+                </div>
+            
+            
+                <em>Consistency (conceptual):</em><div>
+                    
+                        <br/>                                Data should be free from overshoots, undershoots, duplicate lines. Drainage lines should not cross basin boundaries.<br/>                            
+                    
+                </div>
+            
+            
+                <em>Positional accuracy (external, absolute):</em><div>
+                    
+                        <br/>                                Accuracy of the data is dependent on the accuracy of the elevation data of the associated 1:100000 topographic map.  This data is suitable for scales 1:100000 and greater.<br/>                            
+                    
+                </div>
+            
+            
+                <em>Attribute accuracy (non quantitative):</em><div>
+                    
+                        <br/>                                Information was obtained from the Gauging Station Catchments - Queensland dataset. Attribute naming was validated against this data and has an accuracy of 100%.<br/>                            
+                    
+                </div>
+            
+            
+            
+            
+            
+            
+                <h2 class="headTitle">History:</h2><div>
+                    <em>Lineage statement:</em><div>This data set was created as a consequence of a larger project involving the capturing of all gauging station catchments in Queensland.<br/>The polygons were constructed by:<br/>- Using the existing major & minor river basins as an external framework<br/>- Creating a clear overlay matching every 1:100 000 topographical map in Queensland<br/>- The clear overlay had all 1:250 000 river basin boundaries, the major and minor river basins as well as the corner points for each map sheet plotted on it<br/>- Using these 1:250 000 basin boundaries, the major and minor river basins and the topography from the 1: 100 000 topo maps as a guide, the Sub-Basin Areas were determined and traced on to the clear overlay<br/>- These basins were then digitised and stored in an ArcInfo coverage<br/>- RMS errors not > than 0.005<br/>- Regions were created from the resulting polygons<br/>- Attributes pertaining to these regions are: Sub_Name; Sub_Number as definded by the Australian Water Resources Management Committee (WRMC). <br/><br/>River Basins are subsets of and have boundaries that are aligned to and nested with the associated Drainage Basin.<br/>Please refer to the Drainage Basin - Queensland dataset.<br/><br/>In 2020, the seaward edge of the data was moved to align with the Coastline and State Border - Queensland dataset.</div>
+                    
+                    
+                </div>
+            
+        </div><h2 class="headTitle">Distribution</h2><div>
+        
+            
+                <em>Format(s):</em><div>
+                    <em>Name/identifier: </em>Queensland Spatial Catalogue<br/>
+                    
+                    <em>Specification: </em>Download Service<br/>
+                    
+                        
+                                
+                            
+                                
+                                    
+                                        <em>Online resource:</em><div><em>Website: </em><a href="http://qldspatial.information.qld.gov.au/catalogue//"><small>http://qldspatial.information.qld.gov.au/catalogue//</small></a><br/></div>
+                                    
+                                
+                            
+                                <em>Ordering information:</em><div><em>Fees: </em>IncPrice=0000; GST=0000; Currency=AUD; AcctRef=9311662184788<br/><em>Instructions: </em>Data can be obtained from the Queensland Spatial Catalogue - QSpatial<br/></div>
+                            
+                    
+                </div><br/>
+            
+            
+            
+            
+                <em>Format(s):</em><div>
+                    <em>Name/identifier: </em>downloadableData<br/>
+                    <em>Version: </em>10.0<br/>
+                    <em>Specification: </em>ESRI ArcGIS Server Geoportal Extension Content Type<br/>
+                </div><br/>
+            
+            
+                <em>Distributor:</em><div>
+                        
+                    
+                        <em>Format(s):</em><div>
+                            <em>Name/identifier: </em>From the Queensland Spatial Catalogue available as ESRI Shape file SHP, MapInfo Tab file TAB, ESRI file geodatabase FGDB, Google file KMZ, and Geopackage version 1.0, 1.1, or 1.2 file GPKG<br/>
+                            
+                        </div><br/>
+                    
+                        
+                            <em>Transfer size (megabytes): </em>9<br/>
+                            
+                                <em>Online resource:</em><div><em>Website: </em><a href="http://qldspatial.information.qld.gov.au/catalogue/custom/search.page?q=%22Drainage basin sub areas - Queensland%22"><small>http://qldspatial.information.qld.gov.au/catalogue/custom/search.page?q=%22Drainage basin sub areas - Queensland%22</small></a><br/></div>
+                            
+                            
+                        
+                    </div>
+            
+            <em>Transfer options:</em><div>
+                
+                    
+                        <em>Online resource:</em><div><em>Website: </em>
+                                <em>Function: </em>download<br/>
+                            </div>
+                    
+                
+            </div>
+        
+    <br><em>Web Service Finder:</em></br><div><em>Website: </em><a href="http://qldspatial.information.qld.gov.au/catalogue/custom/search.page?q=keywords:&quot;Drainage basin sub areas - Queensland&quot;&amp;contentTypes=liveData">QSpatial Web Service</a></div><div><em>Instructions: </em>Use the URL to search QSpatial for web services displaying or using this dataset.
+                </div></div><h2 class="headTitle">Metadata Reference Information</h2><div>
+        <em>Hierarchy level (scope of the metadata): </em>dataset<br/>
+    <em>Identifier: </em>{5110CD92-F1A4-BCF3-1CDB-E13B2A0C5946}<br/><em>Parent identifier: </em>x<br/><em>Metadata date stamp: </em>
+        2011-04-19
+    <br/><em>Language: </em>eng<br/>
+        <em>Character set: </em>utf8<br/>
+    <em>Metadata standard name: </em>ISO 19115:2005, ANZLIC ISO 1.1<br/><em>Metadata version name: </em>QGIS<br/></div></body></html></span><input type="hidden" name="javax.faces.ViewState" id="javax.faces.ViewState" value="-7991349841890844174:-7815640817082677754" autocomplete="off" />
+</form>
+  <!--iframe class="section" src="/catalogue/rest/document?f=html&id=%7B5110CD92-F1A4-BCF3-1CDB-E13B2A0C5946%7D" width="100%" scrolling="no" frameborder="0"></iframe-->
+  <!--span class="note">/catalogue/rest/document?f=html&id=%7B5110CD92-F1A4-BCF3-1CDB-E13B2A0C5946%7D</span-->
+</span></td>
+</tr>
+</tbody>
+</table>
+
+		</div>
+	</div>
+</body>
+	</html>
+
+
+
