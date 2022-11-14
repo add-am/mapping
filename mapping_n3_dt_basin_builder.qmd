@@ -1,0 +1,388 @@
+---
+title: "Northern Three Mapping (Basin Builder)"
+author: "Adam Shand"
+date: "`r format(Sys.time(), '%d, %B, %Y')`" 
+format: html
+params:
+  dataset_resolution: 30
+  disagg_factor: 1
+  project_crs: "EPSG:7844"
+
+---
+
+A script to create the custom divisions of the Dry Tropics Basins and Marine zone.
+This uses multiple publicly available datasets.
+
+# Global Controls
+
+Before diving in, we must establish some global variables that provide critical 
+control over the output.
+
+```{r}
+#| label: get remotes package and install extra packages
+#| output: false
+
+#check if remotes is installed
+package_list <- c("remotes")
+new_packages <- package_list[!(package_list %in% installed.packages()[,"Package"])]
+
+#if length is anything but zero, install remotes
+if(length(new_packages)) install.packages(new_packages)
+
+#check if gisaimsr data package is installed
+package_list <- c("gisaimsr")
+new_packages <- package_list[!(package_list %in% installed.packages()[,"Package"])]
+
+#if length is anything but zero, install gisaimsr
+if(length(new_packages)) remotes::install_github("https://github.com/open-AIMS/gisaimsr")
+
+#cleanup
+rm(package_list, new_packages)
+
+```
+
+
+```{r}
+#| label: load packages
+#| output: false
+#| echo: false
+
+#graphing and mapping
+library(RColorBrewer) #colour palettes, and create custom palettes
+library(sf) #read and manipulate simple features
+library(tmap) #map data
+library(osmdata) #online data repo from open street map
+library(gifski) #easy interactive visualisations
+
+#general setup and data manipulation
+library(glue) #easier to create strings, particularly those contains variables
+library(lubridate) #time manipulation
+library(terra) #spatial raster manipulation
+library(exactextractr) #function for exact extration of polygon values
+library(tidyverse) #contains multiple useful packages (https://www.tidyverse.org/packages/)
+library(stringr) #additional help on string manipulation
+library(dataaimsr) #load the aims datasets
+
+```
+
+```{r}
+#| label: global vars and initial setup
+#| output: false
+
+#set project variables: crs factor and current_fyear
+proj_crs <- params$project_crs
+
+#format the date for the path below and to be used as a variable in naming later
+date <- format(Sys.time(), "%Y-%m-%d")
+
+#create a file path to help with saving things
+save_path <- glue("output/{date}_n3-basin-builder/")
+
+#bring that path to life
+dir.create(save_path)
+
+#initilize with static mapping
+tmap_mode("plot")
+
+#turn off spherical geometry
+sf_use_s2(F)
+
+```
+
+Our project coordinate reference system (CRS) that we use to interpret
+all geographic data is set to `r proj_crs`.
+
+# Data Source
+
+Load in the relevant shapefiles. If this is the first time running the analysis
+and/or the shapefiles are not in the folder, please refer to the .README for this 
+repo for a guide on downloading the data.
+
+``` {r}
+#| label: load in the relevant shapefiles
+#| output: false
+
+#Import the Environmental Protection Policy env value zones layer
+EPP_water_env_value <- st_read(dsn = "data/shapefiles", 
+                               layer = "EPP_Water_Env_Value_Zones_Qld")
+
+
+#Import the Environmental Protection Policy water types layer
+EPP_water_types <- st_read(dsn = "data/shapefiles",
+                           layer = "EPP_Water_water_types_Qld")
+
+#read in the Environmental Protection Policy management intent layer
+EPP_management_intent <- st_read(dsn = "data/shapefiles", 
+                                 layer = "EPP_Water_management_intent_Qld")
+
+#read in waterbodies data from the gisaimsr package
+data("wbodies", package = "gisaimsr")
+
+#read in the basins used by nrms and gbrmpa
+basins <- st_read(dsn = "data/shapefiles/Drainage_basins.shp")
+
+#update crs
+EPP_water_env_value <- st_transform(EPP_water_env_value, proj_crs)
+EPP_water_types <- st_transform(EPP_water_types, proj_crs)
+EPP_management_intent <- st_transform(EPP_management_intent, proj_crs)
+wbodies <- st_transform(wbodies, proj_crs)
+basins <- st_transform(basins, proj_crs)
+
+```
+
+# Creation of Sub-basins
+
+In the Dry Tropics region there are only two official basins: The Ross Basin, and
+The Black Basin. However each of these basins contain multiple unique environments
+that are not best represented collectively. For example the Black Basin is wide
+and narrow (relative to the coastline) and consists of more than a dozen individual
+river systems. Below we divide the basins into sections based on boundaries used 
+by the  EPP environmental value dataset and the major rivers within.
+
+``` {r}
+#| label: divide the Ross and Black Basins
+
+#select relevant features (land only)
+tsv_wev_temp <- EPP_water_env_value %>% 
+  filter(PROJECT_NA == "Townsville Region" & ENV_VALUE_ != "Halifax & Cleveland Bay")
+
+#save a before plot for below
+map1 <- tsv_wev_temp
+
+#create a list of groups that will be used
+group_list <- c("Two|Christmas", "Deep Creek|Althaus|Healy", "Alick|Black R|Log C|Canal|Alice",
+                "Town C|Pall", "Middle B|(lower)", "Round|Plum|Six|One|Toon",
+                "Anthill|Slippery|Alligator|Killymoon|Crocodile|Cape",
+                "below dam|Mt Stuart|Sachs", "Stuart C|State|Sandfly|Whites",
+                "Bay|Retreat|China|Duck|Ned|Butlers|Gustav|Petersen|Magnetic|Gorge|Endeavour")
+
+#assign a value based on what group each polygon should be in, some are their own group
+tsv_wev_temp <- tsv_wev_temp %>%
+  mutate(zone = BASIN_NAME,
+    grouping_var = case_when(str_detect(ENV_VALUE_, group_list[1]) ~ nrow(tsv_wev_temp) + 1,
+                             str_detect(ENV_VALUE_, group_list[2]) ~ nrow(tsv_wev_temp) + 2,
+                             str_detect(ENV_VALUE_, group_list[3]) ~ nrow(tsv_wev_temp) + 3,
+                             str_detect(ENV_VALUE_, group_list[4]) ~ nrow(tsv_wev_temp) + 4,
+                             str_detect(ENV_VALUE_, group_list[5]) ~ nrow(tsv_wev_temp) + 5,
+                             str_detect(ENV_VALUE_, group_list[6]) ~ nrow(tsv_wev_temp) + 6,
+                             str_detect(ENV_VALUE_, group_list[7]) ~ nrow(tsv_wev_temp) + 7,
+                             str_detect(ENV_VALUE_, group_list[8]) ~ nrow(tsv_wev_temp) + 8,
+                             str_detect(ENV_VALUE_, group_list[9]) ~ nrow(tsv_wev_temp) + 9,
+                             str_detect(ENV_VALUE_, group_list[10]) ~ nrow(tsv_wev_temp) + 10), .after = ENV_VALUE_) %>%
+  mutate(rowid_to_column(tsv_wev_temp, "ID"),
+         grouping_var = coalesce(grouping_var, ID)) %>% 
+  select(-SCHEDULE, -BASIN_NUMB, -ID)
+
+#combine names based on grouping and edit zone
+tsv_wev_temp <- tsv_wev_temp %>% 
+  group_by(grouping_var) %>% 
+  mutate(contains = paste0(ENV_VALUE_, collapse = ", ")) %>% 
+  group_by(contains, zone) %>% 
+  summarise() %>% 
+  mutate(zone = case_when(str_detect(zone, "Black") ~ "black basin",
+                          str_detect(zone, "Ross") ~ "ross basin"))
+
+#create list of names that will be used for each group
+sub_basin <- c("Black River", "Althaus Creek", "Bluewater Creek", "Bohle River (upper)", "Camp Oven Creek",
+                "Alligator Creek", "Sleeper Log Creek", "Crystal Creek", "Ross River Dam", "Leichhardt Creek",
+                "Ollera Creek", "Louisa Creek", "Ross River (lower)", "Magnetic Island", "Town Common", 
+                "Rollingstone Creek", "Ross Creek", "Saltwater Creek", "Station Creek", "Bohle River (lower)", "Stuart Creek",
+                "Surveryors Creek", "Ross River (upper)")
+ 
+#bind the names to the sf data
+tsv_wev_temp <- cbind(tsv_wev_temp, sub_basin)
+
+#cleanup
+rm(group_list, sub_basin)
+
+```
+This is before:
+
+``` {r}
+#| label: visualise before
+
+plot(map1["ENV_VALUE_"])
+
+#cleanup
+rm(map1)
+
+```
+
+
+And this is after (ignoring the legend - not sure why that happens):
+
+``` {r}
+#| label: visualise after
+
+plot(tsv_wev_temp["sub_basin"])
+
+```
+
+However, the most painful part is that these divisions were created based on DES
+mapping requirements. Therefore the Black and Ross Basin outlines are slightly
+different from the Black and Ross Basin outlines used by the more widely accepted
+Drainage_basins shapefiles. The below code rectifies the biggest disparity between
+the basin outlines - the Alligator Ck/Cape Cleveland corner of the Ross Basin.
+
+``` {r}
+#| label: rectify the difference between the two Ross basin outlines
+
+#select the Ross and Black Basins
+tsv_basin <- basins %>% 
+  filter(BASIN_NAME %in% c("Ross", "Black"))
+
+#union the shapefile for the difference function
+temp <- tsv_wev_temp %>% st_union()
+
+#take the difference of the two outlines and cast the multipolygon to polygons
+temp <- st_cast(st_difference(tsv_basin, temp), "POLYGON")
+
+#calculate the area of each polygon 
+temp$area <- st_area(temp)
+
+#select only the biggest one
+temp <- temp %>% slice_max(area, n = 1)
+
+#edit for the rbind function
+temp <- temp %>% 
+  select(geometry) %>% 
+  mutate(contains = "Cape Cleveland", zone = "ross basin",
+         sub_basin = "Alligator Creek", .before = geometry)
+
+#bind the temp polygon back onto the main
+tsv_wev <- rbind(tsv_wev_temp, temp)
+
+#cleanup
+rm(tsv_wev_temp, temp)
+
+#combine names based on grouping
+tsv_wev <- tsv_wev %>% 
+  group_by(sub_basin) %>% 
+  mutate(contains = paste0(contains, collapse = ", ")) %>% 
+  group_by(contains, , sub_basin, zone) %>% 
+  summarise()
+
+#transform the shapefiles to a project system for the snap function
+tsv_wev <- st_transform(tsv_wev, "EPSG:32755")
+tsv_basin <- st_transform(tsv_basin, "EPSG:32755")
+
+#snap the env value shapefile to the other basin (this removes minor disparities)
+tsv_wev <- st_snap(tsv_wev, tsv_basin, tolerance = 100)
+
+#fix any invalid geometries that occur
+tsv_wev <- st_make_valid(tsv_wev)
+
+#transform back to the standard EPSG:7844 GDA 2020
+tsv_wev <- st_transform(tsv_wev, proj_crs)
+tsv_basin <- st_transform(tsv_basin, proj_crs)
+
+```
+
+
+Before is the plot above, and here is after:
+
+``` {r}
+#| label: visualise after2
+
+plot(tsv_wev["sub_basin"])
+
+```
+
+# Creation of Freshwater and Estuarine areas
+
+The report card seperates its land-based water features into fresh and estuarine
+systems. Once again the EPP datasets provide the necessary divisions. This time 
+we will be using the Water Types data. The code below adds these divisions.
+
+``` {r}
+#| label: prep the fresh and estuarine polygons
+
+#select townsville region, get the fresh and estuarine components and combine into one polygon
+tsv_fre <- EPP_water_types %>% 
+  filter(PROJECT_NA %in% c("Townsville Region"),
+         !str_detect(WATER_TYPE, "coast|estua")) %>% 
+  st_union(by_feature = FALSE) %>%
+  st_combine() %>% nngeo::st_remove_holes() %>% st_sf()
+
+tsv_est <- EPP_water_types %>% 
+  filter(PROJECT_NA %in% c("Townsville Region"),
+         str_detect(WATER_TYPE, "estua")) %>% 
+  st_union(by_feature = FALSE) %>%
+  st_combine() %>% nngeo::st_remove_holes() %>% st_sf()
+
+#combine the fresh, estuarine and wev polygons
+temp1 <- st_intersection(tsv_wev, tsv_fre) %>% 
+  mutate(env = "fresh") %>% 
+  group_by(sub_basin, zone, env) %>% 
+  st_collection_extract("POLYGON") %>% 
+  summarise(geometry = st_union(geometry))
+
+temp2 <- st_intersection(tsv_wev, tsv_est) %>% 
+  mutate(env = "estuarine") %>% 
+  mutate(zone = case_when(str_detect(zone, "black") ~ "black estuary",
+                          str_detect(zone, "ross") ~ "ross estuary")) %>% 
+  group_by(sub_basin, zone, env) %>% 
+  st_collection_extract("POLYGON") %>% 
+  summarise(geometry = st_union(geometry))
+
+#join everything back together
+tsv_wev_wt <- rbind(temp1, temp2)
+
+#clean up
+rm(tsv_fre, tsv_est, temp1, temp2)
+
+```
+Before is the plot above, and here is after:
+
+``` {r}
+#| label: visualise after3
+
+plot(tsv_wev_wt["env"])
+
+```
+
+# Creation of Marine areas
+
+Next we need to build the marine divisions for the Dry Tropics region. These divisions
+are based on the GBRMPA dataset provided within the aims package and therefore the
+data is not visible within the shapefile folder. Refer to the .README for more
+information if required. The code chunk below introduces these divisions.
+
+``` {r}
+#| label: prep the marine segments of the DT region
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+
+

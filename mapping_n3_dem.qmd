@@ -5,8 +5,7 @@ date: "`r format(Sys.time(), '%d, %B, %Y')`"
 format: html
 params:
   dataset_resolution: 100
-  disagg_factor: 1
-  project_crs: "EPSG:4326"
+  project_crs: "EPSG:7844"
 ---
 
 A script to create "easily" customisable 3D maps of the Northern Three region using 
@@ -82,29 +81,24 @@ library(tidyverse)
 # Global Controls
 
 As always, we then need to assign the global controls. Our project coordinate 
-reference system (CRS) is set to `r params$project_crs`. While our project interpolation 
-factor is set to `r params$disagg_factor`. Higher interpolation factors increase 
-data resolution and create a more detailed map, however will dramatically increase 
-processing time. The resolution of the DEM data is good enough that no additional 
-increase is needed. Speaking of resolution, two DEM data sets can be used, either 
-the 30m data or 100m data. Thisrefers to the cell size of the data (smaller is 
-higher resolution). This script is currently using the `r params$dataset_resolution` 
-data.
+reference system (CRS) is set to `r params$project_crs`. Two DEM data sets can 
+be used, either the 30m data or 100m data. Thisrefers to the cell size of the data 
+(smaller is higher resolution). This script is currently using the 
+`r params$dataset_resolution` data.
 
 ```{r}
 #| label: establish global controls and settings
 #| output: false
 
-#set project variables: crs factor and data to use
+#set project variables
 proj_crs <- params$project_crs
-fac <- params$disagg_factor
 data_set <- params$dataset_resolution
 
 #format the date for the path below and to be used as a variable in naming later
 date <- format(Sys.time(), "%Y-%m-%d")
 
 #create a file path to help with saving things
-save_path <- glue("output/{date}_n3-dem_factor-{fac}/")
+save_path <- glue("output/{date}_n3-dem_resolution-{data_set}m/")
 
 #bring that path to life
 dir.create(save_path)
@@ -228,32 +222,10 @@ gbr <- raster::raster(glue("data/elevation/gbr_{data_set}m_2020.tif"))
 
 ```
 
-# Basin Data Source
+# Basin Selection
 
-The Northern Three reporting regions are broken into multiple basins and sub-basins 
-and stored as gpkg files. **Note: These gpkg files should already be present in 
-the data/shapefiles folder, Don't change the name if they are.**
-
-Should the files not be present, they can be found on QSpatial 
-[here](https://qldspatial.information.qld.gov.au/catalogue/custom/index.page). Search and download:
-
--   Drainage basins - Queensland
--   Drainage basins sub areas - Queensland
-
-Data should be downloaded in the following format:
-
--   GeoPackage 1.2 - GEOPACKAGE_1.2 - .gpkg
--   WGS84 geographic 2D (EPSG:4326)
-
-Once downloaded save the files in under **data/shapefiles/** make sure to update 
-the names of the .gpkg files to **Drainage_basins** and **Drainage_basins_sub_areas** 
-respectively.
-
-A second important file is the Queensland outline polygon. **Note: This file 
-should also already be present in the data folder, Don't change the name.** If 
-required, you can find qld polygons online, the exact source does not matter.
-
-Below are each of the basins - you might recognise your region.
+Load in the shapefiles required for analysis. Should you need to re-download the
+files please refer to the .README for this repo.
 
 ```{r}
 #| label: Read and Prep Basin Shapefiles
@@ -261,8 +233,8 @@ Below are each of the basins - you might recognise your region.
 #| fig-cap: Northern three basins
 
 #read the drainage basins and drainage basin sub areas
-basins <- st_read(dsn = "data/shapefiles/Drainage_basins.gpkg")
-sub_basins <- st_read(dsn = "data/shapefiles/Drainage_basin_sub_areas.gpkg")
+basins <- st_read(dsn = "data/shapefiles/Drainage_basins.shp")
+sub_basins <- st_read(dsn = "data/shapefiles/Drainage_basin_sub_areas.shp")
 
 #update crs
 basins <- st_transform(basins, proj_crs)
@@ -280,7 +252,7 @@ temp <- sub_basins %>%
   filter(SUB_NAME %in% c("Russell River", "Mulgrave River")) %>% 
   mutate(SUB_NAME = case_when(SUB_NAME == "Russell River" ~ "Russell",
                               SUB_NAME == "Mulgrave River" ~ "Mulgrave")) %>% 
-  rename(BASIN_NAME = SUB_NAME, BASIN_NUMBER = SUB_NUMBER)
+  rename(BASIN_NAME = SUB_NAME, BASIN_NUMB = SUB_NUMBER)
 
 #add the two basins onto main
 n3_basins <- rbind(n3_basins, temp)
@@ -330,7 +302,7 @@ source("functions/n3_dem_base_map.R")
 key_tbl <- tibble()
 
 #get unique target names
-names <- unique(n3_basins$basin)
+names <- unique(n3_basins$region)
 
 for (i in 1:length(names)){
   
@@ -342,11 +314,11 @@ for (i in 1:length(names)){
   
   #create a shapefile that contains only the region of interest. Combine all polygons
   target <- n3_basins %>% 
-    filter(str_detect(basin, names[i])) %>% 
+    filter(str_detect(region, names[i])) %>% 
     st_union(by_feature = F) %>% st_combine() %>%
     nngeo::st_remove_holes() %>% 
     st_sf() %>% 
-    mutate(basin = names1, .before = geometry)
+    mutate(region = names1, .before = geometry)
   
   #run the function using the DEM data and the shapefile, will return a var called 
   #base_map, and a height matrix called dem_matrix. It will also save the base_map
