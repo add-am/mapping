@@ -1,8 +1,10 @@
-output/
+# Specific folders
 data/elevation/
 data/raw/
-data/shapefiles/
+output/
 
+# Temporarily block .shpfiles
+*.shp
 
 # History files
 .Rhistory

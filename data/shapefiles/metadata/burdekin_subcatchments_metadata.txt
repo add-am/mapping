@@ -1,0 +1,132 @@
+Question!From: HeritageGIS (Girringun) [GIS@girringun.com.au]
+Sent: Friday, 25 January 2008 2:08 PM
+To: Mark Kelton
+Subject: RE: Question!
+
+Hi Mark,
+
+ 
+
+                Well, I’ll have to confess, I am the culprit. 
+
+ 
+
+                That’s something I began not belong before the funding for my position at the EPA ran out. When I left the EPA it wasn’t complete but when I started with the BDT I got a copy of it from the EPA and continued with it. Unfortunately I never did get around to sorting out the metadata for it. I was still tweeking it when I left the BDT and went to Toowoomba and found that Toowoomba sucks. 
+
+ 
+
+                Anyway, essentially the whole dataset was digitised on screen using ArcInfo, and a combination data. I stated off with a drainage dataset, elevation contours (20m) and some satellite imagery. At the time I was in the middle of processing the drainage data into stream orders using a script I downloaded. Anyway, while all the processing was getting done I was digitising the outline of the Burdekin catchment. Once I had an ordered drainage dataset I decided to digitise around the subcatchments and it went on from their. I left the Burdekin river itself as a subcatchment including some of the class 1 stream feeding directly into the river. Seemed like a good idea at the time. I meant that I could discriminate between the river directly and the other internal catchments of the basin. 
+
+ 
+
+                When I started working for the BDT I knew that the dataset didn’t include any of the coastal catchments external to the Burdekin basin. So I digitised them using scanned 100K mapsheets as a guide. AS many of the catchments were huge I just kept going, digitising subcatchments of subcatchments. You can see this in the likes of the Clarke River subcatchment. 
+
+ 
+
+                I s’pose I thought I’d get around to the metadata when I thought I gone as far as I thought was necessary. 
+
+ 
+
+                For what its worth, at the time there was plenty of talk about generating the same thing from the DEM that NRW (then NRM) had at the time but everyone was complaining about the inaccuracies because the data was pretty course and that you could only do so much resampling before it wasn’t worth anything. We needed something then, not five years down the track so I digitised it. 
+
+ 
+
+                I haven’t heard of anything else being created yet so until we get a decent DEM it’s probably the best thing around. 
+
+ 
+
+                As far as horizontal accuracy, maybe 50m – 100m. Vertical accuracy is probably as good as the 100K topo maps, what ever the Army Survey Corps think.It didn’t look too bad up against the Landsat imagery I was using at the time. There was a couple of places around the Cape and Belyando rivers where I have to make some guesses by looking at the imagery because the land is so flat I didn’t get much help from the contours. 
+
+ 
+
+                I probably did most of the work on it and added new information to it while I was with the BDT, so it would be my guess that the BDT would hold rights to what they have as it was improved (for want of a better word) by the BDT. That is probably an arguable point but its for the boffins and legal eagles to work that one out. Meanwhile anyone who needs to get the work done has to sit on their hands and wait. The data agreements all worked on a return basis anyway. Something we’re working on here at the moment. 
+
+ 
+
+                It’s not too bad for what it’s worth anyway.
+
+ 
+
+                I’ll have to sit down next week and write up some metadata for it and I’ll send it off to Doug Willis and he can get it over to you.
+
+ 
+
+                Cheers
+
+ 
+
+Rod Nielson
+
+Spatial Information Manager
+
+Girringun Aboriginal Corporation
+
+Ph:  07 4066 8300
+
+Fax: 07 4066 8353
+
+E-mail: GIS@girringun.com.au
+
+G-mail: girringun@gmail.com
+
+
+--------------------------------------------------------------------------------
+
+From: Mark Kelton [mailto:Mark.Kelton@epa.qld.gov.au] 
+Sent: Friday, 25 January 2008 1:23 PM
+To: HeritageGIS (Girringun)
+Subject: Question!
+
+ 
+
+Hi Rod,
+
+Sorry to contact you like this but I heard you may be able to shed some light on a dataset I am working with. Doug Willis from the BDT NRM gave me a subcatchment layer for the Burdekin NRM Region however there is no metadata accompanying it. Apparently this is the one ACTFR used to create their subcatchments layer used for the Coast to Catchments Initiative (CCI). Mirjam from the ACTFR informed me that you may have been involved in the creation of the Burdekin subcatchments layer. I am trying to find out basic information about this such as how it was created (i.e. method used), when it was created, by whom and anything else that will help me use this dataset. I would GREATLY appreciate your help.   
+
+Regards
+
+Mark
+
+ 
+
+Mark Kelton
+
+Senior Conservation Officer (GIS)
+
+Environmental Protection Agency
+
+Northern Regional Office
+
+PO Box 5391 Townsville, QLD 4810
+
+Ph: 07) 4722 5277
+
+___________________________
+
+Disclaimer
+
+ 
+
+WARNING: This e-mail (including any attachments) has originated from a Queensland Government department and may contain information that is confidential, private, or covered by legal professional privilege, and may be protected by copyright. 
+
+ 
+
+You may use this e-mail only if you are the person(s) it was intended to be sent to and if you use it in an authorised way. No one is allowed to use, review, alter, transmit, disclose, distribute, print or copy this e-mail without appropriate authority. If you have received this e-mail in error, please inform the sender immediately by phone or e-mail and delete this e-mail, including any copies, from your computer system network and destroy any hardcopies.
+
+ 
+
+Unless otherwise stated, this e-mail represents the views of the sender and not the views of the Environmental Protection Agency.
+
+ 
+
+Although this e-mail has been checked for the presence of computer viruses, the Environmental Protection Agency provides no warranty that all viruses have been detected and cleaned. Any use of this e-mail could harm your computer system. It is your responsibility to ensure that this e-mail does not contain and is not affected by computer viruses, defects or interference by third parties or replication problems (including incompatibility with your computer system).
+
+ 
+
+E-mails sent to and from the Environmental Protection Agency will be electronically stored, managed and may be audited, in accordance with the law and Queensland Government Information Standards (IS31, IS38, IS40, IS41 and IS42) to the extent they are consistent with the law.
+
+ 
+
+___________________________
+
+ 

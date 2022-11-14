@@ -1,0 +1,48 @@
+black_ross_subsections.shp Metadata
+
+
+Projection: 
+MGA_Zone55
+
+Datum:
+GDA 1994
+
+Background information:
+The catchments data depicted in thin the black_ross_subsections.shp dataset conforms with the following classification system for catchment boundaries.
+
+a. Drainage Basins: synomynous with the Australian Water Resources Management Committee (WRMC) basins.
+b. Subcatchments: unique/distinct drainage areas constructed by grouping connected subsections.*
+c. Subsections: the finest scale drainage areas.   
+
+ *Subcatchments are not recorded in this dataset. 
+
+Source: 
+The black_ross_subsections.shp datset has been created using linework from the BDTNRM Burdekin_Subcatchments.shp datalayer created by Rod Nielson (see burdekin_subcatchments_metadata.txt). The Wild Bear Creek subsection was added with the aid of 100k Topo drainage data. The Magnetic Island subsections line work sourced from TTCC_Catchments1996.shp datalayer (No metadata exists for this layer however subcatchment boundaries appeared to be generally consistent with 100k Topo drainage data).  
+
+The following topological checks have been carried out and errors fixed:
+
+1. Checks for overlapping polygons.
+2. Checks for gaps.
+  
+ 
+
+Attributes:
+Island Type = type of feature (i.e. mainland, island, etc).
+WRMC Basin = Australian Water Resources Management Committee (WRMC) basin.
+WQIP_Area = WQIP area (i.e. Burdekin, Black/Ross, etc).
+ACTFR_Basi = Australian Centre for Tropical Freshwater Research (ACTFR) Basin (groups of subsections).
+Subsect = the finest scale drainage areas (synomonous with EPA AquaBAMM Subsections).
+
+
+Contact:
+Mark Kelton
+Senior Conservation Officer (GIS)
+Environmental Protection Agency
+Northern Regional Office
+PO Box 5391 Townsville, QLD 4810
+Ph: 07) 4722 5277
+
+Document Created:
+11/02/2008
+
+ENDS

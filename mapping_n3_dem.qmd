@@ -4,7 +4,7 @@ author: "Adam Shand"
 date: "`r format(Sys.time(), '%d, %B, %Y')`" 
 format: html
 params:
-  dataset_resolution: 100
+  dataset_resolution: 30
   project_crs: "EPSG:7844"
 ---
 
