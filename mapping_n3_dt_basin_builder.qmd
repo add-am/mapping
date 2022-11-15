@@ -4,8 +4,6 @@ author: "Adam Shand"
 date: "`r format(Sys.time(), '%d, %B, %Y')`" 
 format: html
 params:
-  dataset_resolution: 30
-  disagg_factor: 1
   project_crs: "EPSG:7844"
 
 ---
@@ -106,14 +104,9 @@ repo for a guide on downloading the data.
 EPP_water_env_value <- st_read(dsn = "data/shapefiles", 
                                layer = "EPP_Water_Env_Value_Zones_Cropped")
 
-
 #Import the Environmental Protection Policy water types layer
 EPP_water_types <- st_read(dsn = "data/shapefiles",
                            layer = "EPP_Water_water_types_Cropped")
-
-#read in the Environmental Protection Policy management intent layer
-EPP_management_intent <- st_read(dsn = "data/shapefiles", 
-                                 layer = "EPP_Water_management_intent_Cropped")
 
 #read in waterbodies data from the gisaimsr package
 data("wbodies", package = "gisaimsr")
@@ -124,7 +117,6 @@ basins <- st_read(dsn = "data/shapefiles/Drainage_basins.shp")
 #update crs
 EPP_water_env_value <- st_transform(EPP_water_env_value, proj_crs)
 EPP_water_types <- st_transform(EPP_water_types, proj_crs)
-EPP_management_intent <- st_transform(EPP_management_intent, proj_crs)
 wbodies <- st_transform(wbodies, proj_crs)
 basins <- st_transform(basins, proj_crs)
 
@@ -137,7 +129,7 @@ The Black Basin. However each of these basins contain multiple unique environmen
 that are not best represented collectively. For example the Black Basin is wide
 and narrow (relative to the coastline) and consists of more than a dozen individual
 river systems. Below we divide the basins into sections based on boundaries used 
-by the  EPP environmental value dataset and the major rivers within.
+by the EPP environmental value dataset and the major rivers within.
 
 ``` {r}
 #| label: divide the Ross and Black Basins
@@ -179,21 +171,21 @@ tsv_wev_temp <- tsv_wev_temp %>%
   mutate(contains = paste0(ENV_VALUE_, collapse = ", ")) %>% 
   group_by(contains, zone) %>% 
   summarise() %>% 
-  mutate(zone = case_when(str_detect(zone, "Black") ~ "black basin",
-                          str_detect(zone, "Ross") ~ "ross basin"))
+  mutate(zone = case_when(str_detect(zone, "Black") ~ "black",
+                          str_detect(zone, "Ross") ~ "ross"))
 
 #create list of names that will be used for each group
-sub_basin <- c("Black River", "Althaus Creek", "Bluewater Creek", "Bohle River (upper)", "Camp Oven Creek",
-                "Alligator Creek", "Sleeper Log Creek", "Crystal Creek", "Ross River Dam", "Leichhardt Creek",
-                "Ollera Creek", "Louisa Creek", "Ross River (lower)", "Magnetic Island", "Town Common", 
-                "Rollingstone Creek", "Ross Creek", "Saltwater Creek", "Station Creek", "Bohle River (lower)", "Stuart Creek",
-                "Surveryors Creek", "Ross River (upper)")
+sub_zone <- c("Black River", "Althaus Creek", "Bluewater Creek", "Bohle River (upper)", "Camp Oven Creek",
+              "Alligator Creek", "Sleeper Log Creek", "Crystal Creek", "Ross River Dam", "Leichhardt Creek",
+              "Ollera Creek", "Louisa Creek", "Ross River (lower)", "Magnetic Island", "Town Common", 
+              "Rollingstone Creek", "Ross Creek", "Saltwater Creek", "Station Creek", "Bohle River (lower)", "Stuart Creek",
+              "Surveryors Creek", "Ross River (upper)")
  
 #bind the names to the sf data
-tsv_wev_temp <- cbind(tsv_wev_temp, sub_basin)
+tsv_wev <- cbind(tsv_wev_temp, sub_zone)
 
 #cleanup
-rm(group_list, sub_basin)
+rm(group_list, sub_zone, tsv_wev_temp)
 
 ```
 This is before:
@@ -214,77 +206,7 @@ And this is after (ignoring the legend - not sure why that happens):
 ``` {r}
 #| label: visualise after
 
-plot(tsv_wev_temp["sub_basin"])
-
-```
-
-However, the most painful part is that these divisions were created based on DES
-mapping requirements. Therefore the Black and Ross Basin outlines are slightly
-different from the Black and Ross Basin outlines used by the more widely accepted
-Drainage_basins shapefiles. The below code rectifies the biggest disparity between
-the basin outlines - the Alligator Ck/Cape Cleveland corner of the Ross Basin.
-
-``` {r}
-#| label: rectify the difference between the two Ross basin outlines
-
-#select the Ross and Black Basins
-tsv_basin <- basins %>% 
-  filter(BASIN_NAME %in% c("Ross", "Black"))
-
-#union the shapefile for the difference function
-temp <- tsv_wev_temp %>% st_union()
-
-#take the difference of the two outlines and cast the multipolygon to polygons
-temp <- st_cast(st_difference(tsv_basin, temp), "POLYGON")
-
-#calculate the area of each polygon 
-temp$area <- st_area(temp)
-
-#select only the biggest one
-temp <- temp %>% slice_max(area, n = 1)
-
-#edit for the rbind function
-temp <- temp %>% 
-  select(geometry) %>% 
-  mutate(contains = "Cape Cleveland", zone = "ross basin",
-         sub_basin = "Alligator Creek", .before = geometry)
-
-#bind the temp polygon back onto the main
-tsv_wev <- rbind(tsv_wev_temp, temp)
-
-#cleanup
-rm(tsv_wev_temp, temp)
-
-#combine names based on grouping
-tsv_wev <- tsv_wev %>% 
-  group_by(sub_basin) %>% 
-  mutate(contains = paste0(contains, collapse = ", ")) %>% 
-  group_by(contains, , sub_basin, zone) %>% 
-  summarise()
-
-#transform the shapefiles to a project system for the snap function
-tsv_wev <- st_transform(tsv_wev, "EPSG:32755")
-tsv_basin <- st_transform(tsv_basin, "EPSG:32755")
-
-#snap the env value shapefile to the other basin (this removes minor disparities)
-tsv_wev <- st_snap(tsv_wev, tsv_basin, tolerance = 100)
-
-#fix any invalid geometries that occur
-tsv_wev <- st_make_valid(tsv_wev)
-
-#transform back to the standard EPSG:7844 GDA 2020
-tsv_wev <- st_transform(tsv_wev, proj_crs)
-tsv_basin <- st_transform(tsv_basin, proj_crs)
-
-```
-
-
-Before is the plot above, and here is after:
-
-``` {r}
-#| label: visualise after2
-
-plot(tsv_wev["sub_basin"])
+plot(tsv_wev["sub_zone"])
 
 ```
 
@@ -313,15 +235,13 @@ tsv_est <- EPP_water_types %>%
 #combine the fresh, estuarine and wev polygons
 temp1 <- st_intersection(tsv_wev, tsv_fre) %>% 
   mutate(env = "fresh") %>% 
-  group_by(sub_basin, zone, env) %>% 
+  group_by(sub_zone, zone, env) %>% 
   st_collection_extract("POLYGON") %>% 
   summarise(geometry = st_union(geometry))
 
 temp2 <- st_intersection(tsv_wev, tsv_est) %>% 
   mutate(env = "estuarine") %>% 
-  mutate(zone = case_when(str_detect(zone, "black") ~ "black estuary",
-                          str_detect(zone, "ross") ~ "ross estuary")) %>% 
-  group_by(sub_basin, zone, env) %>% 
+  group_by(sub_zone, zone, env) %>% 
   st_collection_extract("POLYGON") %>% 
   summarise(geometry = st_union(geometry))
 
@@ -348,41 +268,154 @@ are based on the GBRMPA dataset provided within the aims package and therefore t
 data is not visible within the shapefile folder. Refer to the .README for more
 information if required. The code chunk below introduces these divisions.
 
+First we need to create a rough outline of our marine area:
+
 ``` {r}
-#| label: prep the marine segments of the DT region
+#| label: rough marine outline
 
+#raw numbers for the Black/Halifax bay coastal boundary and Ross/Cleveland bay coastal boundary. 
+#Note that this is a hand drawn boundary - no online backup. Note the first and last lat and long 
+#coordinates match to close the polygon
+lon_h <- c(147.3247, 146.6656, 146.6656, 146.2960, 146.2960, 146.4415, 146.4429, 
+           146.9999, 147.3247)
+lat_h <- c(-17.6958, -19.2108, -19.3867, -18.9512, -18.8976, -18.8976, -18.3898,
+           -17.4958, -17.6958) 
+#ross/cleveland
+lon_c <- c(146.6656, 147.3247, 148.0303, 147.6438, 147.0198, 147.0293, 147.0057, 
+           147.0057, 146.6656, 146.6656)
+lat_c <- c(-19.2108, -17.6958, -18.1305, -18.7596, -19.1927, -19.2088, -19.3004, 
+           -19.3867, -19.3867, -19.2108)
 
+#concatenate long and lat, make it a matrix, create a polygon by providing the matrix as a list, 
+#turn polygon into a simple feature class
+halifax_bay <- st_sfc(st_polygon(list(matrix(c(lon_h, lat_h),,2))))
+cleveland_bay <- st_sfc(st_polygon(list(matrix(c(lon_c, lat_c),,2))))
 
+#combine these together
+dt_marine_rough <- st_sf(c(halifax_bay, cleveland_bay), crs = proj_crs) %>% 
+  rename(geometry = 1) %>% 
+  mutate(zone = c("Halifax Bay", "Cleveland Bay"),
+         MarineWate = "Enclosed Coastal", .before = "geometry")
 
+#cleanup
+rm(lon_h, lat_h, lon_c, lat_c, halifax_bay, cleveland_bay)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#visualise
+plot(dt_marine_rough["zone"])
 
 ```
+
+Then we need to overlay the marine divisions that fall within our rough outline and group up all the
+geometries that share the same properties. We also need to combine the offshore marine zone into one
+polygon.
+
+``` {r}
+#| label: overlay marine divisions
+
+#get x within y
+intersection <- st_intersection(wbodies, dt_marine_rough) |> select(MarineWate, zone)
+
+#bind the intersection back over the top of the rough outline, then group and union geometry
+marine <- rbind(dt_marine_rough, intersection) |> 
+  group_by(zone, MarineWate) |> summarise(geometry = st_union(geometry)) |> 
+  rename(sub_zone = MarineWate)
+
+#merge offshore zone and union again
+marine <- marine |> mutate(zone = case_when(sub_zone == "Offshore" ~ "Offshore",
+                                            TRUE ~ zone)) |> 
+  group_by(zone, sub_zone) |> summarise(geometry = st_union(geometry)) |> mutate(env = "marine")
+
+#cleanup
+rm(dt_marine_rough, intersection)
+
+#visualise
+plot(marine)
+
+```
+
+# Combining Land and Marine areas
+
+As the land and marine shapefiles were developed separately, they need to be combined. The below
+code chunk does this combination.
+
+``` {r}
+#| label: combine land and marine areas
+
+#get just the polygon outline of the land
+blank <- tsv_wev_wt %>% st_union(by_feature = FALSE) %>%
+  st_combine() %>% nngeo::st_remove_holes() %>% st_sf()
+
+#cut the marine shapefile by land
+marine <- st_difference(marine, blank)
+
+#join everything together
+tsv_wev_wt_wb <- rbind(tsv_wev_wt, marine)
+
+#visualise
+plot(tsv_wev_wt_wb)
+
+```
+# Adressing inconsistencies
+
+The painful part of this process is that these divisions were created based on DES mapping 
+requirements. Therefore the Black and Ross Basin outlines are slightly different from the Black and 
+Ross Basin outlines used by the more widely accepted Drainage_basins shapefiles. The below code 
+rectifies the biggest disparity between the basin outlines (the Alligator Ck/Cape Cleveland corner 
+of the Ross Basin).
+
+``` {r}
+#| label: rectify the difference between the two Ross basin outlines
+
+#select the Ross and Black Basins
+tsv_basin <- basins |> 
+  filter(BASIN_NAME %in% c("Ross", "Black"))
+
+#union the main shapefile for the difference function
+temp <- tsv_wev_wt_wb |> st_union()
+
+#take the difference of the two outlines and cast the multipolygon to polygons
+temp <- st_cast(st_difference(tsv_basin, temp), "POLYGON")
+
+#calculate the area of each polygon and select only the biggest
+temp$area <- st_area(temp)
+
+#select only the biggest one
+temp <- temp|> slice_max(area, n = 1)
+
+#edit for the rbind function
+temp <- temp |> select(geometry) |> mutate(env = "fresh", zone = "ross",
+                                           sub_zone = "Alligator Creek", .before = geometry)
+
+#bind the temp polygon back onto the main
+tsv_wev_wt_wb <- rbind(tsv_wev_wt_wb, temp)
+
+#combine names based on grouping
+tsv_wev_wt_wb <- tsv_wev_wt_wb |> group_by(sub_zone, zone, env) |> summarise()
+
+#extract only polygons
+tsv_wev_wt_wb <- st_collection_extract(tsv_wev_wt_wb, type = "POLYGON")
+
+#cleanup
+rm(temp)
+
+#save the file
+st_write(tsv_wev_wt_wb, dsn = glue("{save_path}Dry-Tropics-Basins-Detailed.shp"),
+         delete_layer = T)
+
+```
+
+
+Before is the plot above, and here is after (note the right corner of the Ross Basin):
+
+``` {r}
+#| label: visualise after2
+
+plot(tsv_wev_wt_wb["sub_zone"])
+
+```
+
+
+
 
 
 

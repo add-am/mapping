@@ -1,0 +1,22 @@
+project:
+  output-dir: output\
+  pre-render: functions\n3_data_preprocessing.R
+
+toc: true
+toc-location: left
+number-sections: true
+
+format:
+  html:
+    code-fold: true
+    code-overflow: wrap
+    code-tools: true
+    embed-resources: true
+    standalone: true
+    theme: flatly
+  docx: default
+execute: 
+  warning: false
+
+
+
