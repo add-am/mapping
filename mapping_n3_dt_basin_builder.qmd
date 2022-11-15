@@ -104,16 +104,16 @@ repo for a guide on downloading the data.
 
 #Import the Environmental Protection Policy env value zones layer
 EPP_water_env_value <- st_read(dsn = "data/shapefiles", 
-                               layer = "EPP_Water_Env_Value_Zones_Qld")
+                               layer = "EPP_Water_Env_Value_Zones_Cropped")
 
 
 #Import the Environmental Protection Policy water types layer
 EPP_water_types <- st_read(dsn = "data/shapefiles",
-                           layer = "EPP_Water_water_types_Qld")
+                           layer = "EPP_Water_water_types_Cropped")
 
 #read in the Environmental Protection Policy management intent layer
 EPP_management_intent <- st_read(dsn = "data/shapefiles", 
-                                 layer = "EPP_Water_management_intent_Qld")
+                                 layer = "EPP_Water_management_intent_Cropped")
 
 #read in waterbodies data from the gisaimsr package
 data("wbodies", package = "gisaimsr")
