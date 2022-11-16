@@ -1,0 +1,61 @@
+---
+title: "Northern Three Mapping (Docx Test)"
+author: "Adam Shand"
+date: "`r format(Sys.time(), '%d, %B, %Y')`" 
+format: docx
+params:
+  project_crs: "EPSG:7844"
+---
+
+## Test 1
+
+Can I read in an output from a variable path?
+
+``` {r}
+#| label: find variable path
+
+#get the date
+date <- format(Sys.time(), "%Y-%m-%d")
+
+#create the file path
+save_path <- glue::glue("output/{date}_n3-basin-builder/")
+
+#grab whatever we are looking for
+shape <- sf::st_read(dsn = glue::glue("{save_path}"),
+                     layer = "Dry-Tropics-Basins-Detailed")
+
+#display
+plot(shape["sub_zone"])
+
+```
+
+
+## Test 2
+
+Can I display images using quarto in-text methods?
+
+![3D Map MWI](images/MWI 3D example.png)
+
+## Test 3
+
+Can I get tables?
+
+
+``` {r}
+#| label: read from static path
+
+tb <- read.csv("images/2022-11-07_annual-ltm-rainfall_fyear-2021.csv")
+
+head(tb)
+
+
+```
+
+
+
+
+
+
+
+
+

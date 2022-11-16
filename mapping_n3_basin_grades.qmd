@@ -1,0 +1,90 @@
+---
+title: "Northern Three Mapping (Basin Grades)"
+author: "Adam Shand"
+date: "`r format(Sys.time(), '%d, %B, %Y')`" 
+format: html
+params:
+  project_crs: "EPSG:7844"
+---
+
+A script to programmatically create basins colored by grade.
+
+# Global Controls
+
+Before diving in, we must establish some global variables that provide critical control over the output, and as usual, install/load packages
+
+```{r}
+#| label: load packages
+#| output: false
+#| echo: false
+
+#graphing and mapping
+library(RColorBrewer) #colour palettes, and create custom palettes
+library(sf) #read and manipulate simple features
+library(tmap) #map data
+library(osmdata) #online data repo from open street map
+
+#general setup and data manipulation
+library(glue) #easier to create strings, particularly those contains variables
+library(lubridate) #time manipulation
+library(terra) #spatial raster manipulation
+library(tidyverse) #contains multiple useful packages (https://www.tidyverse.org/packages/)
+library(stringr) #additional help on string manipulation
+
+```
+
+```{r}
+#| label: global vars and initial setup
+#| output: false
+
+#set project variables: crs factor and current_fyear
+proj_crs <- params$project_crs
+
+#format the date for the path below and to be used as a variable in naming later
+date <- format(Sys.time(), "%Y-%m-%d")
+
+#create a file path to help with saving things
+save_path <- glue("output/{date}_n3-basin-grader/")
+
+#bring that path to life
+dir.create(save_path)
+
+#initilize with static mapping
+tmap_mode("plot")
+
+#turn off spherical geometry
+sf_use_s2(F)
+
+```
+
+# Data Source
+
+This script uses shapefiles created in previous scripts. Refer to the .README for this repo if the data has not been created.
+
+``` {r}
+#| label: read in shapefiles
+
+region <- st_read(dsn = "data/shapefiles/", layer = "Dry-Tropics-Basins-Detailed")
+
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

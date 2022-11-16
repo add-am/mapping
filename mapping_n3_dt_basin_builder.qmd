@@ -5,16 +5,13 @@ date: "`r format(Sys.time(), '%d, %B, %Y')`"
 format: html
 params:
   project_crs: "EPSG:7844"
-
 ---
 
-A script to create the custom divisions of the Dry Tropics Basins and Marine zone.
-This uses multiple publicly available datasets.
+A script to create the custom divisions of the Dry Tropics Basins and Marine zone. This uses multiple publicly available datasets.
 
 # Global Controls
 
-Before diving in, we must establish some global variables that provide critical 
-control over the output.
+Before diving in, we must establish some global variables that provide critical control over the output.
 
 ```{r}
 #| label: get remotes package and install extra packages
@@ -39,7 +36,6 @@ rm(package_list, new_packages)
 
 ```
 
-
 ```{r}
 #| label: load packages
 #| output: false
@@ -56,7 +52,6 @@ library(gifski) #easy interactive visualisations
 library(glue) #easier to create strings, particularly those contains variables
 library(lubridate) #time manipulation
 library(terra) #spatial raster manipulation
-library(exactextractr) #function for exact extration of polygon values
 library(tidyverse) #contains multiple useful packages (https://www.tidyverse.org/packages/)
 library(stringr) #additional help on string manipulation
 library(dataaimsr) #load the aims datasets
@@ -87,16 +82,13 @@ sf_use_s2(F)
 
 ```
 
-Our project coordinate reference system (CRS) that we use to interpret
-all geographic data is set to `r proj_crs`.
+Our project coordinate reference system (CRS) that we use to interpret all geographic data is set to `r proj_crs`.
 
 # Data Source
 
-Load in the relevant shapefiles. If this is the first time running the analysis
-and/or the shapefiles are not in the folder, please refer to the .README for this 
-repo for a guide on downloading the data.
+Load in the relevant shapefiles. If this is the first time running the analysis and/or the shapefiles are not in the folder, please refer to the .README for this repo for a guide on downloading the data.
 
-``` {r}
+```{r}
 #| label: load in the relevant shapefiles
 #| output: false
 
@@ -124,14 +116,9 @@ basins <- st_transform(basins, proj_crs)
 
 # Creation of Sub-basins
 
-In the Dry Tropics region there are only two official basins: The Ross Basin, and
-The Black Basin. However each of these basins contain multiple unique environments
-that are not best represented collectively. For example the Black Basin is wide
-and narrow (relative to the coastline) and consists of more than a dozen individual
-river systems. Below we divide the basins into sections based on boundaries used 
-by the EPP environmental value dataset and the major rivers within.
+In the Dry Tropics region there are only two official basins: The Ross Basin, and The Black Basin. However each of these basins contain multiple unique environments that are not best represented collectively. For example the Black Basin is wide and narrow (relative to the coastline) and consists of more than a dozen individual river systems. Below we divide the basins into sections based on boundaries used by the EPP environmental value dataset and the major rivers within.
 
-``` {r}
+```{r}
 #| label: divide the Ross and Black Basins
 
 #select relevant features (land only)
@@ -188,9 +175,10 @@ tsv_wev <- cbind(tsv_wev_temp, sub_zone)
 rm(group_list, sub_zone, tsv_wev_temp)
 
 ```
+
 This is before:
 
-``` {r}
+```{r}
 #| label: visualise before
 
 plot(map1["ENV_VALUE_"])
@@ -200,10 +188,9 @@ rm(map1)
 
 ```
 
-
 And this is after (ignoring the legend - not sure why that happens):
 
-``` {r}
+```{r}
 #| label: visualise after
 
 plot(tsv_wev["sub_zone"])
@@ -212,11 +199,9 @@ plot(tsv_wev["sub_zone"])
 
 # Creation of Freshwater and Estuarine areas
 
-The report card seperates its land-based water features into fresh and estuarine
-systems. Once again the EPP datasets provide the necessary divisions. This time 
-we will be using the Water Types data. The code below adds these divisions.
+The report card seperates its land-based water features into fresh and estuarine systems. Once again the EPP datasets provide the necessary divisions. This time we will be using the Water Types data. The code below adds these divisions.
 
-``` {r}
+```{r}
 #| label: prep the fresh and estuarine polygons
 
 #select townsville region, get the fresh and estuarine components and combine into one polygon
@@ -252,9 +237,10 @@ tsv_wev_wt <- rbind(temp1, temp2)
 rm(tsv_fre, tsv_est, temp1, temp2)
 
 ```
+
 Before is the plot above, and here is after:
 
-``` {r}
+```{r}
 #| label: visualise after3
 
 plot(tsv_wev_wt["env"])
@@ -263,14 +249,11 @@ plot(tsv_wev_wt["env"])
 
 # Creation of Marine areas
 
-Next we need to build the marine divisions for the Dry Tropics region. These divisions
-are based on the GBRMPA dataset provided within the aims package and therefore the
-data is not visible within the shapefile folder. Refer to the .README for more
-information if required. The code chunk below introduces these divisions.
+Next we need to build the marine divisions for the Dry Tropics region. These divisions are based on the GBRMPA dataset provided within the aims package and therefore the data is not visible within the shapefile folder. Refer to the .README for more information if required. The code chunk below introduces these divisions.
 
 First we need to create a rough outline of our marine area:
 
-``` {r}
+```{r}
 #| label: rough marine outline
 
 #raw numbers for the Black/Halifax bay coastal boundary and Ross/Cleveland bay coastal boundary. 
@@ -305,11 +288,9 @@ plot(dt_marine_rough["zone"])
 
 ```
 
-Then we need to overlay the marine divisions that fall within our rough outline and group up all the
-geometries that share the same properties. We also need to combine the offshore marine zone into one
-polygon.
+Then we need to overlay the marine divisions that fall within our rough outline and group up all the geometries that share the same properties. We also need to combine the offshore marine zone into one polygon.
 
-``` {r}
+```{r}
 #| label: overlay marine divisions
 
 #get x within y
@@ -335,10 +316,9 @@ plot(marine)
 
 # Combining Land and Marine areas
 
-As the land and marine shapefiles were developed separately, they need to be combined. The below
-code chunk does this combination.
+As the land and marine shapefiles were developed separately, they need to be combined. The below code chunk does this combination.
 
-``` {r}
+```{r}
 #| label: combine land and marine areas
 
 #get just the polygon outline of the land
@@ -355,15 +335,12 @@ tsv_wev_wt_wb <- rbind(tsv_wev_wt, marine)
 plot(tsv_wev_wt_wb)
 
 ```
+
 # Adressing inconsistencies
 
-The painful part of this process is that these divisions were created based on DES mapping 
-requirements. Therefore the Black and Ross Basin outlines are slightly different from the Black and 
-Ross Basin outlines used by the more widely accepted Drainage_basins shapefiles. The below code 
-rectifies the biggest disparity between the basin outlines (the Alligator Ck/Cape Cleveland corner 
-of the Ross Basin).
+The painful part of this process is that these divisions were created based on DES mapping requirements. Therefore the Black and Ross Basin outlines are slightly different from the Black and Ross Basin outlines used by the more widely accepted Drainage_basins shapefiles. The below code rectifies the biggest disparity between the basin outlines (the Alligator Ck/Cape Cleveland corner of the Ross Basin).
 
-``` {r}
+```{r}
 #| label: rectify the difference between the two Ross basin outlines
 
 #select the Ross and Black Basins
@@ -399,23 +376,16 @@ tsv_wev_wt_wb <- st_collection_extract(tsv_wev_wt_wb, type = "POLYGON")
 rm(temp)
 
 #save the file
-st_write(tsv_wev_wt_wb, dsn = glue("{save_path}Dry-Tropics-Basins-Detailed.shp"),
+st_write(tsv_wev_wt_wb, dsn = "data/shapefiles/Dry-Tropics-Basins-Detailed.shp",
          delete_layer = T)
 
 ```
 
-
 Before is the plot above, and here is after (note the right corner of the Ross Basin):
 
-``` {r}
+```{r}
 #| label: visualise after2
 
 plot(tsv_wev_wt_wb["sub_zone"])
 
 ```
-
-
-
-
-
-

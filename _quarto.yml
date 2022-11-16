@@ -1,6 +1,9 @@
 project:
-  output-dir: output\
+  output-dir: renders
   pre-render: functions\n3_data_preprocessing.R
+  render:
+    - mapping_n3_dt_basin_builder.qmd
+    - mapping_n3_generate_docx.qmd
 
 toc: true
 toc-location: left
@@ -17,6 +20,4 @@ format:
   docx: default
 execute: 
   warning: false
-
-
 
