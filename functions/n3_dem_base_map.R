@@ -185,7 +185,7 @@ n3_dem_base_map <- function(dem, region, zscale = 10, sealevel = 0, highlight = 
           add_shadow(ambmat, max_darken = 0.2) %>%
           add_shadow(texturemat, max_darken = 0.2) %>% 
           add_water(detect_water(dem_cropped_matrix, zscale = 1), color = "lightblue") %>% 
-          add_overlay(generate_altitude_overlay(bathy_elev, dem_cropped_matrix, 0, 0)) %>% 
+          add_overlay(generate_altitude_overlay(bathy_elev, dem_cropped_matrix, 0, 0)) %>%  #----------------make variable by sealevel
           add_overlay(overlay1, alphalayer = 1) %>%
           add_overlay(overlay2, alphalayer = 1) %>% 
           add_overlay(overlay3, alphalayer = 0.7)
@@ -256,7 +256,7 @@ n3_dem_base_map <- function(dem, region, zscale = 10, sealevel = 0, highlight = 
     h = round(w/(h1/h2), 0)
     
     #plot the map in 3D
-    plot_3d(base_map, dem_cropped_matrix, zscale = 10, soliddepth = min(dem_matrix)-200,
+    plot_3d(base_map, dem_cropped_matrix, zscale = zscale, soliddepth = min(dem_matrix)-200,
             water = F, background = "white", shadowcolor = "grey50", 
             shadowdepth = min(dem_matrix)-400, theta = 180, phi = 35, fov = 16, zoom = 0.6,
             windowsize = c(w, h))

@@ -3,8 +3,8 @@ data/elevation/
 data/raw/
 output/
 
-# Temporarily block .shpfiles
-
+# Specific file types
+*.gpkg
 
 # History files
 .Rhistory

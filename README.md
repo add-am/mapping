@@ -9,19 +9,25 @@ The data to run these scripts must be downloaded from their original source as f
 
 ## Data Sources
 
-Note: If this is the first time the repo is run on the machine, the folder structure with the data folder must be created manually. The rough structure is shown below:
+Note: If this is the first time the repo is run on the machine then some of the folder structure will be missing and must be created manually. The rough structure is shown below:
 
 ```bash
 
 ├───data
 │   ├───dims
-│   │   ├───annual
-│   │   └───monthly
 │   ├───elevation
 │   ├───raw
+│   │   ├───Biodiversity_status_of_pre_clearing_regional_ecosystems
+│   │   ├───Biodiversity_status_of_remnant_regional_ecosystems
+│   │   ├───Great Barrier Reef Bathymetry 2020 100m
+│   │   ├───Great Barrier Reef Bathymetry 2020 30m
+│   │   ├───QLD_LANDUSE_June_2019
+│   │   │   └───QLD_LANDUSE_June_2019.gdb
+│   │   └───shapefiles
+│   │       └───metadata
+│   ├───regional_ecosystems
 │   └───shapefiles
-│       ├───metadata
-
+│       └───metadata
 ```
 
 ### Shapefiles
@@ -68,7 +74,7 @@ And download each in the following format:
 -   Shapefile - SHP - .shp
 -   GDA2020 geographic 2D (EPSG:7844)
 
-> The original EPP shapefiles are too large to upload to GitHub. Store them under **data/raw/shapefiles/** and run the data preprocessing script to produced the cropped files.
+> **NOTE** The original EPP shapefiles are too large to upload to GitHub. Store them under **data/raw/shapefiles/** and run the data preprocessing script to produced the cropped files. The cropped files are small enough to upload to Github
 
 #### GBRMPA Marine Water Bodies
 
@@ -94,4 +100,22 @@ Repeat this process for the 100m dataset. This is a courser version of the 30m d
 if you inspect the 30m data you might notice that the data is split into 4 GeoTIFFs, this is due to the large size of the files. A data preprocessing script is available to combine these files, and will save the output under 
 **data/elevation/** ready to be used by subsequent scripts.
 
+### Regional Ecosystems
+
+Regional ecosystem data is used to estimate changes in vegetation cover. These layers are updated every few (~2-3) years and are found on the QSpatial website [here](https://qldspatial.information.qld.gov.au/catalogue/custom/index.page).
+For information on each re type refer to the csv spreadsheet that is available [here](https://www.qld.gov.au/environment/plants-animals/plants/ecosystems/descriptions), All links are relevant and useful. To find the data, using the
+first link provided:
+
+- Click on the "Regional Ecosystem Series" button on the bottom left of the page
+- Use the related resources tabs to select "Biodiversity status of pre-clearing regional ecosystems – Queensland" (Repeat this for the "Biodiversity status of 2019 remnant regional ecosystems - Queensland").
+
+And download the data in the following format:
+
+- GeoPackage 1.0 - GEOPACKAGE_1.0 - .gpkg
+- GDA2020 geographic 2D (EPSG:7844)
+
+Once downloaded this data must be unzipped and stored under **data/raw/**. Each folder must be renamed to "Biodiversity_status_of_pre_clearing_regional_ecosystems" and "Biodiversity_status_of_remnant_regional_ecosystems" respectively.
+The contents within the folders does not need to be renamed.
+
+> These files are quite large and should be pre-processed to ensure efficent script runtime. Even once pre-processed they are too large to be uploaded and must be downloaded on each new machine.
 

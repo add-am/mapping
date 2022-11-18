@@ -119,3 +119,57 @@ for (i in 1:length(file_names)){
 #clean up
 rm(path)
 
+# -------------------------
+#Regional Ecosystem Biodiversity
+#The Regional Ecosystem  Biodiversity (RE) datasets are downloaded as geopackage files. They are 
+#extremely detailed and extend far beyond the northern three region. The code chunk below crops the
+#data to only have areas that are at least partially within the n3 regions.
+
+#create a file path to help with saving things
+save_path <- "data/regional_ecosystems/"
+
+#bring that path to life
+dir.create(save_path)
+
+#get list of file names
+file_names <- list("remnant", "pre_clearing")
+
+for (i in 1:length(file_names)){
+
+  #create path to output
+  path <- glue::glue("data/regional_ecosystems/re_{file_names[i]}.gpkg")
+  
+  if (file.exists(path)){
+    
+    print("File already exists in regional ecosystems folder, data processing complete.")
+    
+  } else {
+    
+    #read in basins
+    basins <- sf::st_read(dsn = "data/shapefiles/Drainage_basins.shp")
+    
+    #select northern three basins and combine into one large multipolygon
+    n3_basins <- basins |> 
+      dplyr::filter(BASIN_NAME %in% c("Ross", "Black", "Don", "Proserpine", "O'Connell", 
+                                      "Pioneer", "Plane", "Daintree", "Mossman", "Barron", 
+                                      "Johnstone", "Tully", "Murray", "Herbert")) |> 
+      sf::st_union()
+    
+    #read in the regional ecosystems
+    data <- sf::st_read(dsn = glue::glue("data/raw/Biodiversity_status_of_{file_names[i]}_regional_ecosystems/data.gpkg"))
+    
+    #create a T F list of polygons that intersect the n3 basins
+    intersects <- lengths(sf::st_intersects(data, n3_basins)) > 0
+    
+    #select only rows with T for intersection
+    df <- data |> dplyr::mutate(within = intersects) |> dplyr::filter(within == T)
+
+    #write the output to file
+    sf::st_write(df, dsn = glue::glue("{save_path}re_{file_names[i]}.gpkg"), layer = file_names[[i]], quiet = TRUE)
+  }
+}
+
+
+
+
+
