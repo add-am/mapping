@@ -217,7 +217,7 @@ for (i in 1:length(names)){
   names1 <- gsub(" ", "-", names[i])
   
   #mutate again for key table (look inside the function below)
-  names2 <- gsub(" ", "_", names[i])
+  names2 <- paste((str_extract_all(names1, "[:upper:]"))[[1]], collapse = "")
   
   #create a shapefile that contains only the region of interest. Combine all polygons
   target <- n3_basins %>% 
@@ -231,8 +231,8 @@ for (i in 1:length(names)){
   #base_map, and a height matrix called dem_matrix. It will also save the base_map
   #as an array, matrix and image. The array and matrix can be loaded back in anytime
   #to avoid the high intensity processing step. A table of town names within the 
-  #region is also created.
-  n3_dem_base_map(dem = gbr, region = target, zscale = 30, sealevel = -10, highlight = T, rivers = T, preload = T)
+  #region is also created. Zscale = 10 for 30m data, and 30 for 100m data
+  n3_dem_base_map(dem = gbr, region = target, zscale = 30, sealevel = -30, highlight = T, rivers = T, preload = T)
   
   #track variables
   key_tbl <- rbind(key_tbl, global_list)
@@ -264,7 +264,7 @@ The list of available towns that can be added to the 3D model, like this:
 
 ``` {r}
 
-head(town_names_Dry_Tropics)
+head(town_names_DT)
 
 ```
 The key table that summarises what variables have been created and can now be 
@@ -315,9 +315,9 @@ they belong to.
 #| label: Customizing the 3D map further
 
 #pull up the rgl window again
-plot_3d(base_map_Mackay_Whitsunday_Isaac, dem_matrix_Mackay_Whitsunday_Isaac, zscale = 30, soliddepth = min(dem_matrix_Mackay_Whitsunday_Isaac)-200,
+plot_3d(base_map_WT, dem_matrix_WT, zscale = 30, soliddepth = min(dem_matrix_WT)-200,
         water = F, background = "white", shadowcolor = "grey50", 
-        shadowdepth = min(dem_matrix_Mackay_Whitsunday_Isaac)-400, theta = 90, phi = 32, zoom = 0.40, fov = 28, 
+        shadowdepth = min(dem_matrix_WT)-400, theta = 90, phi = 35, zoom = 0.47, fov = 16, 
         windowsize = c(50, 50, 1920, 1080))
 
 #get the camera angle
@@ -332,21 +332,21 @@ render_label(clear_previous = TRUE)
 
 #render labels from the town_names df. With the [] system, the row index is the 
 #first number. Lat is always 3, long is always 2, and name is always 1. 
-render_label(dem_matrix_Mackay_Whitsunday_Isaac, lat = town_names_Mackay_Whitsunday_Isaac[6,3], long = town_names_Mackay_Whitsunday_Isaac[6,2], 
-             extent = location_extent_Mackay_Whitsunday_Isaac, altitude=9000, zscale=10, 
-             linewidth = 3, linecolor = "white", textsize = 1.5, text = town_names_Mackay_Whitsunday_Isaac[6,1])
+render_label(dem_matrix_WT, lat = town_names_WT[51,3], long = town_names_WT[51,2], 
+             extent = location_extent_WT, altitude=9000, zscale=10, 
+             linewidth = 3, linecolor = "white", textsize = 1.5, text = town_names_WT[51,1])
 #labels come in sets of 2 to create a black outline on the markers
-render_label(dem_matrix_Mackay_Whitsunday_Isaac, lat = town_names_Mackay_Whitsunday_Isaac[6,3], long = town_names_Mackay_Whitsunday_Isaac[6,2], 
-             extent = location_extent_Mackay_Whitsunday_Isaac, altitude=9000, zscale=10, 
-             text = town_names_Mackay_Whitsunday_Isaac[6,1], textalpha = 0, linewidth = 6)
+render_label(dem_matrix_WT, lat = town_names_WT[51,3], long = town_names_WT[51,2], 
+             extent = location_extent_WT, altitude=9000, zscale=10, 
+             text = town_names_WT[51,1], textalpha = 0, linewidth = 6)
 
-render_label(dem_matrix_Mackay_Whitsunday_Isaac, lat = town_names_Mackay_Whitsunday_Isaac[311,3], long = town_names_Mackay_Whitsunday_Isaac[311,2], 
-             extent = location_extent_Mackay_Whitsunday_Isaac, altitude=12000, zscale=10, 
-             linewidth = 3, linecolor = "white", textsize = 1.5, text = town_names_Mackay_Whitsunday_Isaac[311,1])
+render_label(dem_matrix_MWI, lat = town_names_MWI[311,3], long = town_names_MWI[311,2], 
+             extent = location_extent_MWI, altitude=12000, zscale=10, 
+             linewidth = 3, linecolor = "white", textsize = 1.5, text = town_names_MWI[311,1])
 #labels come in sets of 2 to create a black outline on the markers
-render_label(dem_matrix_Mackay_Whitsunday_Isaac, lat = town_names_Mackay_Whitsunday_Isaac[311,3], long = town_names_Mackay_Whitsunday_Isaac[311,2], 
-             extent = location_extent_Mackay_Whitsunday_Isaac, altitude=12000, zscale=10, 
-             text = town_names_Mackay_Whitsunday_Isaac[311,1], textalpha = 0, linewidth = 6)
+render_label(dem_matrix_MWI, lat = town_names_MWI[311,3], long = town_names_MWI[311,2], 
+             extent = location_extent_MWI, altitude=12000, zscale=10, 
+             text = town_names_MWI[311,1], textalpha = 0, linewidth = 6)
 
 
 ```
@@ -358,7 +358,7 @@ as required and the map saved as an image.
 #| label: save final image
 
 #Basic snapshot render of the current RGL view.
-render_snapshot(filename = glue("{save_path}_Mackay-Whitsunday-Isaac_3D-final-map"))
+render_snapshot(filename = glue("{save_path}Wet-Tropics_3D-final-map_sea-level--30m"))
 
 #close the rgl window
 rgl::close3d()

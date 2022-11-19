@@ -2,7 +2,7 @@
 #dem <- the digital elevation model data
 #region <- the area which you want the map to be created. MUST BE A SHAPEFILE
 #zscale <- the height "ratio", i.e. how exaggerated should the elevations be? 10 is good for
-#the 30m dataset
+#the 30m dataset and 30 is good for the 100m
 #sealevel <- where you want the waterline to be 0 is normal water level
 #highlight <- do you want the og region you selected to highlighted?
 #rivers <- do you want the top 50 rivers by length in the region to be highlighted?
@@ -185,7 +185,7 @@ n3_dem_base_map <- function(dem, region, zscale = 10, sealevel = 0, highlight = 
           add_shadow(ambmat, max_darken = 0.2) %>%
           add_shadow(texturemat, max_darken = 0.2) %>% 
           add_water(detect_water(dem_cropped_matrix, zscale = 1), color = "lightblue") %>% 
-          add_overlay(generate_altitude_overlay(bathy_elev, dem_cropped_matrix, 0, 0)) %>%  #----------------make variable by sealevel
+          add_overlay(generate_altitude_overlay(bathy_elev, dem_cropped_matrix, sealevel, sealevel)) %>%  
           add_overlay(overlay1, alphalayer = 1) %>%
           add_overlay(overlay2, alphalayer = 1) %>% 
           add_overlay(overlay3, alphalayer = 0.7)
@@ -274,8 +274,9 @@ n3_dem_base_map <- function(dem, region, zscale = 10, sealevel = 0, highlight = 
     #close the rgl window
     rgl::close3d()
     
-    #return the base_map
-    assign("base_map", base_map, envir = globalenv())
+    #return the base_map and dem
+    assign(glue("base_map_{names2}"), base_map, envir =  globalenv())
+    assign(glue("dem_matrix_{names2}"), dem_cropped_matrix, envir = globalenv())
     
     #save the base_map array so that it does not have to be recalculated every time
     saveRDS(base_map, file = array)
