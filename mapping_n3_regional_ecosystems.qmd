@@ -1,0 +1,229 @@
+---
+title: "Northern Three Mapping (Regional Ecosystem Measurements)"
+author: "Adam Shand"
+date: "`r format(Sys.time(), '%d, %B, %Y')`" 
+format: html
+params:
+  project_crs: "EPSG:7844"
+---
+
+A script to assess rememant and pre-cleared regional ecosystem data in Townsville estuarines. This script is a work in progress script designed in an attempt to mimic the gis anaylsis DES provides for MWI and WT. 
+
+# Initial Setup
+
+Install pacakges and assign global project variables.
+
+```{r}
+#| label: establish global controls and settings
+#| output: false
+
+#mapping
+library(terra)
+library(sf)
+
+#extra utils
+library(glue)
+#library(readr)
+library(tidyverse)
+
+#set project variables
+proj_crs <- params$project_crs
+
+#format the date for the path below and to be used as a variable in naming later
+date <- format(Sys.time(), "%Y-%m-%d")
+
+#create a file path to help with saving things
+save_path <- glue("output/{date}_n3-regional-ecosystems/")
+
+#bring that path to life
+dir.create(save_path)
+
+#turn of spherical geometry
+sf_use_s2(FALSE)
+
+```
+
+# Data Source
+
+Load in the RE data and shapefiles. If this is the first time running the analysis please refer to the .README for this repo for a guide on downloading the data.
+
+``` {r}
+#| label: load in RE data
+#| output: false
+
+#read in data
+re_remnant <- st_read(dsn = "data/regional_ecosystems/re_remnant.gpkg")
+re_p_clear <- st_read(dsn = "data/regional_ecosystems/re_pre_clearing.gpkg")
+dt_env <- st_read(dsn = "data/shapefiles",
+                  layer = "Dry-Tropics-Basins-Detailed")
+
+#transform crs
+re_remnant <- st_transform(re_remnant, proj_crs)
+re_p_clear <- st_transform(re_p_clear, proj_crs)
+
+
+```
+
+# Establishing RE within Estuarine boundaries
+
+The method used by DES is to select an arbitrary (but reasonable) boundary for the estuary in question. The code chuck below selects a boundary for the Black and Ross basins respectively. The method is to use the estuarine boundaries as defined by the EPP layers that are used to define estuarine zones for the report card. Refer to the dt_basin_builder script on how these were ingested.
+
+``` {r}
+#| label: define estuarine boundaries
+#| output: false
+
+#filter for black estuarine, and union everything together
+black_est <- dt_env |> filter(zone == "black", env == "estuarine") |> 
+  summarise(geometry = st_union(geometry)) |> st_transform(proj_crs)
+
+ross_est <- dt_env |> filter(zone == "ross", env == "estuarine") |> 
+  summarise(geometry = st_union(geometry)) |> st_transform(proj_crs)
+
+```
+Once the estuarine boundaries are selected we can then use them to intersect the areas of the regional ecosystem layers that we care about.
+
+``` {r}
+#| label: select RE within estuaries
+#| output: false
+
+#get re layer within est bounds
+black_rem <- st_intersection(black_est, re_remnant)
+ross_rem <- st_intersection(ross_est, re_remnant)
+
+black_pclear <- st_intersection(black_est, re_p_clear)
+ross_pclear <- st_intersection(ross_est, re_p_clear)
+
+#group up the ecosystems by Broad Vegetation type
+black_rem <- black_rem |> 
+  group_by(across(c(24, 25))) |> summarise(geometry = st_union(geometry)) |> 
+  ungroup()
+ross_rem <- ross_rem |> 
+  group_by(across(c(24, 25))) |> summarise(geometry = st_union(geometry)) |> 
+  ungroup()
+
+black_pclear <- black_pclear |> 
+  group_by(across(c(24, 25))) |> summarise(geometry = st_union(geometry)) |> 
+  ungroup()
+ross_pclear <- ross_pclear |> 
+  group_by(across(c(24, 25))) |> summarise(geometry = st_union(geometry)) |> 
+  ungroup()
+
+```
+
+Now we can calculate the area of each RE type and create a summary table.
+
+``` {r}
+#|label: calcuate area
+
+#extract only polygons then group back up again
+
+black_rem <- black_rem |> st_collection_extract(type = "POLYGON", warn = F) |>
+  group_by(across(1:2)) |> summarise(geometry = st_union(geometry))
+ross_rem <- ross_rem |> st_collection_extract(type = "POLYGON", warn = F) |>
+  group_by(across(1:2)) |> summarise(geometry = st_union(geometry))
+
+black_pclear <- black_pclear |> st_collection_extract(type = "POLYGON", warn = F) |>
+  group_by(across(1:2)) |> summarise(geometry = st_union(geometry))
+ross_pclear <- ross_pclear |> st_collection_extract(type = "POLYGON", warn = F) |>
+  group_by(across(1:2)) |> summarise(geometry = st_union(geometry))
+
+#calculate area
+black_rem <- black_rem |> group_by(BVG1M) |> 
+  mutate(area_m = st_area(geometry))
+ross_rem <- ross_rem |> group_by(BVG1M) |> 
+  mutate(area_m = st_area(geometry))
+
+black_pclear <- black_pclear |> group_by(BVG1M) |> 
+  mutate(area_m = st_area(geometry))
+ross_pclear <- ross_pclear |> group_by(BVG1M) |> 
+  mutate(area_m = st_area(geometry))
+
+#update units to a more reasonable measure
+black_rem$area_km <- units::set_units(black_rem$area_m ,km^2)
+ross_rem$area_km <- units::set_units(ross_rem$area_m, km^2)
+
+black_pclear$area_km <- units::set_units(black_pclear$area_m ,km^2)
+ross_pclear$area_km <- units::set_units(ross_pclear$area_m, km^2)
+
+
+#create a summary table
+black_rem_area <- black_rem |> select(!area_m) |> 
+  st_drop_geometry() |> ungroup()
+ross_rem_area <- ross_rem |> select(!area_m) |> 
+  st_drop_geometry() |> ungroup()
+
+black_pclear_area <- black_pclear |> select(!area_m) |> 
+  st_drop_geometry() |> ungroup()
+ross_pclear_area <- ross_pclear |> select(!area_m) |> 
+  st_drop_geometry() |> ungroup()
+
+#save the spatial file
+st_write(black_rem, dsn = glue("data/shapefiles/black-est-remnant.shp"),
+         delete_layer = T)
+st_write(ross_rem, dsn = glue("data/shapefiles/ross-re-remnant.shp"),
+         delete_layer = T)
+
+st_write(black_pclear, dsn = glue("data/shapefiles/black-est-pre-clearing.shp"),
+         delete_layer = T)
+st_write(ross_pclear, dsn = glue("data/shapefiles/ross-re-pre-clearing.shp"),
+         delete_layer = T)
+
+#save the summary table
+write_csv(black_rem_area, file = glue("{save_path}black-estuary-remnant-summary.csv"))
+write_csv(ross_rem_area, file = glue("{save_path}ross-estuary-remnant-summary.csv"))
+
+write_csv(black_pclear_area, file = glue("{save_path}black-estuary-pre-clearing-summary.csv"))
+write_csv(ross_pclear_area, file = glue("{save_path}ross-estuary-pre-clearing-summary.csv"))
+
+```
+
+
+# Analysis Results
+
+We can now start manipulating our data and exploring further.
+
+``` {r}
+#| label: explore data
+
+#split data with more than one BVG into multiple columns
+test <- ross_pclear_area |>  
+  separate(BVG1M, into = c("BVG1", "BVG2", "BVG3", "BVG4", "BVG5"), sep = "/") |> 
+  separate(BVG1M_PC, into = c("PC1", "PC2", "PC3", "PC4", "PC5"), sep = "/") |> 
+  mutate(across(c(6:10), as.numeric)) |> 
+  mutate(PC1_area = PC1*area_km,
+         PC2_area = PC2*area_km,
+         PC3_area = PC3*area_km,
+         PC4_area = PC4*area_km,
+         PC5_area = PC5*area_km) |> 
+  select(where(~!all(is.na(.x))))
+  
+
+
+
+
+black_rem_area <- black_rem_area |> mutate(group = "remnant(2019)") |> 
+  rename("broad_vegetation_groups" = 1,
+         "percentage_of_bvg" = 2)
+
+black_pclear_area <- black_pclear_area |> mutate(group = "pre-clearing") |> 
+  rename("broad_vegetation_groups" = 1,
+         "percentage_of_bvg" = 2)
+
+black_est_summary <- rbind(black_rem_area, black_pclear_area)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
