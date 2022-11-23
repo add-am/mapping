@@ -56,6 +56,8 @@ re_remnant <- st_read(dsn = "data/regional_ecosystems/re_remnant.gpkg")
 re_p_clear <- st_read(dsn = "data/regional_ecosystems/re_pre_clearing.gpkg")
 dt_env <- st_read(dsn = "data/shapefiles",
                   layer = "Dry-Tropics-Basins-Detailed")
+water_course <- st_read(dsn = "data/shapefiles",
+                        layer = "Watercourse_areas")
 
 #transform crs
 re_remnant <- st_transform(re_remnant, proj_crs)
@@ -63,16 +65,17 @@ re_p_clear <- st_transform(re_p_clear, proj_crs)
 
 
 ```
+# Data Analysis
 
-# Establishing RE within Estuarine boundaries
+## Establishing Estuarine Boundaries
 
-The method used by DES is to select an arbitrary (but reasonable) boundary for the estuary in question. The code chuck below selects a boundary for the Black and Ross basins respectively. The method is to use the estuarine boundaries as defined by the EPP layers that are used to define estuarine zones for the report card. Refer to the dt_basin_builder script on how these were ingested.
+The method used by DES is to select an arbitrary (but reasonable) boundary for the estuary in question. The code chuck below selects a boundary for the Black and Ross basins respectively. Here, the method is to use the estuarine boundaries as defined by the EPP layers that are used to define estuarine zones for the report card. Refer to the dt_basin_builder script on how these were ingested.
 
 ``` {r}
 #| label: define estuarine boundaries
 #| output: false
 
-#filter for black estuarine, and union everything together
+#filter for estuarine, and union everything together
 black_est <- dt_env |> filter(zone == "black", env == "estuarine") |> 
   summarise(geometry = st_union(geometry)) |> st_transform(proj_crs)
 
@@ -80,7 +83,28 @@ ross_est <- dt_env |> filter(zone == "ross", env == "estuarine") |>
   summarise(geometry = st_union(geometry)) |> st_transform(proj_crs)
 
 ```
-Once the estuarine boundaries are selected we can then use them to intersect the areas of the regional ecosystem layers that we care about.
+## Establishing 50m Estuarine Waterway Buffer
+
+The method used by DES is to select the main river within the estuary, create a 50m buffer around that river, and calculate the amount of vegetation within that buffer that is remnant vs non-remnant. Here, the selection of the main rivers within an estuary was based on the "watercourse_areas" shapefile provided by QSpatial. The rivers are then cut by the estuarine boundaries calculated above.
+
+``` {r}
+#| label: establishing wateway bundaries
+#| output: false
+
+#get water courses only within our region of interest and buffer by 50m
+ross_water <- st_intersection(ross_est, water_course) |> 
+  summarise(geometry = st_union(geometry)) |> st_transform(28356) |> st_buffer(dist = 50) |> 
+  st_transform(proj_crs)
+
+black_water <- st_intersection(black_est, water_course) |> 
+  summarise(geometry = st_union(geometry)) |> st_transform(28356) |> st_buffer(dist = 50) |> 
+  st_transform(proj_crs)
+
+```
+
+## Calculating Vegetation Cover
+
+Once the boundaries are selected we can then use them to intersect the areas of the regional ecosystem layers that we care about.
 
 ``` {r}
 #| label: select RE within estuaries
@@ -89,141 +113,198 @@ Once the estuarine boundaries are selected we can then use them to intersect the
 #get re layer within est bounds
 black_rem <- st_intersection(black_est, re_remnant)
 ross_rem <- st_intersection(ross_est, re_remnant)
-
 black_pclear <- st_intersection(black_est, re_p_clear)
 ross_pclear <- st_intersection(ross_est, re_p_clear)
 
-#group up the ecosystems by Broad Vegetation type
-black_rem <- black_rem |> 
-  group_by(across(c(24, 25))) |> summarise(geometry = st_union(geometry)) |> 
-  ungroup()
-ross_rem <- ross_rem |> 
-  group_by(across(c(24, 25))) |> summarise(geometry = st_union(geometry)) |> 
-  ungroup()
+#get re layer within river buffer bounds
+black_rem_buff <- st_intersection(black_water, re_remnant)
+ross_rem_buff <- st_intersection(ross_water, re_remnant)
+black_pclear_buff <- st_intersection(black_water, re_p_clear)
+ross_pclear_buff <- st_intersection(ross_water, re_p_clear)
 
-black_pclear <- black_pclear |> 
-  group_by(across(c(24, 25))) |> summarise(geometry = st_union(geometry)) |> 
-  ungroup()
-ross_pclear <- ross_pclear |> 
-  group_by(across(c(24, 25))) |> summarise(geometry = st_union(geometry)) |> 
-  ungroup()
+#create a list of files to loop over
+file_list <- c("black_rem", "ross_rem", "black_pclear", "ross_pclear", "black_rem_buff", "ross_rem_buff",
+               "black_pclear_buff", "ross_pclear_buff")
+
+for (i in 1:length(file_list)){
+
+  #group up the ecosystems by Broad Vegetation type
+  assign(glue("{file_list[i]}"), (get(glue("{file_list[i]}")) |> group_by(across(c(24, 25))) |> 
+                                    summarise(geometry = st_union(geometry)) |> ungroup()))
+}
+
 
 ```
 
 Now we can calculate the area of each RE type and create a summary table.
 
 ``` {r}
-#|label: calcuate area
+#|label: calculate area
+#| output: false
 
-#extract only polygons then group back up again
-
-black_rem <- black_rem |> st_collection_extract(type = "POLYGON", warn = F) |>
-  group_by(across(1:2)) |> summarise(geometry = st_union(geometry))
-ross_rem <- ross_rem |> st_collection_extract(type = "POLYGON", warn = F) |>
-  group_by(across(1:2)) |> summarise(geometry = st_union(geometry))
-
-black_pclear <- black_pclear |> st_collection_extract(type = "POLYGON", warn = F) |>
-  group_by(across(1:2)) |> summarise(geometry = st_union(geometry))
-ross_pclear <- ross_pclear |> st_collection_extract(type = "POLYGON", warn = F) |>
-  group_by(across(1:2)) |> summarise(geometry = st_union(geometry))
-
-#calculate area
-black_rem <- black_rem |> group_by(BVG1M) |> 
-  mutate(area_m = st_area(geometry))
-ross_rem <- ross_rem |> group_by(BVG1M) |> 
-  mutate(area_m = st_area(geometry))
-
-black_pclear <- black_pclear |> group_by(BVG1M) |> 
-  mutate(area_m = st_area(geometry))
-ross_pclear <- ross_pclear |> group_by(BVG1M) |> 
-  mutate(area_m = st_area(geometry))
-
-#update units to a more reasonable measure
-black_rem$area_km <- units::set_units(black_rem$area_m ,km^2)
-ross_rem$area_km <- units::set_units(ross_rem$area_m, km^2)
-
-black_pclear$area_km <- units::set_units(black_pclear$area_m ,km^2)
-ross_pclear$area_km <- units::set_units(ross_pclear$area_m, km^2)
-
-
-#create a summary table
-black_rem_area <- black_rem |> select(!area_m) |> 
-  st_drop_geometry() |> ungroup()
-ross_rem_area <- ross_rem |> select(!area_m) |> 
-  st_drop_geometry() |> ungroup()
-
-black_pclear_area <- black_pclear |> select(!area_m) |> 
-  st_drop_geometry() |> ungroup()
-ross_pclear_area <- ross_pclear |> select(!area_m) |> 
-  st_drop_geometry() |> ungroup()
-
-#save the spatial file
-st_write(black_rem, dsn = glue("data/shapefiles/black-est-remnant.shp"),
+for (i in 1:length(file_list)){
+  
+  #extract only polygons then group back up again
+  df <- get(file_list[i]) |> st_collection_extract(type = "POLYGON", warn = F) |> 
+    group_by(across(1:2)) |> summarise(geometry = st_union(geometry))
+  
+  #calculate the area
+  df <- df |> group_by(BVG1M) |> mutate(area_m = st_area(geometry))
+  
+  #update units to a more reasonable measure
+  df$area_km <- units::set_units(df$area_m, km^2)
+  
+  #cleanup
+  df <- df |> select(!area_m)
+  
+  #create summary table of area
+  df1 <- df |> st_drop_geometry() |> ungroup()
+  
+  #assign df to spatial file
+  assign(glue("{file_list[i]}"), df)
+  
+  #and save it
+  st_write(get(glue("{file_list[i]}")), dsn = glue("data/shapefiles/{file_list[i]}.shp"),
          delete_layer = T)
-st_write(ross_rem, dsn = glue("data/shapefiles/ross-re-remnant.shp"),
-         delete_layer = T)
-
-st_write(black_pclear, dsn = glue("data/shapefiles/black-est-pre-clearing.shp"),
-         delete_layer = T)
-st_write(ross_pclear, dsn = glue("data/shapefiles/ross-re-pre-clearing.shp"),
-         delete_layer = T)
-
-#save the summary table
-write_csv(black_rem_area, file = glue("{save_path}black-estuary-remnant-summary.csv"))
-write_csv(ross_rem_area, file = glue("{save_path}ross-estuary-remnant-summary.csv"))
-
-write_csv(black_pclear_area, file = glue("{save_path}black-estuary-pre-clearing-summary.csv"))
-write_csv(ross_pclear_area, file = glue("{save_path}ross-estuary-pre-clearing-summary.csv"))
+  
+  #assign df1 to summary table
+  assign(glue("{file_list[i]}_area"), df1)
+  
+  #clean up
+  rm(df, df1)
+  
+}
 
 ```
 
 
-# Analysis Results
+## Analysis Results
 
-We can now start manipulating our data and exploring further.
+We can now start manipulating our summary data and exploring further. The code chunk below separates out areas that consist of more than one broad vegetation group and assigns each an area based on its percentage weighting of the total area it represents.
 
 ``` {r}
 #| label: explore data
+#| output: false
 
-#split data with more than one BVG into multiple columns
-test <- ross_pclear_area |>  
-  separate(BVG1M, into = c("BVG1", "BVG2", "BVG3", "BVG4", "BVG5"), sep = "/") |> 
-  separate(BVG1M_PC, into = c("PC1", "PC2", "PC3", "PC4", "PC5"), sep = "/") |> 
-  mutate(across(c(6:10), as.numeric)) |> 
-  mutate(PC1_area = PC1*area_km,
-         PC2_area = PC2*area_km,
-         PC3_area = PC3*area_km,
-         PC4_area = PC4*area_km,
-         PC5_area = PC5*area_km) |> 
-  select(where(~!all(is.na(.x))))
+#create a new file list with only the summary table options
+file_list <- c("black_rem_area", "ross_rem_area", "black_pclear_area", "ross_pclear_area", "black_rem_buff_area", "ross_rem_buff_area",
+               "black_pclear_buff_area", "ross_pclear_buff_area")
+
+
+for (i in 1:length(file_list)){
   
+  #get the zone
+  zone <- strsplit(file_list[i], "_")[[1]][1]
+  
+  #get the re type
+  re_type <- strsplit(file_list[i], "_")[[1]][2]
+  
+  #get the area we are looking at
+  area <- strsplit(file_list[i], "_")[[1]][3]
 
+  #split data with more than one BVG into multiple columns
+  temp_df <- get(file_list[i]) |>  
+    separate(BVG1M, into = c("BVG1", "BVG2", "BVG3", "BVG4", "BVG5"), sep = "/") |> 
+    separate(BVG1M_PC, into = c("PC1", "PC2", "PC3", "PC4", "PC5"), sep = "/") |> 
+    mutate(across(c(6:10), as.numeric)) |> 
+    mutate(PC1_area = PC1*area_km,
+           PC2_area = PC2*area_km,
+           PC3_area = PC3*area_km,
+           PC4_area = PC4*area_km,
+           PC5_area = PC5*area_km)
+  
+  #select only the bvg columns and pivot longer
+  bvg_temp <- temp_df |> select(starts_with("BVG")) |> 
+    pivot_longer(everything() , names_to = "BVG_group", values_to = "BVG")   
+  
+  #select only the percentage area columns and pivot longer
+  area_temp <- temp_df |> select(ends_with("_area")) |> 
+    pivot_longer(everything() , names_to = "area_group", values_to = "area_km") 
+  
+  #combine the two tables
+  combined <- cbind(bvg_temp, area_temp)
+      
+  #select only the bvg and area columns, group by the bvg and summarise the areas, rename columns
+  final <- combined |> select("BVG", "area_km") |> drop_na()|> 
+    group_by(BVG) |> summarise(area_km = sum(area_km)) |> 
+    rename("broad_vegetation_group" := BVG,
+           "{re_type}_area_km" := area_km) 
+  
+  #assign the output to a summary table
+  assign(glue("{zone}_{re_type}_{area}_summary"), final)
+  
+  #clean up
+  rm(temp_df, bvg_temp, area_temp, combined, final)
+}
 
+```
+Once the pre-clearing and remnant calculations have been performed for each region, the data for a region can then be combined into a single table and compared against one another. This code does the combination.
 
+``` {r}
+#| label: combine preclear and remnant
+#| output: false
 
-black_rem_area <- black_rem_area |> mutate(group = "remnant(2019)") |> 
-  rename("broad_vegetation_groups" = 1,
-         "percentage_of_bvg" = 2)
+#assign an empty variable for unique zones
+zone <- c()
 
-black_pclear_area <- black_pclear_area |> mutate(group = "pre-clearing") |> 
-  rename("broad_vegetation_groups" = 1,
-         "percentage_of_bvg" = 2)
+#using the var_name list from above
+for (i in 1:length(var_name)){
+  
+  #get a list of unique zones
+  zone <- unique(append(zone, strsplit(var_name[i], "_")[[1]][1]))
+}
 
-black_est_summary <- rbind(black_rem_area, black_pclear_area)
-
-
-
-
-
-
-
-
-
-
-
-
-
+#assign a variable as 0km^2
+a <- units::set_units(0, km^2) 
+  
+#using unique zone list, combine data and replace na values with the 0 variable (needs units attached)
+for (i in 1:length(zone)){
+  
+  assign(glue("{zone[i]}_summary"), full_join(get(glue("{zone[i]}_pclear_summary")), 
+                                              get(glue("{zone[i]}_rem_summary"))) |> 
+           mutate(across(c(2:3), ~replace_na(.x, a))))
+}
 
 
 ```
+
+And this code calculates the area change and percentage change for vegetation groups.
+
+``` {r}
+#| label: calcuate percentage change
+#| output: false
+
+#calculate area and percent change
+ross_summary <- ross_summary |> 
+  mutate(area_change = (rem_area_km-pclear_area_km)) |> 
+  mutate(percentage_change = (area_change/rem_area_km)*100)
+black_summary <- black_summary |> 
+  mutate(area_change = (rem_area_km-pclear_area_km)) |> 
+  mutate(percentage_change = (area_change/rem_area_km)*100)
+
+#update data type
+ross_summary$percentage_change <- as.numeric(ross_summary$percentage_change)
+black_summary$percentage_change <- as.numeric(black_summary$percentage_change)
+
+#round values
+ross_summary <- ross_summary |> mutate(across(where(is.numeric), round, 2))
+black_summary <- black_summary |> mutate(across(where(is.numeric), round, 2))
+
+
+```
+
+These tables can now be saved to file.
+
+``` {r}
+#| label: save summary tables
+
+#save the summary table
+write_csv(ross_summary, file = glue("{save_path}ross-estuary-summary.csv"))
+write_csv(black_summary, file = glue("{save_path}black-estuary-summary.csv"))
+
+```
+
+#
+
+
 
