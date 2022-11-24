@@ -1,17 +1,17 @@
 ---
 title: "Northern Three Mapping (Regional Ecosystem Measurements)"
 author: "Adam Shand"
-date: "`r format(Sys.time(), '%d, %B, %Y')`" 
+date: "`r format(Sys.time(), '%d, %B, %Y')`"
 format: html
 params:
   project_crs: "EPSG:7844"
 ---
 
-A script to assess rememant and pre-cleared regional ecosystem data in Townsville estuarines. This script is a work in progress script designed in an attempt to mimic the gis anaylsis DES provides for MWI and WT. 
+A script to assess remnant and pre-cleared regional ecosystem (RE) data in Townsville estuaries. This script is a work in progress script designed in an attempt to mimic the gis analysis DES provides for MWI and WT. 
 
 # Initial Setup
 
-Install pacakges and assign global project variables.
+Install packages and assign global project variables.
 
 ```{r}
 #| label: establish global controls and settings
@@ -20,10 +20,11 @@ Install pacakges and assign global project variables.
 #mapping
 library(terra)
 library(sf)
+library(tmap)
 
 #extra utils
 library(glue)
-#library(readr)
+library(reactable)
 library(tidyverse)
 
 #set project variables
@@ -83,6 +84,15 @@ ross_est <- dt_env |> filter(zone == "ross", env == "estuarine") |>
   summarise(geometry = st_union(geometry)) |> st_transform(proj_crs)
 
 ```
+Here is an example of how the boundaries look:
+
+```{r}
+#| label: show example of ross boundary
+
+plot(st_geometry(ross_est))
+
+```
+
 ## Establishing 50m Estuarine Waterway Buffer
 
 The method used by DES is to select the main river within the estuary, create a 50m buffer around that river, and calculate the amount of vegetation within that buffer that is remnant vs non-remnant. Here, the selection of the main rivers within an estuary was based on the "watercourse_areas" shapefile provided by QSpatial. The rivers are then cut by the estuarine boundaries calculated above.
@@ -100,6 +110,30 @@ black_water <- st_intersection(black_est, water_course) |>
   summarise(geometry = st_union(geometry)) |> st_transform(28356) |> st_buffer(dist = 50) |> 
   st_transform(proj_crs)
 
+```
+
+And here is an example of how the river buffers look:
+
+``` {r}
+#| label: show example of buffer
+
+plot(st_geometry(ross_water))
+
+```
+
+We can also now save all of these spatial files. Other teams might be interested in reproducing the work.
+
+``` {r}
+#| label: save spatial layers
+#| output: false
+
+dir.create("data/shapefiles/re_outputs/")
+
+st_write(black_est, dsn = "data/shapefiles/re_outputs/black_estuary.shp", delete_layer = T)
+st_write(ross_est, dsn = "data/shapefiles/re_outputs/ross_estuary.shp", delete_layer = T)
+st_write(black_water, dsn = "data/shapefiles/re_outputs/black_river_buff.shp", delete_layer = T)
+st_write(ross_water, dsn = "data/shapefiles/re_outputs/ross_river_buff.shp", delete_layer = T)
+ 
 ```
 
 ## Calculating Vegetation Cover
@@ -139,8 +173,11 @@ for (i in 1:length(file_list)){
 Now we can calculate the area of each RE type and create a summary table.
 
 ``` {r}
-#|label: calculate area
+#| label: calculate area
 #| output: false
+
+#create an new empty list to track outputs of loop
+output_dfs <- c()
 
 for (i in 1:length(file_list)){
   
@@ -155,55 +192,54 @@ for (i in 1:length(file_list)){
   df$area_km <- units::set_units(df$area_m, km^2)
   
   #cleanup
-  df <- df |> select(!area_m)
+  df <- df |> select(!area_m) |> ungroup()
   
-  #create summary table of area
-  df1 <- df |> st_drop_geometry() |> ungroup()
+  #assign df back to main
+  assign(glue("{file_list[i]}_area"), df)
   
-  #assign df to spatial file
-  assign(glue("{file_list[i]}"), df)
-  
-  #and save it
-  st_write(get(glue("{file_list[i]}")), dsn = glue("data/shapefiles/{file_list[i]}.shp"),
-         delete_layer = T)
-  
-  #assign df1 to summary table
-  assign(glue("{file_list[i]}_area"), df1)
+  #build list of df that are output
+  output_dfs <- append(output_dfs, glue("{file_list[i]}_area"))
   
   #clean up
-  rm(df, df1)
+  rm(df)
   
 }
 
 ```
 
+Below is a map of one area to help visualise what we now have:
 
-## Analysis Results
+``` {r}
+#| label: show BVG1M
 
-We can now start manipulating our summary data and exploring further. The code chunk below separates out areas that consist of more than one broad vegetation group and assigns each an area based on its percentage weighting of the total area it represents.
+plot(st_geometry(ross_rem_area), col = sf.colors())
+
+```
+
+## Further Analysis
+
+We can now start manipulating our summary data and exploring further. The code chunk below separates out areas that consist of more than one broad vegetation group and assigns each an area based on its percentage weighting of the total area it represents. Once this is done, the spatial geometry for each dataset must be dropped to continue the next steps. A file with geometry and areas at this point is saved to the shapefiles folder.
 
 ``` {r}
 #| label: explore data
 #| output: false
 
-#create a new file list with only the summary table options
-file_list <- c("black_rem_area", "ross_rem_area", "black_pclear_area", "ross_pclear_area", "black_rem_buff_area", "ross_rem_buff_area",
-               "black_pclear_buff_area", "ross_pclear_buff_area")
+#create an empty list to track outputs of this loop
+output_dfs2 <- c()
 
-
-for (i in 1:length(file_list)){
+for (i in 1:length(output_dfs)){
   
   #get the zone
-  zone <- strsplit(file_list[i], "_")[[1]][1]
+  zone <- strsplit(output_dfs[i], "_")[[1]][1]
   
   #get the re type
-  re_type <- strsplit(file_list[i], "_")[[1]][2]
+  re_type <- strsplit(output_dfs[i], "_")[[1]][2]
   
   #get the area we are looking at
-  area <- strsplit(file_list[i], "_")[[1]][3]
+  area <- strsplit(output_dfs[i], "_")[[1]][3]
 
   #split data with more than one BVG into multiple columns
-  temp_df <- get(file_list[i]) |>  
+  temp_df <- get(output_dfs[i]) |>  
     separate(BVG1M, into = c("BVG1", "BVG2", "BVG3", "BVG4", "BVG5"), sep = "/") |> 
     separate(BVG1M_PC, into = c("PC1", "PC2", "PC3", "PC4", "PC5"), sep = "/") |> 
     mutate(across(c(6:10), as.numeric)) |> 
@@ -213,12 +249,12 @@ for (i in 1:length(file_list)){
            PC4_area = PC4*area_km,
            PC5_area = PC5*area_km)
   
-  #select only the bvg columns and pivot longer
+  #select only the bvg columns and pivot longer (keep geometry)
   bvg_temp <- temp_df |> select(starts_with("BVG")) |> 
-    pivot_longer(everything() , names_to = "BVG_group", values_to = "BVG")   
+    pivot_longer(c(1:5) , names_to = "BVG_group", values_to = "BVG")   
   
-  #select only the percentage area columns and pivot longer
-  area_temp <- temp_df |> select(ends_with("_area")) |> 
+  #select only the percentage area columns and pivot longer (drop geometry)
+  area_temp <- temp_df |> select(ends_with("_area")) |> st_drop_geometry() |> 
     pivot_longer(everything() , names_to = "area_group", values_to = "area_km") 
   
   #combine the two tables
@@ -230,14 +266,25 @@ for (i in 1:length(file_list)){
     rename("broad_vegetation_group" := BVG,
            "{re_type}_area_km" := area_km) 
   
+  #save a spatial version
+  st_write(final, dsn = glue("data/shapefiles/re_outputs/{output_dfs[i]}.shp"),
+           delete_layer = T)
+
+  #drop the geometry
+  final <- final |> st_drop_geometry()
+  
   #assign the output to a summary table
   assign(glue("{zone}_{re_type}_{area}_summary"), final)
+  
+  #build a list of outputs for next loop
+  output_dfs2 <- append(output_dfs2, glue("{zone}_{re_type}_{area}_summary"))
   
   #clean up
   rm(temp_df, bvg_temp, area_temp, combined, final)
 }
 
 ```
+
 Once the pre-clearing and remnant calculations have been performed for each region, the data for a region can then be combined into a single table and compared against one another. This code does the combination.
 
 ``` {r}
@@ -247,24 +294,56 @@ Once the pre-clearing and remnant calculations have been performed for each regi
 #assign an empty variable for unique zones
 zone <- c()
 
-#using the var_name list from above
-for (i in 1:length(var_name)){
+#create empty list for new df create
+output_dfs3 <- c()
+
+#using the list from above
+for (i in 1:length(output_dfs2)){
   
   #get a list of unique zones
-  zone <- unique(append(zone, strsplit(var_name[i], "_")[[1]][1]))
+  zone <- unique(append(zone, strsplit(output_dfs2[i], "_")[[1]][1]))
 }
+
+#create choice for area we are looking
+area <- c("area", "buff")
 
 #assign a variable as 0km^2
 a <- units::set_units(0, km^2) 
   
-#using unique zone list, combine data and replace na values with the 0 variable (needs units attached)
-for (i in 1:length(zone)){
+#using the two area choices
+for (i in 1:length(area)){
   
-  assign(glue("{zone[i]}_summary"), full_join(get(glue("{zone[i]}_pclear_summary")), 
-                                              get(glue("{zone[i]}_rem_summary"))) |> 
-           mutate(across(c(2:3), ~replace_na(.x, a))))
+  #if area choice is area
+  if (area[i] == "area"){
+    
+    #for each zone
+    for (i in 1:length(zone)){
+      
+      #join the two data frames together
+      assign(glue("{zone[i]}_estuary_summary"), full_join(get(glue("{zone[i]}_pclear_area_summary")),
+                                                  get(glue("{zone[i]}_rem_area_summary"))) |>
+               mutate(across(c(2:3), ~replace_na(.x, a))))
+      
+      #keep track of df created
+      output_dfs3 <- append(output_dfs3, glue("{zone[i]}_estuary_summary"))
+    }
+    
+  #if area choice is not area 
+  } else {
+    
+    #for each zone
+    for (i in 1:length(zone)){
+      
+      #join the two data frames together with different name
+      assign(glue("{zone[i]}_river_buffer_summary"), full_join(get(glue("{zone[i]}_pclear_buff_summary")),
+                                                  get(glue("{zone[i]}_rem_buff_summary"))) |>
+               mutate(across(c(2:3), ~replace_na(.x, a))))
+      
+      #keep track of df created
+      output_dfs3 <- append(output_dfs3, glue("{zone[i]}_river_buffer_summary"))
+    }
+  }
 }
-
 
 ```
 
@@ -274,22 +353,23 @@ And this code calculates the area change and percentage change for vegetation gr
 #| label: calcuate percentage change
 #| output: false
 
-#calculate area and percent change
-ross_summary <- ross_summary |> 
-  mutate(area_change = (rem_area_km-pclear_area_km)) |> 
-  mutate(percentage_change = (area_change/rem_area_km)*100)
-black_summary <- black_summary |> 
-  mutate(area_change = (rem_area_km-pclear_area_km)) |> 
-  mutate(percentage_change = (area_change/rem_area_km)*100)
+for (i in 1:length(output_dfs3)){
+  
+  #split data with more than one BVG into multiple columns
+  temp_df <- get(output_dfs3[i]) |> 
+    mutate(area_change = (rem_area_km-pclear_area_km)) |> 
+    mutate(percentage_change = (area_change/pclear_area_km)*100)
+  
+  #update data type
+  temp_df$percentage_change <-  as.numeric(temp_df$percentage_change)
+  
+  #round values
+  temp_df <- temp_df |> mutate(across(where(is.numeric), round, 2))
+  
+  #assign the output to a summary table
+  assign(glue("{output_dfs3[i]}"), temp_df)
 
-#update data type
-ross_summary$percentage_change <- as.numeric(ross_summary$percentage_change)
-black_summary$percentage_change <- as.numeric(black_summary$percentage_change)
-
-#round values
-ross_summary <- ross_summary |> mutate(across(where(is.numeric), round, 2))
-black_summary <- black_summary |> mutate(across(where(is.numeric), round, 2))
-
+}
 
 ```
 
@@ -298,13 +378,29 @@ These tables can now be saved to file.
 ``` {r}
 #| label: save summary tables
 
-#save the summary table
-write_csv(ross_summary, file = glue("{save_path}ross-estuary-summary.csv"))
-write_csv(black_summary, file = glue("{save_path}black-estuary-summary.csv"))
+for (i in 1:length(output_dfs3)){
+  
+  #get the zone
+  zone <- strsplit(output_dfs3[i], "_")[[1]][1]
+  
+  #get the area we are looking at
+  area <- strsplit(output_dfs3[i], "_")[[1]][2]
+  
+  #save the file
+  write_csv(get(output_dfs3[i]), file = glue("{save_path}{zone}-{area}-summary.csv"))
+}
 
 ```
 
-#
+Here is an example of what has been calculated.
+
+``` {r}
+#| label: show example table
+
+#visualise
+reactable(ross_estuary_summary, highlight = T)
+
+```
 
 
 

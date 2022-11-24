@@ -2,9 +2,12 @@ project:
   output-dir: renders
   pre-render: functions\n3_data_preprocessing.R
   render:
-    - mapping_n3_dt_basin_builder.qmd
+    - mapping_n3_basin_builder.qmd
+    - mapping_n3_basin_grades.qmd
+    - mapping_n3_dem.qmd
     - mapping_n3_generate_docx.qmd
-
+    - mapping_n3_regional_ecosystems.qmd
+    
 toc: true
 toc-location: left
 number-sections: true
@@ -17,7 +20,8 @@ format:
     embed-resources: true
     standalone: true
     theme: flatly
-  docx: default
+  docx:
+    reference-doc: functions\custom-reference-doc.docx
 execute: 
   warning: false
 

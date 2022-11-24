@@ -3,13 +3,11 @@ title: "Northern Three Mapping (Docx Test)"
 author: "Adam Shand"
 date: "`r format(Sys.time(), '%d, %B, %Y')`" 
 format: docx
-params:
-  project_crs: "EPSG:7844"
 ---
 
 ## Test 1
 
-Can I read in an output from a variable path?
+Can I read in an output from a variable path? Yes (but the chunk below is commented out for that section).
 
 ``` {r}
 #| label: find variable path
@@ -18,10 +16,14 @@ Can I read in an output from a variable path?
 date <- format(Sys.time(), "%Y-%m-%d")
 
 #create the file path
-save_path <- glue::glue("output/{date}_n3-basin-builder/")
+#save_path <- glue::glue("output/{date}_n3-basin-builder/")
 
 #grab whatever we are looking for
-shape <- sf::st_read(dsn = glue::glue("{save_path}"),
+#shape <- sf::st_read(dsn = glue::glue("{save_path}"),
+                     #layer = "Dry-Tropics-Basins-Detailed")
+
+#get from here instead
+shape <- sf::st_read(dsn = "data/shapefiles/",
                      layer = "Dry-Tropics-Basins-Detailed")
 
 #display
@@ -38,15 +40,15 @@ Can I display images using quarto in-text methods?
 
 ## Test 3
 
-Can I get tables?
+Can I get tables? Yes (but chunk below is also commented out as file isnt there currently)
 
 
 ``` {r}
 #| label: read from static path
 
-tb <- read.csv("images/2022-11-07_annual-ltm-rainfall_fyear-2021.csv")
+#tb <- read.csv("images/2022-11-07_annual-ltm-rainfall_fyear-2021.csv")
 
-head(tb)
+#head(tb)
 
 
 ```
