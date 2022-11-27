@@ -65,6 +65,16 @@ re_remnant <- st_transform(re_remnant, proj_crs)
 re_p_clear <- st_transform(re_p_clear, proj_crs)
 
 
+#read in DES's data
+test <- st_read("data/regional_ecosystems/Data_for_Adam.gdb")
+
+test <- st_transform(test, proj_crs)
+
+test <- test |> filter(str_detect(NAME, "BARRON"))
+
+test <- test |> select(NAME) |> group_by(NAME) |> summarise(Shape = st_union(Shape)) |> st_zm()
+
+
 ```
 # Data Analysis
 
@@ -82,6 +92,8 @@ black_est <- dt_env |> filter(zone == "black", env == "estuarine") |>
 
 ross_est <- dt_env |> filter(zone == "ross", env == "estuarine") |> 
   summarise(geometry = st_union(geometry)) |> st_transform(proj_crs)
+
+barron_est <- test |> filter(str_detect(NAME, "AREA"))
 
 ```
 Here is an example of how the boundaries look:
@@ -109,6 +121,8 @@ ross_water <- st_intersection(ross_est, water_course) |>
 black_water <- st_intersection(black_est, water_course) |> 
   summarise(geometry = st_union(geometry)) |> st_transform(28356) |> st_buffer(dist = 50) |> 
   st_transform(proj_crs)
+
+barron_water <- test |> filter(str_detect(NAME, "CREEK"))
 
 ```
 
@@ -150,18 +164,31 @@ ross_rem <- st_intersection(ross_est, re_remnant)
 black_pclear <- st_intersection(black_est, re_p_clear)
 ross_pclear <- st_intersection(ross_est, re_p_clear)
 
+barron_rem <- st_intersection(barron_est, re_remnant) |> select(!NAME)
+barron_pclear <- st_intersection(barron_est, re_p_clear) |> select(!NAME)
+
 #get re layer within river buffer bounds
 black_rem_buff <- st_intersection(black_water, re_remnant)
 ross_rem_buff <- st_intersection(ross_water, re_remnant)
 black_pclear_buff <- st_intersection(black_water, re_p_clear)
 ross_pclear_buff <- st_intersection(ross_water, re_p_clear)
 
+barron_rem_buff <- st_intersection(barron_water, re_remnant) |> select(!NAME)
+barron_pclear_buff <- st_intersection(barron_water, re_p_clear) |> select(!NAME)
+
 #create a list of files to loop over
 file_list <- c("black_rem", "ross_rem", "black_pclear", "ross_pclear", "black_rem_buff", "ross_rem_buff",
-               "black_pclear_buff", "ross_pclear_buff")
+               "black_pclear_buff", "ross_pclear_buff", "barron_rem", "barron_pclear", "barron_rem_buff", 
+               "barron_pclear_buff")
 
 for (i in 1:length(file_list)){
-
+  
+  if ("Shape" %in% colnames(get(file_list[i]))){
+    
+    assign(glue("{file_list[i]}"), (get(glue("{file_list[i]}")) |> rename(geometry = Shape)))
+    
+  }
+  
   #group up the ecosystems by Broad Vegetation type
   assign(glue("{file_list[i]}"), (get(glue("{file_list[i]}")) |> group_by(across(c(24, 25))) |> 
                                     summarise(geometry = st_union(geometry)) |> ungroup()))
