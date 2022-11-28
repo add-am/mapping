@@ -63,17 +63,61 @@ water_course <- st_read(dsn = "data/shapefiles",
 #transform crs
 re_remnant <- st_transform(re_remnant, proj_crs)
 re_p_clear <- st_transform(re_p_clear, proj_crs)
-
+water_course <- st_transform(water_course, proj_crs)
 
 #read in DES's data
-test <- st_read("data/regional_ecosystems/Data_for_Adam.gdb")
+wt_mwi <- st_read("data/regional_ecosystems/Data_for_Adam.gdb")
 
-test <- st_transform(test, proj_crs)
+#transform crs
+wt_mwi <- st_transform(wt_mwi, proj_crs)
 
-test <- test |> filter(str_detect(NAME, "BARRON"))
+```
 
-test <- test |> select(NAME) |> group_by(NAME) |> summarise(Shape = st_union(Shape)) |> st_zm()
+``` {r}
+#| label: process DES data
+#| output: false
 
+#get a list of unique names 
+names <- unique(wt_mwi$NAME)
+
+#create an empty list to keep track of variables
+output_names <- c()
+
+#for each name
+for (i in 1:length(names)){
+  
+  #filter for only that name
+  df <- wt_mwi |> filter(str_detect(NAME, names[i]))
+  
+  #group everything up, summarise the geometry and remove z dimension
+  df <- df |> group_by(NAME) |> summarise(Shape = st_union(Shape)) |> st_zm()
+  
+  #create a var name for the data
+  var_name <- str_replace_all(names[i], c(" AREA" = "_est", " CREEK" = "_water", 
+                                          " RIVERS" = "_water", " RIVER" = "_water",
+                                          " INLET$" = "_water"))
+  
+  #make lowercase
+  var_name <- tolower(var_name)
+  
+  #replace certain characters
+  var_name <- str_replace_all(var_name, c(" / " = ".", "/" = ".", " " = "_", "'" = ""))
+  
+  #if var name has 3 elements,
+  if (length(strsplit(var_name, "_")[[1]]) == 3){
+    
+    #combine first and third elements
+    var_name <- paste(strsplit(var_name, "_")[[1]][1], strsplit(var_name, "_")[[1]][3], sep = "_")
+    
+  } 
+  
+  #assign data to variable
+  assign(var_name, df)
+  
+  #keep track of names created
+  output_names <- append(output_names, var_name)
+  
+}
 
 ```
 # Data Analysis
@@ -92,8 +136,6 @@ black_est <- dt_env |> filter(zone == "black", env == "estuarine") |>
 
 ross_est <- dt_env |> filter(zone == "ross", env == "estuarine") |> 
   summarise(geometry = st_union(geometry)) |> st_transform(proj_crs)
-
-barron_est <- test |> filter(str_detect(NAME, "AREA"))
 
 ```
 Here is an example of how the boundaries look:
@@ -122,8 +164,6 @@ black_water <- st_intersection(black_est, water_course) |>
   summarise(geometry = st_union(geometry)) |> st_transform(28356) |> st_buffer(dist = 50) |> 
   st_transform(proj_crs)
 
-barron_water <- test |> filter(str_detect(NAME, "CREEK"))
-
 ```
 
 And here is an example of how the river buffers look:
@@ -134,6 +174,23 @@ And here is an example of how the river buffers look:
 plot(st_geometry(ross_water))
 
 ```
+## Create list of shapefiles to use
+
+``` {r}
+
+#add ross and black to list
+output_names <- append(output_names, c("ross_water", "black_water", "ross_est", "black_est"))
+
+#make alphabetical for clarity
+output_names <- output_names[order(names(setNames(output_names, output_names)))]
+
+#for now, remove elements that don't have both est and water
+#output_names <- output_names[-c(19, 26, 27)]
+
+
+```
+
+
 
 We can also now save all of these spatial files. Other teams might be interested in reproducing the work.
 
@@ -141,12 +198,12 @@ We can also now save all of these spatial files. Other teams might be interested
 #| label: save spatial layers
 #| output: false
 
-dir.create("data/shapefiles/re_outputs/")
+#dir.create("data/shapefiles/re_outputs/")
 
-st_write(black_est, dsn = "data/shapefiles/re_outputs/black_estuary.shp", delete_layer = T)
-st_write(ross_est, dsn = "data/shapefiles/re_outputs/ross_estuary.shp", delete_layer = T)
-st_write(black_water, dsn = "data/shapefiles/re_outputs/black_river_buff.shp", delete_layer = T)
-st_write(ross_water, dsn = "data/shapefiles/re_outputs/ross_river_buff.shp", delete_layer = T)
+#st_write(black_est, dsn = "data/shapefiles/re_outputs/black_estuary.shp", delete_layer = T)
+#st_write(ross_est, dsn = "data/shapefiles/re_outputs/ross_estuary.shp", delete_layer = T)
+#st_write(black_water, dsn = "data/shapefiles/re_outputs/black_river_buff.shp", delete_layer = T)
+#st_write(ross_water, dsn = "data/shapefiles/re_outputs/ross_river_buff.shp", delete_layer = T)
  
 ```
 
@@ -158,40 +215,60 @@ Once the boundaries are selected we can then use them to intersect the areas of 
 #| label: select RE within estuaries
 #| output: false
 
-#get re layer within est bounds
-black_rem <- st_intersection(black_est, re_remnant)
-ross_rem <- st_intersection(ross_est, re_remnant)
-black_pclear <- st_intersection(black_est, re_p_clear)
-ross_pclear <- st_intersection(ross_est, re_p_clear)
+#create new list to track outputs
+output_names2 <- c()
 
-barron_rem <- st_intersection(barron_est, re_remnant) |> select(!NAME)
-barron_pclear <- st_intersection(barron_est, re_p_clear) |> select(!NAME)
-
-#get re layer within river buffer bounds
-black_rem_buff <- st_intersection(black_water, re_remnant)
-ross_rem_buff <- st_intersection(ross_water, re_remnant)
-black_pclear_buff <- st_intersection(black_water, re_p_clear)
-ross_pclear_buff <- st_intersection(ross_water, re_p_clear)
-
-barron_rem_buff <- st_intersection(barron_water, re_remnant) |> select(!NAME)
-barron_pclear_buff <- st_intersection(barron_water, re_p_clear) |> select(!NAME)
-
-#create a list of files to loop over
-file_list <- c("black_rem", "ross_rem", "black_pclear", "ross_pclear", "black_rem_buff", "ross_rem_buff",
-               "black_pclear_buff", "ross_pclear_buff", "barron_rem", "barron_pclear", "barron_rem_buff", 
-               "barron_pclear_buff")
-
-for (i in 1:length(file_list)){
+#using list of names of shapefiles to intersect over re layers
+for (i in 1:length(output_names)){
   
-  if ("Shape" %in% colnames(get(file_list[i]))){
+  #estuary is in name
+  if (strsplit(output_names, "_")[[1]][2] == "est"){
     
-    assign(glue("{file_list[i]}"), (get(glue("{file_list[i]}")) |> rename(geometry = Shape)))
+    #intersect element over remant veg and name appropriately
+    assign(glue("{output_names[i]}_rem"), st_intersection(get(output_names[i]), re_remnant))
+    
+    #intersect element over pre-clear veg and name appropriately
+    assign(glue("{output_names[i]}_pclear"), st_intersection(get(output_names[i]), re_p_clear))
+    
+    #track outputs
+    output_names2 <- append(output_names2, c(glue("{output_names[i]}_rem"), glue("{output_names[i]}_pclear")))
+    
+  } else if (strsplit(output_names, "_")[[1]][2] == "water"){
+    
+    #intersect element over remant veg and name appropriately
+    assign(glue("{output_names[i]}_rem"), st_intersection(get(output_names[i]), re_remnant))
+    
+    #intersect element over pre-clear veg and name appropriately
+    assign(glue("{output_names[i]}_pclear"), st_intersection(get(output_names[i]), re_p_clear))
+    
+    #track outputs
+    output_names2 <- append(output_names2, c(glue("{output_names[i]}_rem"), glue("{output_names[i]}_pclear")))
+    
+  }
+}
+
+
+for (i in 1:length(output_names2)){
+  
+  #if shape col name exists
+  if ("Shape" %in% colnames(get(output_names2[i]))){
+    
+    #rename it to geometry
+    assign(glue("{output_names2[i]}"), (get(glue("{output_names2[i]}")) |> rename(geometry = Shape)))
+    
+  } 
+  
+  #if name col exists
+  if ("NAME" %in% colnames(get(output_names2[i]))){
+    
+    #remove it
+    assign(glue("{output_names2[i]}"), (get(glue("{output_names2[i]}")) |> select(!NAME)))
     
   }
   
   #group up the ecosystems by Broad Vegetation type
-  assign(glue("{file_list[i]}"), (get(glue("{file_list[i]}")) |> group_by(across(c(24, 25))) |> 
-                                    summarise(geometry = st_union(geometry)) |> ungroup()))
+  assign(glue("{output_names2[i]}"), (get(glue("{output_names2[i]}")) |> group_by(across(c(24, 25))) |> 
+                                        summarise(geometry = st_union(geometry)) |> ungroup()))
 }
 
 
@@ -203,13 +280,10 @@ Now we can calculate the area of each RE type and create a summary table.
 #| label: calculate area
 #| output: false
 
-#create an new empty list to track outputs of loop
-output_dfs <- c()
-
-for (i in 1:length(file_list)){
+for (i in 1:length(output_names2)){
   
   #extract only polygons then group back up again
-  df <- get(file_list[i]) |> st_collection_extract(type = "POLYGON", warn = F) |> 
+  df <- get(output_names2[i]) |> st_collection_extract(type = "POLYGON", warn = F) |> 
     group_by(across(1:2)) |> summarise(geometry = st_union(geometry))
   
   #calculate the area
@@ -222,10 +296,7 @@ for (i in 1:length(file_list)){
   df <- df |> select(!area_m) |> ungroup()
   
   #assign df back to main
-  assign(glue("{file_list[i]}_area"), df)
-  
-  #build list of df that are output
-  output_dfs <- append(output_dfs, glue("{file_list[i]}_area"))
+  assign(glue("{output_names2[i]}"), df)
   
   #clean up
   rm(df)
@@ -239,7 +310,10 @@ Below is a map of one area to help visualise what we now have:
 ``` {r}
 #| label: show BVG1M
 
-plot(st_geometry(ross_rem_area), col = sf.colors())
+tmap_mode("view")
+
+tm_shape(ross_est_rem) +
+  tm_polygons(col = "BVG1M")
 
 ```
 
@@ -252,29 +326,29 @@ We can now start manipulating our summary data and exploring further. The code c
 #| output: false
 
 #create an empty list to track outputs of this loop
-output_dfs2 <- c()
+output_names3 <- c()
 
-for (i in 1:length(output_dfs)){
+for (i in 1:length(output_names2)){
   
   #get the zone
-  zone <- strsplit(output_dfs[i], "_")[[1]][1]
-  
-  #get the re type
-  re_type <- strsplit(output_dfs[i], "_")[[1]][2]
+  zone <- strsplit(output_names2[i], "_")[[1]][1]
   
   #get the area we are looking at
-  area <- strsplit(output_dfs[i], "_")[[1]][3]
-
+  area <- strsplit(output_names2[i], "_")[[1]][2]
+  
+  #get the re type
+  re_type <- strsplit(output_names2[i], "_")[[1]][3]
+  
   #split data with more than one BVG into multiple columns
-  temp_df <- get(output_dfs[i]) |>  
+  temp_df <- get(output_names2[i]) |>  
     separate(BVG1M, into = c("BVG1", "BVG2", "BVG3", "BVG4", "BVG5"), sep = "/") |> 
     separate(BVG1M_PC, into = c("PC1", "PC2", "PC3", "PC4", "PC5"), sep = "/") |> 
     mutate(across(c(6:10), as.numeric)) |> 
-    mutate(PC1_area = PC1*area_km,
-           PC2_area = PC2*area_km,
-           PC3_area = PC3*area_km,
-           PC4_area = PC4*area_km,
-           PC5_area = PC5*area_km)
+    mutate(PC1_area = (PC1*area_km)/100,
+           PC2_area = (PC2*area_km)/100,
+           PC3_area = (PC3*area_km)/100,
+           PC4_area = (PC4*area_km)/100,
+           PC5_area = (PC5*area_km)/100)
   
   #select only the bvg columns and pivot longer (keep geometry)
   bvg_temp <- temp_df |> select(starts_with("BVG")) |> 
@@ -294,17 +368,17 @@ for (i in 1:length(output_dfs)){
            "{re_type}_area_km" := area_km) 
   
   #save a spatial version
-  st_write(final, dsn = glue("data/shapefiles/re_outputs/{output_dfs[i]}.shp"),
+  st_write(final, dsn = glue("data/shapefiles/re_outputs/{output_names2[i]}.shp"),
            delete_layer = T)
 
   #drop the geometry
   final <- final |> st_drop_geometry()
   
   #assign the output to a summary table
-  assign(glue("{zone}_{re_type}_{area}_summary"), final)
+  assign(glue("{zone}_{area}_{re_type}_summary"), final)
   
   #build a list of outputs for next loop
-  output_dfs2 <- append(output_dfs2, glue("{zone}_{re_type}_{area}_summary"))
+  output_names3 <- append(output_names3, glue("{zone}_{area}_{re_type}_summary"))
   
   #clean up
   rm(temp_df, bvg_temp, area_temp, combined, final)
@@ -322,55 +396,49 @@ Once the pre-clearing and remnant calculations have been performed for each regi
 zone <- c()
 
 #create empty list for new df create
-output_dfs3 <- c()
+output_names4 <- c()
 
 #using the list from above
-for (i in 1:length(output_dfs2)){
+for (i in 1:length(output_names3)){
   
   #get a list of unique zones
-  zone <- unique(append(zone, strsplit(output_dfs2[i], "_")[[1]][1]))
+  zone <- unique(append(zone, strsplit(output_names3[i], "_")[[1]][1]))
 }
-
-#create choice for area we are looking
-area <- c("area", "buff")
 
 #assign a variable as 0km^2
 a <- units::set_units(0, km^2) 
   
-#using the two area choices
-for (i in 1:length(area)){
-  
-  #if area choice is area
-  if (area[i] == "area"){
+ 
+#for each zone
+for (i in 1:length(zone)){
     
-    #for each zone
-    for (i in 1:length(zone)){
+  #if at least one of the listed files exists
+  if ((exists(glue("{zone[i]}_est_pclear_summary")) | exists(glue("{zone[i]}_est_rem_summary"))) == T){
       
-      #join the two data frames together
-      assign(glue("{zone[i]}_estuary_summary"), full_join(get(glue("{zone[i]}_pclear_area_summary")),
-                                                  get(glue("{zone[i]}_rem_area_summary"))) |>
-               mutate(across(c(2:3), ~replace_na(.x, a))))
+    #join the two data frames together
+    assign(glue("{zone[i]}_estuary_summary"), full_join(get(glue("{zone[i]}_est_pclear_summary")),
+                                                get(glue("{zone[i]}_est_rem_summary"))) |>
+             mutate(across(c(2:3), ~replace_na(.x, a))))
       
-      #keep track of df created
-      output_dfs3 <- append(output_dfs3, glue("{zone[i]}_estuary_summary"))
-    }
+    #keep track of df created
+    output_names4 <- append(output_names4, glue("{zone[i]}_estuary_summary"))
     
-  #if area choice is not area 
-  } else {
-    
-    #for each zone
-    for (i in 1:length(zone)){
+  } 
+  #if at least one of the listed files exists  
+  if ((exists(glue("{zone[i]}_water_pclear_summary")) | exists(glue("{zone[i]}_water_rem_summary"))) == T) {
       
-      #join the two data frames together with different name
-      assign(glue("{zone[i]}_river_buffer_summary"), full_join(get(glue("{zone[i]}_pclear_buff_summary")),
-                                                  get(glue("{zone[i]}_rem_buff_summary"))) |>
-               mutate(across(c(2:3), ~replace_na(.x, a))))
+    #join the two data frames together with different name
+    assign(glue("{zone[i]}_river_summary"), full_join(get(glue("{zone[i]}_water_pclear_summary")),
+                                                get(glue("{zone[i]}_water_rem_summary"))) |>
+             mutate(across(c(2:3), ~replace_na(.x, a))))
       
-      #keep track of df created
-      output_dfs3 <- append(output_dfs3, glue("{zone[i]}_river_buffer_summary"))
-    }
+    #keep track of df created
+    output_names4 <- append(output_names4, glue("{zone[i]}_river_summary"))
   }
 }
+
+     
+
 
 ```
 
@@ -380,10 +448,10 @@ And this code calculates the area change and percentage change for vegetation gr
 #| label: calcuate percentage change
 #| output: false
 
-for (i in 1:length(output_dfs3)){
+for (i in 1:length(output_names4)){
   
   #split data with more than one BVG into multiple columns
-  temp_df <- get(output_dfs3[i]) |> 
+  temp_df <- get(output_names4[i]) |> 
     mutate(area_change = (rem_area_km-pclear_area_km)) |> 
     mutate(percentage_change = (area_change/pclear_area_km)*100)
   
@@ -391,10 +459,13 @@ for (i in 1:length(output_dfs3)){
   temp_df$percentage_change <-  as.numeric(temp_df$percentage_change)
   
   #round values
-  temp_df <- temp_df |> mutate(across(where(is.numeric), round, 2))
+  temp_df <- temp_df |> mutate(across(where(is.numeric), round, 6))
+  
+  #replace Inf values with 100 (i.e. a 100% increase)
+  temp_df$percentage_change <- ifelse(is.finite(temp_df$percentage_change), temp_df$percentage_change, 100)
   
   #assign the output to a summary table
-  assign(glue("{output_dfs3[i]}"), temp_df)
+  assign(glue("{output_names4[i]}"), temp_df)
 
 }
 
@@ -405,17 +476,35 @@ These tables can now be saved to file.
 ``` {r}
 #| label: save summary tables
 
-for (i in 1:length(output_dfs3)){
+for (i in 1:length(output_names4)){
   
   #get the zone
-  zone <- strsplit(output_dfs3[i], "_")[[1]][1]
+  zone <- strsplit(output_names4[i], "_")[[1]][1]
   
   #get the area we are looking at
-  area <- strsplit(output_dfs3[i], "_")[[1]][2]
+  area <- strsplit(output_names4[i], "_")[[1]][2]
   
   #save the file
-  write_csv(get(output_dfs3[i]), file = glue("{save_path}{zone}-{area}-summary.csv"))
+  write_csv(get(output_names4[i]), file = glue("{save_path}{zone}-{area}-summary.csv"))
+
 }
+
+library(openxlsx2)
+
+save_list <- c()
+
+for (i in 1:length(output_names4)){
+  
+  save_list <- append(save_list, list(get(output_names4[i])))
+}
+
+#name elements in list
+names(save_list) <- output_names4
+
+#save everything
+write_xlsx(save_list, "regional_ecosystems_analysis.xlsx")
+
+
 
 ```
 

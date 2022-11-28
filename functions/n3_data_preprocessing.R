@@ -155,6 +155,9 @@ for (i in 1:length(file_names)){
                                       "Johnstone", "Tully", "Murray", "Herbert")) |> 
       sf::st_union()
     
+    #create a large buffer around this area to make sure not to miss anything
+    n3_basins <- sf::st_buffer(n3_basins, units::set_units(0.1, degree))
+    
     #read in the regional ecosystems
     data <- sf::st_read(dsn = glue::glue("data/raw/Biodiversity_status_of_{file_names[i]}_regional_ecosystems/data.gpkg"))
     
