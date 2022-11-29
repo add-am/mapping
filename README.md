@@ -3,7 +3,7 @@
 The objective of this repo is to handle additional spatial analysis for the Northern Three partnerships, outside of the standard climate analysis. Currently spatial analysis processes include:
 
 - 3D Digital Elevation Model maps (with bathymetry)
-- Regional Ecosystem anaylsis
+- Regional Ecosystem analysis
 - A Dry Tropics specific basin builder
 
 The data to run these scripts must be downloaded from their original source as files are too large to be stored on the repo. An overview on how to obtain data is provided below.
@@ -22,13 +22,12 @@ Note: The first time the repo is run on the machine some of the folder structure
 │   │   ├───Biodiversity_status_of_remnant_regional_ecosystems
 │   │   ├───Great Barrier Reef Bathymetry 2020 100m
 │   │   ├───Great Barrier Reef Bathymetry 2020 30m
-│   │   ├───QLD_LANDUSE_June_2019
-│   │   │   └───QLD_LANDUSE_June_2019.gdb
 │   │   └───shapefiles
 │   │       └───metadata
 │   ├───regional_ecosystems
 │   └───shapefiles
-│       └───metadata
+│       ├───metadata
+│       └───wt_mwi_re_areas.gdb
 ```
 Each of these data folders will be explained below.
 
@@ -75,7 +74,7 @@ And download the data in the following format:
 - GDA2020 geographic 2D (EPSG:7844)
 
 Once downloaded this data must be unzipped and stored under **data/raw/**. Each folder must be renamed to "Biodiversity_status_of_pre_clearing_regional_ecosystems" and "Biodiversity_status_of_remnant_regional_ecosystems" respectively.
-The contents within the folders does not need to be renamed. The pre-processing Rscript then needs to be run to create and fill this folder with the data used by the other scripts.
+The contents within the folders does not need to be renamed. The pre-processing Rscript then needs to be run to create and fill the regional_ecosystems folder with the data that will be used by the other scripts.
 
 > Note that these files are quite large, and even once pre-processed, are too large to be uploaded and must be downloaded using the instructions above on each new machine.
 
