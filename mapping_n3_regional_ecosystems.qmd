@@ -14,6 +14,11 @@ A script to assess remnant and pre-cleared regional ecosystem (RE) data in the N
 
 Note that there is potential to calculate RE changes for the freshwater zone and freshwater portion of the rivers as well.
 
+This script is under works to complete RE calculations for:
+
+- the freshwater zone of each basin
+- the 50m buffer either side of the main rivers within the freshwater zone of each basin
+
 # Initial Setup
 
 Install packages and assign global project variables.
@@ -74,19 +79,72 @@ dt_env <- st_read(dsn = "data/shapefiles",layer = "Dry-Tropics-Basins-Detailed")
 #read in wet tropics and Mackay estuarine zones
 wt_mwi <- st_read("data/shapefiles/wt_mwi_re_areas.gdb")
 
+#read the drainage basins and drainage basin sub areas
+basins <- st_read(dsn = "data/shapefiles/Drainage_basins.shp")
+sub_basins <- st_read(dsn = "data/shapefiles/Drainage_basin_sub_areas.shp")
+
 #transform crs
 re_remnant <- st_transform(re_remnant, proj_crs)
 re_p_clear <- st_transform(re_p_clear, proj_crs)
 water_course <- st_transform(water_course, proj_crs)
 dt_env <- st_transform(dt_env, proj_crs)
 wt_mwi <- st_transform(wt_mwi, proj_crs)
+basins <- st_transform(basins, proj_crs)
+sub_basins <- st_transform(sub_basins, proj_crs)
 
 
 ```
+# Data Preparation
 
-# Data Analysis
+Before we can analyse the RE layers, we first need to do some data preparations. Specifically we need to:
 
-## Manipulating DES Boundaries
+- select only the Northern Three basins
+- wrangle the DES data into a format that works with the rest of the data
+- use the DES data and estuarine boundaries to split the N3 basins into "estuarine" and "not estuarine" i.e. fresh
+- create the 50m buffers either side of the main rivers in each basin
+- divide these buffers into either estuarine or fresh
+
+Each code chunk below address at least one of these steps.
+
+## Specify the target basins
+
+```{r}
+#| label: Prep Basin Shapefiles
+#| output: false
+
+#select northern three basins based on list of names
+n3_basins <- basins %>% 
+  filter(BASIN_NAME %in% c("Ross", "Black", "Don", "Proserpine", "O'Connell", 
+                           "Pioneer", "Plane", "Daintree", "Mossman", "Barron", 
+                           "Johnstone", "Tully", "Murray", "Herbert"))
+
+#wet tropics split mulgrave-russell into two separate sub basins.
+#get Russell and Mulgrave River from sub_basins
+temp <- sub_basins %>% 
+  filter(SUB_NAME %in% c("Russell River", "Mulgrave River")) %>% 
+  mutate(SUB_NAME = case_when(SUB_NAME == "Russell River" ~ "Russell",
+                              SUB_NAME == "Mulgrave River" ~ "Mulgrave")) %>% 
+  rename(BASIN_NAME = SUB_NAME, BASIN_NUMB = SUB_NUMBER)
+
+#add the two basins onto main
+n3_basins <- rbind(n3_basins, temp)
+
+#clean up
+rm(temp, basins, sub_basins)
+
+#remove unwanted vars and add regional context
+n3_basins <- n3_basins %>% 
+  select(BASIN_NAME) %>% 
+  rename(basin = BASIN_NAME) %>% 
+  mutate(region = case_when(
+    str_detect(basin, "Ross|Black") ~ "Dry Tropics",
+    str_detect(basin, "Dain|Moss|Barr|John|Tull|Murr|Herb|Mulg|Russ") ~ "Wet Tropics",
+    str_detect(basin, "Don|Proser|O'|Pio|Plane") ~ "Mackay Whitsunday Isaac"
+    ), .after = basin)
+
+```
+
+## Create WT and MWI estuarine area and estuarine river buffer
 
 The data provided by DES for the wt and mwi estuarine zones currently requires some wrangling to manipulate it into a structure that works with the script.
 ``` {r}
@@ -109,9 +167,9 @@ for (i in 1:length(names)){
   df <- df |> group_by(NAME) |> summarise(Shape = st_union(Shape)) |> st_zm()
   
   #create a var name for the data to be saved with
-  var_name <- str_replace_all(names[i], c(" AREA" = "_est", " CREEK" = "_water", 
-                                          " RIVERS" = "_water", " RIVER" = "_water",
-                                          " INLET$" = "_water"))
+  var_name <- str_replace_all(names[i], c(" AREA" = "_est", " CREEK" = "_ebuff", 
+                                          " RIVERS" = "_ebuff", " RIVER" = "_ebuff",
+                                          " INLET$" = "_ebuff"))
   
   #make lowercase
   var_name <- tolower(var_name)
@@ -137,12 +195,102 @@ for (i in 1:length(names)){
 
 ```
 
-## Establishing Dry Tropics Estuarine Boundaries
+## Create WT and MWI fresh area
 
-The method used by DES is to select an arbitrary (but reasonable) boundary for the estuary in question. The code chuck below selects a boundary for the Black and Ross basins respectively. Here, the method is to use the estuarine boundaries as defined by the EPP layers that are used to define estuarine zones for the report card. Refer to the dt_basin_builder script on how these were ingested.
+The method used by DES for the Wet Tropics and Mackay Whitsunday Issac is to select an arbitrary (but reasonable) boundary for the estuary in question. We can these use this estuary to mask each basin, which returns everything "not estuarine" which is assumed to be fresh. There are caveats there such as the fact that DES doesn't designate all estuarine areas - but we will cross that bridge later.
 
 ``` {r}
-#| label: define estuarine boundaries
+#| label: create fresh areas for other n3 regions
+#| output: false
+
+#create condition
+first_est <- T
+
+#merge all estuarine areas into one shape
+for (i in 1:length(output_names)){
+  
+  #on first estuary loop
+  if (strsplit(output_names[i], "_")[[1]][2] == "est" & first_est == T){
+    
+    #create the estuary shapefile
+    all_est <- get(output_names[i])
+    
+    #update condition
+    first_est <- F
+    
+    #on every other estuary loop
+  } else if (strsplit(output_names[i], "_")[[1]][2] == "est") {
+      
+    #write to a temp file
+    temp_sf <- get(output_names[i])
+    
+    #add the temp file to the main shapefile
+    all_est <- rbind(all_est, temp_sf)
+      
+  }
+  
+}
+
+#merge into a single polygon and remove holes
+all_est <- all_est |> summarise(geometry = st_union(Shape)) |> st_union(by_feature = FALSE) |> 
+  st_combine() |>  nngeo::st_remove_holes() |> st_sf()
+
+#return the difference between the estuary area and the basins to return the fresh areas
+all_fresh <- st_difference(n3_basins, all_est)
+
+#edit the sf
+all_fresh <- all_fresh |> filter(region != "Dry Tropics") |> 
+  select(!region) |> rename(NAME = basin)
+
+#get a list of unique basin names all in lower case
+basin_names <- tolower(unique(all_fresh$NAME))
+
+#replace the ' character
+basin_names <- str_replace_all(basin_names, c("'" = ""))
+
+#create an empty vector
+names_to_add <- c()
+
+#split all the basins into separate shapefiles so that they can be manipulated the same way
+for (i in 1:length(basin_names)){
+  
+  #create the new shapefile
+  assign(glue("{basin_names[i]}_fresh"), slice(all_fresh, i))
+  
+  #keep track of the names created
+  names_to_add <- append(names_to_add, glue("{basin_names[i]}_fresh"))
+}
+
+#add the new shapefiles to the tracker
+output_names <- append(output_names, names_to_add)
+
+#cleanup
+rm(temp_sf, all_est, all_fresh, basin_names, names_to_add)
+
+
+```
+
+An example of the area create is below, note the circular holes at the river mouths - these are the estuarine areas.
+
+``` {r}
+#| label: show DES areas
+
+tm_shape(johnstone_fresh) +
+  tm_polygons(border.col = "red")
+
+
+```
+
+## Create DT estuarine area and fresh area
+
+For the Dry Tropics we will use the estuarine and fresh boundaries as defined by the EPP maps. (Refer to the dt_basin_builder script on how these were ingested into the dry tropics maps).
+
+:::{.callout-note}
+There is the possibility to create similar map structures for the other n3 regions , but for now that hasn't occurred.
+:::
+
+``` {r}
+#| label: define DT estuarine and fresh boundaries
 #| output: false
 
 #filter for estuarine, and union everything together
@@ -152,8 +300,15 @@ black_est <- dt_env |> filter(zone == "black", env == "estuarine") |>
 ross_est <- dt_env |> filter(zone == "ross", env == "estuarine") |> 
   summarise(geometry = st_union(geometry)) |> st_transform(proj_crs)
 
+#filter for fresh, and union everything together
+black_fresh <- dt_env |> filter(zone == "black", env == "fresh") |> 
+  summarise(geometry = st_union(geometry)) |> st_transform(proj_crs)
+
+ross_fresh <- dt_env |> filter(zone == "ross", env == "fresh") |> 
+  summarise(geometry = st_union(geometry)) |> st_transform(proj_crs)
+
 ```
-Here is an example of how the boundaries look:
+Here is an example of how the Dry Tropics boundaries look:
 
 ```{r}
 #| label: show example of ross boundary
@@ -163,50 +318,74 @@ tm_shape(ross_est) +
 
 ```
 
-## Establishing Dry Tropics 50m Estuarine Waterway Buffer
+## Create DT estuarine river buffer and fresh river buffer
 
-The method used by DES is to select the main river within the estuary, create a 50m buffer around that river, and calculate the amount of vegetation within that buffer that is remnant vs non-remnant. Here, the selection of the main rivers within an estuary was based on the "watercourse_areas" shapefile provided by QSpatial. The rivers are then cut by the estuarine boundaries calculated above.
+The method used by DES is to select the main river within the estuary, and manually create a 50m buffer around that river. Here, the selection of the main rivers was based on the "watercourse_areas" shapefile provided by QSpatial. The rivers are then cut by the estuarine and fresh boundaries calculated above.
 
 ``` {r}
 #| label: establishing wateway bundaries
 #| output: false
 
-#get water courses only within our region of interest and buffer by 50m
-ross_water <- st_intersection(ross_est, water_course) |> 
+#get water courses only within our est region of interest and buffer by 50m, remove holes
+ross_ebuff <- st_intersection(ross_est, water_course) |> 
   summarise(geometry = st_union(geometry)) |> st_transform(28356) |> st_buffer(dist = 50) |> 
-  st_transform(proj_crs)
+  st_transform(proj_crs) #|> st_union(by_feature = FALSE) |> st_combine() |> 
+  #nngeo::st_remove_holes() |> st_sf()
 
-black_water <- st_intersection(black_est, water_course) |> 
+black_ebuff <- st_intersection(black_est, water_course) |> 
   summarise(geometry = st_union(geometry)) |> st_transform(28356) |> st_buffer(dist = 50) |> 
-  st_transform(proj_crs)
+  st_transform(proj_crs) #|> st_union(by_feature = FALSE) |> st_combine() |> 
+  #nngeo::st_remove_holes() |> st_sf()
+
+#get water courses only within our fresh region of interest and buffer by 50m, remove holes
+ross_fbuff <- st_intersection(ross_fresh, water_course) |> 
+  summarise(geometry = st_union(geometry)) |> st_transform(28356) |> st_buffer(dist = 50) |> 
+  st_transform(proj_crs) #|> st_union(by_feature = FALSE) |> st_combine() |> 
+  #nngeo::st_remove_holes() |> st_sf()
+
+black_fbuff <- st_intersection(black_fresh, water_course) |> 
+  summarise(geometry = st_union(geometry)) |> st_transform(28356) |> st_buffer(dist = 50) |> 
+  st_transform(proj_crs) #|> st_union(by_feature = FALSE) |> st_combine() |> 
+  #nngeo::st_remove_holes() |> st_sf()
 
 ```
 
-And here is an example of how the river buffers look:
+And here is an example of how the river buffers look, note that in some areas it can appear patchy. This is due to the underlying EPP designation of fresh or estuary - which is also patchy.
 
 ``` {r}
 #| label: show example of buffer
 
-tm_shape(mulgrave.russell_water) +
+tm_shape(ross_fbuff) +
   tm_polygons(border.col = "red")
+  
 
 ```
-## Create list of shapefiles to use
+## Finalise the list of shapefiles to use
+
+This script relies on creating a list that keeps track of all the shapefiles created, as each shapefile is its own variable. All the current shapefiles are list below.
 
 ``` {r}
 
 #add ross and black to list
-output_names <- append(output_names, c("ross_water", "black_water", "ross_est", "black_est"))
+output_names <- append(output_names, c("ross_ebuff", "black_ebuff", "ross_est", "black_est", 
+                                       "ross_fbuff", "black_fbuff", "ross_fresh", "black_fresh"))
 
 #make alphabetical for clarity
 output_names <- output_names[order(names(setNames(output_names, output_names)))]
 
+#print names
+output_names
+
 ```
 
 
+# Data Analysis
+
+Now all the data preparation is complete and we have a list of shapefiles that we will be using we can begin the analysis.
+
 ## Calculating Vegetation Cover
 
-Once the boundaries are selected we can then use them to intersect the areas of the regional ecosystem layers that we care about.
+Use the layers to intersect the areas of the regional ecosystem layers that we care about, and return only RE groups within.
 
 ``` {r}
 #| label: select RE within estuaries
@@ -218,35 +397,20 @@ output_names2 <- c()
 #using list of names of shapefiles to intersect over re layers
 for (i in 1:length(output_names)){
   
-  #if estuary is in name
-  if (strsplit(output_names, "_")[[1]][2] == "est"){
+  #intersect element over remnant veg and name appropriately
+  assign(glue("{output_names[i]}_rem"), st_intersection(get(output_names[i]), re_remnant))
     
-    #intersect element over remnant veg and name appropriately
-    assign(glue("{output_names[i]}_rem"), st_intersection(get(output_names[i]), re_remnant))
+  #intersect element over pre-clear veg and name appropriately
+  assign(glue("{output_names[i]}_pclear"), st_intersection(get(output_names[i]), re_p_clear))
     
-    #intersect element over pre-clear veg and name appropriately
-    assign(glue("{output_names[i]}_pclear"), st_intersection(get(output_names[i]), re_p_clear))
-    
-    #track outputs
-    output_names2 <- append(output_names2, c(glue("{output_names[i]}_rem"), glue("{output_names[i]}_pclear")))
-    
-  } else if (strsplit(output_names, "_")[[1]][2] == "water"){
-    
-    #intersect element over remnant veg and name appropriately
-    assign(glue("{output_names[i]}_rem"), st_intersection(get(output_names[i]), re_remnant))
-    
-    #intersect element over pre-clear veg and name appropriately
-    assign(glue("{output_names[i]}_pclear"), st_intersection(get(output_names[i]), re_p_clear))
-    
-    #track outputs
-    output_names2 <- append(output_names2, c(glue("{output_names[i]}_rem"), glue("{output_names[i]}_pclear")))
-    
-  }
+  #track outputs
+  output_names2 <- append(output_names2, c(glue("{output_names[i]}_rem"), glue("{output_names[i]}_pclear")))
+  
 }
 
 ```
 
-We then do some minor data cleaning, and group rows by RE type
+Clean the data sets and group rows by RE type.
 
 ``` {r}
 #| label: clean data
@@ -278,7 +442,7 @@ for (i in 1:length(output_names2)){
 
 ```
 
-Now we can calculate the area of each group of RE types and create a summary table.
+Calculate the total area of each RE group.
 
 ``` {r}
 #| label: calculate area
@@ -309,17 +473,19 @@ for (i in 1:length(output_names2)){
 
 ```
 
-Below is a map of one area to help visualise what we now have:
+Below is a map of some areas to help visualise what we now have:
 
 ``` {r}
 #| label: show BVG1M
 
 tm_shape(ross_est_rem) +
-  tm_polygons(col = "RE")
+  tm_polygons(col = "RE") +
+  tm_shape(ross_fbuff_rem) +
+  tm_polygons(col =)
 
 ```
 
-## Further Analysis
+## Vegetation Cover Change over time
 
 We can now start manipulating our summary data and exploring further. The code chunk below separates out areas that consist of more than one regional ecosystem group and assigns each an area based on its percentage weighting of the total area it represents. Once this is done, the spatial geometry for each dataset must be dropped to continue the next steps.
 
@@ -422,16 +588,40 @@ for (i in 1:length(zone)){
     
   } 
   #if at least one of the listed files exists  
-  if ((exists(glue("{zone[i]}_water_pclear_summary")) | exists(glue("{zone[i]}_water_rem_summary"))) == T) {
+  if ((exists(glue("{zone[i]}_ebuff_pclear_summary")) | exists(glue("{zone[i]}_ebuff_rem_summary"))) == T) {
       
     #join the two data frames together with different name and replace any resulting na values with 0km^2
-    assign(glue("{zone[i]}_river_summary"), full_join(get(glue("{zone[i]}_water_pclear_summary")),
-                                                get(glue("{zone[i]}_water_rem_summary"))) |>
+    assign(glue("{zone[i]}_eriver_summary"), full_join(get(glue("{zone[i]}_ebuff_pclear_summary")),
+                                                get(glue("{zone[i]}_ebuff_rem_summary"))) |>
              mutate(across(c(2:3), ~replace_na(.x, a))))
       
     #keep track of df created
-    output_names4 <- append(output_names4, glue("{zone[i]}_river_summary"))
+    output_names4 <- append(output_names4, glue("{zone[i]}_eriver_summary"))
   }
+  #if at least one of the listed files exists
+  if ((exists(glue("{zone[i]}_fresh_pclear_summary")) | exists(glue("{zone[i]}_fresh_rem_summary"))) == T){
+      
+    #join the two data frames together and replace any resulting na values with 0km^2
+    assign(glue("{zone[i]}_fresh_summary"), full_join(get(glue("{zone[i]}_fresh_pclear_summary")),
+                                                get(glue("{zone[i]}_fresh_rem_summary"))) |>
+             mutate(across(c(2:3), ~replace_na(.x, a))))
+      
+    #keep track of df created
+    output_names4 <- append(output_names4, glue("{zone[i]}_fresh_summary"))
+    
+  } 
+  #if at least one of the listed files exists  
+  if ((exists(glue("{zone[i]}_fbuff_pclear_summary")) | exists(glue("{zone[i]}_fbuff_rem_summary"))) == T) {
+      
+    #join the two data frames together with different name and replace any resulting na values with 0km^2
+    assign(glue("{zone[i]}_friver_summary"), full_join(get(glue("{zone[i]}_fbuff_pclear_summary")),
+                                                get(glue("{zone[i]}_fbuff_rem_summary"))) |>
+             mutate(across(c(2:3), ~replace_na(.x, a))))
+      
+    #keep track of df created
+    output_names4 <- append(output_names4, glue("{zone[i]}_friver_summary"))
+  }
+  
 }
 
      
