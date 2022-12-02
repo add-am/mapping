@@ -50,7 +50,7 @@ save_path <- glue("output/{date}_n3-regional-ecosystems/")
 #bring that path to life
 dir.create(save_path)
 
-#turn of spherical geometry
+#turn off spherical geometry
 sf_use_s2(FALSE)
 
 #turn on interactive mapping
@@ -73,13 +73,13 @@ re_p_clear <- st_read(dsn = "data/regional_ecosystems/re_pre_clearing.gpkg")
 #read in water course shapefile
 water_course <- st_read(dsn = "data/shapefiles", layer = "Watercourse_areas")
 
-#read in dry tropics estuarine zones
+#read in dry tropics areas
 dt_env <- st_read(dsn = "data/shapefiles",layer = "Dry-Tropics-Basins-Detailed")
 
-#read in wet tropics and Mackay estuarine zones
+#read in wet tropics and MWI estuarine and estuarine river areas
 wt_mwi <- st_read("data/shapefiles/wt_mwi_re_areas.gdb")
 
-#read the drainage basins and drainage basin sub areas
+#read the drainage basins and drainage basin sub areas (used to get the fresh areas for WT and MWI)
 basins <- st_read(dsn = "data/shapefiles/Drainage_basins.shp")
 sub_basins <- st_read(dsn = "data/shapefiles/Drainage_basin_sub_areas.shp")
 
@@ -91,7 +91,6 @@ dt_env <- st_transform(dt_env, proj_crs)
 wt_mwi <- st_transform(wt_mwi, proj_crs)
 basins <- st_transform(basins, proj_crs)
 sub_basins <- st_transform(sub_basins, proj_crs)
-
 
 ```
 # Data Preparation
@@ -485,10 +484,7 @@ tm_shape(ross_est_rem) +
 
 ```
 
-## Vegetation Cover Change over time
-
-We can now start manipulating our summary data and exploring further. The code chunk below separates out areas that consist of more than one regional ecosystem group and assigns each an area based on its percentage weighting of the total area it represents. Once this is done, the spatial geometry for each dataset must be dropped to continue the next steps.
-
+It should be noted that many areas currently share more than one RE group. The code chunk below separates out areas that consist of more than one regional ecosystem group and assigns each an area based on its percentage weighting of the total area it represents.
 ``` {r}
 #| label: explore data
 #| output: false
@@ -550,7 +546,11 @@ for (i in 1:length(output_names2)){
 
 ```
 
-Once the pre-clearing and remnant calculations have been performed for each region, the data for a region can then be combined into a single table and compared against one another. This code does the combination.
+## Vegetation Cover Change over time
+
+Currently we are looking at two different RE data layers for each area: pre-clear, and the remnant vegetation as of 2019. Once the calculations and summaries above are done, the results for each RE layer for an area can be combined into one table. We can then compare these two layers and make comments on the change in cover over time.
+
+Below we combine tables that refer to the same area.
 
 ``` {r}
 #| label: combine preclear and remnant
@@ -624,16 +624,18 @@ for (i in 1:length(zone)){
   
 }
 
-     
-
 
 ```
 
-And this code calculates the sum remnant area, and the sum area of specific RE groups, these groups are **X.1.1 - X.1.5** inclusive, where X varies depending on the region: Wet Tropics: 7, Dry Tropics: 11, Mackay Whitsunday Isaac: 8. This calculation currently only applies to the full estuarine area, rather than both the estuarine area and the river buffer area.
+However for many of the areas, the number of RE groups within is extensive (50+), therefore we combine the RE groups into broader categories, specifically:
 
-The also then calculates area change and percentage change for each row, and the total area of each location.
+- The total area sum of all vegetation (everything except the non-remnant RE category)
+- The total area sum of specific estuarine RE groups (these groups are **X.1.1 - X.1.5**, where X varies by region)
++ Wet Tropics = 7.1.1 - 7.1.5
++ Dry Tropics = 11.1.1 - 11.1.5
++ Mackay Whitsunday Issac = 8.1.1 - 8.1.5
 
-For an explanation on RE groups refer to the .README for links to external resources.
+For all the individual RE groups, as well as the summaries we create above, we then calculate the area change and percentage change.
 
 ``` {r}
 #| label: calcuate percentage change
@@ -696,7 +698,8 @@ rm(temp_df, temp_df1, temp_df2, temp_df3, temp_df4)
 
 # Data Presentation
 
-We can then combine elements from all of these tables to create one large summary table.
+Now all calculations are done we can save the output, the full tables for each area are combined into one multi-paged excel workbook, while the main summary groups calculated above are saved into another, simpler csv.
+
 
 ``` {r}
 #|label: create final summary table
@@ -737,9 +740,6 @@ final_summary$percentage_change <- round(final_summary$percentage_change, 2)
 
 ```
 
-
-
-The full data tables and the main summary table can now be saved to file.
 
 ``` {r}
 #| label: save summary tables
