@@ -7,17 +7,14 @@ params:
   project_crs: "EPSG:7844"
 ---
 
-A script to assess remnant and pre-cleared regional ecosystem (RE) data in the Northern Three region. Currently this script only calculates RE changes for:
+A script to assess remnant and pre-cleared regional ecosystem (RE) data in the Northern Three region. Currently this script calculates RE changes for:
 
 - the estuarine zone of each basin
 - the 50m buffer either side of the main rivers within the estuarine zone of each basin
-
-Note that there is potential to calculate RE changes for the freshwater zone and freshwater portion of the rivers as well.
-
-This script is under works to complete RE calculations for:
-
 - the freshwater zone of each basin
-- the 50m buffer either side of the main rivers within the freshwater zone of each basin
+- the 50m buffer either side of the main rivers within the freshwater zone, only with the Black and Ross basins
+
+Note that there is potential to calculate RE changes for the 50m freshwater buffer zone for the other regions in the northern three
 
 # Initial Setup
 
@@ -95,7 +92,7 @@ sub_basins <- st_transform(sub_basins, proj_crs)
 ```
 # Data Preparation
 
-Before we can analyse the RE layers, we first need to do some data preparations. Specifically we need to:
+Before we can analyse the RE layers, we first need to do some data preparation. Specifically we need to:
 
 - select only the Northern Three basins
 - wrangle the DES data into a format that works with the rest of the data
@@ -153,44 +150,76 @@ The data provided by DES for the wt and mwi estuarine zones currently requires s
 #get a list of unique names 
 names <- unique(wt_mwi$NAME)
 
-#create an empty list to keep track of variables
-output_names <- c()
+#set starting condition
+first = T
 
 #for each name
 for (i in 1:length(names)){
   
-  #filter for only that name
-  df <- wt_mwi |> filter(str_detect(NAME, glue("{names[i]}$")))
-  
-  #group everything up, summarise the geometry and remove z dimension
-  df <- df |> group_by(NAME) |> summarise(Shape = st_union(Shape)) |> st_zm()
-  
-  #create a var name for the data to be saved with
-  var_name <- str_replace_all(names[i], c(" AREA" = "_est", " CREEK" = "_ebuff", 
-                                          " RIVERS" = "_ebuff", " RIVER" = "_ebuff",
-                                          " INLET$" = "_ebuff"))
-  
-  #make lowercase
-  var_name <- tolower(var_name)
-  
-  #replace certain characters
-  var_name <- str_replace_all(var_name, c(" / " = ".", "/" = ".", " " = "_", "'" = ""))
-  
-  #if var name has 3 elements,
-  if (length(strsplit(var_name, "_")[[1]]) == 3){
+  #on first  loop
+  if (first == T){
     
-    #delete the second element
-    var_name <- paste(strsplit(var_name, "_")[[1]][1], strsplit(var_name, "_")[[1]][3], sep = "_")
+    #filter for only that name, group, summarise, and remove z dimension
+    wt_mwi_all <- wt_mwi |> filter(str_detect(NAME, glue("{names[i]}$"))) |> 
+      group_by(NAME) |> summarise(geometry = st_union(Shape)) |> st_zm()
     
-  } 
+    #create a lower case name for the data to be updated with, replace punctuation with consist form
+    var_name <- tolower(
+      str_replace_all(names[i], c(" AREA" = "_area", " CREEK" = "_buff",
+                                  " RIVERS" = "_buff", " RIVER" = "_buff",
+                                  " INLET$" = "_buff"))) |> 
+      str_replace_all(c(" / " = ".", "/" = ".", " " = "_", "'" = ""))
+      
+    #if var name has 3 elements,
+    if (length(strsplit(var_name, "_")[[1]]) == 3){
+      
+      #delete the second element
+      var_name <- paste(strsplit(var_name, "_")[[1]][1], strsplit(var_name, "_")[[1]][3], sep = "_")
+      
+    } 
+    
+    #replace the current name
+    wt_mwi_all$NAME <- var_name
+    
+    #update condition
+    first <- F
   
-  #assign data to variable
-  assign(var_name, df)
-  
-  #keep track of names created
-  output_names <- append(output_names, var_name)
-  
+  } else if (first == F) { #do the same thing but with a different output name
+    
+    temp_sf <- wt_mwi |> filter(str_detect(NAME, glue("{names[i]}$"))) |> 
+      group_by(NAME) |> summarise(geometry = st_union(Shape)) |> st_zm() 
+    
+    var_name <- tolower(
+      str_replace_all(names[i], c(" AREA" = "_area", " CREEK" = "_buff",
+                                  " RIVERS" = "_buff", " RIVER" = "_buff",
+                                  " INLET$" = "_buff"))) |> 
+      str_replace_all(c(" / " = ".", "/" = ".", " " = "_", "'" = ""))
+    
+    #if var name has 3 elements,
+    if (length(strsplit(var_name, "_")[[1]]) == 3){
+      
+      #delete the second element
+      var_name <- paste(strsplit(var_name, "_")[[1]][1], strsplit(var_name, "_")[[1]][3], sep = "_")
+      
+    }
+    
+    #replace the current name
+    temp_sf$NAME <- var_name
+    
+    #add the temp to main
+    wt_mwi_all <- rbind(wt_mwi_all, temp_sf)
+    
+  }
 }
+
+#split name into two cols and add one more col
+wt_mwi_all <- wt_mwi_all |> separate(NAME, into = c("basin", "type"), sep = "_") |> 
+  mutate(env = "est", .before = type)
+
+
+#clean up
+rm(wt_mwi, var_name, temp_sf, names, first)
+
 
 ```
 
@@ -202,81 +231,35 @@ The method used by DES for the Wet Tropics and Mackay Whitsunday Issac is to sel
 #| label: create fresh areas for other n3 regions
 #| output: false
 
-#create condition
-first_est <- T
-
-#merge all estuarine areas into one shape
-for (i in 1:length(output_names)){
-  
-  #on first estuary loop
-  if (strsplit(output_names[i], "_")[[1]][2] == "est" & first_est == T){
-    
-    #create the estuary shapefile
-    all_est <- get(output_names[i])
-    
-    #update condition
-    first_est <- F
-    
-    #on every other estuary loop
-  } else if (strsplit(output_names[i], "_")[[1]][2] == "est") {
-      
-    #write to a temp file
-    temp_sf <- get(output_names[i])
-    
-    #add the temp file to the main shapefile
-    all_est <- rbind(all_est, temp_sf)
-      
-  }
-  
-}
-
-#merge into a single polygon and remove holes
-all_est <- all_est |> summarise(geometry = st_union(Shape)) |> st_union(by_feature = FALSE) |> 
-  st_combine() |>  nngeo::st_remove_holes() |> st_sf()
+#group by area and create one large polygon
+wt_mwi_est <- wt_mwi_all |> filter(str_detect(type, "area")) |> summarise(geometry = st_union(geometry)) 
 
 #return the difference between the estuary area and the basins to return the fresh areas
-all_fresh <- st_difference(n3_basins, all_est)
+wt_mwi_temp <- st_difference(n3_basins, wt_mwi_est)
 
-#edit the sf
-all_fresh <- all_fresh |> filter(region != "Dry Tropics") |> 
-  select(!region) |> rename(NAME = basin)
+#get each name in lowercase, replace the ' 
+basin_names <- str_replace_all(tolower(wt_mwi_temp$basin), c("'" = ""))
 
-#get a list of unique basin names all in lower case
-basin_names <- tolower(unique(all_fresh$NAME))
+#edit the fresh sf, get specific rows, change names
+wt_mwi_temp <- wt_mwi_temp |> mutate(basin = basin_names) |> filter(region != "Dry Tropics") |> 
+  select(!region) |> mutate(env = "fresh", type = "area", .before = geometry)
 
-#replace the ' character
-basin_names <- str_replace_all(basin_names, c("'" = ""))
-
-#create an empty vector
-names_to_add <- c()
-
-#split all the basins into separate shapefiles so that they can be manipulated the same way
-for (i in 1:length(basin_names)){
-  
-  #create the new shapefile
-  assign(glue("{basin_names[i]}_fresh"), slice(all_fresh, i))
-  
-  #keep track of the names created
-  names_to_add <- append(names_to_add, glue("{basin_names[i]}_fresh"))
-}
-
-#add the new shapefiles to the tracker
-output_names <- append(output_names, names_to_add)
+#add onto the main dataset
+wt_mwi_all <- rbind(wt_mwi_all, wt_mwi_temp)
 
 #cleanup
-rm(temp_sf, all_est, all_fresh, basin_names, names_to_add)
+rm(wt_mwi_est, n3_basins, wt_mwi_temp, basin_names)
 
 
 ```
 
-An example of the area create is below, note the circular holes at the river mouths - these are the estuarine areas.
+The area created is below, note the circular holes at the river mouths - these are the estuarine areas that have been cut out.
 
 ``` {r}
 #| label: show DES areas
 
-tm_shape(johnstone_fresh) +
-  tm_polygons(border.col = "red")
-
+tm_shape(wt_mwi_all) +
+  tm_polygons(col = "env")
 
 ```
 
@@ -292,19 +275,16 @@ There is the possibility to create similar map structures for the other n3 regio
 #| label: define DT estuarine and fresh boundaries
 #| output: false
 
-#filter for estuarine, and union everything together
-black_est <- dt_env |> filter(zone == "black", env == "estuarine") |> 
-  summarise(geometry = st_union(geometry)) |> st_transform(proj_crs)
+#select only the fresh and estuarine environments
+dt_all <- dt_env |> group_by(zone, env) |> summarise() |> filter(env != "marine")
 
-ross_est <- dt_env |> filter(zone == "ross", env == "estuarine") |> 
-  summarise(geometry = st_union(geometry)) |> st_transform(proj_crs)
+#edit some variables
+dt_all <- dt_all |> mutate(env = case_when(env == "estuarine" ~ "est",
+                                       TRUE ~ "fresh")) |> rename(basin = zone) |> 
+  mutate(type = "area", .before = geometry)
 
-#filter for fresh, and union everything together
-black_fresh <- dt_env |> filter(zone == "black", env == "fresh") |> 
-  summarise(geometry = st_union(geometry)) |> st_transform(proj_crs)
-
-ross_fresh <- dt_env |> filter(zone == "ross", env == "fresh") |> 
-  summarise(geometry = st_union(geometry)) |> st_transform(proj_crs)
+#clean
+rm(dt_env)
 
 ```
 Here is an example of how the Dry Tropics boundaries look:
@@ -312,8 +292,8 @@ Here is an example of how the Dry Tropics boundaries look:
 ```{r}
 #| label: show example of ross boundary
 
-tm_shape(ross_est) +
-  tm_polygons(border.col = "red")
+tm_shape(dt_all) +
+  tm_polygons(col = "env")
 
 ```
 
@@ -325,27 +305,15 @@ The method used by DES is to select the main river within the estuary, and manua
 #| label: establishing wateway bundaries
 #| output: false
 
-#get water courses only within our est region of interest and buffer by 50m, remove holes
-ross_ebuff <- st_intersection(ross_est, water_course) |> 
-  summarise(geometry = st_union(geometry)) |> st_transform(28356) |> st_buffer(dist = 50) |> 
-  st_transform(proj_crs) #|> st_union(by_feature = FALSE) |> st_combine() |> 
-  #nngeo::st_remove_holes() |> st_sf()
+#intersect over the water course to return water course with characteristics of its location
+temp_sf <- st_intersection(dt_all, water_course) |> group_by(basin, env) |> summarise() |> 
+  mutate(type = "buff", .before = geometry)
 
-black_ebuff <- st_intersection(black_est, water_course) |> 
-  summarise(geometry = st_union(geometry)) |> st_transform(28356) |> st_buffer(dist = 50) |> 
-  st_transform(proj_crs) #|> st_union(by_feature = FALSE) |> st_combine() |> 
-  #nngeo::st_remove_holes() |> st_sf()
+#add it to the main dt dataset
+dt_all <- rbind(dt_all, temp_sf)
 
-#get water courses only within our fresh region of interest and buffer by 50m, remove holes
-ross_fbuff <- st_intersection(ross_fresh, water_course) |> 
-  summarise(geometry = st_union(geometry)) |> st_transform(28356) |> st_buffer(dist = 50) |> 
-  st_transform(proj_crs) #|> st_union(by_feature = FALSE) |> st_combine() |> 
-  #nngeo::st_remove_holes() |> st_sf()
-
-black_fbuff <- st_intersection(black_fresh, water_course) |> 
-  summarise(geometry = st_union(geometry)) |> st_transform(28356) |> st_buffer(dist = 50) |> 
-  st_transform(proj_crs) #|> st_union(by_feature = FALSE) |> st_combine() |> 
-  #nngeo::st_remove_holes() |> st_sf()
+#clean
+rm(water_course, temp_sf)
 
 ```
 
@@ -354,33 +322,29 @@ And here is an example of how the river buffers look, note that in some areas it
 ``` {r}
 #| label: show example of buffer
 
-tm_shape(ross_fbuff) +
+tm_shape(dt_all) +
   tm_polygons(border.col = "red")
   
-
 ```
-## Finalise the list of shapefiles to use
+## Finalise the group of shapefiles to use
 
-This script relies on creating a list that keeps track of all the shapefiles created, as each shapefile is its own variable. All the current shapefiles are list below.
+The final thing we need to do before we are ready to run the analysis is put everything into one shapefile.
 
 ``` {r}
+#| label: combine wt_mwi and dt
 
-#add ross and black to list
-output_names <- append(output_names, c("ross_ebuff", "black_ebuff", "ross_est", "black_est", 
-                                       "ross_fbuff", "black_fbuff", "ross_fresh", "black_fresh"))
+#combine everything
+n3_all <- rbind(wt_mwi_all, dt_all)
 
-#make alphabetical for clarity
-output_names <- output_names[order(names(setNames(output_names, output_names)))]
-
-#print names
-output_names
+#clean up
+rm(dt_all, wt_mwi_all)
 
 ```
 
 
 # Data Analysis
 
-Now all the data preparation is complete and we have a list of shapefiles that we will be using we can begin the analysis.
+Now all the data preparation is complete and we have a dataset of shapefiles that we will be using we can begin the analysis.
 
 ## Calculating Vegetation Cover
 
@@ -390,54 +354,19 @@ Use the layers to intersect the areas of the regional ecosystem layers that we c
 #| label: select RE within estuaries
 #| output: false
 
-#create new list to track outputs
-output_names2 <- c()
+#get all rem data within the areas, select RE columns, group everything and summarise geometry, and add a layer column
+n3_rem <- st_intersection(n3_all, re_remnant) |> select(1:4, 10) |> 
+  group_by(across(c(!geometry))) |> summarise() |> mutate(layer = "remnant2019", .after = type) 
 
-#using list of names of shapefiles to intersect over re layers
-for (i in 1:length(output_names)){
-  
-  #intersect element over remnant veg and name appropriately
-  assign(glue("{output_names[i]}_rem"), st_intersection(get(output_names[i]), re_remnant))
-    
-  #intersect element over pre-clear veg and name appropriately
-  assign(glue("{output_names[i]}_pclear"), st_intersection(get(output_names[i]), re_p_clear))
-    
-  #track outputs
-  output_names2 <- append(output_names2, c(glue("{output_names[i]}_rem"), glue("{output_names[i]}_pclear")))
-  
-}
+#repeat for the pre clear data
+n3_pclear <- st_intersection(n3_all, re_p_clear) |> select(1:4, 10) |> 
+  group_by(across(c(!geometry))) |> summarise() |> mutate(layer = "pre_clear", .after = type)
 
-```
+#combine everything together
+n3_all <- rbind(n3_rem, n3_pclear)
 
-Clean the data sets and group rows by RE type.
-
-``` {r}
-#| label: clean data
-#| output: false
-
-for (i in 1:length(output_names2)){
-  
-  #if shape col name exists
-  if ("Shape" %in% colnames(get(output_names2[i]))){
-    
-    #rename it to geometry
-    assign(glue("{output_names2[i]}"), (get(glue("{output_names2[i]}")) |> rename(geometry = Shape)))
-    
-  } 
-  
-  #if name col exists
-  if ("NAME" %in% colnames(get(output_names2[i]))){
-    
-    #remove it
-    assign(glue("{output_names2[i]}"), (get(glue("{output_names2[i]}")) |> select(!NAME)))
-    
-  }
-  
-  #group up the ecosystems by Regional Ecosystem type
-  assign(glue("{output_names2[i]}"), (get(glue("{output_names2[i]}")) |> group_by(across(c(1, 7))) |> 
-                                        summarise(geometry = st_union(geometry)) |> ungroup()))
-}
-
+#clean up
+rm(n3_rem, n3_pclear, re_remnant, re_p_clear)
 
 ```
 
@@ -447,321 +376,154 @@ Calculate the total area of each RE group.
 #| label: calculate area
 #| output: false
 
-for (i in 1:length(output_names2)){
+#calculate the m2 for each area
+n3_all <- n3_all |> group_by(RE) |> mutate(area_m = st_area(geometry)) |> ungroup()
+
+#update the units to a more reasonable metric
+n3_all$area_km <- units::set_units(n3_all$area_m, km^2)
   
-  #extract only polygons then group back up again
-  df <- get(output_names2[i]) |> st_collection_extract(type = "POLYGON", warn = F) |> 
-    group_by(across(1:2)) |> summarise(geometry = st_union(geometry))
-  
-  #calculate the area
-  df <- df |> group_by(RE) |> mutate(area_m = st_area(geometry))
-  
-  #update units to a more reasonable measure
-  df$area_km <- units::set_units(df$area_m, km^2)
-  
-  #cleanup
-  df <- df |> select(!area_m) |> ungroup()
-  
-  #assign df back to main
-  assign(glue("{output_names2[i]}"), df)
-  
-  #clean up
-  rm(df)
-  
-}
+#cleanup
+n3_all <- n3_all |> select(!area_m)
 
 ```
 
-Below is a map of some areas to help visualise what we now have:
+Below is a map of a select area to help visualise what we now have for **every** area, in this location alone we have ` r length(unique((filter(n3_all, basin == "barron"))$RE)` different RE groups... that's a bit many.
 
 ``` {r}
 #| label: show BVG1M
 
-tm_shape(ross_est_rem) +
-  tm_polygons(col = "RE") +
-  tm_shape(ross_fbuff_rem) +
-  tm_polygons(col =)
+tm_shape(filter(n3_all, basin == "barron")) +
+  tm_polygons(col = "RE")
 
 ```
 
-It should be noted that many areas currently share more than one RE group. The code chunk below separates out areas that consist of more than one regional ecosystem group and assigns each an area based on its percentage weighting of the total area it represents.
+It should be noted that many areas area also currently sharing more than one RE group. The code chunk below separates out areas that consist of more than one regional ecosystem group and assigns each an area based on its percentage weighting of the total area it represents.
+
 ``` {r}
 #| label: explore data
 #| output: false
 
-#create an empty list to track outputs of this loop
-output_names3 <- c()
-
-for (i in 1:length(output_names2)){
-  
-  #get the zone
-  zone <- strsplit(output_names2[i], "_")[[1]][1]
-  
-  #get the area we are looking at
-  area <- strsplit(output_names2[i], "_")[[1]][2]
-  
-  #get the re type
-  re_type <- strsplit(output_names2[i], "_")[[1]][3]
-  
-  #split data with more than one RE into multiple columns
-  temp_df <- get(output_names2[i]) |>  
-    separate(RE, into = c("RE1", "RE2", "RE3", "RE4", "RE5"), sep = "/") |> 
+temp_sf <- n3_all |> separate(RE, into = c("RE1", "RE2", "RE3", "RE4", "RE5"), sep = "/") |> 
     separate(PERCENT, into = c("PC1", "PC2", "PC3", "PC4", "PC5"), sep = "/") |> 
-    mutate(across(c(6:10), as.numeric)) |> 
+    mutate(across(c(10:14), as.numeric)) |> 
     mutate(PC1_area = (PC1*area_km)/100,
            PC2_area = (PC2*area_km)/100,
            PC3_area = (PC3*area_km)/100,
            PC4_area = (PC4*area_km)/100,
            PC5_area = (PC5*area_km)/100)
-  
-  #select only the RE columns and pivot longer (keep geometry)
-  re_temp <- temp_df |> select(starts_with("RE")) |> 
-    pivot_longer(c(1:5) , names_to = "RE_group", values_to = "RE")   
-  
-  #select only the percentage area columns and pivot longer (drop geometry)
-  area_temp <- temp_df |> select(ends_with("_area")) |> st_drop_geometry() |> 
-    pivot_longer(everything() , names_to = "area_group", values_to = "area_km") 
-  
-  #combine the two tables
-  combined <- cbind(re_temp, area_temp)
-      
-  #select only the re and area columns, group by the re and summarise the areas, rename columns
-  final <- combined |> select("RE", "area_km") |> drop_na()|> 
-    group_by(RE) |> summarise(area_km = sum(area_km)) |> 
-    rename("regional_ecosystem_group" := RE,
-           "{re_type}_area_km" := area_km) 
-  
-  #drop the geometry
-  final <- final |> st_drop_geometry()
-  
-  #assign the output to a summary table
-  assign(glue("{zone}_{area}_{re_type}_summary"), final)
-  
-  #build a list of outputs for next loop
-  output_names3 <- append(output_names3, glue("{zone}_{area}_{re_type}_summary"))
-  
-  #clean up
-  rm(temp_df, re_temp, area_temp, combined, final)
-}
+
+#select only the RE columns and pivot longer (keep geometry)
+re_temp <- temp_sf |> select(c(1:4, starts_with("RE"))) |> 
+  pivot_longer(c(5:9) , names_to = "RE_group", values_to = "RE")  
+
+#select only the percentage area columns and pivot longer (drop geometry)
+area_temp <- temp_sf |> select(ends_with("_area")) |> st_drop_geometry() |> 
+  pivot_longer(everything(), names_to = "area_group", values_to = "area_km") 
+
+#combine everything
+combined <- cbind(re_temp, area_temp)
+
+#drop re and area groups, drop rows with na, group by basin, env, type, layer and RE to summarise area
+n3_all <- combined |> select(!RE_group, !area_group) |> drop_na()|> 
+  group_by(basin, env, type, layer, RE) |> summarise(area_km = sum(area_km)) |> 
+  rename("regional_ecosystem_group" := RE) 
+
+#clean up
+rm(temp_sf, re_temp, area_temp, combined)
+
+#get only polygon data
+n3_all <- n3_all |> st_collection_extract(type = "POLYGON", warn = F) |> 
+  group_by(basin, env, type, layer, regional_ecosystem_group, area_km) |> summarise(geometry = st_union(geometry))
+
+#save the file
+st_write(n3_all, "data/regional_ecosystems/spatial_output.shp", delete_dsn = T)
 
 ```
 
 ## Vegetation Cover Change over time
 
-Currently we are looking at two different RE data layers for each area: pre-clear, and the remnant vegetation as of 2019. Once the calculations and summaries above are done, the results for each RE layer for an area can be combined into one table. We can then compare these two layers and make comments on the change in cover over time.
-
-Below we combine tables that refer to the same area.
-
-``` {r}
-#| label: combine preclear and remnant
-#| output: false
-
-#assign an empty variable for unique zones
-zone <- c()
-
-#create empty list for new df create
-output_names4 <- c()
-
-#using the list from above
-for (i in 1:length(output_names3)){
-  
-  #get a list of unique zones
-  zone <- unique(append(zone, strsplit(output_names3[i], "_")[[1]][1]))
-}
-
-#assign a variable as 0km^2
-a <- units::set_units(0, km^2) 
- 
-#for each zone
-for (i in 1:length(zone)){
-    
-  #if at least one of the listed files exists
-  if ((exists(glue("{zone[i]}_est_pclear_summary")) | exists(glue("{zone[i]}_est_rem_summary"))) == T){
-      
-    #join the two data frames together and replace any resulting na values with 0km^2
-    assign(glue("{zone[i]}_estuary_summary"), full_join(get(glue("{zone[i]}_est_pclear_summary")),
-                                                get(glue("{zone[i]}_est_rem_summary"))) |>
-             mutate(across(c(2:3), ~replace_na(.x, a))))
-      
-    #keep track of df created
-    output_names4 <- append(output_names4, glue("{zone[i]}_estuary_summary"))
-    
-  } 
-  #if at least one of the listed files exists  
-  if ((exists(glue("{zone[i]}_ebuff_pclear_summary")) | exists(glue("{zone[i]}_ebuff_rem_summary"))) == T) {
-      
-    #join the two data frames together with different name and replace any resulting na values with 0km^2
-    assign(glue("{zone[i]}_eriver_summary"), full_join(get(glue("{zone[i]}_ebuff_pclear_summary")),
-                                                get(glue("{zone[i]}_ebuff_rem_summary"))) |>
-             mutate(across(c(2:3), ~replace_na(.x, a))))
-      
-    #keep track of df created
-    output_names4 <- append(output_names4, glue("{zone[i]}_eriver_summary"))
-  }
-  #if at least one of the listed files exists
-  if ((exists(glue("{zone[i]}_fresh_pclear_summary")) | exists(glue("{zone[i]}_fresh_rem_summary"))) == T){
-      
-    #join the two data frames together and replace any resulting na values with 0km^2
-    assign(glue("{zone[i]}_fresh_summary"), full_join(get(glue("{zone[i]}_fresh_pclear_summary")),
-                                                get(glue("{zone[i]}_fresh_rem_summary"))) |>
-             mutate(across(c(2:3), ~replace_na(.x, a))))
-      
-    #keep track of df created
-    output_names4 <- append(output_names4, glue("{zone[i]}_fresh_summary"))
-    
-  } 
-  #if at least one of the listed files exists  
-  if ((exists(glue("{zone[i]}_fbuff_pclear_summary")) | exists(glue("{zone[i]}_fbuff_rem_summary"))) == T) {
-      
-    #join the two data frames together with different name and replace any resulting na values with 0km^2
-    assign(glue("{zone[i]}_friver_summary"), full_join(get(glue("{zone[i]}_fbuff_pclear_summary")),
-                                                get(glue("{zone[i]}_fbuff_rem_summary"))) |>
-             mutate(across(c(2:3), ~replace_na(.x, a))))
-      
-    #keep track of df created
-    output_names4 <- append(output_names4, glue("{zone[i]}_friver_summary"))
-  }
-  
-}
-
-
-```
-
-However for many of the areas, the number of RE groups within is extensive (50+), therefore we combine the RE groups into broader categories, specifically:
+Currently we are looking at two different RE data layers for each area: pre-clear, and the remnant vegetation as of 2019. Once the calculations and summaries above are done we can then compare these two layers and make comments on the change in cover over time. However for many of the areas, the number of RE groups within is extensive (50+), therefore we will also combine the RE groups into broader categories and compare these as well, specifically:
 
 - The total area sum of all vegetation (everything except the non-remnant RE category)
 - The total area sum of specific estuarine RE groups (these groups are **X.1.1 - X.1.5**, where X varies by region)
-+ Wet Tropics = 7.1.1 - 7.1.5
-+ Dry Tropics = 11.1.1 - 11.1.5
-+ Mackay Whitsunday Issac = 8.1.1 - 8.1.5
+  + Wet Tropics = 7.1.1 - 7.1.5
+  + Dry Tropics = 11.1.1 - 11.1.5
+  + Mackay Whitsunday Issac = 8.1.1 - 8.1.5
 
 For all the individual RE groups, as well as the summaries we create above, we then calculate the area change and percentage change.
+
+We also have to drop layer geometry at this point, but we have calculated area so thats fine.
 
 ``` {r}
 #| label: calcuate percentage change
 #| output: false
 
-for (i in 1:length(output_names4)){
-  
-  #pull out all remnant and get the sum
-  temp_df <- get(output_names4[i]) |> filter(regional_ecosystem_group != "non-remnant") |> 
-    summarise(pclear_area_km = sum(pclear_area_km), rem_area_km = sum(rem_area_km)) |> 
-    mutate(regional_ecosystem_group = "remnant_total")
-  
-  #bind back to main
-  temp_df1 <- rbind(get(output_names4[i]), temp_df)
-  
-  #select only those with estuary in name
-  if (strsplit(output_names4[i], "_")[[1]][2] == "estuary"){
-    
-    #filter to select specific RE groups
-    temp_df2 <- get(output_names4[i]) |> 
-      filter(str_detect(regional_ecosystem_group, c("\\d.1.1|\\d.1.2|\\d.1.3|\\d.1.4|\\d.1.5"))) |> 
-      summarise(across(where(is.numeric), list(sum))) |> 
-      rename(pclear_area_km = pclear_area_km_1, rem_area_km = rem_area_km_1) |> 
-      mutate(regional_ecosystem_group = "target_re_group")
-    
-    #bind the summary row back onto main
-    temp_df3 <- rbind(temp_df1, temp_df2)
-    
-  } else {temp_df3 <- temp_df1}
-  
-  #calculate total area for the location
-  temp_df4 <- temp_df3 |> filter(regional_ecosystem_group %in% c("non-remnant","remnant_total")) |> 
-    summarise(across(where(is.numeric), list(sum))) |> 
-    rename(pclear_area_km = pclear_area_km_1, rem_area_km = rem_area_km_1) |> 
-    mutate(regional_ecosystem_group = "total_area")
-  
-  #bind the summary row back onto main
-  temp_df4 <- rbind(temp_df3, temp_df4)
-  
-  #calculate area change and the percentage change
-  temp_df4 <- temp_df4 |> 
-    mutate(area_change = (rem_area_km-pclear_area_km)) |> 
-    mutate(percentage_change = (area_change/pclear_area_km)*100)
-  
-  #update data type
-  temp_df4$percentage_change <-  as.numeric(temp_df4$percentage_change)
-  
-  #replace Inf values with 100 (i.e. a 100% increase)
-  temp_df4$percentage_change <- ifelse(is.finite(temp_df4$percentage_change), temp_df4$percentage_change, 100)
-  
-  #assign the output back to the input name
-  assign(glue("{output_names4[i]}"), temp_df4)
+#drop geometry to speed things up
+n3_all_df <- n3_all |> st_drop_geometry()
 
-}
+#grab all RE layers that are not non-remnant and sum the area per the grouping
+n3_rem_sum <- n3_all_df |> group_by(basin, env, type, layer) |> filter(regional_ecosystem_group != "non-remnant") |> 
+  summarise(area_km = sum(area_km)) |> mutate(regional_ecosystem_group = "all_remnant") |> ungroup()
+
+#do the same, but selecting specific estuarine only RE layers
+n3_est_focus_sum <- n3_all_df |> filter(env == "est", type == "area") |> 
+  filter(str_detect(regional_ecosystem_group, c("\\d.1.1|\\d.1.2|\\d.1.3|\\d.1.4|\\d.1.5"))) |> 
+  group_by(basin, env, type, layer) |> 
+  summarise(area_km = sum(area_km)) |> 
+  mutate(regional_ecosystem_group = "focused_estuary") |> ungroup()
+
+#combine these together
+combined <- rbind(n3_all_df, n3_rem_sum, n3_est_focus_sum)
+
+#calculate total area for the location
+n3_total_area <- combined |> filter(regional_ecosystem_group %in% c("non-remnant","all_remnant")) |>
+  #filter(layer == "remnant2019") |> 
+  group_by(basin, env, type, layer) |> summarise(area_km = sum(area_km)) |> 
+  mutate(regional_ecosystem_group = "total_area") |> ungroup()
+
+#add this also back onto main
+n3_all_df <- rbind(combined, n3_total_area)
+
+#pivot data wider
+n3_all_df <- n3_all_df |> pivot_wider(names_from = "layer", values_from = "area_km")
+
+#assign a variable as 0km^2
+a <- units::set_units(0, km^2) 
+
+#replace NA values with 0
+n3_all_df <- n3_all_df |> mutate(across(c(remnant2019, pre_clear), ~replace_na(.x, a)))
+
+#calculate area and percentage change
+n3_all_df <- n3_all_df |> 
+  mutate(area_change = (remnant2019 - pre_clear)) |> 
+  mutate(percentage_change = (area_change/pre_clear)*100)
+  
+#update the data type
+n3_all_df$percentage_change <- as.numeric(n3_all_df$percentage_change)
 
 #cleanup
 rm(temp_df, temp_df1, temp_df2, temp_df3, temp_df4)
+
+#clean up
+rm(n3_rem_sum, n3_est_focus_sum, combined, n3_total_area, a)
 
 ```
 
 # Data Presentation
 
-Now all calculations are done we can save the output, the full tables for each area are combined into one multi-paged excel workbook, while the main summary groups calculated above are saved into another, simpler csv.
-
-
-``` {r}
-#|label: create final summary table
-#|output: false
-
-#create empty tibble
-final_summary <- tibble()
-
-#create list to match
-matches <- c("non-remnant", "remnant_total", "target_re_group", "total_area")
-
-for (i in 1:length(output_names4)){
-  
-  #select the zone from the data fram name
-  zone <- strsplit(output_names4[i], "_")[[1]][1]
-  
-  #select the focus area
-  area <- strsplit(output_names4[i], "_")[[1]][2]
-  
-  #add as a col
-  df <- get(output_names4[i]) |> 
-    mutate(zone = zone, .before = regional_ecosystem_group) |> 
-    mutate(area = area, .before = regional_ecosystem_group)
-  
-  #select specific rows
-  df <- df |> filter(regional_ecosystem_group %in% matches)
-  
-  #bind to main
-  final_summary <- rbind(final_summary, df)
-}
-
-#round all numeric values
-final_summary <- final_summary |> mutate(across(where(is.numeric), round, 6))
-
-#round percentage values further
-final_summary$percentage_change <- round(final_summary$percentage_change, 2)
-
-
-```
-
+Now all calculations are done we can save the output, the full table is saved, as well as a summary table of only the major groupings for each area.
 
 ``` {r}
 #| label: save summary tables
 
-#save the big summary table
-write_csv(final_summary, file = glue("{save_path}regional_ecosystems_summary.csv"))
-
-#create an empty list
-save_list <- c()
-
-#fill list with full data table variable names
-for (i in 1:length(output_names4)){
-  
-  save_list <- append(save_list, list(get(output_names4[i])))
-}
-
-#name elements in list
-names(save_list) <- output_names4
-
 #save everything
-write_xlsx(save_list, glue("{save_path}regional_ecosystems_full_data.xlsx"))
+write_csv(n3_all_df, glue("{save_path}regional_ecosystems_full_data.csv"))
 
+#get summary data
+n3_summary_df <- n3_all_df |> filter(regional_ecosystem_group %in% c("non-remnant", "all_remnant", "focused_estuary", "total_area"))
+
+#save
+write_csv(n3_summary_df, glue("{save_path}regional_ecosystems_summary.csv"))
 
 
 ```
@@ -772,7 +534,7 @@ Here is main summary table.
 #| label: show example table
 
 #visualise
-reactable(final_summary, highlight = T)
+reactable(n3_summary_df, highlight = T)
 
 ```
 
