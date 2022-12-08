@@ -16,13 +16,13 @@ if (file.exists(path)) {
 } else {
   
   #read in each file from raw folder
-  gbr30mA <- raster("data/raw/Great Barrier Reef Bathymetry 2020 30m/
+  gbr30mA <- raster::raster("data/raw/Great Barrier Reef Bathymetry 2020 30m/
                     Great_Barrier_Reef_A_2020_30m_MSL_cog.tif")
-  gbr30mB <- raster("data/raw/Great Barrier Reef Bathymetry 2020 30m/
+  gbr30mB <- raster::raster("data/raw/Great Barrier Reef Bathymetry 2020 30m/
                     Great_Barrier_Reef_B_2020_30m_MSL_cog.tif")
-  gbr30mC <- raster("data/raw/Great Barrier Reef Bathymetry 2020 30m/
+  gbr30mC <- raster::raster("data/raw/Great Barrier Reef Bathymetry 2020 30m/
                     Great_Barrier_Reef_C_2020_30m_MSL_cog.tif")
-  gbr30mD <- raster("data/raw/Great Barrier Reef Bathymetry 2020 30m/
+  gbr30mD <- raster::raster("data/raw/Great Barrier Reef Bathymetry 2020 30m/
                     Great_Barrier_Reef_D_2020_30m_MSL_cog.tif")
   
   #change the origins of each to match (changing from values such as 0.00015 to
@@ -43,7 +43,6 @@ if (file.exists(path)) {
 
 #clean up
 rm(path)
-
 
 #------------------
 #Although Great Barrier Reef 100m Digital Elevation Model dataset is small enough to be downloaded 
@@ -67,7 +66,6 @@ if (file.exists(path_new)) {
 
 #clean up
 rm(path_old, path_new)
-
 
 #------------------
 #Environmental Protection Policy Datasets
@@ -117,7 +115,7 @@ for (i in 1:length(file_names)){
 }
 
 #clean up
-rm(path)
+rm(extent, path, file_names, i)
 
 # -------------------------
 #Regional Ecosystem Biodiversity
@@ -125,54 +123,57 @@ rm(path)
 #extremely detailed and extend far beyond the northern three region. The code chunk below crops the
 #data to only have areas that are at least partially within the n3 regions.
 
-#create a file path to help with saving things
+#read in basins data
+n3_basins <- sf::st_read(dsn = "data/shapefiles/Drainage_basins.shp")
+
+#select northern three basins and combine into one large multipolygon
+n3_basins <- n3_basins |> 
+  dplyr::filter(BASIN_NAME %in% c("Ross", "Black", "Don", "Proserpine", "O'Connell", "Pioneer", 
+                                  "Plane", "Daintree", "Mossman", "Barron", "Johnstone", "Tully", 
+                                  "Murray", "Herbert")) |> sf::st_union()
+
+#get path to read layers
+read_path <- "data/raw/Regional_Ecosystem_Geopackage_Files/"
+
+#get path to save layers
 save_path <- "data/regional_ecosystems/"
 
-#bring that path to life
+#bring that save path to life
 dir.create(save_path)
 
-#get list of file names
-file_names <- list("remnant", "pre_clearing")
+#get list of files in the read folder without their extension
+file_list <- tools::file_path_sans_ext(list.files(read_path))
 
-for (i in 1:length(file_names)){
-
-  #create path to output
-  path <- glue::glue("data/regional_ecosystems/re_{file_names[i]}.gpkg")
+#for each file in list
+for (i in 1:length(file_list)){
   
-  if (file.exists(path)){
+  #if the cropped and saved version exists
+  if (file.exists(glue::glue("{save_path}{file_list[i]}_cropped.gpkg"))){
     
-    print("File already exists in regional ecosystems folder, data processing complete.")
+    print("Cropped file already exists in regional ecosystems folder, layer processing complete.")
     
   } else {
     
-    #read in basins
-    basins <- sf::st_read(dsn = "data/shapefiles/Drainage_basins.shp")
-    
-    #select northern three basins and combine into one large multipolygon
-    n3_basins <- basins |> 
-      dplyr::filter(BASIN_NAME %in% c("Ross", "Black", "Don", "Proserpine", "O'Connell", 
-                                      "Pioneer", "Plane", "Daintree", "Mossman", "Barron", 
-                                      "Johnstone", "Tully", "Murray", "Herbert")) |> 
-      sf::st_union()
-    
-    #create a large buffer around this area to make sure not to miss anything
-    n3_basins <- sf::st_buffer(n3_basins, units::set_units(0.5, degree))
-    
-    #read in the regional ecosystems
-    data <- sf::st_read(dsn = glue::glue("data/raw/Biodiversity_status_of_{file_names[i]}_regional_ecosystems/data.gpkg"))
+    #read in the regional ecosystem layer
+    re_layer <- sf::st_read(dsn = glue::glue("{read_path}{file_list[i]}.gpkg"))
+  
+    #transform the layer
+    re_layer <- sf::st_transform(re_layer, "EPSG:7844")
     
     #create a T F list of polygons that intersect the n3 basins
-    intersects <- lengths(sf::st_intersects(data, n3_basins)) > 0
+    intersects <- lengths(sf::st_intersects(re_layer, n3_basins)) > 0
     
     #select only rows with T for intersection
-    df <- data |> dplyr::mutate(within = intersects) |> dplyr::filter(within == T)
-
-    #write the output to file
-    sf::st_write(df, dsn = glue::glue("{save_path}re_{file_names[i]}.gpkg"), layer = file_names[[i]], quiet = TRUE)
+    re_layer <- re_layer |> dplyr::mutate(within = intersects) |> dplyr::filter(within == T)
+    
+    #save the file 
+    sf::st_write(re_layer, dsn = glue::glue("{save_path}{file_list[i]}_cropped.gpkg"),
+                 delete_dsn = T)
   }
 }
 
-
+#clean up
+rm(n3_basins, read_path, save_path, file_list, i, intersects, re_layer)
 
 
 
