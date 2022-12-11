@@ -65,7 +65,7 @@ Load in the RE data and shapefiles. If this is the first time running the analys
 
 #read in regional ecosystem data
 re_remnant <- st_read(dsn = "data/regional_ecosystems/re_remnant.gpkg")
-re_p_clear <- st_read(dsn = "data/regional_ecosystems/re_pre_clearing.gpkg")
+re_p_clear <- st_read(dsn = "data/regional_ecosystems/re_pre_clear_v12_2_cropped.gpkg")
 
 #read in water course shapefile
 water_course <- st_read(dsn = "data/shapefiles", layer = "Watercourse_areas")

@@ -130,7 +130,7 @@ n3_basins <- sf::st_read(dsn = "data/shapefiles/Drainage_basins.shp")
 n3_basins <- n3_basins |> 
   dplyr::filter(BASIN_NAME %in% c("Ross", "Black", "Don", "Proserpine", "O'Connell", "Pioneer", 
                                   "Plane", "Daintree", "Mossman", "Barron", "Johnstone", "Tully", 
-                                  "Murray", "Herbert")) |> sf::st_union()
+                                  "Murray", "Herbert", "Mulgrave-Russell")) |> sf::st_union()
 
 #get path to read layers
 read_path <- "data/raw/Regional_Ecosystem_Geopackage_Files/"
@@ -161,10 +161,13 @@ for (i in 1:length(file_list)){
     re_layer <- sf::st_transform(re_layer, "EPSG:7844")
     
     #create a T F list of polygons that intersect the n3 basins
-    intersects <- lengths(sf::st_intersects(re_layer, n3_basins)) > 0
+    #intersects <- lengths(sf::st_intersects(re_layer, n3_basins)) > 0
+    
+    #get x within y
+    re_layer <- sf::st_intersection(re_layer, n3_basins)
     
     #select only rows with T for intersection
-    re_layer <- re_layer |> dplyr::mutate(within = intersects) |> dplyr::filter(within == T)
+    #re_layer <- re_layer |> dplyr::mutate(within = intersects) |> dplyr::filter(within == T)
     
     #save the file 
     sf::st_write(re_layer, dsn = glue::glue("{save_path}{file_list[i]}_cropped.gpkg"),
@@ -172,7 +175,7 @@ for (i in 1:length(file_list)){
   }
 }
 
-#clean up
+ #clean up
 rm(n3_basins, read_path, save_path, file_list, i, intersects, re_layer)
 
 
