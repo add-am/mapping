@@ -57,15 +57,15 @@ tmap_mode("view")
 
 # Data Source
 
-Load in the RE data and shapefiles. If this is the first time running the analysis please refer to the .README for this repo for a guide on downloading the data.
+Load in the shapefiles. If this is the first time running the analysis please refer to the .README for this repo for a guide on downloading the data. Note, the RE data layers will be loaded further down.
 
 ``` {r}
 #| label: load in RE data
 #| output: false
 
 #read in regional ecosystem data
-re_remnant <- st_read(dsn = "data/regional_ecosystems/re_remnant.gpkg")
-re_p_clear <- st_read(dsn = "data/regional_ecosystems/re_pre_clear_v12_2_cropped.gpkg")
+#re_remnant <- st_read(dsn = "data/regional_ecosystems/re_remnant.gpkg")
+#re_p_clear <- st_read(dsn = "data/regional_ecosystems/re_pre_clear_v12_2_cropped.gpkg")
 
 #read in water course shapefile
 water_course <- st_read(dsn = "data/shapefiles", layer = "Watercourse_areas")
@@ -81,8 +81,8 @@ basins <- st_read(dsn = "data/shapefiles/Drainage_basins.shp")
 sub_basins <- st_read(dsn = "data/shapefiles/Drainage_basin_sub_areas.shp")
 
 #transform crs
-re_remnant <- st_transform(re_remnant, proj_crs)
-re_p_clear <- st_transform(re_p_clear, proj_crs)
+#re_remnant <- st_transform(re_remnant, proj_crs)
+#re_p_clear <- st_transform(re_p_clear, proj_crs)
 water_course <- st_transform(water_course, proj_crs)
 dt_env <- st_transform(dt_env, proj_crs)
 wt_mwi <- st_transform(wt_mwi, proj_crs)
@@ -344,66 +344,67 @@ rm(dt_all, wt_mwi_all)
 
 # Data Analysis
 
-Now all the data preparation is complete and we have a dataset of shapefiles that we will be using we can begin the analysis.
+Now all the data preparation is complete and we have a dataset of shapefiles that we will be using we can begin the analysis. The shapefiles will be used to assess each RE layer, however due to the size of the RE layers, only one can be read and processed at a time.
 
-## Calculating Vegetation Cover
+## RE Layer Loop
 
-Use the layers to intersect the areas of the regional ecosystem layers that we care about, and return only RE groups within.
+First we must create a list of RE layers that we plan to analyse.
 
 ``` {r}
-#| label: select RE within estuaries
+#| label: create layer loop
 #| output: false
 
-#get all rem data within the areas, select RE columns, group everything and summarise geometry, and add a layer column
-n3_rem <- st_intersection(n3_all, re_remnant) |> select(1:4, 10) |> 
-  group_by(across(c(!geometry))) |> summarise() |> mutate(layer = "remnant2019", .after = type) 
+#build path to data layers
+path <- "data/regional_ecosystems/"
 
-#repeat for the pre clear data
-n3_pclear <- st_intersection(n3_all, re_p_clear) |> select(1:4, 10) |> 
-  group_by(across(c(!geometry))) |> summarise() |> mutate(layer = "pre_clear", .after = type)
-
-#combine everything together
-n3_all <- rbind(n3_rem, n3_pclear)
-
-#clean up
-rm(n3_rem, n3_pclear, re_remnant, re_p_clear)
+#get list of files to read
+file_list <- tools::file_path_sans_ext(list.files(path))
 
 ```
 
-Calculate the total area of each RE group.
+## Calculate Vegetation Cover
 
-``` {r}
-#| label: calculate area
-#| output: false
+Then, for each layer we perform the following steps:
 
-#calculate the m2 for each area
-n3_all <- n3_all |> group_by(RE) |> mutate(area_m = st_area(geometry)) |> ungroup()
+ - Read data layer
+ - Transform crs
+ - Extract data only within shapefile polygons
+ - Calculate the total area of each RE classification
+ - Separate grouped REs into their individual components
+ - Drop geometry
+ - Bind the output to the main data frame
 
-#update the units to a more reasonable metric
-n3_all$area_km <- units::set_units(n3_all$area_m, km^2)
+```{r}
+#|label: process each layer
+#|output: false
+
+#create empty df to receive output data
+n3_df_output <- data.frame()
+
+#for each file in list
+for (i in 1:length(file_list)){
   
-#cleanup
-n3_all <- n3_all |> select(!area_m)
+  #read in the layer
+  re_layer <- st_read(dsn = glue("{path}{file_list[i]}.gpkg"))
+  
+  #transform the crs
+  re_layer <- st_transform(re_layer, proj_crs)
 
-```
-
-Below is a map of a select area to help visualise what we now have for **every** area, in this location alone we have ` r length(unique((filter(n3_all, basin == "barron"))$RE)` different RE groups... that's a bit many.
-
-``` {r}
-#| label: show BVG1M
-
-tm_shape(filter(n3_all, basin == "barron")) +
-  tm_polygons(col = "RE")
-
-```
-
-It should be noted that many areas area also currently sharing more than one RE group. The code chunk below separates out areas that consist of more than one regional ecosystem group and assigns each an area based on its percentage weighting of the total area it represents.
-
-``` {r}
-#| label: explore data
-#| output: false
-
-temp_sf <- n3_all |> separate(RE, into = c("RE1", "RE2", "RE3", "RE4", "RE5"), sep = "/") |> 
+  #get all data within the area, select RE columns, group everything and summarise geometry, and add a layer column
+  re_intersected <- st_intersection(n3_all, re_layer) |> select(1:3,5, 11) |> 
+  group_by(across(c(!geometry))) |> summarise() |> mutate(layer = glue("{file_list[i]}"), .after = type)
+  
+  #calculate the m2 for each area
+  re_area <- re_intersected |> group_by(RE) |> mutate(area_m = st_area(geometry)) |> ungroup()
+  
+  #update the units to a more reasonable metric
+  re_area$area_km <- units::set_units(re_area$area_m, km^2)
+    
+  #remove old column
+  re_area <- re_area |> select(!area_m)
+  
+  #break the grouped RE data entries into individual RE entries
+  temp_sf <- re_area |> separate(RE, into = c("RE1", "RE2", "RE3", "RE4", "RE5"), sep = "/") |> 
     separate(PERCENT, into = c("PC1", "PC2", "PC3", "PC4", "PC5"), sep = "/") |> 
     mutate(across(c(10:14), as.numeric)) |> 
     mutate(PC1_area = (PC1*area_km)/100,
@@ -412,37 +413,42 @@ temp_sf <- n3_all |> separate(RE, into = c("RE1", "RE2", "RE3", "RE4", "RE5"), s
            PC4_area = (PC4*area_km)/100,
            PC5_area = (PC5*area_km)/100)
 
-#select only the RE columns and pivot longer (keep geometry)
-re_temp <- temp_sf |> select(c(1:4, starts_with("RE"))) |> 
-  pivot_longer(c(5:9) , names_to = "RE_group", values_to = "RE")  
-
-#select only the percentage area columns and pivot longer (drop geometry)
-area_temp <- temp_sf |> select(ends_with("_area")) |> st_drop_geometry() |> 
-  pivot_longer(everything(), names_to = "area_group", values_to = "area_km") 
-
-#combine everything
-combined <- cbind(re_temp, area_temp)
-
-#drop re and area groups, drop rows with na, group by basin, env, type, layer and RE to summarise area
-n3_all <- combined |> select(!RE_group, !area_group) |> drop_na()|> 
-  group_by(basin, env, type, layer, RE) |> summarise(area_km = sum(area_km)) |> 
-  rename("regional_ecosystem_group" := RE) 
-
-#clean up
-rm(temp_sf, re_temp, area_temp, combined)
-
-#get only polygon data
-n3_all <- n3_all |> st_collection_extract(type = "POLYGON", warn = F) |> 
-  group_by(basin, env, type, layer, regional_ecosystem_group, area_km) |> summarise(geometry = st_union(geometry))
-
-#save the file
-st_write(n3_all, "data/regional_ecosystems/spatial_output.shp", delete_dsn = T)
+  #select only the RE columns and pivot longer (keep geometry)
+  re_temp <- temp_sf |> select(c(1:4, starts_with("RE"))) |> 
+    pivot_longer(c(5:9) , names_to = "RE_group", values_to = "RE")  
+  
+  #select only the percentage area columns and pivot longer (drop geometry)
+  area_temp <- temp_sf |> select(ends_with("_area")) |> st_drop_geometry() |> 
+    pivot_longer(everything(), names_to = "area_group", values_to = "area_km") 
+  
+  #combine everything
+  combined <- cbind(re_temp, area_temp)
+  
+  #drop re and area groups, drop rows with na, group by basin, env, type, layer and RE to summarise area
+  re_single_type_group <- combined |> select(!RE_group, !area_group) |> drop_na()|> 
+    group_by(basin, env, type, layer, RE) |> summarise(area_km = sum(area_km)) |> 
+    rename("regional_ecosystem_group" := RE) 
+  
+  #get only polygon data
+  re_single_type_group <- re_single_type_group |> st_collection_extract(type = "POLYGON", warn = F) |> 
+    group_by(basin, env, type, layer, regional_ecosystem_group, area_km) |> summarise(geometry = st_union(geometry))
+  
+  #drop geometry to speed things up
+  re_dataframe <- re_single_type_group |> st_drop_geometry()
+  
+  #bind to final output dataframe
+  n3_df_output <- rbind(n3_df_output, re_dataframe)
+  
+  #clean up
+  rm(re_layer, re_intersected, re_area, temp_sf, re_temp, area_temp, combined, re_single_type_group, re_dataframe)
+  
+}
 
 ```
 
 ## Vegetation Cover Change over time
 
-Currently we are looking at two different RE data layers for each area: pre-clear, and the remnant vegetation as of 2019. Once the calculations and summaries above are done we can then compare these two layers and make comments on the change in cover over time. However for many of the areas, the number of RE groups within is extensive (50+), therefore we will also combine the RE groups into broader categories and compare these as well, specifically:
+Once the calculations and summaries above are done we can then compare layers and make comments on the change in cover over time. However for many of the areas, the number of RE groups within is extensive (50+), therefore we will also combine the RE groups into broader categories and compare these as well, specifically:
 
 - The total area sum of all vegetation (everything except the non-remnant RE category)
 - The total area sum of specific estuarine RE groups (these groups are **X.1.1 - X.1.5**, where X varies by region)
@@ -450,62 +456,252 @@ Currently we are looking at two different RE data layers for each area: pre-clea
   + Dry Tropics = 11.1.1 - 11.1.5
   + Mackay Whitsunday Issac = 8.1.1 - 8.1.5
 
-For all the individual RE groups, as well as the summaries we create above, we then calculate the area change and percentage change.
+For all the individual RE groups, as well as the summaries we create above, we can then plot these over time, or pick specific years and calculate the area change and percentage change.
 
-We also have to drop layer geometry at this point, but we have calculated area so thats fine.
+
+```{r}
+#|label: analysis over time and space
+#|output: false
+
+#grab all RE layers that are not non-remnant and sum the area per the grouping
+re_rem_sum <- n3_df_output |> group_by(basin, env, type, layer) |> filter(regional_ecosystem_group != "non-remnant") |> 
+  summarise(area_km = sum(area_km)) |> mutate(regional_ecosystem_group = "all_remnant") |> ungroup()
+  
+#do the same, but selecting specific estuarine only RE layers
+re_est_focus_sum <- n3_df_output |> filter(env == "est", type == "area") |> 
+  filter(str_detect(regional_ecosystem_group, c("\\d.1.1|\\d.1.2|\\d.1.3|\\d.1.4|\\d.1.5"))) |> 
+  group_by(basin, env, type, layer) |> 
+  summarise(area_km = sum(area_km)) |> 
+  mutate(regional_ecosystem_group = "focused_estuary") |> ungroup()
+  
+#combine these together
+combined <- rbind(n3_df_output, re_rem_sum, re_est_focus_sum)
+
+#calculate total area
+n3_total_area <- combined |> filter(regional_ecosystem_group %in% c("non-remnant","all_remnant")) |>
+  #filter(layer == "remnant2019") |> 
+  group_by(basin, env, type, layer) |> summarise(area_km = sum(area_km)) |> 
+  mutate(regional_ecosystem_group = "total_area") |> ungroup()
+  
+#add this all back onto main
+n3_all_df <- rbind(combined, n3_total_area)
+  
+#pivot data wider
+#n3_all_df <- n3_all_df |> pivot_wider(names_from = "layer", values_from = "area_km")
+  
+#assign a variable as 0km^2
+unit_set <- units::set_units(0, km^2) 
+  
+#replace NA values with 0km^2
+n3_all_df <- n3_all_df |> mutate(across(c(), ~replace_na(.x, unit_set))) |> ungroup()
+  
+#calculate area and percentage change
+#n3_all_df <- n3_all_df |> 
+  #mutate(area_change = (remnant2019 - pre_clear)) |> 
+  #mutate(percentage_change = (area_change/pre_clear)*100)
+    
+  #update the data type
+  #n3_all_df$percentage_change <- as.numeric(n3_all_df$percentage_change)
+
+#create a new column with the year by splitting the layer name
+test <- n3_all_df |> separate(layer, c("A", "B", "year"), remove = F) |> 
+  select(!c(A, B))
+
+#for now we will drop the 2006b layer
+test <- test |> filter(year != "2006b")
+
+
+#edit the year column and make numeric. NOTE: there will now be two 2006 layers, distinguish unique using layer name
+test <- test |> mutate(year = case_when(year == "clear" ~ "1990",
+                                        year == "2006b" ~ "2006",
+                                        TRUE ~ year),
+                       year = as.numeric(year))
+
+#create a seperate units column and drop units for the actual values
+test <- test |> mutate(units = "km^2") |> units::drop_units() |> rename(area = area_km)
+
+#clean up
+rm(re_rem_sum, re_est_focus_sum, combined, n3_total_area, unit_set)
+
+```
+
+```{r}
+#|label: plotting change over time
+#|output: false
+
+#for non-remnant RE types (i.e the build environment)
+
+#get one row for each basin, env, type, year  combination
+test1 <- test |> filter(regional_ecosystem_group == "total_area", year == 1990)
+
+#add a 1990 area measure of 0km^2 and rename the regional ecosystem group to "non-remnant"
+test1 <- test1 |> mutate(regional_ecosystem_group = "non-remnant", area = 0)
+
+#bind the data back to the main
+test2 <- rbind(test, test1)
+
+
+#get list of unique basins
+basin_list <- unique(test$basin)
+
+#run loop per basin
+for (i in 1:length(basin_list)){
+  
+  #select a specific RE and basin for experimentation 
+  test3 <- test2 |> filter(basin == basin_list[i], regional_ecosystem_group %in% c("all_remnant", "non-remnant", "focused_estuary"))
+  
+  
+  ggplot(test3, aes(x = year, y = area, fill = interaction(regional_ecosystem_group))) +
+    geom_area(alpha = 0.6, size = 1, colour = "black") +
+    facet_grid(interaction(env, type) ~., scales = "free")
+  
+  #save
+  ggsave(glue("{save_path}{basin_list[i]}_vegetation_change_plot.png"))
+
+  
+}
+
+
+
+
+```
+
+
+``` {r}
+#| label: select RE within estuaries
+#| output: false
+
+#get all rem data within the areas, select RE columns, group everything and summarise geometry, and add a layer column
+#n3_rem <- st_intersection(n3_all, re_remnant) |> select(1:4, 10) |> 
+  #group_by(across(c(!geometry))) |> summarise() |> mutate(layer = "remnant2019", .after = type) 
+
+#repeat for the pre clear data
+#n3_pclear <- st_intersection(n3_all, re_p_clear) |> select(1:3,5, 11) |> 
+  #group_by(across(c(!geometry))) |> summarise() |> mutate(layer = "pre_clear", .after = type)
+
+#combine everything together
+#n3_all <- rbind(n3_rem, n3_pclear)
+
+#clean up
+#rm(n3_rem, n3_pclear, re_remnant, re_p_clear)
+
+```
+
+``` {r}
+#| label: calculate area
+#| output: false
+
+#calculate the m2 for each area
+#n3_all <- n3_all |> group_by(RE) |> mutate(area_m = st_area(geometry)) |> ungroup()
+
+#update the units to a more reasonable metric
+#n3_all$area_km <- units::set_units(n3_all$area_m, km^2)
+  
+#cleanup
+#n3_all <- n3_all |> select(!area_m)
+
+```
+
+``` {r}
+#| label: show BVG1M
+
+#test <- n3_all |> filter(basin == "barron")
+
+#tm_shape(test) +
+  #tm_polygons(col = "RE")
+
+```
+
+``` {r}
+#| label: explore data
+#| output: false
+
+#temp_sf <- n3_all |> separate(RE, into = c("RE1", "RE2", "RE3", "RE4", "RE5"), sep = "/") |> 
+    #separate(PERCENT, into = c("PC1", "PC2", "PC3", "PC4", "PC5"), sep = "/") |> 
+    #mutate(across(c(10:14), as.numeric)) |> 
+    #mutate(PC1_area = (PC1*area_km)/100,
+           #PC2_area = (PC2*area_km)/100,
+           #PC3_area = (PC3*area_km)/100,
+           #PC4_area = (PC4*area_km)/100,
+           #PC5_area = (PC5*area_km)/100)
+
+#select only the RE columns and pivot longer (keep geometry)
+#re_temp <- temp_sf |> select(c(1:4, starts_with("RE"))) |> 
+  #pivot_longer(c(5:9) , names_to = "RE_group", values_to = "RE")  
+
+#select only the percentage area columns and pivot longer (drop geometry)
+#area_temp <- temp_sf |> select(ends_with("_area")) |> st_drop_geometry() |> 
+  #pivot_longer(everything(), names_to = "area_group", values_to = "area_km") 
+
+#combine everything
+#combined <- cbind(re_temp, area_temp)
+
+#drop re and area groups, drop rows with na, group by basin, env, type, layer and RE to summarise area
+#n3_all <- combined |> select(!RE_group, !area_group) |> drop_na()|> 
+  #group_by(basin, env, type, layer, RE) |> summarise(area_km = sum(area_km)) |> 
+  #rename("regional_ecosystem_group" := RE) 
+
+#clean up
+#rm(temp_sf, re_temp, area_temp, combined)
+
+#get only polygon data
+#n3_all <- n3_all |> st_collection_extract(type = "POLYGON", warn = F) |> 
+  #group_by(basin, env, type, layer, regional_ecosystem_group, area_km) |> summarise(geometry = st_union(geometry))
+
+#save the file
+#st_write(n3_all, "data/regional_ecosystems/spatial_output.shp", delete_dsn = T)
+
+```
 
 ``` {r}
 #| label: calcuate percentage change
 #| output: false
 
 #drop geometry to speed things up
-n3_all_df <- n3_all |> st_drop_geometry()
+#n3_all_df <- n3_all |> st_drop_geometry()
 
 #grab all RE layers that are not non-remnant and sum the area per the grouping
-n3_rem_sum <- n3_all_df |> group_by(basin, env, type, layer) |> filter(regional_ecosystem_group != "non-remnant") |> 
-  summarise(area_km = sum(area_km)) |> mutate(regional_ecosystem_group = "all_remnant") |> ungroup()
+#n3_rem_sum <- n3_all_df |> group_by(basin, env, type, layer) |> filter(regional_ecosystem_group != "non-remnant") |> 
+  #summarise(area_km = sum(area_km)) |> mutate(regional_ecosystem_group = "all_remnant") |> ungroup()
 
 #do the same, but selecting specific estuarine only RE layers
-n3_est_focus_sum <- n3_all_df |> filter(env == "est", type == "area") |> 
-  filter(str_detect(regional_ecosystem_group, c("\\d.1.1|\\d.1.2|\\d.1.3|\\d.1.4|\\d.1.5"))) |> 
-  group_by(basin, env, type, layer) |> 
-  summarise(area_km = sum(area_km)) |> 
-  mutate(regional_ecosystem_group = "focused_estuary") |> ungroup()
+#n3_est_focus_sum <- n3_all_df |> filter(env == "est", type == "area") |> 
+  #filter(str_detect(regional_ecosystem_group, c("\\d.1.1|\\d.1.2|\\d.1.3|\\d.1.4|\\d.1.5"))) |> 
+  #group_by(basin, env, type, layer) |> 
+  #summarise(area_km = sum(area_km)) |> 
+  #mutate(regional_ecosystem_group = "focused_estuary") |> ungroup()
 
 #combine these together
-combined <- rbind(n3_all_df, n3_rem_sum, n3_est_focus_sum)
+#combined <- rbind(n3_all_df, n3_rem_sum, n3_est_focus_sum)
 
 #calculate total area for the location
-n3_total_area <- combined |> filter(regional_ecosystem_group %in% c("non-remnant","all_remnant")) |>
+#n3_total_area <- combined |> filter(regional_ecosystem_group %in% c("non-remnant","all_remnant")) |>
   #filter(layer == "remnant2019") |> 
-  group_by(basin, env, type, layer) |> summarise(area_km = sum(area_km)) |> 
-  mutate(regional_ecosystem_group = "total_area") |> ungroup()
+  #group_by(basin, env, type, layer) |> summarise(area_km = sum(area_km)) |> 
+  #mutate(regional_ecosystem_group = "total_area") |> ungroup()
 
 #add this also back onto main
-n3_all_df <- rbind(combined, n3_total_area)
+#n3_all_df <- rbind(combined, n3_total_area)
 
 #pivot data wider
-n3_all_df <- n3_all_df |> pivot_wider(names_from = "layer", values_from = "area_km")
+#n3_all_df <- n3_all_df |> pivot_wider(names_from = "layer", values_from = "area_km")
 
 #assign a variable as 0km^2
-a <- units::set_units(0, km^2) 
+#a <- units::set_units(0, km^2) 
 
 #replace NA values with 0
-n3_all_df <- n3_all_df |> mutate(across(c(remnant2019, pre_clear), ~replace_na(.x, a)))
+#n3_all_df <- n3_all_df |> mutate(across(c(remnant2019, pre_clear), ~replace_na(.x, a)))
 
 #calculate area and percentage change
-n3_all_df <- n3_all_df |> 
-  mutate(area_change = (remnant2019 - pre_clear)) |> 
-  mutate(percentage_change = (area_change/pre_clear)*100)
+#n3_all_df <- n3_all_df |> 
+  #mutate(area_change = (remnant2019 - pre_clear)) |> 
+  #mutate(percentage_change = (area_change/pre_clear)*100)
   
 #update the data type
-n3_all_df$percentage_change <- as.numeric(n3_all_df$percentage_change)
-
-#cleanup
-rm(temp_df, temp_df1, temp_df2, temp_df3, temp_df4)
+#n3_all_df$percentage_change <- as.numeric(n3_all_df$percentage_change)
 
 #clean up
-rm(n3_rem_sum, n3_est_focus_sum, combined, n3_total_area, a)
+#rm(n3_rem_sum, n3_est_focus_sum, combined, n3_total_area, a)
 
 ```
 
