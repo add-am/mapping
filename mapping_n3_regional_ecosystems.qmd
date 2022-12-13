@@ -512,10 +512,14 @@ test <- test |> filter(year != "2006b")
 
 
 #edit the year column and make numeric. NOTE: there will now be two 2006 layers, distinguish unique using layer name
-test <- test |> mutate(year = case_when(year == "clear" ~ "1990",
+test <- test |> mutate(year = case_when(year == "clear" ~ "1900",
                                         year == "2006b" ~ "2006",
                                         TRUE ~ year),
-                       year = as.numeric(year))
+                       year = as.numeric(year),
+                       env = case_when(env == "est" ~ "Estuarine",
+                                       TRUE ~ "Fresh"),
+                       type = case_when(type == "area" ~ "Full Area",
+                                        TRUE ~ "River Bank"))
 
 #create a seperate units column and drop units for the actual values
 test <- test |> mutate(units = "km^2") |> units::drop_units() |> rename(area = area_km)
@@ -532,7 +536,7 @@ rm(re_rem_sum, re_est_focus_sum, combined, n3_total_area, unit_set)
 #for non-remnant RE types (i.e the build environment)
 
 #get one row for each basin, env, type, year  combination
-test1 <- test |> filter(regional_ecosystem_group == "total_area", year == 1990)
+test1 <- test |> filter(regional_ecosystem_group == "total_area", year == 1900)
 
 #add a 1990 area measure of 0km^2 and rename the regional ecosystem group to "non-remnant"
 test1 <- test1 |> mutate(regional_ecosystem_group = "non-remnant", area = 0)
@@ -540,27 +544,104 @@ test1 <- test1 |> mutate(regional_ecosystem_group = "non-remnant", area = 0)
 #bind the data back to the main
 test2 <- rbind(test, test1)
 
+test2 <- test2 |> mutate(regional_ecosystem_group = case_when(regional_ecosystem_group == "non-remnant" ~ "Developed",
+                                                              regional_ecosystem_group == "all_remnant" ~ "Natural",
+                                                              regional_ecosystem_group == "focused_estuary" ~ "Estuarine",
+                                                              TRUE ~ regional_ecosystem_group),
+                         regional_ecosystem_group = fct_relevel(regional_ecosystem_group, levels = c("Natural", "Developed", "Estuarine")),
+                         year = as.factor(year))
 
-#get list of unique basins
-basin_list <- unique(test$basin)
+#get vector of unique basins
+basin_vec <- unique(test2$basin)
 
-#run loop per basin
-for (i in 1:length(basin_list)){
-  
-  #select a specific RE and basin for experimentation 
-  test3 <- test2 |> filter(basin == basin_list[i], regional_ecosystem_group %in% c("all_remnant", "non-remnant", "focused_estuary"))
-  
-  
-  ggplot(test3, aes(x = year, y = area, fill = interaction(regional_ecosystem_group))) +
-    geom_area(alpha = 0.6, size = 1, colour = "black") +
-    facet_grid(interaction(env, type) ~., scales = "free")
-  
-  #save
-  ggsave(glue("{save_path}{basin_list[i]}_vegetation_change_plot.png"))
+#a vector of unique environments
+env_vec <- unique(test2$env)
 
+#a vector of unique types
+type_vec <- unique(test2$type)
+
+
+for (i in 1:length(basin_vec)){
+  for (j in 1:length(type_vec)){
+    for (k in 1:length(env_vec)){
+      
+      df <- test2 |> filter(basin == basin_vec[i],
+                            type == type_vec[j],
+                            env == env_vec[k],
+                            year != 1900, 
+                            regional_ecosystem_group %in% c("Natural", "Developed")) |>
+        mutate(area = round(area, 2))
+      
+      if (dim(df)[1] == 0){
+        
+        print("dataframe empty, skip plot")
+        assign(glue("plot{j}_{k}"), plot_spacer())
+        
+        } else {
+          
+          plot <- ggplot(df, aes(x = year, y = area, group = regional_ecosystem_group, colour = regional_ecosystem_group)) +
+            geom_line(size = 1.5) +
+            theme_bw() +
+            theme(legend.position = "none") +
+            xlab("Year") +
+            ylab("Area (km^2)") +
+            facet_grid(interaction(regional_ecosystem_group, sep = " ") 
+                       ~ interaction(env, type, sep = " "), scales = "free")
+      
+          assign(glue("plot{j}_{k}"), plot)
+          
+        }
+    }
+  }
+  
+  final <- plot1_1 + plot1_2 + plot2_1 + plot2_2
+  
+  ggsave(glue("{save_path}{basin_list[i]}_patchwork_area_change.png"))
   
 }
 
+for (i in 1:length(basin_vec)){
+  for (j in 1:length(type_vec)){
+    for (k in 1:length(env_vec)){
+      
+      test3 <- test2 |> filter(basin == basin_vec[i], 
+                               type == type_vec[j], 
+                               env == env_vec[k], 
+                               year != "1900", 
+                               regional_ecosystem_group %in% c("Natural")) |> 
+        mutate(area = round(area, 2))
+      
+      test4 <- test3 |> group_by(regional_ecosystem_group) |> 
+        mutate(change = area - lag(area), change = replace_na(change, 0)) |> 
+        mutate(percent_change = change/lag(area)*100, percent_change = replace_na(percent_change, 0))
+
+      if (dim(test4)[1] == 0){
+        
+        print("dataframe empty, skip plot")
+        assign(glue("plot{j}_{k}"), plot_spacer())
+        
+        } else {
+          
+          plot <- ggplot(test4, aes(x = year, y = percent_change)) +
+            geom_line(size = 1.5) +
+            theme_bw() +
+            theme(legend.position = "none") +
+            xlab("Year") +
+            ylab("Percentage Loss (%)") +
+            facet_grid(interaction(regional_ecosystem_group, sep = " ") 
+                       ~ interaction(env, type, sep = " "), scales = "free")
+          
+          assign(glue("plot{j}_{k}"), plot)
+          
+        }
+    }
+  }
+  
+  final <- plot1_1 + plot1_2 + plot2_1 + plot2_2
+  
+  ggsave(glue("{save_path}{basin_list[i]}_patchwork_percent_change.png"))
+  
+}
 
 
 
