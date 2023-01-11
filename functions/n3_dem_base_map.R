@@ -97,8 +97,10 @@ n3_dem_base_map <- function(dem, region, zscale = 10, sealevel = 0, highlight = 
         #assume that the basins dataset is freely available
         islands <- st_read(dsn = "data/shapefiles/Drainage_basins.shp")
         
-        #assume that the qld dataset is freely available
-        qld <- st_read(dsn = "data/shapefiles/qld.shp")
+        #read in qld outlines data from the gisaimsr package, filter for land and islands, update crs
+        qld <- get(data("gbr_feat", package = "gisaimsr")) |> 
+          filter(FEAT_NAME %in% c("Mainland", "Island")) |> 
+          st_transform(proj_crs)
         
         #match crs
         islands <- st_transform(islands, proj_crs)
