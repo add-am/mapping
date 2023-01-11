@@ -373,13 +373,13 @@ Below is all the code needed to complete this extra step.
 #| label: create STL file
 
 #pull up the plot
-plot_3d(base_map_DT, dem_matrix_DT, zscale = 30, soliddepth = min(dem_matrix_DT)-200,
+plot_3d(base_map_DT, dem_matrix_DT, zscale = 30, soliddepth = min(dem_matrix_DT)-800,
         water = F, background = "white", shadowcolor = "grey50", 
-        shadowdepth = min(dem_matrix_DT)-400, theta = 90, phi = 35, zoom = 0.47, fov = 16, 
+        shadowdepth = min(dem_matrix_DT)-1200, theta = 90, phi = 35, zoom = 0.47, fov = 16, 
         windowsize = c(50, 50, 1920, 1080))
 
 #run the function
-save_3dprint("tester.stl", maxwidth = 4, unit = "in")
+save_3dprint("tester3.stl", maxwidth = 200, unit = "mm")
 
 
 ```
