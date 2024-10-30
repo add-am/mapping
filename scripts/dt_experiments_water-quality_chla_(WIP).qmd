@@ -1,0 +1,129 @@
+---
+title: "IMOS MODIS Satellite Data Testing"
+subtitle: "A Healthy Waters Partnership Analysis"
+description: "This script explores the possibility of using satellite data for a range of potential anaylses (vegetation, wq, climate, etc.). The outputs of this script are currently used for demonstration purposes."
+author: "Adam Shand"
+format: html
+params:
+  project_crs: "EPSG:7844"
+---
+
+# Introduction
+
+This script provides a general workflow for exploring satellite data downloaded from AODN. Data is provided by the MODIS satellite. The script demonstrates how to:
+
+ - 
+
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, sf, tmap, janitor, stars, ncmeta, ggplot2, ereefs, viridis, ggthemes)
+
+```
+
+
+
+Then we also need to set up key variables for the script, as well as the output location.
+
+```{r}
+#| label: create save path and establish project crs
+
+#set project crs
+proj_crs <- params$project_crs
+
+#create a file path to help with saving outputs
+save_outputs <- here("outputs/dt_experiments_satellite-testing/")
+
+#this script needs no downloaded data inputs
+
+#bring the path to life
+dir.create(save_outputs)
+
+#turn off s2 geometry
+sf_use_s2(FALSE)
+
+```
+
+# Load Data
+
+Now the script is set up we need to load in all of the required datasets. This will be broken into two segments:
+
+ - Spatial data specific to the N3 region - such as the region, basin, and sub basin boundaries.
+ - Satellite data from MODIS
+
+## Spatial Data
+
+Spatial data for the northern three regions should be readily available in the repo, the dataset is created by the n3_region-builder.qmd script in the repo that should be the first script run for new users. If the dataset is not available refer back to the README document in the GitHub repo. The other parts of spatial data here should go off without a hitch if the region-builder script has been run.
+
+```{r}
+#| label: load the n3 region
+
+#read in the custom function to clean column names into our specific style
+source("../functions/name_cleaning.R")
+
+#read in qld outlines data from the gisaimsr package, filter for land and islands, update crs
+qld <- get(data("gbr_feat", package = "gisaimsr")) |> 
+  name_cleaning() |> 
+  filter(FeatName %in% c("Mainland", "Island")) |> 
+  st_transform(proj_crs)
+
+#read in the northern three spatial files and reduce down to only the components we need
+n3_marine_region <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg")) |> 
+  name_cleaning() |> 
+  filter(Environment == "Marine")
+
+```
+
+## Satellite Data
+
+```{r}
+#| label: Download temperature data
+
+input_1 <- "https://thredds.aodn.org.au/thredds/dodsC/IMOS/SRS/OC/gridded/aqua/P1D/2022/06/A.P1D.20220601T053000Z.aust.chl_carder.nc"
+input_2 <- "https://thredds.aodn.org.au/thredds/dodsC/IMOS/SRS/OC/gridded/aqua/P1D/2022/06/A.P1D.20220602T053000Z.aust.chl_carder.nc"
+input_3 <- "https://thredds.aodn.org.au/thredds/dodsC/IMOS/SRS/OC/gridded/aqua/P1D/2022/06/A.P1D.20220603T053000Z.aust.chl_carder.nc"
+input_4 <- "https://thredds.aodn.org.au/thredds/dodsC/IMOS/SRS/OC/gridded/aqua/P1D/2022/06/A.P1D.20220604T053000Z.aust.chl_carder.nc"
+input_5 <- "https://thredds.aodn.org.au/thredds/dodsC/IMOS/SRS/OC/gridded/aqua/P1D/2022/06/A.P1D.20220605T053000Z.aust.chl_carder.nc"
+
+#download chla data
+carder_1 <- read_ncdf(input_1, var = "chl_carder", 
+                ncsub = cbind(start = c(start_lon, start_lat, 1),
+                              count = c(count_lon, count_lat, 1)))
+carder_2 <- read_ncdf(input_2, var = "chl_carder", 
+                ncsub = cbind(start = c(start_lon, start_lat, 1),
+                              count = c(count_lon, count_lat, 1)))
+carder_3 <- read_ncdf(input_3, var = "chl_carder", 
+                ncsub = cbind(start = c(start_lon, start_lat, 1),
+                              count = c(count_lon, count_lat, 1)))
+carder_4 <- read_ncdf(input_4, var = "chl_carder", 
+                ncsub = cbind(start = c(start_lon, start_lat, 1),
+                              count = c(count_lon, count_lat, 1)))
+carder_5 <- read_ncdf(input_5, var = "chl_carder", 
+                ncsub = cbind(start = c(start_lon, start_lat, 1),
+                              count = c(count_lon, count_lat, 1)))
+
+longitude <- read_ncdf(input_1, var = "longitude")
+latitude <- read_ncdf(input_1, var = "latitude")
+
+start_lon <- which.min(abs(as.vector(longitude$longitude) - 145.35))
+start_lat <- which.min(abs(as.vector(latitude$latitude) - -15.19))
+
+count_lon <- which.min(abs(as.vector(longitude$longitude) - 151.33)) - start_lon
+count_lat <- which.min(abs(as.vector(latitude$latitude) - -22.18)) - start_lat
+
+carder_join <- c(carder_1, carder_2, carder_3, carder_4, carder_5)
+
+carder_mean <- st_apply(carder_join, MARGIN = c("longitude", "latitude"), FUN = mean, na.rm = T)
+  
+
+test <- read_ncdf(glue("{save_data}/A.P1D.20230101T053000Z.aust.chl_oc3.nc")) |> 
+  st_transform(proj_crs)
+
+test_crop <- st_crop(test, n3_marine_region, na.rm = T)
+
+```

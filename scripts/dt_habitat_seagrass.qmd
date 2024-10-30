@@ -1,0 +1,181 @@
+---
+title: "Inshore Marine Seagrass"
+subtitle: "A Healthy Waters Partnership Analysis"
+description: "This script analyses, scores and presents seagrass data in the inshore marine environment in the Dry Tropics region.."
+author: "Adam Shand"
+format: html
+params:
+  project_crs: "EPSG:7844"
+---
+
+# Introduction
+
+This is a simple script to produce a map of sampling locations for the Seagrass Index in the Inshore Marine zone of the Dry Tropics region.
+
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, sf, tmap, janitor, dataaimsr, grid)
+
+```
+
+
+Then set the coordinate reference system and save location.
+
+```{r}
+#| label: global vars and initial setup
+
+#set crs
+proj_crs <- params$project_crs
+
+#create a file path to help with saving things
+save_path <- here("outputs/dt_habitat_seagrass/")
+
+#create a data path as well
+data_path <- here("data/dt_habitat_seagrass/")
+
+#bring that path to life
+dir.create(save_path)
+
+#turn off s2 geometry
+sf_use_s2(F)
+
+```
+
+# Load Data
+
+Next we load in the data, refer to the README in the GitHub repo if data is missing.
+
+```{r}
+#| label: load in wetland data
+
+#read in the custom function to clean column names into our specific style
+source("../functions/name_cleaning.R")
+
+#read in the northern three spatial files 
+n3_region <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg")) |> 
+  name_cleaning() 
+
+#and reduce down to only the components we need
+dt_marine <- n3_region |>  
+  filter(Region == "Dry Tropics",
+         Environment == "Marine") |> 
+  mutate(GeographicArea = case_when(GeographicArea == "Open Coastal" ~ "H.Open Coastal",
+                                     GeographicArea == "Enclosed Coastal" ~ "H.Enclosed Coastal",
+                                     T ~ GeographicArea))
+
+#get land components to help with background
+dt_land <- n3_region |>  
+  filter(Region == "Dry Tropics",
+         Environment != "Marine") |> 
+  group_by(BasinOrZone) |> 
+  summarise(geom = st_union(geom)) |> 
+  ungroup() |> st_cast() |> st_make_valid()
+
+#get only the dry tropics waterways
+dt_watercourses <- st_read(here("data/n3_prep_watercourse-builder/n3_watercourse.gpkg")) |> 
+  name_cleaning() |>
+  filter(Region == "Dry Tropics",
+         !StreamOrder %in% c(0,1))
+
+#read in qld outlines data from the gisaimsr package, filter for land and islands, update crs
+qld <- get(data("gbr_feat", package = "gisaimsr")) |> filter(FEAT_NAME %in% c("Mainland", "Island")) |> 
+  st_transform(proj_crs)
+
+#read data and update crs
+seagrass <- st_read(glue("{data_path}/dt_seagrass_2022.gpkg")) |> 
+  name_cleaning()
+
+```
+
+# Maipulate Data
+
+Before we can create the map we just need to manipulate the data bit to remove unnecessary visual clutter.
+
+```{r}
+#| label: clean up data
+
+#change a label name, and update ID col to factor and change its order
+seagrass <- seagrass |> mutate(Id = as.character(Id)) |> mutate(Id = case_when(Id == 1718 ~ "17/18",
+                                                                           T ~ Id)) |> 
+  mutate(Id = factor(Id, levels = c("3", "4", "5", "6", "10", "12", "14", "15", "16", "17/18"))) |> 
+  rename("Meadow ID" = Id)
+
+```
+
+# Create Map
+
+And finally we can produce the required maps to be used in our technical report style.
+
+```{r}
+#| label: create map
+
+#create a bbox of the entire dry tropics area
+dt_bbox <- st_bbox(dt_land)
+
+#define focus area for waterways
+focus_area <- dt_land |> 
+  filter(BasinOrZone == "Ross")
+  
+#define focus area for marine wq sites and rename column
+focus_marine <- dt_marine |> 
+  filter(BasinOrZone == "Cleveland Bay") |> 
+  rename("Geographic Area: All" = GeographicArea)
+  
+#create a box of the focus area
+focus_bbox <- st_as_sfc(st_bbox(focus_marine))
+  
+#create secondary box of the sites
+focus2_bbox <- st_buffer(st_as_sfc(st_bbox(seagrass)), 0.01)
+
+#create an inset map
+inset_map <- tm_shape(qld) +
+  tm_polygons(col = "grey80", border.col = "black") +
+  tm_shape(dt_marine, is.master = T) +
+  tm_polygons(col = "grey90", border.col = "black") +
+  tm_shape(dt_land) +
+  tm_polygons(col = "grey90", border.col = "black") +
+  tm_shape(focus_bbox) +
+  tm_borders(lwd = 2, col = "red") +
+  tm_shape(focus2_bbox) +
+  tm_borders(lwd = 2, col = "blue")
+
+#create the main map
+map <- tm_shape(focus2_bbox) +
+  tm_borders(alpha = 0) +
+  tm_shape(qld) +
+  tm_polygons(col = "grey80", border.col = "black") +
+  tm_shape(dt_marine) +
+  tm_polygons(col = "white", border.col = "black") +
+  tm_shape(focus_marine) +
+  tm_polygons(col = "grey90", border.col = "grey90") +
+  tm_shape(dt_land) +
+  tm_polygons(col = "grey90", border.col = "black") +
+  tm_shape(focus_marine) +
+  tm_polygons(col = "Geographic Area: All", border.col = "black", alpha = 0.3, palette = "Pastel1") +
+  tm_shape(dt_watercourses) +
+  tm_lines(col = "dodgerblue") +
+  tm_shape(dt_watercourses) +
+  tm_polygons(col = "aliceblue", border.col = "dodgerblue") +
+  tm_shape(seagrass) +
+  tm_polygons(col = "Meadow ID", palette = "Set3", border.col = "black", legend.show = F) +
+  tm_text("Meadow ID", shadow = T, auto.placement = T, size = 1.5) +
+  tm_layout(legend.bg.color = "white", legend.frame = "black", asp = 1.1)
+
+#figure out the aspect of the inset map and the view port
+asp2 <- (dt_bbox$ymax - dt_bbox$ymin)/(dt_bbox$xmax - dt_bbox$xmin)
+w <- 0.2
+h <- asp2 * w
+vp <- viewport(x = 0.98, y = 1, width = w, height = h, just = c("right", "top"))
+
+#save map
+tmap_save(map, filename = glue("{save_path}/inshore-marine_seagrass.png"),
+          insets_tm = inset_map, insets_vp = vp)
+
+```
+

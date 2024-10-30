@@ -1,0 +1,17 @@
+Region,Zone,Sub_Zone,Geographic_Area,Chla,TSS,FRP,NOX,PN,PP,Secchi,Turbidity,TN,TP,Nutrients,Phys_Chem,overall_wq,Chla_Grade,TSS_Grade,FRP_Grade,NOX_Grade,PN_Grade,PP_Grade,Secchi_Grade,Turbidity_Grade,TN_Grade,TP_Grade,Nutrients_Grade,Phys_Chem_Grade,overall_wq_Grade
+DT,Halifax Bay,Midshelf,Midshelf,53,76,96,55,32,82,7,100,NA,NA,56,61,57,C,B,A,C,D,A,E,A,NA,NA,C,B,C
+DT,Halifax Bay,HB.Open Coastal,H.Open Coastal,74,71,94,97,18,76,0,77,NA,NA,64,49,62,B,B,A,A,E,B,E,B,NA,NA,B,C,B
+DT,Cleveland Bay,Magnetic Island,Magnetic Island,83,84,100,23,3,36,74,80,NA,NA,20,79,61,A,A,A,D,E,D,B,B,NA,NA,E,B,B
+DT,Cleveland Bay,CB.Enclosed Coastal,EC.Outside Port Zone,81,7,100,100,NA,NA,83,0,100,100,100,30,70,A,E,A,A,NA,NA,A,E,A,A,A,D,B
+DT,Cleveland Bay,CB.Open Coastal,OC.Outside Port Zone,NA,53,100,NA,NA,NA,39,39,81,100,100,44,72,NA,C,A,NA,NA,NA,D,D,A,A,A,C,B
+DT,Cleveland Bay,CB.Open Coastal,OC.Inside Port Zone,NA,100,100,100,NA,NA,100,100,100,100,100,100,100,NA,A,A,A,NA,NA,A,A,A,A,A,A,A
+DT,Halifax Bay,HB.Enclosed Coastal,H.Enclosed Coastal,100,73,100,100,NA,NA,NA,57,NA,100,100,65,88,A,B,A,A,NA,NA,NA,C,NA,A,A,B,A
+DT,Cleveland Bay,CB.Enclosed Coastal,EC.Inside Port Zone,NA,100,100,100,NA,NA,92,100,99,100,100,97,98,NA,A,A,A,NA,NA,A,A,A,A,A,A,A
+DT,Cleveland Bay,CB.Enclosed Coastal,NA,81,53,100,100,NA,NA,87,50,99,100,100,63,81,A,C,A,A,NA,NA,A,C,A,A,A,B,A
+DT,Cleveland Bay,CB.Open Coastal,NA,NA,76,100,100,NA,NA,69,69,90,100,100,72,86,NA,B,A,A,NA,NA,B,B,A,A,A,B,A
+DT,Cleveland Bay,Magnetic Island,NA,83,84,100,23,3,36,74,80,NA,NA,20,79,61,A,A,A,D,E,D,B,B,NA,NA,E,B,B
+DT,Halifax Bay,HB.Enclosed Coastal,NA,100,73,100,100,NA,NA,NA,57,NA,100,100,65,88,A,B,A,A,NA,NA,NA,C,NA,A,A,B,A
+DT,Halifax Bay,HB.Open Coastal,NA,74,71,94,97,18,76,0,77,NA,NA,64,49,62,B,B,A,A,E,B,E,B,NA,NA,B,C,B
+DT,Halifax Bay,Midshelf,NA,53,76,96,55,32,82,7,100,NA,NA,56,61,57,C,B,A,C,D,A,E,A,NA,NA,C,B,C
+DT,Cleveland Bay,NA,NA,82,69,100,80,3,36,77,64,95,100,84,70,78,A,B,A,B,E,D,B,B,A,A,A,B,B
+DT,Halifax Bay,NA,NA,76,74,96,84,25,79,3,78,NA,100,73,58,69,B,B,A,A,D,B,E,B,NA,A,B,C,B

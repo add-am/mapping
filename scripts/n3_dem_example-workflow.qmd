@@ -1,0 +1,585 @@
+---
+title: "Northern Three Spatial Analyses (Digital Elevation Models - Example Workflow)"
+author: "Adam Shand"
+date: "`r format(Sys.time(), '%d, %B, %Y')`" 
+format: html
+params:
+  dataset_resolution: 30
+  project_crs: "EPSG:7844"
+---
+
+::: {.callout-tip}
+## R Version
+For R session info at the time of rendering this script see @sec-sessioninfo.
+:::
+
+# Introduction
+
+This script contains the methods used to wrangle, analyse and present digital elevation model (DEM) data in the Northern Three regions. For a guide on downloading DEM data refer to the README document for the Spatial Analysis GitHub repo.
+
+Digital Elevation data is not currently used within the technical report for any of the northern three regions, and was originally used only for the Hydrology and Hydrodynamics StoryMap created by the Dry Tropics partnership. However the products that can be created using DEM data make for excellent communications material. Therefore this script has been adapted to provide a more general overview and workflow. The main objectives of this script are to:
+
+ - Merge and cut down the 30m resolution DEM data to the N3 region.
+ - Cut down the 100m resolution DEM data to the N3 region.
+ - Provide a framework for creating DEM models in a chosen area.
+ - Show the framework in action, key components include:
+    + Multiple methods to establish an area of interest.
+    + A function to convert the area of interest into the base components for a 3D model.
+    + Examples of visual/aesthetic alterations possible including adjusting sea level, adding highlights, adding polygons and lines, adding labels for points of interest, and changing camera perspective/angle.
+    + Saving static images and videos of the model.
+    + Saving an STL version of the model (file used for 3D printing).
+
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, janitor, sf, tmap, raster, terra, rayshader)
+
+```
+
+
+We also need to set up key variables for the script such as where we are going to save the outputs, and what coordinate reference system (crs) we are going to be using. Note that the crs is first established under 'params' at the start of the script.
+
+```{r}
+#| label: establish global controls and settings
+#| output: false
+
+#set project variables
+proj_crs <- params$project_crs
+
+#create a file path to help with saving things
+save_path <- here("outputs/n3_dem_example-workflow/")
+
+#bring that path to life
+dir.create(save_path)
+
+#turn of spherical geometry
+sf_use_s2(FALSE)
+
+```
+
+# Load Data
+
+Now the script is set up we need to load in all of the required datasets. This will be broken into two segments:
+- Spatial data specific to the N3 region - such as the region, basin, and sub basin boundaries.
+- Digital Elevation Model (DEM) data
+
+## Spatial Data
+
+Spatial data for the northern three regions should be readily available in the repo, the dataset is created by the n3_region-builder.qmd script in the repo that should be the first script run for new users. If the dataset is not available refer back to the README document in the GitHub repo. The other parts of spatial data here should go off without a hitch if the region-builder script has been run.
+
+```{r}
+#| label: load N3 spatial data
+
+library(sf)
+library(here)
+
+#read in the northern three spatial files
+n3_region <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg")) |> 
+  filter(is.na(stream_order))
+
+#get a bounding box of the n3 region then convert it into a spatVect for later
+n3_box <- st_as_sfc(st_bbox(n3_region)) |> terra::vect()
+
+```
+
+## DEM data
+
+The original DEM data that is downloaded from the AUS Seabed portal is extremely large. The 30m resolution data set is so large that the data is actually provided in four separate files. Before we can begin creating models using this data we first need to combine the four 30m files, then cut both the 30m and 100m datasets down to only the N3 region (land and marine). This is completed using the custom built `dem_data_pre_processing.R` function.
+
+We can then extend on this function with two additional inputs:
+
+ - SpatVec, defaults to NA, accepts the SpatVector data type.
+ - name, defaults to NA, accepts the character data type.
+ - save, defaults to NA, accepts the character data type.
+ - resolution, defaults to NA, accepts either "30", or "100" (as character or numeric).
+ - reload, defaults to NA, accepts the Boolean T/F data type.
+ 
+The SpatVec input is the ability to provide the function with an additional, smaller, area in which to crop the data down to. The perk of this is that it allows for reruns to occur much quicker as any additional cropping (which takes time) has already been done.
+
+The name input is the character text used to save/load the resulting additional crop, if an additional crop was requested.
+
+The save input is the character text of the file path to the folder in which you want to save your output.
+
+The resolution input is the dataset you want, either the 100m dataset or the 30m dataset. Accepts character or numeric because I will force it to be character later on.
+
+The reload input is a T/F Boolean that determines if the user intends to reload the data or if they want to create a new copy/overwrite an existing copy.
+
+Note that regardless of the inputs, the entire N3 region dataset will also be created/checked if exists. If you put no inputs, only the N3 region dataset will also be created/checked if exists.
+
+:::{.callout-note}
+The initial merge, cut down, and save process will take a significant chunk of time. Go make a coffee or something.
+:::
+
+```{r}
+#| label: load and cut down DEM datasets
+
+#read in the function
+source(here("functions/dem_data_pre_processing.R"))
+
+#use the function, refer to text chuck above for guidance.
+dem_data_pre_processing()
+
+```
+
+:::{.callout-note}
+Please note that the cut down dataset is still so large that R will do a memory saving technique when reading in the dataset. Basically it will load the bare minimum metadata to create an object in the global environment, but not read in any of the raw values. To get the values read into memory you have to "request" them by using functions that cannot be answered with only the metadata, e.g. setMinMax().
+:::
+
+For example:
+
+```{r}
+#| label: demonstrate the error
+
+minmax(n3_100m_dem)
+
+```
+
+And after forcing values into memory:
+
+```{r}
+#| label: force values into memory
+
+#set the min and max values for each
+setMinMax(n3_100m_dem)
+setMinMax(n3_30m_dem)
+
+minmax(n3_100m_dem)
+
+```
+
+# Visualise Data
+
+As mentioned above, there are no specific visualizations that currently need to be achieved by this script. Rather, the following visualization component will provide a general overview and demonstration on how to create a DEM model for a chosen area.
+
+:::{.callout-note}
+Please note that creating the initial 3D matrix and 3D array will take a significant amount of time, even for smaller maps at lower resolutions - please give the script time to run. Further, there are limits to the extent of maps, for example, even if you are willing to wait for multiple days, creating a single map of the entire great barrier reef will crash your computer. Be reasonable in the spatial extent you are looking for.
+:::
+
+## Establish Area of Interest
+
+The below code chunk demonstrates two (and a half) methods of defining your area of interest, you can either:
+
+ - Create a bounding box (rectangular) around your location using;
+    + Coordinates taken from a map (e.g. Google Maps)
+    + An sf object in the global environment
+ - Or, use an sf object (polygon) to trim(mask()) your area of interest - noting that this will produce an irregular shape.
+ 
+An important thing to remember her is that the DEM data is stored as the "SpatRaster" type in the global environment. A SpatRaster can only be cropped by a SpatVector. So everything we are doing here we need to convert into a SpatVector at the end. (The "Spat..." types are part of the terra package).
+
+```{r}
+#| label: demonstrate methods of defining area of interest
+
+#make a set of coords for a bbox from a single coord point
+example <- c(146.6038, -18.7326)
+
+coords_from_point <- function(numeric_pair, area = 0.15){
+  
+  coord_out <- st_polygon(list(cbind(c(numeric_pair[1] - area/2, numeric_pair[1] - area/2, 
+                                       numeric_pair[1] + area/2, numeric_pair[1] + area/2, 
+                                       numeric_pair[1] - area/2), 
+                                    c(numeric_pair[2] + area/2, numeric_pair[2] - area/2, 
+                                      numeric_pair[2] - area/2, numeric_pair[2] + area/2, 
+                                      numeric_pair[2] + area/2)))) |> st_sfc(crs = proj_crs)
+  
+}
+
+coord <- coords_from_point(example)
+
+#then convert to SpatVector
+coord_vect <- vect(coord)
+
+#using an sf object to get a bounding box
+sf_bbox <- st_as_sfc(st_bbox(filter(n3_region, region == "Dry Tropics"))) 
+
+#then converting to a SpatVector
+sf_bbox_vect <- vect(sf_bbox)
+
+#directly using an sf object
+sf <- n3_region |> filter(region == "Dry Tropics")
+
+#then converting to a SpatVector
+sf_vect <- vect(sf)
+
+```
+
+And here is how each of those look. Note that I am plotting the sf versions of these shapes as I detest trying to map using SpatVectors - they are not recognized by any of the major mapping programs and the native terra mapping is... underwhelming.
+
+The red box might be a bit hard to see, but is around magnetic island.
+
+```{r}
+#| label: show each of the areas of interest
+
+tm_shape(sf_bbox) +
+  tm_borders(col = "blue") +
+  tm_shape(sf) +
+  tm_borders(col = "orange") +
+  tm_shape(coord) +
+  tm_borders(col = "red")
+
+#clean up
+rm(sf_bbox, sf, coord)
+
+```
+
+## Cut DEM to Area
+
+Once we have a SpatVector that defines our area of interest we then cut the DEM data to that area. The method is the same no matter how the area of interest was defined, as long as the DEM is a SpatRaster and the cutting shape is a SpatVector we can just use trim(mask(). Where mask replaces all cells outside our area with NA, and trim removes NA cells from the dataset. This step can take a bit of time.
+
+```{r}
+#| label: cut to area
+
+area_30m_dem <- trim(mask(n3_30m_dem, coord_vect))
+
+```
+
+## Create Base Elements
+
+The next step is to convert the SpatRaster into the base components needed for a 3D model. A function called `dem_base_map()` has been created to help in this process, and will handle the base map elements creation. When the function is run, a matrix, and an array are created. This matrix-array can take quite a while to create so the objects are added to the global R environment and saved to your computer. When coming back to create/recreate a map you might find a previous matrix-array set has already been completed for your area - saving a significant amount of time. A general overview of the `dem_base_map()` function is as follows:
+
+`dem_base_map(SpatRast, sea_level = 0, z_scale, name, save, reload = FALSE)`, where:
+
+ - SpatRas:
+    + Is the data that you want to create a 3D map for.
+    + Must be of SpatRaster type.
+ - sea_level:
+    + Is the height at which water elements are drawn. 
+    + Has a default value of 0 (i.e. current sea level).
+    + Must be of numeric type.
+    + Can be raised/lowered to simulate ice ages and floods etc (must not be used for official flood modelling).
+ - z_scale:
+    + The ratio between the x and y spacing and the z axis. E.g., if the elevation is in meters and the grid values are separated by 30 meters, 'z_scale' would be 30 (for realistic topography). 
+    + Must be of numeric type.
+    + Decreasing the z_scale will exaggerate the z axis (height).
+ - save:
+    + The path to the desired save location. Note, a new folder will be created at this location.
+    + Must be of character type.
+ - name:
+    + The name of all outputs. Outputs produced are a matrix, and an array.
+    + Must be of character type.
+ - resolution:
+    + The dataset to use - either 30m resolution or 100m resolution. Can be either numeric or character type
+    + A good tip is to set the zscale at roughly half the resolution.
+ - reload:
+    + Should a previous matrix-array combination attempt to be loaded?
+    + Has a default value of FALSE
+    + Must be of Boolean (TRUE/FALSE) type.
+    + The `name` variable of the `n3_dem_base()` function must match the files attempting to be loaded. E.g. if the saved files are "alpha_array" and "alpha_matrix"  then name = "alpha".
+    
+    
+The code chunk below demonstrates usage of this function.
+
+```{r}
+#| label: create base map elements using function
+
+#read in the function
+source(here("functions/n3_dem_base.R"))
+
+#use the function, refer to text chuck above for guidance.
+n3_dem_base(area_30m_dem, sea_level = -10, z_scale = 15, name = "magnetic_island", save = save_path, resolution = 30, reload = F)
+
+```
+
+This function shouldn't need to be edited unless it breaks. If so, the best way to learn about the function is to go and read above the underlying R packages that the function uses [here](https://www.tylermw.com/).
+
+## Create A Map
+
+Once an array and matrix have been created a 3D map can be made from the objects as follows:
+
+```{r}
+#| label: plot the 3D map
+
+#plot map, note zscale follows the same rules as the function above.
+plot_3d(magnetic_island_array, magnetic_island_matrix, windowsize = c(50, 50, 1920, 1080), zscale = 15,
+        theta = 45.54, phi = 36.77, fov = 0, zoom = 0.61)
+
+```
+
+And we can use render_snapshot() to show how that looks in this rendered document.
+
+```{r}
+#| label: show the rgl window
+
+#render the currently visible rgl window to the document.
+render_snapshot()
+
+```
+
+Then close the rgl window.
+
+```{r}
+#| label: close the rgl window
+
+#close the rgl window
+rgl::close3d()
+
+```
+
+## Customisations
+
+Thanks to the flexibility of the custom function and the underlying rayshader package there are several customisations we can implement after the heavy processing has already been done. Some examples of additional features/customisations are:
+
+-   Area outlines and highlights can be added.
+-   Rivers can be added.
+-   City/Town/POI labels can be added.
+-   Camera position can be changed.
+-   Image ratio can be adjusted.
+
+However, there are a few exceptions to what is customisable (and therefore what must be adjusted back up at the custom function above), major exceptions are:
+
+ - The sea level height.
+ - The actual area of interest.
+
+### Outlines and Highlights
+
+In this code chunk we demonstrate how sf objects (polygons specifically) can be added to the base map. These objects can be used for things such as delineation an area, or darkening surrounding areas to make the focus seem highlighted.
+
+```{r}
+#| label: demonstrate addition of overlays and highlights
+
+#create a sf polygon
+maggie <- n3_region |> filter(sub_basin_or_sub_zone == "Magnetic Island")
+
+#create an inverted version of the above polygon to darken the surrounding area
+not_maggie <- n3_region |> filter(sub_basin_or_sub_zone != "Magnetic Island")
+
+#get the extent using the original SpatVector that defines the area of interest - this tells the overlay where to put itself
+maggie_extent <- ext(coord_vect)
+
+#create some overlays
+maggie_overlay_1 <- generate_polygon_overlay(maggie, extent = maggie_extent,
+                                             magnetic_island_matrix, palette = "transparent",
+                                             linecolor = "black", linewidth = "2")
+maggie_overlay_2 <- generate_polygon_overlay(maggie, extent = maggie_extent,
+                                             magnetic_island_matrix, palette = "transparent",
+                                             linecolor = "white", linewidth = "1.5")
+maggie_overlay_3 <- generate_polygon_overlay(not_maggie, extent = maggie_extent,
+                                             magnetic_island_matrix, palette = "black",
+                                             linecolor = "black", linewidth = "0")
+
+#add the overlays
+magnetic_island_array <- magnetic_island_array |> 
+  add_overlay(maggie_overlay_1) |>
+  add_overlay(maggie_overlay_2) |> 
+  add_overlay(maggie_overlay_3, alphalayer = 0.6)
+
+#re run the 3d map
+plot_3d(magnetic_island_array, magnetic_island_matrix, windowsize = c(50, 50, 1920, 1080), zscale = 15,
+        theta = 45.54, phi = 36.77, fov = 0, zoom = 0.61)
+
+```
+
+Heres how that would look:
+
+```{r}
+#| label: show the map
+
+#render the currently visible rgl window to the document.
+render_snapshot()
+
+```
+
+```{r}
+#| label: close the rgl window 1
+
+#close the rgl window
+rgl::close3d()
+
+```
+
+### Rivers
+
+Next we will look at how sf objects that are lines (such as rivers and roads) can be added to the base map. We will take advantage of the osmdata package to get some rivers in the area to demonstrate.
+
+```{r}
+#| label: demonstrate how line data can be added
+
+#using the extent we calculated earlier create an osm friendly version (order is 1,3,2,4)
+osm_ext <- c(maggie_extent[1], maggie_extent[3], maggie_extent[2], maggie_extent[4])
+
+#query the osm database for waterways
+waterways <- opq(osm_ext, timeout = 100) |> add_osm_feature("waterway") |> osmdata_sf()
+      
+#transform and filter data to only get line data
+waterways <- st_transform(waterways$osm_lines, crs = crs(proj_crs))
+
+#crop waterways to only within focus region
+#waterways <- st_intersection(waterways, st_as_sf(coord_vect))
+
+#create some overlays
+river_overlay_1 <- generate_line_overlay(waterways, extent = maggie_extent,
+                                             magnetic_island_matrix, color = "dodgerblue",
+                                             linewidth = "1")
+
+#add the overlay
+magnetic_island_array <- magnetic_island_array |> 
+  add_overlay(river_overlay_1)
+
+#re run the 3d map
+plot_3d(magnetic_island_array, magnetic_island_matrix, windowsize = c(50, 50, 1920, 1080), zscale = 15,
+        theta = 45.54, phi = 36.77, fov = 0, zoom = 0.61)
+
+```
+
+And below is the outcome.
+
+```{r}
+#| label: show the river map
+
+#render the currently visible rgl window to the document.
+render_snapshot()
+
+```
+
+```{r}
+#| label: close the rgl window 2
+
+#close the rgl window
+rgl::close3d()
+
+```
+
+### Labels
+
+Labels are another great thing to add to a map, below we explore how to coordinate point coords into labels. A key difference for adding labels is that the rgl window must be open before the labels are added, rather than after. The map above is before,
+
+```{r}
+#| label: add labels to the map
+
+#re run the 3d map
+plot_3d(magnetic_island_array, magnetic_island_matrix, windowsize = c(50, 50, 1920, 1080), zscale = 15,
+        theta = 45.54, phi = 36.77, fov = 0, zoom = 0.61)
+
+#use this to clear any labels
+render_label(clear_previous = TRUE)
+
+#using random coord points on maggie
+render_label(magnetic_island_matrix, lat = -19.1398, long = 146.81719, extent = maggie_extent,
+             altitude = 3000, zscale = 15, linewidth = 2, linecolor = "white", textsize = 1.5, 
+             text = "Somewhere on Magnetic Island")
+
+#create a second label for black outline of the label line
+render_label(magnetic_island_matrix, lat = -19.1398, long = 146.81719, extent = maggie_extent,
+             altitude = 3000, zscale = 15, linewidth = 4, textalpha = 0,
+             text = "Somewhere on Magnetic Island")
+
+```
+
+And this map is after.
+
+```{r}
+#| label: show the label map
+
+#render the currently visible rgl window to the document.
+render_snapshot()
+
+```
+
+```{r}
+#| label: close the rgl window 3
+
+#close the rgl window
+rgl::close3d()
+
+```
+
+### Camera Position
+
+A final trick regarding changing the aesthetic/visuals of the map is that either in the rgl window, or in the initial plotting function the camera angle can be changed, set, and "got":
+
+```{r}
+#| label: camera angles
+
+#open the rgl window with a different angle
+plot_3d(magnetic_island_array, magnetic_island_matrix, windowsize = c(50, 50, 1920, 1080), zscale = 15,
+        theta = 90, phi = 36.77, fov = 0, zoom = 0.61)
+
+#render the currently visible rgl window to the document.
+render_snapshot()
+
+```
+
+```{r}
+#| label: close the rgl window 4
+
+#get the current angles of the camera
+render_camera()
+
+#close the rgl window
+rgl::close3d()
+
+```
+
+## Save A Map
+
+Once you are happy with the map, it is time to save. This is a fairly standard procedure and uses the `render_snapshot()` function. Note that the rgl window has to be open to save (and that labels have to be added to the rgl window before saving - they cant be saved to the underlying array and matrix).
+
+```{r}
+#| label: save the map
+
+#re run the 3d map
+plot_3d(magnetic_island_array, magnetic_island_matrix, windowsize = c(50, 50, 1920, 1080), zscale = 15,
+        theta = 45.54, phi = 36.77, fov = 0, zoom = 0.61)
+
+#save the map
+render_snapshot(glue("{save_path}/magnetic_island_example"))
+
+#close the rgl window
+rgl::close3d()
+
+```
+
+There is also the option of creating a gif or mp4 of the 3D map, such as of it spinning:
+
+:::{.callout-note}
+This code chunk is not run due to the significant time cost.
+:::
+
+```{r}
+#| label: show render option
+
+#render_movie(glue("{save_path}/magnetic_island_example.mp4", frames = 90, fps = 12)
+
+```
+
+## Print A Map
+
+One final thing that is possible using this rayshader package is to export the 3D map as an STL file. What is an STL file? It is the file type that 3D printers use. Yes, these maps can literally be printed! :)
+
+The code below exports the map as an STL file, make sure to chat with your local 3D printing company on exactly how they want things (for example a bigger base is usually needed for stability), happy printing.
+
+``` {r}
+#| label: create STL file
+
+#resize the file to be much smaller
+magnetic_island_matrix <- resize_matrix(magnetic_island_matrix, scale = 0.3)
+
+#pull up the plot
+plot_3d(magnetic_island_array, magnetic_island_matrix, windowsize = c(50, 50, 1920, 1080), zscale = 30,
+        theta = 45.54, phi = 36.77, fov = 0, zoom = 0.61)
+
+#export the STL
+save_3dprint(glue("{save_path}/magnetic_island_example.stl"), maxwidth = 100, unit = "mm")
+
+#close the rgl window
+rgl::close3d()
+
+```
+
+And with that, the script is complete. Have fun modelling!
+
+# Session Info {#sec-sessioninfo}
+
+Below is the session info at the time of rendering this script. Of greatest importance is to note the R version, and the "other attached packages" as these are the most significant drivers of success/failure. It is also good to check the "attached base packages" and "loaded via a namespace" packages as well. To check your session info use `sessionInfo()`.
+
+```{r}
+#| label: show session info
+
+sessionInfo()
+
+```
+

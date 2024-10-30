@@ -1,0 +1,89 @@
+unique(relevant_eras$era)
+Non-Scheduled; Mining Activity - Exploration Permit Mineral (EPM)
+"ERA 16 - Extraction and Screening; 1(a) - Dredging, in a year, the following quantity of material - 1000t to 10,000t"
+ERA 01 - Aquaculture; 1(b) - Cultivating or holding crustaceans in enclosures that are on land and have a total area of more than 10ha but not more than 100ha
+"ERA 16 - Extraction and Screening; 1(b) - Dredging, in a year, the following quantity of material - more than 10,000t but not more than 100,000t"
+"ERA 62 - Resource recovery and transfer facility operation; 1(b) - Operating a facility for receiving and sorting, dismantling, baling or temporarily storing general waste"
+"ERA 62 - Resource recovery and transfer facility operation; 1(c) - Operating a facility for receiving and sorting, dismantling, baling or temporarily storing category 2 regulated waste"
+"ERA 01 - Aquaculture; 2(a) - Cultivating or holding marine, estuarine or freshwater organisms, other than crustaceans, in enclosures that are on land and have a total area of more than 100 square metres but not more than 10ha"
+"ERA 60 - Waste disposal; 2(a) - Operating a facility for disposing of, in a year, the following quantity of waste mentioned in subsection (1)(b) - less than 2000t"
+"ERA 27 - Seafood processing; Seafood processing (the relevant activity) consists of processing, in a year, 500t or more of seafood or seafood products"
+"Schedule 3; 09 - A mining activity involving drilling, costeaning, pitting or carrying out geological surveys causing significant disturbance"
+"Ancillary 08 - Chemical Storage; 1 - Storing a total of 50t or more of chemicals of dangerous goods class 1 or class 2, division 2.3 under subsection (1)(a)"
+"Ancillary 60 - Waste disposal; 1(a) - Operating a facility for disposing of, in a year, the following quantity of waste mentioned in subsection (1)(a) - less than 50,000t"
+"Ancillary 30 - Metal smelting and refining; 1(a) - Processing, in a year, 1t to 100t of gold"
+"Ancillary 63 - Sewage Treatment; 1(a-i) - Operating sewage treatment works, other than no-release works, with a total daily peak design capacity of 21 to 100EP - if treated effluent is discharged from the works to an infiltration trench or through an irri"
+"Ancillary 63 - Sewage Treatment; 1(b-i) - Operating sewage treatment works, other than no-release works, with a total daily peak design capacity of more than 100 but not more than 1500EP if treated effluent is discharged from the works to an infiltration "
+"Ancillary 62 - Resource recovery and transfer facility operation; 1(c) - Operating a facility for receiving and sorting, dismantling, baling or temporarily storing category 2 regulated waste"
+"Ancillary 63 - Sewage Treatment; 1(d) - Operating sewage treatment works, other than no-release works, with a total daily peak design capacity of more than 4000 but not more than 10,000EP"
+"Schedule 3; 10 - Investigating the potential development of a mineral resource by large bulk sampling or constructing an exploratory shaft, adit or open pit"
+Schedule 3; 13 - Mining black coal
+Schedule 3; 16 - Mining gold ore
+"Ancillary 08 - Chemical Storage; 2 - Storing 50t or more of chemicals of dangerous goods class 6, division 6.1 under subsection (1)(b)"
+"Ancillary 31 - Mineral processing; 2(b) - Processing, in a year, the following quantities of mineral products, other than coke - more than 100,000t"
+"Ancillary 16 - Extraction and Screening; 2(c) - Extracting, other than by dredging, in a year, the following quantity of material - more than 1,000,000t"
+"Ancillary 60 - Waste disposal; 2(h) - Operating a facility for disposing of, in a year, the following quantity of waste mentioned in subsection (1)(b) - more than 200,000t"
+Ancillary 08 - Chemical Storage; 3 - Storing more than 500 cubic metres of chemicals of class C1 or C2 combustible liquids under AS 1940 or dangerous goods class 3 under subsection (1)(c)
+Ancillary 64 - Water treatment; 3 - Treating 10ML or more raw water in a day
+"Ancillary 08 - Chemical Storage; 4 - storing 200t or more of chemicals that are solids or gases, other than chemicals mentioned in items 1 to 3, under subsection (1)(d)"
+"Ancillary 08 - Chemical Storage; 5 - storing 200 cubic metres or more of chemicals that are liquids, other than chemicals mentioned in items 1 to 3, under subsection (1)(d)"
+Non-Scheduled; Mining Activity - Exploration Permit Coal (EPC)
+Non-Scheduled; Mining Activity - Mineral Development Licence (MDL)
+Non-Scheduled; Mining Activity - Mining Claim (MC)
+Non-Scheduled; Mining Activity - Mining Lease (ML)
+Ancillary 15 - Fuel burning; Using fuel burning equipment that is capable of burning at least 500kg of fuel in an hour
+"ERA 63 - Sewage Treatment; 1(a-i) - Operating sewage treatment works, other than no-release works, with a total daily peak design capacity of 21 to 100EP - if treated effluent is discharged from the works to an infiltration trench or through an irrigation"
+"ERA 16 - Extraction and Screening; 2(a) - Extracting, other than by dredging, in a year, the following quantity of material - 5,000t to 100,000t"
+"ERA 16 - Extraction and Screening; 2(b) - Extracting, other than by dredging, in a year, the following quantity of material - more than 100,000t but not more than 1,000,000t"
+"ERA 60 - Waste disposal; 2(b) - Operating a facility for disposing of, in a year, the following quantity of waste mentioned in subsection (1)(b) - 2,000t to 5,000t"
+"ERA 16 - Extraction and Screening; 3(a) - Screening, in a year, the following quantity of material - 5,000t to 100,000t"
+"ERA 16 - Extraction and Screening; 3(b) - Screening, in a year, the following quantity of material - more than 100,000t but not more than 1,000,000t"
+Non-Scheduled; Petroleum Activity - Authority to Prospect (ATP)
+"ERA 16 - Extraction and Screening; 2(c) - Extracting, other than by dredging, in a year, the following quantity of material - more than 1,000,000t"
+ERA 06 - Asphalt manufacturing; 1 - Manufacturing more than 1000t of asphalt in a year
+"ERA 16 - Extraction and Screening; 3(c) - Screening, in a year, the following quantity of material - more than 1,000,000t"
+"Ancillary 63 - Sewage Treatment; 1(b-ii) - Operating sewage treatment works, other than no-release works, with a total daily peak design capacity of more than 100 but not more than 1500EP - otherwise"
+"Ancillary 62 - Resource recovery and transfer facility operation; 1(d) - Operating a facility for receiving and sorting, dismantling, baling or temporarily storing category 1 regulated waste"
+Schedule 3; 17 - Mining copper ore
+"Schedule 3; 18 - Mining lead, silver or zinc separately or in any combination"
+"Schedule 3; 19 - Mining metal ore, other than a metal ore mentioned in items 11, 12, 14, 15, 16,17 or 18"
+"Ancillary 16 - Extraction and Screening; 2(b) - Extracting, other than by dredging, in a year, the following quantity of material - more than 100,000t but not more than 1,000,000t"
+"Ancillary 60 - Waste disposal; 2(d) - Operating a facility for disposing of, in a year, the following quantity of waste mentioned in subsection (1)(b) - more than 10,000t but not more than 20,000t"
+"Ancillary 60 - Waste disposal; 2(e) - Operating a facility for disposing of, in a year, the following quantity of waste mentioned in subsection (1)(b) - more than 20,000t but not more than 50,000t"
+"Ancillary 33 - Crushing, milling, grinding or screening; Crushing, grinding, milling or screening more than 5000t of material in a year"
+"ERA 63 - Sewage Treatment; 1(d) - Operating sewage treatment works, other than no-release works, with a total daily peak design capacity of more than 4000 but not more than 10,000EP"
+ERA 64 - Water treatment; 3 - Treating 10ML or more raw water in a day
+"Schedule 3; 08 - A petroleum or GHG storage activity, other than items 1 to 7, that includes an activity from Schedule 2 with an AES"
+"Ancillary 62 - Resource recovery and transfer facility operation; 1(a) - Operating a facility for receiving and sorting, dismantling, baling or temporarily storing scrap metal, non-putrescible waste or green waste only"
+"Ancillary 63 - Sewage Treatment; 1(a-ii) - Operating sewage treatment works, other than no-release works, with a total daily peak design capacity of 21 to 100EP - otherwise"
+"Ancillary 62 - Resource recovery and transfer facility operation; 1(b) - Operating a facility for receiving and sorting, dismantling, baling or temporarily storing general waste"
+"Ancillary 60 - Waste disposal; 3(d) - Operating a facility for disposing of, in a year, the following quantity of waste mentioned in subsection (1)(c) - more than 200,000t"
+"ERA 63 - Sewage Treatment; 1(b-i) - Operating sewage treatment works, other than no-release works, with a total daily peak design capacity of more than 100 but not more than 1500EP if treated effluent is discharged from the works to an infiltration trench"
+"ERA 16 - Extraction and Screening; 1(c) - Dredging, in a year, the following quantity of material - more than 100,000t but not more than 1,000,000t"
+"ERA 63 - Sewage Treatment; 1(c) - Operating sewage treatment works, other than no-release works, with a total daily peak design capacity of more than 1500 but not more than 4000EP"
+"ERA 60 - Waste disposal; 2(e) - Operating a facility for disposing of, in a year, the following quantity of waste mentioned in subsection (1)(b) - more than 20,000t but not more than 50,000t"
+ERA 28 - Sugar milling or refining; Crushing or grinding 200t or more of sugar cane in a year or manufacturing 200t or more of sugar or other sugarcane products in a year
+"Ancillary 60 - Waste disposal; 1(d) - Operating a facility for disposing of, in a year, the following quantity of waste mentioned in subsection (1)(a) - more than 200,000t"
+"Ancillary 64 - Water treatment; 2(a) - Desalinating, in a day, the following quantity of water, allowing the release of waste to waters other than seawater - 0.5ML to 5ML"
+"Ancillary 60 - Waste disposal; 2(a) - Operating a facility for disposing of, in a year, the following quantity of waste mentioned in subsection (1)(b) - less than 2000t"
+"Ancillary 31 - Mineral processing; 2(a) - Processing, in a year, the following quantities of mineral products, other than coke - 1000t to 100,000t"
+ERA 63 - Sewage Treatment; 2 - Operating a sewage pumping station mentioned in subsection (1)(b)
+"ERA 25 - Meat Processing; 2(b) - Processing, including rendering, in a year, the following quantity of meat or meat products - more than 5000t but not more than 50,000t"
+ERA 13a - Commercial cropping and horticulture; Commercial cropping and horticulture in the Great Barrier Reef catchment
+Schedule 3; 03 - A petroleum activity that is likely to have a significant impact on a category A or B Environmentally Sensitive Area
+"Ancillary 61 - Thermal waste reprocessing and treatment; 1(a) - Thermally reprocessing or treating, in a year, the following quantity of general waste - not more than 5,000t"
+"Ancillary 54 - Mechanical waste reprocessing; 2(c) - Operating a facility for receiving and mechanically reprocessing, in a year, the following quantity of general waste - more than 10,000t"
+"Schedule 3; 21 - A mining activity that is an ineligible ERA, other than a mining activity mentioned in items 9 to 20"
+"ERA 60 - Waste disposal; 2(d) - Operating a facility for disposing of, in a year, the following quantity of waste mentioned in subsection (1)(b) - more than 10,000t but not more than 20,000t"
+"ERA 07 - Chemical manufacturing; 3(d) - Manufacturing, in a year, a total of 200t or more of any of the following - explosives"
+"ERA 62 - Resource recovery and transfer facility operation; 1(a) - Operating a facility for receiving and sorting, dismantling, baling or temporarily storing scrap metal, non-putrescible waste or green waste only"
+ERA 53 - Organic material processing; (a) Processing more than 200t of organic material in a year by composting the organic material
+"ERA 08 - Chemical Storage; 1 - Storing a total of 50t or more of chemicals of dangerous goods class 1 or class 2, division 2.3 under subsection (1)(a)"
+"ERA 50 - Mineral and bulk material handling; 1(b) - Loading or unloading 100t or more of minerals in a day, other than loading or unloading mentioned in item 3, or storing 50,000t or more of minerals - at another place"
+"ERA 63 - Sewage Treatment; 1(e) - Operating sewage treatment works, other than no-release works, with a total daily peak design capacity of more than 10,000 but not more than 50,000EP"
+"ERA 31 - Mineral processing; 2(b) - Processing, in a year, the following quantities of mineral products, other than coke - more than 100,000t"
+"ERA 55 - Other waste reprocessing or treatment; 2(c) - Operating a facility for receiving and either reprocessing or treating, in a year, the following quantity of category 2 regulated waste - more than 10,000t"
+ERA 08 - Chemical Storage; 3 - Storing more than 500 cubic metres of chemicals of class C1 or C2 combustible liquids under AS 1940 or dangerous goods class 3 under subsection (1)(c)
+"ERA 55 - Other waste reprocessing or treatment; 3(a) - Operating a facility for receiving and either reprocessing or treating, in a year, the following quantity of category 1 regulated waste - 5,000t or less"
+"ERA 33 - Crushing, milling, grinding or screening; Crushing, grinding, milling or screening more than 5000t of material in a year"
+ERA 15 - Fuel burning; Using fuel burning equipment that is capable of burning at least 500kg of fuel in an hour

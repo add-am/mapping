@@ -1,0 +1,1002 @@
+---
+title: "Northern Three Spatial Analyses (Habitat: Mangroves and Saltmarshes)"
+author: "Adam Shand"
+date: "`r format(Sys.time(), '%d, %B, %Y')`"
+format: html
+params:
+  project_crs: "EPSG:7844"
+  target_fyear: 2023
+---
+
+::: {.callout-tip}
+## R Version
+For R session info at the time of rendering this script see @sec-sessioninfo.
+:::
+
+# Introduction
+
+This script contains the methods used to wrangle, analyse and present mangrove and saltmarsh data in the Northern Three regions. This data is a subset of the regional ecosystem data, for a guide on downloading regional ecosystem data refer to the README document for the Spatial Analysis GitHub repo.
+
+Mangrove and saltmarsh (M&S) data is currently used within the estuarine habitat and hydrology section of the technical report. The amount of M&S lost/gained is the metric assessed. Therefore the main objectives of this script are to:
+
+ - Define the estuarine area of each basin in each region of the Northern Three team
+ - Select only M&S data in these areas
+ - Calculate the total amount of M&S coverage for each dataset from "pre-clear" to present.
+ - Create a tabular summary of the coverage
+ - Create maps of the coverage
+
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, janitor, sf, tmap, grid)
+
+```
+
+
+We also need to set up key variables for the script such as where we are going to save the outputs, and what coordinate reference system (crs) we are going to be using. Note that the crs is first established under 'params' at the start of the script.
+
+A side note here, because data is not updated every year, even when we create a new folder under a new financial year does not necessarily mean that there will be new results. E.g. the years of mangrove and saltmarsh data (a subsection of the regional ecosystem data) we have are currently pre_clear, 1997, 1999, 2000, 2001, 2003, 2005, 2006, 2006b, 2007, 2009, 2011, 2013, 2015, 2017, 2019, and 2021. So if we were to put financial year 2001 or financial year 2002 we would still get the same results. 
+
+To make matters worse, the year of data (e.g. 2021) is not released on that same year, but at a later date. Specifically, the 2021 data was released in late 2023.
+
+Thus instead of trying to name folders with just the financial years we will name folders with financial years and data layer years using a translation as follows:
+
+fyear = 2023, data layer = 2021
+fyear = 2022/21 data layer = 2019
+fyear = 2020/19, data layer = 2017
+fyear = 2018/17, data layer = 2015
+fyear = 2016/15, data layer = 2013
+
+```{r}
+#| label: connection between fyear and data year
+
+#get the targeted financial year that was set in the yaml
+current_fyear <- params$target_fyear
+
+#get the data year that we should look at using this relationship
+data_year <- ifelse(current_fyear %in% c(2023), 2021,
+                    ifelse(current_fyear %in% c(2022, 2021), 2019,
+                           ifelse(current_fyear %in% c(2020, 2019), 2017,
+                                  ifelse(current_fyear %in% c(2018, 2017), 2015,
+                                         ifelse(current_fyear %in% c(2016, 2015), 2013)))))
+
+#we also need to figure out what the most recent previous dataset is - this is useful later on (we dont need to bother going super far back)
+prev_data_year <- ifelse(data_year == 2021, 2019,
+                         ifelse(data_year == 2019, 2017,
+                                ifelse(data_year == 2017, 2015,
+                                       ifelse(data_year == 2015, 2013))))
+
+
+```
+
+```{r}
+#| label: global vars and initial setup
+#| echo: false
+
+#set project variables: crs factor and current_fyear
+proj_crs <- params$project_crs 
+
+#create a file path to help with saving things
+save_path <- here(glue("outputs/n3_habitat_mangroves-and-saltmarshes/fyear-{current_fyear}_data-{data_year}/"))
+
+#bring that path to life
+dir.create(save_path)
+
+#create an extra off of this for maps and plots
+dir.create(glue("{save_path}/maps/"))
+dir.create(glue("{save_path}/plots/"))
+
+#turn off spherical geometry
+sf_use_s2(F)
+
+#turn off scientific notation
+options(scipen = 999)
+
+```
+
+# Load Data
+
+Now the script is set up we need to load in all of the required datasets. This will be broken into two segments:
+- Spatial data specific to the N3 region - such as the region, basin, and sub basin boundaries.
+- Regional Ecosystem data.
+
+## Spatial Data
+
+Spatial data for the northern three regions should be readily available in the repo, the dataset is created by the n3_region-builder.qmd script in the repo that should be the first script run for new users. If the dataset is not available refer back to the README document in the GitHub repo. The other parts of spatial data here should go off without a hitch if the region-builder script has been run.
+
+```{r}
+#| label: load the n3 region
+#| output: false
+
+#read in the northern three spatial files and reduce down to only the components we need
+n3_region <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg")) |> 
+  filter(environment != "Marine") |> 
+  group_by(region, environment, basin_or_zone, sub_basin_or_sub_zone) |> summarise(geom = st_union(geom)) |> 
+  rename(basin = basin_or_zone, sub_basin = sub_basin_or_sub_zone) |> ungroup() |> 
+  st_cast() |> st_make_valid()
+
+#load a Queensland outline from the aims package
+qld <- get(data("gbr_feat", package = "gisaimsr")) |> filter(FEAT_NAME %in% c("Mainland", "Island")) |> 
+  st_transform(proj_crs)
+
+```
+
+## Regional Ecosystem Data
+
+:::{.callout-note}
+This section of the code takes a significant chunk of time to run. Processes have been put in place to reduce the need to rerun this step, however the inclusion of any new regional ecosystem layers as they are published will need to be run through this step.
+:::
+
+:::{.callout-note}
+Only the newest and oldest RE layers are provided by QSpatial. If middle layers are missing, refer to README regarding download all layers. Note that the middle layers are not necessarily required for the script to run, but certain outputs benefit from the inclusion of additional layers.
+:::
+
+Regional Ecosystem (RE) data (i.e. vegetation) is published to QSpatial by DES and covers the entirety of Queensland (for more info go [here](https://www.qld.gov.au/environment/plants-animals/plants/ecosystems/descriptions)). Vegetation type is given via an RE code such as "11.1.3" where:
+
+ - 11 = bioregion (e.g. The Brigalow Belt).
+ - 1 = landzone (e.g. Tidal flats and beaches).
+ - 3 = vegetation community (e.g. Sedgelands on marine clay plains).
+ 
+Regional Ecosystem data is used by multiple scripts under the "habitat" banner in this repo. Because data is frequently used the raw data is stored in a generic data folder that is accessible by all habitat scripts. This is an exception to general repo data storage rules and is noted as such in the README.
+
+### Getting the Data
+
+The following code chunk executes several key steps all at once, this is because running each of these steps takes a significant chunk of time and we can create an if-else statement that skips every single step if it has already been done. Each of these steps is quite detailed so we will spend some time explaining each process. I have tried to highlight each step that is known to take a long time, here we will:
+
+ 1. Load the raw RE data and select estuarine data only using our n3_region dataset with a slight buffer[^31]. **Takes a long time.**
+    + Behind the scenes this will check if the cropped files already exists to save additional time.
+ 2. Combine each dataset together to form one large dataset called `re_data`.
+ 3. Calculate the area in km2 of each geometry (row) in the dataset **Takes a long time.**
+ 4. Split the main RE column into multiple columns (e.g. original = "11.1.1/11.1.3/11.1.5", new = "11.1.1", "11.1.3", "11.1.5".
+ 5. Create two duplicates of this data, one for mapping (will retain spatial data), and one for tables and plots (drops spatial data, pivots, and will receive additional calculations).
+ 6. For the mapping version of the data:
+    i) Retain only the dominant RE vegetation type and drop the area calculation.[^2]
+    ii) Assign custom short names for the mangrove and saltmarsh RE codes[^3]. (See below for short name summary).
+    iii) Union geometry to make maps look nicer. **Takes a long time.**
+    iv) Save this data to the mangrove and saltmarsh specific data folder.
+ 7. For the table version of the data:
+    i) Drop the geometry column as this requires heavy processing power.
+    ii) Use the associated PC (percentage) column to calculate the area of each component.
+    iii) Pivot data longer and assign custom short names for the mangrove and saltmarsh RE codes[^3]. (See below for short name summary).
+    iv) Drop the RE groups: "Other Vegetation", "Water" and "Non-Remnant" as they are not relevant to calculations[^4].
+    v) Save this data to the mangrove and saltmarsh specific data folder.
+
+[^1]: When selecting the estuarine area we use a buffer of 0.001 degrees around the area - this will capture any additional vegetation that might be outside of our estuarine zone, but still classed as estuarine vegetation. It will also help detect and instances of vegetation creep, where estuarine vegetation might have encroached outside the currently accepted estuarine zone. To ensure we are only measuring estuarine vegetation, we also select specific estuarine vegetation types later on.
+
+[^2]: When mapping we can only show/use the dominant RE type for each row. This is because a row might have the original RE column of "11.1.1/11.1.3/11.1.5", but the associated geometry for that group does not make any distinction/separation between groups. I.e. if we were to split up the column into "11.1.1", "11.1.3", "11.1.5", pivot the data, and then try to plot each of them, they would each have an identical geometry and overlap one another.
+
+[^3]: Mangrove and saltmarsh RE types are:
+
+    - Wet Tropics: RE Groups = 7.1.1 - 7.1.5 inclusive.
+    - Dry Tropics: RE Groups = 11.1.1 - 11.1.5 inclusive.
+    - Mackay Whitsunday Issac: RE Groups = 8.1.1 - 8.1.5 inclusive.
+
+[^4]: Because we are going to be calculating things such as "percent of total coverage" for each of our short names, we want to set the total coverage as the sum of all estuarine vegetation, not the sum of all things picked up in the estuarine boundary.
+
+The short names that we will use to "translate" the RE codes are:
+
+| Region                  | RE Code | Short Name  | Long Name      |
+|-------------------------|---------|-------------|----------------|
+| Wet Tropics             | 7.1.1   | Mangroves   | Mangrove closed scrub to open forest of areas subject to regular tidal inundation |
+| Wet Tropics             | 7.1.2   | Saltmarshes | Sporobolus virginicus grassland, samphire open forbland to sparse forbland and bare saltpans on plains adjacent to mangroves |
+| Wet Tropics             | 7.1.3   | Sedgelands  | Schoenoplectus subulatus and/or Eleocharis dulcis sparse sedgeland, or Melaleuca quinquenervia low open forest, in swamps which fluctuate periodically between freshwater and estuarine |
+| Wet Tropics             | 7.1.4   | Mangroves   | Mangrove and vine forest closed forest of the brackish zone |
+| Wet Tropics             | 7.1.5   | Saltmarshes | Melaleuca viridiflora or Melaleuca spp. +/- Acacia spp. +/- mangrove spp. woodland on plains adjacent to mangroves |
+| Dry Tropics             | 11.1.1  | Saltmarshes | Sporobolus virginicus grassland on marine clay plains |
+| Dry Tropics             | 11.1.2  | Saltmarshes | Samphire forbland on marine clay plains |
+| Dry Tropics             | 11.1.3  | Sedgelands  | Sedgelands on marine clay plains |
+| Dry Tropics             | 11.1.4  | Mangroves   | Mangrove low open forest and/or woodland on marine clay plains |
+| Mackay Whitsunday Isaac | 8.1.1   | Mangroves   | Mangrove closed forest to open shrubland of marine clay plains and estuaries |
+| Mackay Whitsunday Isaac | 8.1.2   | Saltmarshes | Samphire open forbland on saltpans and plains adjacent to mangroves |
+| Mackay Whitsunday Isaac | 8.1.3   | Saltmarshes |	Sporobolus virginicus tussock grassland on marine sediments |
+| Mackay Whitsunday Isaac | 8.1.4   | Saltmarshes | Schoenoplectus subulatus and/or Eleocharis dulcis sedgeland or Paspalum vaginatum tussock grassland |
+| Mackay Whitsunday Isaac | 8.1.5   | Saltmarshes | Melaleuca spp. and/or Eucalyptus tereticornis and/or Corymbia tessellaris woodland with a ground stratum of salt tolerant grasses and sedges, usually in a narrow zone adjoining tidal ecosystems |
+
+Please note that while short names might be the same across regions, the exact vegetation it refers to could be slightly different. When analyzing vegetation types closely also check the long name for more detail. We will also add three more short names for the remain vegetation groups that don't fit into the mangroves and saltmarshes category. These groups are:
+
+ - "Water" - self explanatory but this will actually grab the "water", "estuary", "ocean", and "shallow" RE groups.
+ - "Other Vegetation" - which is any other remnant vegetation in the area
+ - "Non-Remnant Vegetation" - which, broadly speaking, is vegetation that has been at least 50% cleared by anthropogenic factors.
+
+```{r}
+#| label: crop the RE layers to improve processing time
+#| output: false
+
+#create paths to where all the files will be saved
+path1 <- here("data/n3_habitat_mangroves-and-saltmarshes/mangroves_and_saltmarshes.gpkg")
+path2 <- here("data/n3_habitat_mangroves-and-saltmarshes/mangroves_and_saltmarshes.csv")
+
+if (all(file.exists(c(path1, path2)))){#if both datasets exists, read them in
+  
+  re_map_data <- st_read(path1)
+  re_tbl_data <- read.csv(path2)
+  
+  #reestablish units as they are wiped by the .csv format
+  re_tbl_data$area <- units::set_units(re_tbl_data$area, km^2)
+  
+} else {#begin the process of creating the files (note that even if only one is missing, we need to recreate both)
+  
+  #create a polygon for the estuarine areas with a small buffer zone
+  est_poly <- n3_region |> filter(environment == "Estuarine") |> st_buffer(0.001)
+
+  #get path to the raw layers and the edited layers
+  raw_path <- here("data/n3_habitat/re_raw/")
+  cropped_path <- here("data/n3_habitat_mangroves-and-saltmarshes/re_mangroves_and_saltmarshes_cropped/")
+  
+  #get list of files in the read folder that contain "re_" and .gpkg" without their extension
+  file_list <- tools::file_path_sans_ext(list.files(raw_path, pattern = ".gpkg"))
+  
+  #create a vector to track objects created
+  years_loaded <- c()
+  
+  for (i in file_list){#for each file in list (excluding cropped versions)
+    
+    if (file.exists(glue("{cropped_path}/{i}_cropped.gpkg"))){#if the cropped version exists
+      writeLines("\n\nCropped file exists, data loaded from storage.\n")
+        
+      #read it in
+      re_layer <- st_read(glue("{cropped_path}/{i}_cropped.gpkg"))
+        
+      #edit the name
+      i <- str_remove_all(i, "^re_|_v12_2")
+        
+      #keep track of the new object names
+      years_loaded <- append(years_loaded, i)
+        
+      #assign it to the global environment
+      assign(i, re_layer)
+        
+    } else {
+      writeLines("\nCropped file does not exists, data will be cropped, saved, then loaded.\n")
+      
+      #create look up to optionally rename the geometry column
+      lookup <- c(geom = "Shape", Shape_Length = "Shape_Leng")
+      
+      #read in the original regional ecosystem layer
+      re_layer <- st_read(glue("{raw_path}/{i}.gpkg")) |> rename(any_of(lookup))
+      
+      #and separate the data into "standard" geometries - polygons, and non-standard geometries - e.g. multisurfaces
+      standard_geoms <- re_layer |> filter(grepl("POLYGON", st_geometry_type(geom))) |> st_make_valid()
+      non_standard_geoms <- re_layer |> filter(grepl("MULTISURFACE", st_geometry_type(geom)))
+      
+      #save non-standard geoms to be edited
+      st_write(non_standard_geoms, glue("{cropped_path}/temporary_storage.gpkg"), delete_dsn = T)
+      
+      #use the gdalUtilies to open edit and save the file (it auto saves as a folder containing a shapefile)
+      gdalUtilities::ogr2ogr(glue("{cropped_path}/temporary_storage.gpkg"), glue("{cropped_path}/temporary_storage"), 
+                             explodecollections = T, nlt = 'CONVERT_TO_LINEAR', overwrite = T)
+      
+      #read back in the edited file
+      fixed_geoms <- st_read(glue("{cropped_path}/temporary_storage/temporary_storage.shp")) |> 
+        rename(any_of(lookup)) |> st_make_valid()
+      
+      #join the fixed data onto the standard data
+      re_layer <- rbind(standard_geoms, fixed_geoms)
+      
+      #transform the crs, then intersect over the bvg area
+      re_layer <- re_layer |> st_transform(proj_crs) |> st_intersection(est_poly)
+      
+      #save the file 
+      st_write(re_layer, glue("{cropped_path}/{i}_cropped.gpkg"), append = F)
+          
+      #edit the name
+      i <- str_remove_all(i, "^re_|_v12_2")
+    
+      #keep track of the new object names
+      years_loaded <- append(years_loaded, i)
+          
+      #assign it to the global environment
+      assign(i, re_layer)
+      
+    }
+  }
+  
+  for (i in years_loaded){#create a year column then assign it to the correct name again
+    writeLines("\nAssigning layer years.")
+    
+    #get the specific layer and add the year
+    data <- get(i) |> mutate(year = i) |> select(-any_of(c("OBJECTID", "Shape_Length", "Shape_Area")))
+    
+    #reassign data to the correct name
+    assign(i, data)
+    
+  }
+  
+  #create a list containing all of the datasets that were loaded in
+  data_set_list <- lapply(years_loaded, function(x) get(x))
+  
+  #bind all datasets together
+  writeLines("\nBinding data.\n")
+  re_est <- do.call(rbind, data_set_list)
+
+  #create look up to optionally rename the geometry column
+  lookup <- c(geom = "Shape")
+  
+  #rename if needed, then calculate area
+  re_est <- re_est |> rename(any_of(lookup)) |> mutate(area_m = st_area(geom))
+
+  #update units to be km2
+  re_est$area <- units::set_units(re_est$area_m, km^2)
+  
+  #split the main RE column into multiple columns
+  re_est <- re_est |> select(RE, PERCENT, region, basin, sub_basin, year, area) |>
+    separate(RE, into = c("RE_1", "RE_2", "RE_3", "RE_4", "RE_5"), sep = "/") |>
+    separate(PERCENT, into = c("PC_1", "PC_2", "PC_3", "PC_4", "PC_5"), sep = "/")
+
+  ##################
+  #Doing the map version
+  ##################
+  
+  #take only the dominant RE (RE_1), then get only polygons
+  re_map_data <- re_est |> select(RE_1, region, basin, sub_basin, year) |> 
+    st_collection_extract(type = "POLYGON", warn = F)
+  
+  #assign custom vegetation names to the data
+  re_map_data <- re_map_data |> 
+    mutate(vegetation = case_when(str_detect(RE_1, "7.1.1|7.1.4|8.1.1|11.1.4") ~ "Mangroves",
+                                  str_detect(RE_1, "7.1.2|7.1.3|7.1.5|8.1.2|8.1.3|8.1.4|8.1.5|11.1.1|11.1.2|11.1.3") ~ "Saltmarshes",
+                                  str_detect(RE_1, "estuary|shallow|ocean|water") ~ "Water",
+                                  str_detect(RE_1, "non-remnant") ~ "Non-Remnant Vegetation",
+                                  T ~ "Other Vegetation"))
+  
+  #union features by the custom names to improve map visibility
+  re_map_data <- re_map_data |> group_by(region, basin, sub_basin, year, vegetation) |> 
+    summarise(geom = st_union(geom)) |> ungroup()
+  
+  #save the map version of the data
+  st_write(re_map_data, path1, append = F)
+  
+  ##################
+  #Now doing the table version
+  ##################
+
+  #drop geometry and calculate associated percentages  
+  re_tbl_data <- re_est |> st_drop_geometry() |> 
+    mutate(across(matches("PC"), as.numeric),
+           area_1 = (PC_1*area)/100, 
+           area_2 = (PC_2*area)/100, 
+           area_3 = (PC_3*area)/100,
+           area_4 = (PC_4*area)/100,
+           area_5 = (PC_5*area)/100)
+
+  #pivot table longer - note that this requires very specific names to work: value_set
+  re_tbl_data <- re_tbl_data |> select(!area) |> 
+    pivot_longer(-c(region, basin, sub_basin, year), #look at every column except region, basin, sub_basin, and year
+                 names_to = c(".value", "set"), #create a column called "set" and n number of columns for the unique values we find
+                 names_pattern = "(.+)_(.+)") #for columns selected, separate col name either side of the underscore.
+#The right side of the underscore = the values to put in the "set" column (1, 2, 3, 4, 5).
+#The left side of the underscore = the values to put in our .values column(s), values are put into columns based on each unique sequence of characters returned (e.g. all column names starting with RE get grouped, all column names starting with PC get grouped, all columns starting with area get grouped)
+  
+  #drop rows containing NA, and the set column
+  re_tbl_data <- re_tbl_data |> drop_na() |> select(!set)
+  
+  #assign custom vegetation names to the data
+  re_tbl_data <- re_tbl_data |> 
+    mutate(vegetation = case_when(str_detect(RE, "7.1.1|7.1.4|8.1.1|11.1.4") ~ "Mangroves",
+                                  str_detect(RE, "7.1.2|7.1.3|7.1.5|8.1.2|8.1.3|8.1.4|8.1.5|11.1.1|11.1.2|11.1.3") ~ "Saltmarshes",
+                                  str_detect(RE, "estuary|shallow|ocean|water") ~ "Water",
+                                  str_detect(RE, "non-remnant") ~ "Non-Remnant Vegetation",
+                                  T ~ "Other Vegetation"))
+  
+  #save the data
+  write.csv(re_tbl_data, path2, row.names = F)
+  
+  #clean up and force a garbage collection
+  rm(list = years_loaded)
+  unlink(glue("{cropped_path}/temporary_storage.gpkg"))
+  unlink(glue("{cropped_path}/temporary_storage"), recursive = T)
+  rm(est_poly, re_est, lookup, cropped_path, data, data_set_list, file_list, fixed_geoms, 
+     non_standard_geoms, raw_path, standard_geoms, years_loaded)
+  gc()
+  
+}
+
+#clean up paths
+rm(path1, path2)
+
+```
+
+# Analyse Data
+
+Once we have boiled down the vegetation to the specific groups we want we can begin the analysis. Currently we are looking to calculate:
+
+ - The total area coverage by each vegetation in each basin for each year.
+ - The total area coverage of the mangrove and saltmarsh combined category
+ - The proportion of the total area that each vegetation covers.
+ - The change year on year of each vegetation.
+ - The standardised score for each vegetation type
+
+## Calculate Total Vegetation Coverage and Proportional Coverage
+
+Here we can group by region basin and year to get total cover, then use rowwise to divide by each vegetation type, and then group by the custom re to get a final sum and percent for each re in each basin in each year.
+
+```{r}
+#| label: calculate vegetation cover
+
+#calculate the total area of each basin for each year and the proportion each vegetation covers
+re_tbl_data <- re_tbl_data |> 
+  group_by(region, basin, sub_basin, year) |> mutate(total_surveyed_area = sum(area)) |> 
+  ungroup() |> 
+  rowwise() |> mutate(veg_percent_of_total_area = as.numeric((area/total_surveyed_area)*100)) |> 
+  ungroup() |> 
+  group_by(region, basin, sub_basin, year, total_surveyed_area, vegetation) |> 
+  summarise(area = sum(area),
+            veg_percent_of_total_area = sum(veg_percent_of_total_area)) |> 
+  ungroup()
+
+#are all basins represented in sub basins? 
+if(!all(unique(unique(re_tbl_data$basin) %in% unique(re_tbl_data$sub_basin)))){#if not:
+
+  #create basin version
+  basin_temp_tbl <- re_tbl_data |> filter(basin != sub_basin) |> 
+    group_by(region, basin, year, vegetation) |> 
+    summarise(total_surveyed_area = sum(total_surveyed_area),
+              area = sum(area),
+              veg_percent_of_total_area = as.numeric((area/total_surveyed_area)*100)) |> 
+    ungroup() |> 
+    mutate(sub_basin = basin)
+
+  #bind together
+  re_tbl_data <- rbind(re_tbl_data, basin_temp_tbl)
+
+}
+
+#clean up
+rm(basin_temp_tbl)
+
+```
+
+## Create a Mangrove + Saltmarsh combined category
+
+When reporting the mangrove and saltmarsh data we currently have to report them in a combined format, as if they were one single vegetation type. Below we combine the groups into one.
+
+```{r}
+#| label: create m and s combined group
+
+#create a mangrove and saltmarsh only version
+m_and_s <- re_tbl_data |> 
+  filter(vegetation %in% c("Mangroves", "Saltmarshes")) |> 
+  group_by(region, basin, sub_basin, year) |> 
+  summarise(vegetation = "Mangroves and Saltmarshes Combined",
+            area = sum(area),
+            total_surveyed_area = mean(total_surveyed_area),
+            veg_percent_of_total_area = sum(veg_percent_of_total_area)) |> 
+  ungroup()
+
+#add back to main
+re_tbl_data <- rbind(re_tbl_data, m_and_s)
+
+#cleanup
+rm(m_and_s)
+
+```
+
+## Calculate Year on Year Change
+
+After calculating the area each vegetation types covers (and had previously covered) we can then do a year on year comparison to track the loss/gain over time. A good trick here is to order by vegetation type, so we can then use the lag() function to query the above row.
+
+```{r}
+#| label: calculate year on year change
+
+#create a set of rows for non remnant vegetation in the pre clear year (this is obviously 0 but helps with calculations below)
+non_rem_tbl <- re_tbl_data |> filter(year == "pre_clear", vegetation == "Mangroves") |> 
+  mutate(area = 0, veg_percent_of_total_area = 0, vegetation = "Non-Remnant Vegetation")
+
+#add units to temp table
+non_rem_tbl$area <- units::set_units(non_rem_tbl$area, km^2)
+
+#bind these new rows to the main data
+re_tbl_data <- bind_rows(re_tbl_data, non_rem_tbl)
+
+#create a 0 value with units
+replace_value <- units::set_units(0, km^2)
+
+#order by vegetation, group by basin and veg, then compare the row to the one above using lag(), replace na values with 0
+re_tbl_data <- re_tbl_data |> arrange(sub_basin, vegetation, year) |> 
+  group_by(basin, sub_basin, vegetation) |> 
+  mutate(y_on_y_veg_area_change = area - lag(area),
+         y_on_y_veg_percent_change = (y_on_y_veg_area_change/lag(area))*100) |> 
+  mutate(across(matches("percent"), \(x) as.vector(x)),
+         across(matches("percent"), \(x) replace_na(x, 0)),
+         across(matches("area"), \(x) replace_na(x, replace_value)),
+         across(where(is.numeric), \(x) round(x, 5))) |> 
+  ungroup()
+
+#fix up erraneous percent change values (anything over 100% change gets a score of 100)
+re_tbl_data <- re_tbl_data |> 
+  mutate(y_on_y_veg_percent_change = case_when(abs(y_on_y_veg_percent_change) > 100 ~ 100,
+                                               T ~ y_on_y_veg_percent_change))
+
+```
+
+## Calculate Standardised Scores
+
+We can then use the percent change year on year to calculate the standardised scores for each vegetation type
+
+```{r}
+#| label: create and use standardised score function
+
+standardised_m_and_s <- function (x){
+  
+  if (x > 0){floor(100-abs(19-((abs(x)-0)*(19/99.9))))}
+  else if (x >= -0.1){floor(61+abs(19.9-((abs(x)-0)*(19.9/0.1))))}
+  else if (x >= -0.5){floor(41+abs(19.9-((abs(x)-0.11)*(19.9/0.39))))}
+  else if (x >= -3){floor(21+abs(19.9-((abs(x)-0.51)*(19.9/2.49))))}
+  else if (x < -3){floor(abs(20.9-((abs(x)-3.01)*(20.9/96.99))))}
+}
+
+
+re_tbl_data <- re_tbl_data |> 
+  rowwise() |> 
+  mutate(standardised_score = standardised_m_and_s(y_on_y_veg_percent_change))
+
+```
+
+Once that is done we can save the full table to the outputs folder.
+
+```{r}
+#| label: show table output
+
+#create a new version just to update values to ha instead of km2
+save_version <- re_tbl_data |> 
+  mutate(area = round(area*100, 1),
+         y_on_y_veg_area_change = round(y_on_y_veg_area_change*100, 1),
+         y_on_y_veg_percent_change = round(y_on_y_veg_percent_change, 2))
+
+#save full table
+write.csv(save_version, glue("{save_path}/mangrove-and-saltmarsh_full_table.csv"), row.names = F)
+
+#edit cells of year column then pivot data for a clean presentation
+report_ready <- save_version |> 
+  mutate(year = str_remove(year, "remnant_"),
+         year = case_when(is.na(year) ~ "pre_clear",
+                          T ~ year)) |>
+  select(!c(total_surveyed_area, veg_percent_of_total_area)) |> 
+  filter(str_detect(vegetation, c("Mang|Salt"))) |> 
+  rename(area_change = y_on_y_veg_area_change,
+         percent_change = y_on_y_veg_percent_change) |>
+  mutate(standardised_score = case_when(year == data_year ~ standardised_score,
+                                        T ~ NA)) |> 
+  pivot_wider(names_from = year, values_from = c(area, area_change, percent_change)) 
+
+#compress the table 
+report_ready <- report_ready |> 
+  group_by(sub_basin, vegetation) |> 
+  mutate(across(5:ncol(report_ready)-2, ~sum(.x, na.rm = T))) |> 
+  ungroup() |> 
+  unique()
+
+#create custom variables for column selection
+cols_to_select <- c(glue("area_{prev_data_year}"), glue("area_{data_year}"), glue("change_{data_year}"))
+
+#select oldest and two most recent years of data for area, and only most recent for change
+report_ready <- report_ready |> 
+  select(region, basin, sub_basin, vegetation, area_pre_clear, matches(cols_to_select), standardised_score) |> 
+  mutate(vegetation = factor(vegetation),
+         vegetation = fct_relevel(vegetation, "Mangroves", "Saltmarshes", "Mangroves and Saltmarshes Combined")) |> 
+  arrange(vegetation)
+
+#pviot data again, combining the vegetation type with the values
+report_ready <- report_ready |> 
+  pivot_wider(names_from = vegetation, 
+              values_from = c(5:ncol(report_ready)),
+              names_glue = "{vegetation}_{.value}", names_sort = T) #names_glue provides a pattern for the naming to happen
+
+#create a vector of the three names types we have
+m <- names(report_ready)[str_detect(names(report_ready), "groves_")]
+s <- names(report_ready)[str_detect(names(report_ready), "marshes_")]
+m_s <- names(report_ready)[str_detect(names(report_ready), " and ")]
+
+#plus one of columns we wish to remove
+remo <- names(report_ready[str_detect(names(report_ready), "standardised")
+                           & !str_detect(names(report_ready), " and ")])
+
+#"relocate" the first three sets, first putting mangroves at the end, then saltmarsh, then combined. Creates the right order. Then remove the forth set
+report_ready <- report_ready |> 
+  relocate(any_of(c(m,s,m_s)), .after = last_col()) |> 
+  select(!any_of(remo))
+
+#load in our custom colouring function
+source(here("functions/cond_form_rc_grades.R"))
+
+#run function, noting to specify which colour system we want to use
+cond_form_rc_grades(report_ready, glue("{save_path}/mangrove_and_saltmarsh_report_table"), 
+                    cols = ncol(report_ready), method = "Numeric")
+
+#clean up
+rm(save_version)
+
+```
+
+# Visualise Data
+
+Now on to the fun stuff - visualizations. Below we are looking to present the data in a few different ways, by:
+
+ - Creating a horizontal stacked bar chart of the proportional of each group in each basin.
+ - Creating maps of mangrove and saltmarsh vegetation in each basin each year.
+ - Creating a plot over time of how total mangrove and saltmarsh vegetation has changed over time.
+    + As an alternative we could create a bar chart with x as the time axis??
+    
+## Streamline data
+
+Before we can visualise we need to streamline our tbl data to remove some of the excessive rows that were created to calculate final scores.
+
+```{r}
+#| label: streamline data table
+
+#drop rows that we don't need
+re_tbl_data <- re_tbl_data |> 
+  filter(!(region == "Dry Tropics" & basin == sub_basin),
+         !str_detect(vegetation, "and"))
+
+```
+ 
+## Horizontal Stacked Bar Chart
+
+The horizontal stacked bar chart will make use of the table version of the data as there is no spatial information required. First we will create a custom palette that ggplot will use as a reference for how to color groups.
+
+```{r}
+#| label: add a custom palette to table data
+
+#create custom palette
+my_tbl_palette <- c("#B8E08C", "#571111", "#D5B58B", "#2A7E54", "#75DBFF")
+
+#assign names to my palette so ggplot can colour everything correctly
+names(my_tbl_palette) <- sort(unique(re_tbl_data$vegetation))
+
+```
+
+Then we will create the plots, looping for each basin and each year. Note that the way the palette works is by matching the names of the palette variable we created to the cell values in the vegetation column.
+
+```{r}
+#| label: create bar plots
+
+#list out basins
+basins <- unique(n3_region$basin)
+
+for (i in basins){#for each basin
+  
+  #select a specific basin and arrange the data appropriately
+  basin_plot <- re_tbl_data |> filter(basin == i, year == glue("remnant_{data_year}")) |> 
+    arrange(desc(veg_percent_of_total_area)) |> 
+    mutate(vegetation = factor(vegetation, levels = unique(vegetation)))
+  
+  if (nrow(basin_plot) != 0){
+    
+    #create a plot
+    plot <- ggplot(basin_plot, aes(fill = vegetation, x = basin, y = veg_percent_of_total_area)) +
+      geom_bar(position = position_fill(reverse = T), stat = "identity") +
+      scale_fill_manual(values = my_tbl_palette) +
+      scale_x_discrete(expand = c(0.025, 0)) +
+      scale_y_continuous(expand = c(0, 0), labels = scales::percent_format(accuracy = 1)) +
+      labs(x = "", y = "", fill = glue("{i} \nMangroves and Saltmarshes")) +
+      theme(axis.text.x = element_text(colour = "black"),
+            axis.text.y = element_blank(),
+            axis.line.x = element_line(colour = "black"),
+            axis.ticks.length = unit(-0.15, "cm"),
+            panel.background = element_blank()) +
+      coord_flip()
+        
+    #edit names
+    edit_i <- str_remove_all(str_to_lower(paste(i, data_year, sep = "_")), "_tbl")
+    
+    #save
+    ggsave(glue("{save_path}/plots/{edit_i}_mangrove-and-saltmarsh_plot.png"), plot, width = 12, height = 4)
+    
+  }
+}
+
+```
+
+Here is an example of how one of the plots looks, noting that the actual outputted version looks much nicer.
+
+```{r}
+#| label: show example plot
+
+plot
+
+```
+ 
+## Map Mangroves and Saltmarshes
+
+Unfortunately we can't recycle the palette above as that did not contain colours for non mangrove and saltmarsh related vegetation groups. Below we create a new palette. Noting that the vegetation groups that do carry over will retain the same colour as previous.
+
+```{r}
+#| label: add a custom palette to map data
+
+#create custom palette
+my_map_palette <- c("#B8E08C", "#571111", "#D5B58B", "#2A7E54", "#75DBFF")
+
+#assign names to my palette so ggplot can colour everything correctly
+names(my_map_palette) <- sort(unique(re_map_data$vegetation))
+
+```
+
+further, the method of implementation is slightly different as a different R package is used, matching the colours to the appropriate columns.
+
+```{r}
+#| label: map mangroves and saltmarshes
+
+#add an empty column to hold palette
+re_map_data$palette <- NA
+  
+for (i in 1:length(my_map_palette)){#for the length of the palette, match each element
+  
+  #using the custom palette we created earlier
+  re_map_data <- re_map_data |> mutate(palette = case_when(vegetation == names(my_map_palette)[i] ~ my_map_palette[[i]],
+                                                           T ~ palette))
+}
+
+```
+
+Then we will create the maps, same as above, looping over each basin.
+
+```{r}
+#| label: create maps
+
+#drop environment out of the n3 region dataset (just creates unnecessary clutter)
+n3_region <- n3_region |> 
+  group_by(region, basin, sub_basin) |> summarise(geom = st_union(geom)) |> 
+  ungroup() |> st_cast() |> st_make_valid()
+
+#note we are using the target_year variable created earlier
+for (i in unique(n3_region$region)){#for each basin
+  
+  #select region
+  target_region <- re_map_data |> filter(region == i, year == glue("remnant_{data_year}"))
+      
+  #get the region outline
+  region_outline <- n3_region |> filter(region == i)
+      
+  #create a bbox of the vegetation data
+  reg_veg_bbox <- st_as_sfc(st_bbox(target_region))
+      
+  #create an inset map
+  inset_map <- tm_shape(qld) +
+    tm_polygons(col = "grey80", border.col = "black") +
+    tm_shape(region_outline, is.master = T) +
+    tm_polygons(col = "grey90", border.col = "black") +
+    tm_shape(reg_veg_bbox) +
+    tm_borders(lwd = 2, col = "red")
+      
+  #create a map of the area
+  map <- tm_shape(qld) +
+    tm_polygons(col = "grey80", border.col = "black") +
+    tm_shape(region_outline) +
+    tm_polygons(col = "grey90", border.col = "black") +
+    tm_shape(target_region, is.master = T) +
+    tm_fill(col = "palette") +
+    tm_add_legend(type = "fill", col = unique(target_region$palette), labels = unique(target_region$vegetation)) +
+    tm_shape(region_outline) +
+    tm_borders(col = "black") +
+    tm_layout(legend.frame = T, legend.bg.color = "White", asp = 1.1, 
+              legend.text.size = 0.7, legend.position = c("left", "bottom")) +
+    tm_scale_bar(width = 0.15, text.size = 0.7, position = c(0.28, 0))
+            
+  #figure out the aspect of the inset map and the view port
+  xy <- st_bbox(region_outline)
+  asp2 <- (xy$ymax - xy$ymin)/(xy$xmax - xy$xmin)
+  w <- 0.2
+  h <- asp2 * w
+  vp <- viewport(x = 0.985, y = 0.97, width = w, height = h, just = c("right", "top"))
+          
+  #edit names
+  i <- str_replace_all(str_to_lower(i), " ", "_")
+            
+  #save the map as a png
+  tmap_save(map, filename = glue("{save_path}/maps/{i}_region_mangroves-and-saltmarshes_map.png"),
+            insets_tm = inset_map, insets_vp = vp)
+  
+  for (j in unique(target_region$basin)){
+  
+    #select basin from vegetation data
+    target_basin <- re_map_data |> filter(basin == j, year == glue("remnant_{data_year}"))
+
+    #check if data is empty
+    if (nrow(target_basin) != 0){
+      
+      #get the basin outline from the n3 region dataset
+      basin_outline <- n3_region |> filter(basin == j)
+
+      #create a bbox of the vegetation data
+      veg_bbox <- st_as_sfc(st_bbox(target_basin))
+        
+      #create an inset map
+      inset_map <- tm_shape(qld) +
+        tm_polygons(col = "grey80", border.col = "black") +
+        tm_shape(region_outline, is.master = T) +
+        tm_polygons(col = "grey90", border.col = "black") +
+        tm_shape(veg_bbox) +
+        tm_borders(lwd = 2, col = "red")
+        
+      #create a map of the area
+      map <- tm_shape(qld) +
+        tm_polygons(col = "grey80", border.col = "black") +
+        tm_shape(basin_outline) +
+        tm_polygons(col = "grey90", border.col = "black") +
+        tm_shape(target_basin, is.master = T) +
+        tm_fill(col = "palette") +
+        tm_add_legend(type = "fill", col = unique(target_basin$palette), labels = unique(target_basin$vegetation)) +
+        tm_shape(basin_outline) +
+        tm_borders(col = "black") +
+        tm_layout(legend.frame = T, legend.bg.color = "White", asp = 1.1, 
+                  legend.text.size = 0.7, legend.position = c("left", "bottom")) +
+        tm_scale_bar(width = 0.15, text.size = 0.7, position = c(0.26, 0))
+        
+      #figure out the aspect of the inset map and the view port
+      xy <- st_bbox(region_outline)
+      asp2 <- (xy$ymax - xy$ymin)/(xy$xmax - xy$xmin)
+      w <- 0.2
+      h <- asp2 * w
+      vp <- viewport(x = 0.985, y = 0.97, width = w, height = h, just = c("right", "top"))
+        
+      #edit names
+      j <- str_replace_all(str_to_lower(j), " ", "_")
+          
+      #save the map as a png
+      tmap_save(map, filename = glue("{save_path}/maps/{j}_basin_mangroves-and-saltmarshes_map.png"),
+                insets_tm = inset_map, insets_vp = vp)
+    }
+  }
+}
+
+```
+
+Here is an example of how one of the maps looks, noting that the actual outputted version looks much nicer.
+
+```{r}
+#| label: show example map
+
+map
+
+```
+
+## Vegetation Over Time
+
+Lastly we want to look at how the total amount of vegetation has changed over time. We will be using the percent change column in the table version to explore this.
+
+Note, to make these plots more relevant we will not include the pre_clear or 1997 years because the change between these two is so huge it overshadows all other changes.
+
+```{r}
+#| label: plot vegetation over time
+
+#drop pre clear and 1997
+re_tbl_data_filtered <- re_tbl_data |> 
+  filter(!year %in% c("pre_clear", "remnant_1997"))
+
+#generate a list of potential years greater than the target data year
+removal_years <- glue("remnant_{data_year+1:15}")
+
+#remove data years that occured after the target data year
+re_tbl_data_filtered <- re_tbl_data_filtered |> 
+  filter(!year %in% removal_years)
+
+for (i in unique(n3_region$region)){
+  
+  #select the target area
+  target_region_general <- re_tbl_data_filtered |> filter(region == i)
+    
+  #create region specific numbers
+  target_region <- target_region_general |> 
+    select(region, year, vegetation, area) |> 
+    group_by(region, year, vegetation) |> 
+    summarise(area = sum(area)) |>
+    ungroup() |> 
+    group_by(region, vegetation) |> 
+    arrange(vegetation, region, year) |> 
+    mutate(y_on_y_veg_area_change = area - lag(area),
+           y_on_y_veg_percent_change = (y_on_y_veg_area_change/lag(area))*100, 
+           across(matches("percent"), \(x) as.vector(x)),
+           across(matches("percent"), \(x) replace_na(x, 0)),
+           across(matches("area"), \(x) replace_na(x, replace_value)),
+           across(where(is.numeric), \(x) round(x, 5))) |> 
+    ungroup()
+    
+    #fix up erraneous percent change values (anything over 100% change gets a score of 100)
+    target_region <- target_region |> 
+      mutate(y_on_y_veg_percent_change = case_when(abs(y_on_y_veg_percent_change) > 100 ~ 100,
+                                                   T ~ y_on_y_veg_percent_change))
+    
+    #divide percent by 100 to correct for unit addition under 'scale_x_continuous()
+    target_region_ordered <- target_region |>  
+      mutate(y_on_y_veg_percent_change = y_on_y_veg_percent_change/100) |> 
+      mutate(year = str_remove_all(year, "remnant_")) 
+      
+    #reorder years
+    target_region_ordered <- target_region_ordered |> 
+      mutate(year = factor(year, levels = unique(target_region_ordered$year)))
+    
+    #plot
+    plot <- ggplot(target_region_ordered, aes(y_on_y_veg_percent_change, year, fill = vegetation)) +
+      geom_bar(stat = "identity", position = "dodge") +
+      scale_y_discrete(limits = rev) +
+      scale_fill_manual(values = my_tbl_palette) +
+      scale_x_continuous(labels = scales::percent_format(accuracy = 0.1)) +
+      theme(axis.text.x = element_text(colour = "black"),
+            axis.line.x = element_line(colour = "black"),
+            axis.text.y = element_text(colour = "black"),
+            axis.line.y = element_line(colour = "black"),
+            axis.ticks.y = element_blank(),
+            panel.background = element_blank()) +
+      geom_vline(xintercept = 0) +
+      geom_hline(yintercept = seq(1.5, length(unique(target_region_ordered$year))-0.5, 1), 
+                 lwd = 0.5, colour = "grey80") +
+      labs(x = "Year on Year Change (%)", y = "Year", fill = glue("{j} {i}\nRiparian Vegetation"))
+      
+    #edit names
+    i <- str_replace_all(str_to_lower(i), " ", "_")
+
+    #save
+    ggsave(glue("{save_path}/plots/{i}_region_mangrove_and_saltmarshes_change-over-time.png"), plot)
+    
+    for (j in unique(target_region_general$basin)){
+      
+      #select the target area
+      target_basin <- target_region_general |> filter(basin == j)
+    
+      #divide percent by 100 to correct for unit addition under 'scale_x_continuous(), change year to factor for ordering
+      target_basin_ordered <- target_basin |>  
+        group_by(basin, year, vegetation) |> 
+        summarise(y_on_y_veg_percent_change = sum(y_on_y_veg_percent_change)) |> 
+        mutate(y_on_y_veg_percent_change = y_on_y_veg_percent_change/100) |> 
+        mutate(year = str_remove_all(year, "remnant_"))
+      
+      #reorder years
+      target_basin_ordered <- target_basin_ordered |> 
+        mutate(year = factor(year, levels = unique(target_basin_ordered$year)))
+      
+      #plot
+      plot <- ggplot(target_basin_ordered, aes(y_on_y_veg_percent_change, year, fill = vegetation)) +
+        geom_bar(stat = "identity", position = "dodge") +
+        scale_y_discrete(limits = rev) +
+        scale_fill_manual(values = my_tbl_palette) +
+        scale_x_continuous(labels = scales::percent_format(accuracy = 0.1)) +
+        theme(axis.text.x = element_text(colour = "black"),
+              axis.line.x = element_line(colour = "black"),
+              axis.text.y = element_text(colour = "black"),
+              axis.line.y = element_line(colour = "black"),
+              axis.ticks.y = element_blank(),
+              panel.background = element_blank()) +
+        geom_vline(xintercept = 0) +
+        geom_hline(yintercept = seq(1.5, length(unique(target_basin_ordered$year))-0.5, 1), 
+                   lwd = 0.5, colour = "grey80") +
+        labs(x = "Year on Year Change (%)", y = "Year", fill = glue("{j} {i}\nMangroves and Saltmarshes"))
+        
+      #edit names
+      j <- str_replace_all(str_to_lower(j), " ", "_")
+  
+      #save
+      ggsave(glue("{save_path}/plots/{j}_basin_mangrove_and_saltmarshes_change-over-time.png"), plot)
+      
+    }
+}
+
+```
+
+Here is an example of how one of the change over time plots looks, noting that the actual outputted version looks much nicer.
+
+```{r}
+#| label: show example change over time plot
+
+plot
+
+```
+
+And that rounds out the script. Spicy.
+
+# Session Info {#sec-sessioninfo}
+
+Below is the session info at the time of rendering this script. Of greatest importance is to note the R version, and the "other attached packages" as these are the most significant drivers of success/failure. It is also good to check the "attached base packages" and "loaded via a namespace" packages as well. To check your session info use `sessionInfo()`.
+
+```{r}
+#| label: show session info
+
+sessionInfo()
+
+```
+

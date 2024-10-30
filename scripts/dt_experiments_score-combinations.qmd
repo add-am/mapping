@@ -1,0 +1,447 @@
+---
+title: "Score Combination Examples"
+subtitle: "A Healthy Waters Partnership Analysis"
+description: "This script creates graphs that demonstrate different methods of combining scores from two indicators."
+author: "Adam Shand"
+format: html
+params:
+  project_crs: "EPSG:7844"
+---
+
+# Introduction
+
+This script was written to support a TWG paper discussing the combination of two indicators into a single indicator category when the two indicators are not "equal" in their source. For example, the TWG paper presents a vegetation health indicator, and a vegetation extent indicator. These indicators have a different project area (health is site based, extent is whole-of-basin), are not mutually exclusive (weeds get zero for health but 100 for extent), and may not be of equal precision (health is on-ground, extent is satellite). Thus, it is unlikely that the standard method of averaging the two scores is the best approach.
+
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, janitor, ggplot2, gridExtra, RColorBrewer)
+
+```
+
+Then we also need to set up key variables for the script, as well as the output location.
+
+```{r}
+#| label: create save path and establish project crs
+
+#set project crs
+proj_crs <- params$project_crs
+
+#create a file path to help with saving outputs
+save_outputs <- here("outputs/dt_experiments_score-combinations/")
+
+#bring the path to life
+dir.create(save_outputs)
+
+```
+
+# Create Data
+
+Below we create some example data to create this graphic and demonstrate the relationships.
+
+```{r}
+#| label: create dummy scores to be used throughout
+
+#create two vectors of numbers
+score_col1 <- c(rep(1:100, 2), rep(100, 100), 100:51, rep(50, 50))
+score_col2 <- c(100:1, rep(1:100, 2), 100:51, rep(50, 50))
+
+```
+
+## Weight By Score
+
+The first graph we will make is the weight by score graph. In this example we pitch the idea that if one score is high and one score is low, the high score should be given a greater weight. Further, when each score is equal, or the closer each score is to equal, the closer the weighting is to equal.
+
+This strategy seeks to avoid the ends of the spectrum that may be caused my the "fully weeds" situation.
+
+### Edit Data
+
+Firstly we will take the two dummy scores and create a table.
+
+```{r}
+#| label: create weight by score table
+
+#combine into a table
+weight_by_score_tbl <- data.frame(score_col1, score_col2)
+
+```
+
+Following this, we need to set up the relationship rules between the scores and add contextual information.
+
+```{r}
+#| label: set relationship rules 1
+
+#give scores weighted based on their score, then calculate weighted score
+weight_by_score_tbl <- weight_by_score_tbl |>
+  mutate(weight_col1 = map2_dbl(score_col1, score_col2, ~ max(0.25, min(0.75, .x/(.x + .y)))),
+         weight_col2 = map2_dbl(score_col1, score_col2, ~ max(0.25, min(0.75, .y/(.x + .y)))),
+         wscore_col1 = score_col1*weight_col1,
+         wscore_col2 = score_col2*weight_col2,
+         weight_final = 1)
+
+#sum to get the final score and add a column for the row number
+weight_by_score_tbl <- weight_by_score_tbl |> 
+  mutate(score_final = wscore_col1 + wscore_col2,
+         x_axis = row_number())
+
+```
+
+Then we can pivot the data longer, this format is much easier to ingest for ggplot.
+
+```{r}
+#| label: pivot data 1
+
+#pivot data longer
+weight_by_score_tbl <- weight_by_score_tbl |> 
+  select(x_axis, score_col1, score_col2, score_final, weight_col1, weight_col2, weight_final) |> 
+  pivot_longer(-x_axis,
+               names_to = c(".value", "score_type"),
+               names_sep = "_")
+
+#rename columns to help with plotting
+weight_by_score_tbl <- weight_by_score_tbl |> 
+  mutate(score_type = case_when(score_type == "final" ~ "Indicator Category",
+                                score_type == "col1" ~ "Indicator 1",
+                                T ~ "Indicator 2"))
+
+```
+
+### Plot Data
+
+And finally we can create the plot.
+
+```{r}
+#| label: create plot 1
+
+#create a simple line plot
+plot <- ggplot(weight_by_score_tbl) +
+  geom_line(aes(x = x_axis, y = score, color = score_type), linewidth = 1.5) +
+  geom_area(aes(x = x_axis, y = (weight*100), fill = score_type), alpha = 0.3) +
+  facet_wrap(~score_type, ncol = 1) +
+  theme_bw() +
+  theme(axis.text.x = element_blank(),
+        axis.title.x = element_blank(),
+        axis.ticks.x = element_blank()) +
+  scale_color_brewer(palette = "Set1") +
+  scale_fill_brewer(palette = "Set1") +
+  scale_y_continuous(name = "Score", #first axis name
+                     sec.axis = sec_axis(transform = ~./100, name = "Weight")) + #second axis
+  labs(color = "Indicator Type",
+       fill = "Weighting") +
+  guides(color = guide_legend(override.aes = list(fill = NA)))
+
+
+```
+
+```{r}
+#| label: show plot 1
+#| output: true
+
+plot
+
+```
+
+Then save the plot.
+
+```{r}
+#| label: save plot 1
+
+#save plot
+ggsave(glue("{save_outputs}/combining_weight_by_score.png"), plot, width = 11)
+
+```
+
+### Plot Relationship
+
+Above we show how the scores for each indicator might interact with one another to create the final indicator category score. Next we need to show how the scores directly influence the weighting.
+
+```{r}
+#| label: create plot 2
+
+#create two opposing scores
+score1 <- 1:100
+score2 <- 100:1
+
+#create the weighted relationship
+weight1 <- (map2_dbl(score1, score2, ~ max(0.25, min(0.75, .x/(.x + .y))))*100)
+
+#plot the relationship
+plot <- ggplot() +
+  geom_line(aes(x = score1, y = weight1)) +
+  scale_y_continuous(limits = c(0, 100)) +
+  theme_bw() +
+  labs(x = "Score (Unweighted)", y = "Weight (%)")
+
+```
+
+
+```{r}
+#| label: show plot 2
+#| output: true
+
+plot
+
+```
+
+```{r}
+#| label: save plot 2
+
+ggsave(glue("{save_outputs}/weight_score_relation.png"), plot, width = 11)
+
+```
+
+
+The first graph we will make is the weight by score graph. In this example we pitch the idea that if one score is high and one score is low, the high score should be given a greater weight. Further, when each score is equal, or the closer each score is to equal, the closer the weighting is to equal.
+
+This strategy seeks to avoid the ends of the spectrum that may be caused my the "fully weeds" situ
+
+## Weight By Area
+
+Following the Weight by score plot we will create a weight by area graph. In this example we explore how the total area assessed by the indicator influences the weighting that the indicator receives. The idea here is that the more area the indicator covers the more representative it is. The relationship is on a log scale to increase the weighting of very small areas.
+
+### Edit Data
+
+Firstly we will take the two dummy scores and create a new table, this time also included made up area values.
+
+```{r}
+#| label: create weight by area table
+
+#create a vector of area to match these numbers
+area_col1 <- c(1:100, rep(100, 50), 100:1, 1:50, rep(50, 50), 50:1)
+area_col2 <- rep(100, 400) - area_col1
+
+#match up data
+area_table <- data.frame(score_col1, score_col2, area_col1, area_col2)
+
+```
+
+One the base values are set we will create the weighting relationship. In this example we are assuming that one indicator will always have an assessed are of 100%. This is accurate as one of the indicators is a satellite product with 100% coverage.
+
+```{r}
+#| label: set relationship rules 2
+
+#a log transformer is created based on the area of the indicator
+area_table <- area_table |> 
+  mutate(weight_col1 = log(area_col1)/max(log(area_col1))*50,
+         weight_col2 = 100-weight_col1)
+
+#the scores are weighted based on this
+area_table <- area_table |> 
+  mutate(wscore_col1 = score_col1*(weight_col1/100),
+         wscore_col2 = score_col2*(weight_col2/100),
+         score_final = wscore_col1 + wscore_col2, 
+         weight_final = 100,
+         x_axis = row_number())
+
+```
+
+After creating the weighted scores we can pivot the data longer to make it easier to ggplot to work with.
+
+```{r}
+#| label: pivot data 2
+
+#pivot data longer
+area_table <- area_table |> 
+  select(x_axis, score_col1, score_col2, score_final, weight_col1, weight_col2, weight_final) |> 
+  pivot_longer(-x_axis,
+               names_to = c(".value", "score_type"),
+               names_sep = "_")
+
+#rename columns to help with plot
+area_table <- area_table |> 
+  mutate(score_type = case_when(score_type == "final" ~ "Indicator Category",
+                                score_type == "col1" ~ "Indicator 1",
+                                T ~ "Indicator 2"))
+```
+
+### Plot Data
+
+Then we can plot the example scores as influenced by their weighting.
+
+```{r}
+#| label: create plot 3
+
+#create a simple line plot
+plot <- ggplot(area_table) +
+  geom_line(aes(x = x_axis, y = score, color = score_type), linewidth = 1.5) +
+  geom_area(aes(x = x_axis, y = weight, fill = score_type), alpha = 0.3, show.legend = T) +
+  facet_wrap(~score_type, ncol = 1) +
+  theme_bw() +
+  theme(axis.text.x = element_blank(),
+        axis.title.x = element_blank(),
+        axis.ticks.x = element_blank()) +
+  scale_color_brewer(palette = "Set1") +
+  scale_fill_brewer(palette = "Set1") +
+  scale_y_continuous(name = "Score", #first axis name
+                     sec.axis = sec_axis(transform = ~./100, name = "Weight")) + #second axis
+  labs(color = "Indicator Type",
+       fill = "Weighting") +
+  guides(color = guide_legend(override.aes = list(fill = NA)))
+
+```
+
+```{r}
+#| label: show plot 3
+#| output: true
+
+plot
+
+```
+
+And save the plot.
+
+```{r}
+#| label: save plot 3
+
+ggsave(glue("{save_outputs}/combining_weight_by_area.png"), plot, width = 11)
+
+```
+
+### Plot Relationship
+
+Again, we also need to plot the actual relationship between the weight and the area to provide a better understanding of this combination method.
+
+```{r}
+#| label: create plot 4
+
+#we will create a new vector for the different area %s
+area <- 1:100
+
+#this vector is given a log transformation
+log_transformed <- log(area)
+
+#to scale the transformation to be from 0 to 50 we need to find the max value of the transformation
+max_log <- max(log_transformed)
+
+#then divide every value in the vector by the max value, and times it by 50
+scaled_transformation <- (log_transformed / max_log) * 50
+
+#and create the plot
+plot <- ggplot() +
+  geom_line(aes(x=area, y = scaled_transformation)) +
+  theme_bw() +
+  labs(x = "Area (%)", y = "Weight (%)")
+
+
+```
+
+
+```{r}
+#| label: show plot 4
+#| output: true
+
+plot
+
+```
+
+```{r}
+#| label: save plot 4
+
+ggsave(glue("{save_outputs}/weight_area_relation.png"), plot, width = 11)
+
+```
+
+
+## Null Weighting (Mean)
+
+The final method we will create a graphic for is a very simple combination method already in use - taking the mean.
+
+## Edit Data
+
+A basic table is created.
+
+```{r}
+#| label: create mean table
+
+#match up data and take the mean score
+mean_table <- data.frame(score_col1, score_col2) |> 
+  mutate(score_final = rowMeans(cbind(score_col1, score_col2)),
+         weight_col1 = 50, weight_col2 = 50, weight_final = 100,
+         x_axis = row_number()) |> 
+  ungroup()
+
+```
+
+The table is pivoted longer.
+
+```{r}
+#| label: pivot data 3
+
+#pivot data longer
+mean_table <- mean_table |> 
+  select(x_axis, score_col1, score_col2, score_final, weight_col1, weight_col2, weight_final) |> 
+  pivot_longer(-x_axis,
+               names_to = c(".value", "score_type"),
+               names_sep = "_")
+
+#rename columns to help with plot
+mean_table <- mean_table |> 
+  mutate(score_type = case_when(score_type == "final" ~ "Indicator Category",
+                                score_type == "col1" ~ "Indicator 1",
+                                T ~ "Indicator 2"))
+
+```
+
+### Plot Data
+
+And the example scores are plotted.
+
+```{r}
+#| label: create plot 5
+
+#create a simple line plot
+plot <- ggplot(mean_table) +
+  geom_line(aes(x = x_axis, y = score, color = score_type), linewidth = 1.5) +
+  geom_area(aes(x = x_axis, y = weight, fill = score_type), alpha = 0.3, show.legend = T) +
+  facet_wrap(~score_type, ncol = 1) +
+  theme_bw() +
+  theme(axis.text.x = element_blank(),
+        axis.title.x = element_blank(),
+        axis.ticks.x = element_blank()) +
+  scale_color_brewer(palette = "Set1") +
+  scale_fill_brewer(palette = "Set1") +
+  scale_y_continuous(name = "Score", #first axis name
+                     sec.axis = sec_axis(transform = ~./100, name = "Weight")) + #second axis
+  labs(color = "Indicator Type",
+       fill = "Weighting") +
+  guides(color = guide_legend(override.aes = list(fill = NA)))
+
+```
+
+```{r}
+#| label: show plot 5
+#| output: true
+
+plot
+
+```
+
+Then saved.
+
+```{r}
+#| label: save plot 5
+
+ggsave(glue("{save_outputs}/combining_by_mean.png"), plot, width = 11)
+
+```
+
+Note that is this case there is no need to also try and plot the relationship, as this is just a mean of the two scores.
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,254 @@
+---
+title: "Traditional Owner Boundaries in the Dry Tropics"
+subtitle: "A Healthy Waters Partnership Analysis"
+description: "This script has been written to create a map of Traditional Owner boundaries in the Dry Tropics Region, plus an overlay of current Water Quality sampling locations."
+author: "Adam Shand"
+date: "`r format(Sys.time(), '%d, %B, %Y')`"
+format: html
+params:
+  project_crs: "EPSG:7844"
+---
+
+# Introduction
+
+There is potential for funding to run additional water sampling programs in the Dry Tropics Region (specifically the Ross, Haughton and Lower Burdekin Basins). This funding would be for TO lead programs. Thus we need a map to identify all current water quality sample sites (i.e. where are the gaps), and the boundaries of all TO groups in the area (i.e. who is near the gaps).
+        
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, sf, tmap, janitor, readxl, grid, RColorBrewer)
+
+```
+
+
+Then we also need to set up key variables for the script, as well as the output location.
+
+```{r}
+#| label: create save path and establish project crs
+
+#set project crs
+proj_crs <- params$project_crs
+
+#create a file path to help with saving outputs
+save_outputs <- here("outputs/dt_maps_to-boundaries/")
+read_data <- here("data/dt_maps_to-boundaries/")
+
+#bring the path to life
+dir.create(save_outputs)
+dir.create(read_data)
+
+#turn off s2 geometry
+sf_use_s2(FALSE)
+
+```
+
+# Load Data
+
+Now the script is set up we need to load in all of the required datasets. We will need:
+
+- A Qld base map
+- The Northern Three region file (to define our Bohle boundary)
+- The Northern Three watercourse dataset (to show where the water is)
+- The Cultural Heritage Party Boundary (to define TO boundaries)
+- All of our current water quality sampling locations + any additional CLMP sites in the Burdekin (to show where current sites are).
+
+```{r}
+#| label: load the n3 region
+
+#read in the custom function to clean column names into our specific style
+source("../functions/name_cleaning.R")
+
+#load a Queensland outline from the aims package
+qld <- get(data("gbr_feat", package = "gisaimsr")) |> 
+  name_cleaning() |> 
+  filter(FeatName %in% c("Mainland", "Island")) |> 
+  st_transform(proj_crs)
+
+#load in the n3 region
+n3_region <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg")) |> 
+  name_cleaning()
+
+#filter to just the areas of interest
+focus_area_boundaries <- n3_region |> 
+  filter(BasinOrZone %in% c("Ross", "Haughton") | SubBasinOrSubZone %in% c("Lower Burdekin"),
+         Environment != "Marine") |> 
+  group_by(SubBasinOrSubZone) |> 
+  summarise(geom = st_union(geom))
+
+#unfortunately to achieve the colouring that is desired we need to split this into each of the sub basin
+split_df <- focus_area_boundaries |> 
+  group_split(SubBasinOrSubZone)
+
+#get our points of interest
+poi <- st_read(here("data/n3_prep_region-builder/qld_place_names.gpkg")) |> 
+  name_cleaning() |> 
+  filter(Description == "Population centre",
+         PlaceName %in% c("Townsville", "Ayr"))
+  
+```
+
+
+```{r}
+#| label: load the watercourse data
+
+#load in full dataset
+n3_watercourse <- st_read(here("data/n3_prep_watercourse-builder/n3_watercourse.gpkg")) |> 
+  name_cleaning()
+
+#filter to just the area of interest
+focus_area_watercourse <- n3_watercourse |> 
+  filter(BasinOrZone %in% c("Ross", "Haughton") | SubBasinOrSubZone %in% c("Lower Burdekin"),
+         Environment != "Marine")
+
+#cut back the number of streams
+focus_area_watercourse <- focus_area_watercourse |> 
+  filter(StreamOrder > 3)
+
+```
+
+
+```{r}
+#| label: load in TO boundaries
+
+#load in all data
+full_to_boundaries <- st_read(glue("{read_data}/cultural_heritage_party_boundary.kml"))
+
+#filter to our target location
+focus_area_to_boundaries <- full_to_boundaries |> 
+  name_cleaning() |> 
+  st_transform(proj_crs) |> 
+  st_filter(focus_area_boundaries, .predicates = st_intersects)
+
+#Clean up the name column
+focus_area_to_boundaries <- focus_area_to_boundaries |> 
+  mutate(Name = str_replace_all(Name, "QC\\S*\\s*|DET\\s*|PRC\\s*|\\s*#2\\s*|\\s*\\(?Part \\S\\)?\\s*|\\sPeople|\\sMada Claim", "")) |> 
+  group_by(Name) |> 
+  summarise(geom = st_union(geom))
+
+```
+
+
+```{r}
+#| label: load in all water quality data
+
+#read in ross black freshwater site coords and convert to a simple feature object
+wq_fresh <- read_excel(path = here("data/dt_water-quality_freshwater/raw/dt_wq_freshwater_metadata.xlsx"), 
+                       sheet = "Current_Sites", na = c("", "NA", "NULL", "null")) |> 
+  name_cleaning()
+
+#filter to what we are interested in and convert to simple feature object
+wq_fresh <- wq_fresh |>
+  filter(Basin == "Ross") |> 
+  select(Basin, SubBasin, Watercourse, Code, Lat, Long) |> 
+  st_as_sf(coords = c("Long", "Lat"), crs = proj_crs) |> 
+  mutate(Site = "Other")
+
+#read in ross black freshwater site coords and convert to a simple feature object
+wq_est <- read_excel(path = here("data/dt_water-quality_estuarine/raw/dt_wq_estuarine_metadata.xlsx"), 
+                     sheet = "Current_Sites", na = c("", "NA", "NULL", "null")) |> 
+  name_cleaning()
+
+#filter to what we are interested in and convert to simple feature object
+wq_est <- wq_est |>
+  filter(Basin == "Ross") |> 
+  select(Basin, SubBasin, Watercourse, Code, Lat, Long) |> 
+  st_as_sf(coords = c("Long", "Lat"), crs = proj_crs) |> 
+  mutate(Site = "Other")
+
+
+#read in clmp burdekin sites
+burd_sites <- read_excel(path = here("data/dt_maps/clmp_burdekin_sites.xlsx"), 
+                         sheet = "Site Details", na = c("", "NA", "NULL", "null")) |> 
+  name_cleaning()
+
+#and filter to what we are interested in and convert to a simple feature object
+burd_sites <- burd_sites |> 
+  filter(Region == "Burdekin") |> 
+  select("Basin", "Catchment", "SiteId", 6, 7) |> 
+  st_as_sf(coords = c(5, 4), crs = proj_crs) |> 
+  rename(SubBasin = Catchment, Code = "SiteId") |> 
+  mutate(Watercourse = NA,
+         Site = "CLMP")
+
+#join all the data together
+all_wq <- rbind(wq_fresh, wq_est, burd_sites) |> 
+  st_filter(focus_area_boundaries, .predicates = st_intersects)
+
+```
+
+# Create Map
+
+Now that all the data is loaded we can create some maps to inspect what we have.
+
+```{r}
+#| label: create the map
+
+#rename some stuff to make the legend nicer
+focus_area_to_boundaries <- focus_area_to_boundaries |> 
+  rename("TO Boundary" = Name)
+
+#create a box of the focus area (in two stages as we need stage 1 later)
+focus_bbox_1 <- st_bbox(focus_area_boundaries)
+focus_bbox_2 <- st_as_sfc(focus_bbox_1)
+
+#create an inset map
+inset_map <- tm_shape(qld, is.master = T) +
+  tm_polygons(col = "grey80", border.col = "black") +
+  tm_shape(focus_area_boundaries) +
+  tm_polygons(col = "grey90", border.col = "black") +
+  tm_shape(focus_bbox_2) +
+  tm_borders(lwd = 2, col = "red") +
+  tm_layout(asp = 0.9)
+  
+#create the main map
+map <- tm_shape(qld) +
+  tm_polygons(col = "grey90", border.col = "Black")
+
+#add the rest of the map layers
+map <- map +
+  tm_shape(focus_area_to_boundaries) +
+  tm_polygons(col = "TO Boundary", border.alpha = 0, alpha = 0.5, palette = "Pastel1") +
+  tm_shape(focus_area_boundaries, is.master = T) +
+  tm_borders(col = "black", alpha = 0) +
+  tm_add_legend(type = "symbol", shape = 0, col = brewer.pal(8, "Dark2"), 
+                labels = focus_area_boundaries$SubBasinOrSubZone, 
+                title = "Sub Basin") +
+  tm_shape(focus_area_watercourse) +
+  tm_lines(col = "dodgerblue", alpha = 0.8) +
+  tm_shape(focus_area_watercourse) +
+  tm_polygons(col = "aliceblue", border.col = "dodgerblue", alpha = 0.8) +
+  tm_shape(qld) +
+  tm_borders(col = "Black")
+
+#loop over each of the sub basins and add them one at a time
+for (i in 1:length(split_df)){
+  
+  map <- map +
+    tm_shape(split_df[[i]]) +
+    tm_borders(col = brewer.pal(8, "Dark2")[i], lwd = 2)
+}
+
+map <- map +
+  tm_shape(all_wq) +
+  tm_symbols(size = 0.3, col = "Site", border.col = "black", border.lwd = 1.3, shape = 21, palette = "Pastel1") +
+  tm_shape(poi) +
+  tm_symbols(size = 0.2, col = "white", border.col = "black", shape = 23) +
+  tm_text("PlaceName", shadow = T, auto.placement = F, size = 0.9, xmod = c(0.8, 2), ymod = c(0,0)) +
+  tm_layout(legend.bg.color = "white", legend.frame = "black", asp = 1.1)
+  
+#figure out the aspect of the inset map and the view port
+asp2 <- 0.9
+w <- 0.2
+h <- asp2 * w
+vp <- viewport(x = 1, y = 0.97, width = w, height = h, just = c("right", "top"))
+
+
+#save map
+tmap_save(map, glue("{save_outputs}/to_boundary_and_wq_map.png"), insets_tm = inset_map, insets_vp = vp)
+
+```

@@ -1,0 +1,174 @@
+---
+title: "Identify the Parent Sub Basin of All Dry Tropics Schools"
+subtitle: "A Healthy Waters Partnership Analysis"
+description: "This script identifies the parent sub basin that every school in the Dry Tropics region belongs to. The output of this script will be used for a partnership and engagement drive"
+author: "Adam Shand"
+format: html
+params:
+  project_crs: "EPSG:7844"
+---
+
+# Introduction
+
+This script has been written to identify the parent sub basin that every school in the Dry Tropics region belongs to. A map of each school and all sub basins will also be created. The outputs of this script will be used in a partnership and engagement drive where the HWP seeks to connect with a wider audience. Some schools that have been provided in the list may also be found to be outside the Dry Tropics region and should be removed.
+        
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, sf, tmap, janitor, readxl)
+
+```
+
+Then we also need to set up key variables for the script, as well as the output location.
+
+```{r}
+#| label: create save path and establish project crs
+
+#set project crs
+proj_crs <- params$project_crs
+
+#create a file path to help with saving outputs
+save_outputs <- here("outputs/dt_maps_school-sub-basin/")
+read_data <- here("data/dt_maps_school-sub-basin/")
+
+#bring the path to life
+dir.create(save_outputs)
+dir.create(read_data)
+
+#turn off s2 geometry
+sf_use_s2(FALSE)
+
+```
+
+# Load Data
+
+Now the script is set up we need to load in all of the required datasets. We will need:
+
+- The Northern Three region file (to define our sub basin boundaries)
+- The list of schools thought to be with the Dry Tropics region
+
+```{r}
+#| label: load the n3 region
+
+#read in the custom function to clean column names into our specific style
+source("../functions/name_cleaning.R")
+
+#load in the n3 region
+n3_region <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg")) |> 
+  name_cleaning()
+
+#read in the list of schools
+potential_schools <- read_excel(glue("{read_data}/potential_schools_list.xlsx"),
+                                sheet = "Schools")
+
+#read in qld outlines data from the gisaimsr package, filter for land and islands, update crs
+qld <- get(data("gbr_feat", package = "gisaimsr")) |> 
+  name_cleaning() |> 
+  filter(FeatName %in% c("Mainland", "Island")) |> 
+  st_transform(proj_crs)
+
+#read in the qld outline for mapping
+#qld <- st_read(here("data/n3_prep_region-builder/qld_boundary.gpkg")) |> 
+#  name_cleaning()
+
+```
+
+# Edit Data
+
+Next we need to perform some minor edits to the data such as filtering to our specific location and converting the school list into a simple features dataset (spatial dataset).
+
+```{r}
+#| label: edit data
+
+#filter to just the Dry Tropics region
+dt_sub_basins <- n3_region |> 
+  filter(Region %in% c("Burdekin", "Dry Tropics") | BasinOrZone == "Don") |> 
+  filter(Environment != "Marine") |> 
+  group_by(SubBasinOrSubZone) |> 
+  summarise(geom = st_union(geom))
+
+#convert to a sf object
+potential_schools <- potential_schools |> 
+  st_as_sf(coords = c("Longitude", "Latitude"), crs = proj_crs)
+
+```
+
+# Assign Sub Basin
+
+We can then assign the sub basin to each school by simply intersecting the two datasets. This also has the added benefit of removing schools that are not within any of the sub basins.
+
+For example: Number of schools before intersection = `r nrow(potential_schools)`
+
+```{r}
+#| label: intersect datasets
+
+#intersect datasets
+school_sub_basin <- st_intersection(potential_schools, dt_sub_basins)
+
+```
+
+Number of schools after intersection = `r nrow(school_sub_basin)`
+
+# Save 
+
+Since that is all we actually had to do we can go ahead and save the results.
+
+```{r}
+#| label: save results
+
+#save
+write_csv(school_sub_basin, glue("{save_outputs}/school_sub_basin.csv"))
+
+```
+
+# Map
+
+We will also create a map to visually confirm our findings.
+
+```{r}
+#| label: create map
+
+#load in custom mapping functions
+source(here("functions/maps_water_layer.R"))
+source(here("functions/maps_inset_layer.R"))
+
+#create the base water layer
+maps_water_layer(supplied_sf = dt_sub_basins, stream_order = c(4,9), water_lines = T, water_polygons = T, 
+                 #region = c("Burdekin", "Dry Tropics"), #enviro = "Freshwater", 
+                 fast = F)
+
+#create the inset layer
+maps_inset_layer(supplied_sf = school_sub_basin, background = dt_sub_basins, aspect = 0.9)
+
+#create the final map
+map <- tm_shape(qld) +
+  tm_polygons(col = "grey80") +
+  tm_shape(dt_sub_basins) +
+  tm_polygons(col = "grey90", border.col = "black") +
+  water_map +
+  tm_shape(school_sub_basin) +
+  tm_dots(col = "Centre.Name", size = 0.5, jitter = 0.2, legend.show = F,
+          alpha = 0.6, border.col = "Black", border.lwd = 1, shape = 21) +
+  tm_layout(legend.bg.color = "white", legend.frame = "black", asp = 1.1, 
+            legend.position = c("right", "bottom"))
+
+#save map
+tmap_save(map, glue("{save_outputs}/school_sub_basins.png"), insets_tm = inset_map, insets_vp = inset_viewport)
+
+```
+
+
+```{r}
+#| label: show map
+#| output: true
+
+map
+
+```
+
+

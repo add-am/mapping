@@ -1,0 +1,17 @@
+Region,Zone,Sub_Zone,Geographic_Area,Chla,TSS,FRP,NOX,PN,PP,Secchi,Turbidity,TN,TP,Nutrients,Phys_Chem,overall_wq,Chla_Grade,TSS_Grade,FRP_Grade,NOX_Grade,PN_Grade,PP_Grade,Secchi_Grade,Turbidity_Grade,TN_Grade,TP_Grade,Nutrients_Grade,Phys_Chem_Grade,overall_wq_Grade
+DT,Halifax Bay,Midshelf,Midshelf,61,92,100,94,27,73,21,93,NA,NA,65,68,64,B,A,A,A,D,B,D,A,NA,NA,B,B,B
+DT,Halifax Bay,HB.Open Coastal,H.Open Coastal,69,64,100,75,33,38,29,73,NA,NA,49,55,58,B,B,A,B,D,D,D,B,NA,NA,C,C,C
+DT,Cleveland Bay,Magnetic Island,Magnetic Island,83,85,100,0,23,55,83,73,NA,NA,26,80,63,A,A,A,E,D,C,A,B,NA,NA,D,B,B
+DT,Cleveland Bay,CB.Enclosed Coastal,EC.Outside Port Zone,64,20,100,94,NA,NA,100,0,59,16,55,40,53,B,E,A,A,NA,NA,A,E,C,E,C,D,C
+DT,Cleveland Bay,CB.Open Coastal,OC.Outside Port Zone,NA,76,100,NA,NA,NA,56,15,81,100,100,49,74,NA,B,A,NA,NA,NA,C,E,A,A,A,C,B
+DT,Cleveland Bay,CB.Open Coastal,OC.Inside Port Zone,NA,98,100,100,NA,NA,100,100,100,100,100,99,99,NA,A,A,A,NA,NA,A,A,A,A,A,A,A
+DT,Halifax Bay,HB.Enclosed Coastal,H.Enclosed Coastal,100,84,100,100,NA,NA,NA,100,NA,100,100,92,97,A,A,A,A,NA,NA,NA,A,NA,A,A,A,A
+DT,Cleveland Bay,CB.Enclosed Coastal,EC.Inside Port Zone,NA,85,100,100,NA,NA,93,89,100,100,100,89,94,NA,A,A,A,NA,NA,A,A,A,A,A,A,A
+DT,Cleveland Bay,CB.Enclosed Coastal,NA,64,52,100,97,NA,NA,96,44,79,58,77,64,68,B,C,A,A,NA,NA,A,C,B,C,B,B,B
+DT,Cleveland Bay,CB.Open Coastal,NA,NA,87,100,100,NA,NA,78,57,90,100,100,74,87,NA,A,A,A,NA,NA,B,C,A,A,A,B,A
+DT,Cleveland Bay,Magnetic Island,NA,83,85,100,0,23,55,83,73,NA,NA,26,80,63,A,A,A,E,D,C,A,B,NA,NA,D,B,B
+DT,Halifax Bay,HB.Enclosed Coastal,NA,100,84,100,100,NA,NA,NA,100,NA,100,100,92,97,A,A,A,A,NA,NA,NA,A,NA,A,A,A,A
+DT,Halifax Bay,HB.Open Coastal,NA,69,64,100,75,33,38,29,73,NA,NA,49,55,58,B,B,A,B,D,D,D,B,NA,NA,C,C,C
+DT,Halifax Bay,Midshelf,NA,61,92,100,94,27,73,21,93,NA,NA,65,68,64,B,A,A,A,D,B,D,A,NA,NA,B,B,B
+DT,Cleveland Bay,NA,NA,73,73,100,73,23,55,86,55,85,79,76,71,73,B,B,A,B,D,C,A,C,A,B,B,B,B
+DT,Halifax Bay,NA,NA,76,80,100,90,30,55,25,88,NA,100,71,72,73,B,B,A,A,D,C,D,A,NA,A,B,B,B

@@ -1,0 +1,1139 @@
+---
+title: "Fish Barriers Script 3 - Prioritizing and Ranking Fish Barriers"
+subtitle: "A Healthy Waters Partnership Analysis"
+description: "Script 3 in a series of scripts designed to identify, prioritise, and rank, fish barriers on waterways in the Northern Three reporting region."
+author: "Adam Shand"
+date: "`r format(Sys.time(), '%d, %B, %Y')`"
+format: html
+params:
+  project_crs: "EPSG:7844"
+  sub_basin: "Stuart Creek"
+  burdekin_addition: "NA"
+  burdekin_y_n: "n"
+  network_number: 3
+execute: 
+  warning: false
+---
+
+# Introduction
+
+This script is part of a series of script that experiment with the automated identification of fish barriers using a variety of tools and datasets. Each script builds upon the last. The method is inspired by the 2008 Burdekin Barriers study conducted by Alluvium on behalf of NQDT (methods doc in the additional resources folder). Some adjustments have been made however the main stages are the same. 
+
+This is script 3, and focuses on prioritizing and ranking all possible barriers within an area. Note that the prioritization criteria that are listed as "not used" are also not used by the Alluvium study.
+
+Barriers are prioritized using the follow criteria (importance = how important the removal of remediation of the barrier is)
+
+- Stream order, streams with a greater stream order are of greater importance
+    + A sub section of this, streams with an order of 1 are not considered within the study due to their abundance and small size
+- Stream order x Road type
+    + Intersections between roads of type "highway" and streams of order >4 are not considered as the intersections are almost certainly elevated bridges.
+
+(Note that these two above were actually completed in script 1).
+
+- Distance to next barrier upstream, barriers with no barriers or barriers much further upstream are of greater importance
+- Presence/Absence of downstream barriers, a barrier with no additional barriers further downstream is of greater importance
+- Position of Barrier in the Catchment, barriers with a high proportion of the catchment upstream are of greater importance
+- Uninterrupted stream length upstream, barriers with lots of total area upstream are of greater importance
+
+Barriers are NOT prioritized (but it would be good if they were) by the following criteria:
+
+- Upstream habitat quantity (Perennial water in Ha)
+- Upstream habitat quantity (Ephemeral water in Ha)
+- Upstream habitat quality (such as that of riparian health)
+- Proximity to downstream aquatic refuge
+
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, sf, tmap, janitor, terra, igraph, riverdist)
+
+```
+
+
+Then we also need to set up key variables for the script, as well as the output location.
+
+```{r}
+#| label: create save path and establish project crs part 1
+
+#read in the custom function to clean column names into our specific style
+source("../functions/name_cleaning.R")
+
+#set project crs
+proj_crs <- params$project_crs
+
+#set the network number to tell us which river network we are focusing on in the sub basin
+net_num <- params$network_number
+
+#set the focus basin, make sure it is capitalized for the data filtering
+focus_sub_basin <- str_to_title(params$sub_basin)
+
+#create a second version that is better optimized for saving (but wouldnt match the col variables)
+focus_sub_basin_saving <- str_to_lower(str_replace_all(focus_sub_basin, c(" " = "_", "\\(" = "", "\\)" = "", "'" = "")))
+
+#check the sub basin exists by reading in dataset and comparing
+n3_region <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg")) |> 
+  name_cleaning()
+
+```
+
+```{r}
+#| label: check if exists
+#| output: true
+
+if (focus_sub_basin %in% n3_region$SubBasinOrSubZone){#if it exists, do nothing
+  
+  print("The targeted sub_basin or sub_zone exists. The script will continue.")
+  
+} else {# if the sub basin target does not exist
+  
+  to_check <- glue_collapse(unique(n3_region$SubBasinOrSubZone), sep = ", ", last = " and ")
+  
+  stop(glue("The sub basin that was targeted does not exist. The sub basins you can select from include:
+            {to_check}."))
+  
+  #clean up
+  rm(to_check)
+  
+}
+
+```
+
+```{r}
+#| label: create save path and establish project crs part 2
+
+if (params$burdekin_y_n == "y"){#if yes, run function
+  
+  #extra the extra burdekin information
+  burd_extra <- params$burdekin_addition
+  
+  #update the sub basin variable
+  burd_extra <- str_to_lower(str_replace_all(burd_extra, c(" " = "_", "\\(" = "", "\\)" = "", "'" = "")))
+
+  #update file paths
+  save_path <- glue(here("outputs/dt_habitat_fish-barriers_s3-prioritization-and-ranking/{str_to_lower(focus_sub_basin_saving)}_sub_basin/{burd_extra}/"))
+  data_path_1 <- glue(here("outputs/dt_habitat_fish-barriers_s1-create-networks/{focus_sub_basin_saving}_sub_basin/{burd_extra}/"))
+  data_path_2 <- glue(here("outputs/dt_habitat_fish-barriers_s2-identification/{focus_sub_basin_saving}_sub_basin/{burd_extra}/"))
+  
+  #update the sub basin variable
+  focus_sub_basin_saving <- burd_extra
+
+  } else {# do original file path
+  
+  #create a file path to help with saving outputs and loading data from the previous script
+  save_path <- glue(here("outputs/dt_habitat_fish-barriers_s3-prioritization-and-ranking/{str_to_lower(focus_sub_basin_saving)}_sub_basin/"))
+  data_path_1 <- glue(here("outputs/dt_habitat_fish-barriers_s1-create-networks/{focus_sub_basin_saving}_sub_basin/"))
+  data_path_2 <- glue(here("outputs/dt_habitat_fish-barriers_s2-identification/{focus_sub_basin_saving}_sub_basin/"))
+
+}
+
+#bring the path to life
+dir.create(save_path, recursive = T)
+dir.create(data_path_1)
+
+#turn off s2 geometry
+sf_use_s2(FALSE)
+tmap_mode("plot")
+
+
+```
+
+# Load Data
+
+We can load in the barriers and watercourse datasets that were prepped during script 2.
+
+```{r}
+#| label: load data prepped earlier
+
+#load the river network data
+load(glue("{data_path_1}/{focus_sub_basin_saving}_river_network_{net_num}.RData"))
+
+#load the barriers data
+target_barriers <- st_read(glue("{data_path_2}/{focus_sub_basin_saving}_network_{net_num}_potential_barriers.gpkg")) |> 
+  name_cleaning()
+
+```
+
+# Prioritising Barriers
+
+We now have the coordinates of all preexisting, and potential barriers. Their coordinates have been perfectly intersected with our watercourse dataset, and we have remove all overlaps and any low priority barriers (script 1). The watercourse dataset has been edited to be perfectly connected, have a specified river mouth, a unique segment for every section of the network, and vertex points within every segment (script 2). The next step is to creating a ranking system that prioritizes barriers for remediation. Barriers with a high prioritisation score would result in the best improvement to the environment if they were remediated. Through exploration of the available datasets and methods we have determined that barriers can be prioritized based on: 
+
+- Stream order, streams with a greater stream order are of greater importance
+    + A sub section of this, streams with an order of 1 are not considered within the study due to their abundance and small size
+- Stream order x Road type
+    + Intersections between roads of type "highway" and streams of order >4 are not considered as the intersections are almost certainly elevated bridges.
+- Distance to next barrier upstream, barriers with no barriers or barriers much further upstream are of greater importance
+- Presence/Absence of downstream barriers, a barrier with no additional barriers further downstream is of greater importance
+- Position of Barrier in the Catchment, barriers with a high proportion of the catchment upstream are of greater importance
+- Uninterrupted stream length upstream, barriers with lots of total area upstream are of greater importance
+
+The first two points have already been addressed. Below we address the remaining four.
+
+## Distance to next barrier upstream
+
+The barrier data has been loaded in with a segment and vertex associated with each barrier, which is the segment and vertex of the river network that the barrier is on. We can measure the distances between each of the barriers by feeding in these segments and vertices. This will produce a matrix of each barrier compared to every other barrier. An important variable in this function is the "stopiferror" variable, although counter intuitive we want to set this to false - the reason being that an error occurs if there is no connection between the two barriers (on separate watercourses). Instead we want these to be recorded as NA. 
+
+```{r}
+#| label: measure distances
+
+#measure distances between each barrier
+distance_between_barriers <- riverdistancemat(seg = target_barriers$BarrierSegment, 
+                                              vert = target_barriers$BarrierVertex, 
+                                              rivers = target_network_clean,
+                                              stopiferror = F)
+
+```
+
+The resulting matrix will look like this:
+
+`r head(distance_between_barriers, c(5,5))`
+
+Note that the diagonal entries of zero are the distance from the barrier to itself. Also note that this splits a perfect mirror of the data, i.e. the distance from barrier 1 to barrier 2 is obviously the same as the distance from barrier 2 to barrier 1. This will become important later.
+
+It is also important to note here that for any pair [i,j], the i and j values (row/column vals) correspond to the row id in the barriers dataset. I.e. for [1,2], this corresponds to the first row of the barriers dataset measured against the 2nd row of the barriers dataset. This DOES NOT correspond to the barrier segment. To make that even more clear, for the first row of the barriers dataset, the barrier segment is actually 53.
+
+Below we convert this matrix to a table and rename columns to help understand distances between A and B.
+
+```{r}
+#| label: convert to table
+
+# Convert matrix to dataframe
+distance_to_closest_barrier <- as.data.frame.table(distance_between_barriers, responseName = "distance_to_barrier")
+
+# Rename columns
+names(distance_to_closest_barrier) <- c("BarrierAId", "BarrierBId", "DistanceToBarrier")
+
+#show head of table
+head(distance_to_closest_barrier)
+
+```
+
+From this, we can remove all instances where the barrier is checked against itself, i.e. cases in which the unique row id for barrier a is equal to the unique row id for barrier b.
+
+This reduces the number of pairs to check from `r nrow(distance_to_closest_barrier)`,
+
+```{r}
+#| label: filter pairs table
+
+#filter data
+distance_to_closest_barrier <- distance_to_closest_barrier |> 
+  filter(BarrierAId != BarrierBId)
+
+```
+
+to `r nrow(distance_to_closest_barrier)`.
+
+We can then directly connect the BarrierAId x BarrierBId pairs back to the original barrier dataset we loaded in via the id columns. For example, the BarrierAId x BarrierBId pair: 2 x 4, is saying that the barrier with the id 2 and the barrier with the id 4 are within 100km of each other.
+
+By using this information and referencing the original barriers dataset we can then figure out for each barrier the segment and vertex it is located on. For example, the barrier with the id 2, is on the 56th segment, 31st vertex, and the barrier with the id 4 is on the 103rd segment, 50th vertex. We need this information to calculate the river flow direction between the two barriers. This is important as it tells us if the barrier is upstream, downstream, or not flow connected (i.e. on a different branch, i.e. for water would have to flow both up and down to reach the other barrier).
+
+```{r}
+#| label: calculate river flow direction
+
+#create an empty list to store the output that is the same length as the input
+relative_direction <- vector(mode = "list", length = nrow(distance_to_closest_barrier))
+
+for (i in 1:nrow(distance_to_closest_barrier)){ #for each pair
+  
+  #pull out the unique barrier row id for each of the barriers in the pair
+  start_row <- distance_to_closest_barrier[[i, 1]]
+  end_row <- distance_to_closest_barrier[[i, 2]]
+  
+  #use the unique barrier row id to find the associated segment and vertex numbers for the barrier
+  direction <- riverdirection(startseg = target_barriers[[start_row, "BarrierSegment"]],
+                              endseg = target_barriers[[end_row, "BarrierSegment"]],
+                              startvert = target_barriers[[start_row, "BarrierVertex"]],
+                              endvert = target_barriers[[end_row, "BarrierVertex"]],
+                              rivers = target_network_clean,
+                              stopiferror = F,
+                              flowconnected = T)
+  
+  #add the resulting direction (or lack there of) to the list
+  relative_direction[[i]] <- direction
+  
+}
+
+#add the relative direction to our table
+distance_to_closest_barrier$RelativeDirection <- unlist(relative_direction)
+
+#clean up
+rm(start_row, end_row, direction, relative_direction, i)
+
+#show head of table
+head(distance_to_closest_barrier, 15)
+
+```
+
+can be mildly ambiguous as it is not 100% clear which way the barriers were measured. To clarify, we have entered barrier_a, as the starting point, and barrier_b as the ending point. So for any row that says "down" that means the water flows down from barrier_a to barrier_b. If the relative direction is NA that means the water would have to flow both down and up to reach the other barrier, i.e. the other barrier is on a separate branch of the river network.
+
+You may also notice we have entries like this:
+
+row1: barrier_a = 2, barrier_b = 3
+row2: barrier_a = 3, barrier_b = 2
+
+Which are essentially measuring the same thing. What we can do with is is only keep instances in which the relative direction is equal to "up" as in this case, we are only interested in barriers that have another barrier upstream. So for the above example, if row1 is "down", then row2 must be "up" and they effectively cancel each other out and we only need to keep one of them.
+
+::: {.callout-note}
+NA values are also removed as they are not flow connected.
+:::
+
+```{r}
+#| label: keep only flow direction up
+
+#filter for only relative direction is up
+distance_to_closest_barrier <- distance_to_closest_barrier |> 
+  filter(RelativeDirection == "up")
+
+```
+
+We also need to just keep the closest barrier, as we are not interested in the distance to all, just the distance to closest.
+
+```{r}
+#| label: keep closest only
+
+#filter join to keep matches with the lowest distance
+distance_to_closest_barrier <- distance_to_closest_barrier |> 
+  group_by(BarrierAId) |> 
+  slice(which.min(DistanceToBarrier)) |> 
+  ungroup()
+
+```
+
+
+Now that we have the distances between each barrier, we can score them as follows:
+
+|Value |Description |Score |
+|------|------------|------|
+|High  |> 100km     |100   |
+|Medium|50 - 100km  |10    |
+|Low   |10 - 50km   |1     |
+|None  |<10km       |0     |
+
+However in our example case, (and I'm sure in alot of cases for coastal catchments), even the largest distances are quite small - with max ranges of ~10.1km. This would just barely get a score of 1... not much of a different to a barrier that is 200m away which would get a score of 0. As an alternative, I have implemented a system in which the score is scaled from 0 to 85 based on the smallest and largest distances for each network. Scaling is done via log base 10 on the score, and then a linear scaling to fix between 0 and 85. We use the log scale to stay close to the scaling that is used in the table above, and we cap scores to 85 because distance to barrier only exists for when barriers are upstream - there is no distance when there is no barrier upstream, thus barriers in this case will get a score of 100. This means that each barrier is ranked on importance with respect to its specific system. Although this differs to the other scores that are based on importance generally, this should work well, as most of the structure of the barriers analysis is based around sequentially inspecting individual networks.
+
+```{r}
+#| label: add ranking to barriers dataset 1
+
+#create the custom function
+dist_to_bar_log_score <- function(x, min_val, max_val, max_score = 85) {
+  
+  # Handle max and min values
+  if (x <= min_val) { return(0)
+  } else if (x >= max_val) {return(max_score)}
+  
+  # Apply log10 transformation, make sure to add 1 to stop negative values and subtract the min value to not "over cook" the value
+  log_transformed <- log10(x - min_val + 1)
+  
+  #scale the log transformed value from 0 to 100 on a linear scale
+  scaled_score <- (x - min_val) / (max_val - min_val) * max_score
+  
+  #return the value
+  return(scaled_score)
+
+}
+
+#apply the function to each row
+distance_to_closest_barrier <- distance_to_closest_barrier |> 
+  rowwise() |> 
+  mutate(DistToBarUpScore = dist_to_bar_log_score(x = DistanceToBarrier,
+                                                  min_val = min(distance_to_closest_barrier$DistanceToBarrier),
+                                                  max_val = max(distance_to_closest_barrier$DistanceToBarrier))) |> 
+  ungroup()
+
+```
+
+And then add this score back to our original barriers dataset and fill in the blanks (NAs) for barriers that don't have anything upstream.
+
+```{r}
+#| label: add score to barrier 1
+
+#strip down to the essentials
+bar_upstream <- distance_to_closest_barrier |> 
+  select(BarrierAId, DistToBarUpScore) |> 
+  mutate(BarrierAId = as.integer(BarrierAId))
+
+#join to our main dataset
+target_barriers <- left_join(target_barriers, bar_upstream, by = c("RowId" = "BarrierAId"))
+
+#for barriers that have a dist to barrier score of "NA" - these should be scored as 100
+target_barriers <- target_barriers |> 
+  mutate(DistToBarUpScore = case_when(is.na(DistToBarUpScore) ~ 100,
+                                          T ~ DistToBarUpScore))
+
+#clean up
+rm(bar_upstream)
+
+```
+
+## Presence/Absence of downstream barrier
+
+For this section we are interested in if there is a barrier downstream, regardless of distance, and what type of barrier it is. We will score this based on four categories:
+
+|Value |Description                 |Score |
+|------|----------------------------|------|
+|High  |No barriers downstream      |100   |
+|Medium|1 or more partial barriers  |10    |
+|Low   |1 or more complete barriers |1     |
+|None  |1 or more natural barriers  |0     |
+
+Annoyingly, we can only really determine y/n if there is a barrier downstream. Thus, for the matrix, the only filtering we can do on the matrix is to remove distances of zero, as that is the barrier compared to itself. We can recycle the matrix that we create earlier to save time.
+
+```{r}
+#| label: filter distances
+
+#remove instances of barriers with distance 0
+barriers_downstream <- data.frame(which(distance_between_barriers > 0, arr.ind = T))
+
+#join each of the tables together and then rename variables to help with readability
+barriers_downstream <- barriers_downstream |> 
+  rename(BarrierAId = row,
+         BarrierBId = col)
+
+#clean up
+rm(distance_between_barriers)
+
+```
+
+We can use the resulting BarrierAId x BarrierBId pairs to go through and find the flow direction for each pair.
+
+```{r}
+#| label: find river flow direction
+
+#create an empty list to store the output the same length as the input
+relative_direction <- vector(mode = "list", length = nrow(barriers_downstream))
+
+for (i in 1:nrow(barriers_downstream)){ #for each pair
+  
+  ##pull out the unique barrier row id for each of the barriers in the pair
+  start_row <- barriers_downstream[[i, 1]]
+  end_row <- barriers_downstream[[i, 2]]
+  
+  #use the unique barrier row id to find the associated segment and vertex numbers for the barrier
+  direction <- riverdirection(startseg = target_barriers[[start_row, "BarrierSegment"]],
+                              endseg = target_barriers[[end_row, "BarrierSegment"]],
+                              startvert = target_barriers[[start_row, "BarrierVertex"]],
+                              endvert = target_barriers[[end_row, "BarrierVertex"]],
+                              rivers = target_network_clean,
+                              stopiferror = F,
+                              flowconnected = T)
+  
+  #add the resulting direction (or lack there of) to the list
+  relative_direction[[i]] <- direction
+  
+}
+
+#add the relative direction to our table
+barriers_downstream$RelativeDirection <- unlist(relative_direction)
+
+#clean up
+rm(start_row, end_row, direction, relative_direction, i)
+
+#show head of table
+head(barriers_downstream)
+
+```
+
+The same logic for interpretation applies, from "a", to "b". In this table we are looking to keep only rows that contain the "down" relative direction.
+
+```{r}
+#| label: keep only flow direction down
+
+#filter for only relative direction is down
+barriers_downstream <- barriers_downstream |> 
+  filter(RelativeDirection == "down")
+
+```
+
+However this dataset still contains several "downs" per barrier, as far as we are concerned, 1 barrier downstream is the same as 1000 barriers downstream. Below we filter to get only one row per barrier, not caring which one we keep.
+
+```{r}
+#| label: keep only row per barrier
+
+#filter to only have one row per barrier
+barriers_downstream <- barriers_downstream |> 
+  select(-BarrierBId) |> 
+  group_by(BarrierAId) |> 
+  unique() |> 
+  ungroup()
+
+```
+
+Finally we can add a ranking based on the table we created above, although we have a table with four possible scores we can only really give two scores (pres/abs), we will find a middle ground for scoring present. Instead of using 100 we will use 10.
+
+```{r}
+#| label: add ranking to barriers dataset 2
+
+barriers_downstream <- barriers_downstream |> 
+  mutate(BarDownScore = 10)
+
+```
+
+And then add this score to our barrier dataset and fill in the blanks (NAs) for barriers that don't have anything downstream.
+
+```{r}
+#| label: add score to barrier 2
+
+#strip down to the essentials
+bars_down <- barriers_downstream |> 
+  select(BarrierAId, BarDownScore)
+
+#join to our main dataset
+target_barriers <- left_join(target_barriers, bars_down, by = c("RowId" = "BarrierAId"))
+
+#for barriers that have a bar downstream score of "NA" - these should be scored as 100
+target_barriers <- target_barriers |> 
+  mutate(BarDownScore = case_when(is.na(BarDownScore) ~ 100,
+                                    T ~ BarDownScore))
+
+#clean up
+rm(bars_down)
+
+```
+
+## Position of barrier in catchment
+
+For this section we will calculate the position of the barrier relative to the catchment as a whole. We will score the position based on the following for categories:
+
+|Value  |Description                                                                       |Score |
+|-------|----------------------------------------------------------------------------------|------|
+|High   |>80% of stream length above the barrier in relation to the total stream length.   |100   |
+|Medium |50-80% of stream length above the barrier in relation to the total stream length. |10    |
+|Low    |25-50% of stream length above the barrier in relation to the total stream length. |1     |
+|None   |<25% of stream length above the barrier in relation to the total stream length.   |0     |
+
+To do this, we need to figure out where the barrier sits. Although this sounds easy it is annoying to do and requires multiple steps:
+
+- Calculate the distance from the barrier to the river mouth
+- Calculate the distance from each barrier to every other segment in the network.
+- Find if the path between the barrier and the segment is exclusively upstream. 
+- Find the longest exclusively upstream path
+- Combine the longest upstream path with the distance to the river mouth to calculate the length of the parent river.
+- Find the position of the barrier along this parent river by dividing distance to mouth by total river length.
+
+### Distance to Mouth
+
+First is to calculate the distance from each barrier to the mouth of the river. This follows a similar method to the above sections, querying segment by segment and storing the output as a list.
+
+```{r}
+#| label: calculate lengths to mouth
+
+#figure out the seg and vert of the mouth
+mouth_seg <- target_network_clean$mouth[[1]]
+mouth_vert <- target_network_clean$mouth[[2]]
+
+#create an empty list to store the output, the output should have the same length as the barriers set
+distance_to_mouth <- vector(mode = "list", length = nrow(target_barriers))
+
+for (i in 1:nrow(target_barriers)){#for each segment
+  
+  #measure distances between each barrier
+  distance <- riverdistance(startseg = target_barriers[[i, "BarrierSegment"]],
+                                   startvert = target_barriers[[i, "BarrierVertex"]],
+                                   endseg = mouth_seg,
+                                   endvert = mouth_vert,
+                                   rivers = target_network_clean,
+                                   stopiferror = F)
+  
+  #add the length to the list
+  distance_to_mouth[[i]] <- distance
+  
+}
+
+#convert to a vector
+distance_to_mouth <- unlist(distance_to_mouth)
+
+#add to the dataframe
+target_barriers <- mutate(target_barriers, DistanceToMouth = distance_to_mouth)
+
+#clean up
+rm(mouth_seg, mouth_vert, distance, distance_to_mouth, i)
+
+```
+
+### Segment to Segment Distances
+
+First we will create a matrix of distances between every segment and every other segment. This should create a matrix of ` r dim(target_network_clean$connections)[1]` by ` r dim(target_network_clean$connections)[1]` = ` r dim(target_network_clean$connections)[1]* dim(target_network_clean$connections)[1]`.
+
+We could take this one step further and measure from every vertex within every segment, but I'm pretty sure that would blow up my computer - there are sometimes upwards of 300 vertices per segment. Instead we will just measure from the 1st vertex of each segment.
+
+```{r}
+#| label: distances between every segment
+
+#create a vector of length 1 to n where n is the length of the number of available segments
+all_segments <- 1:dim(target_network_clean$connections)[1]
+
+#create a vector of the same length as above of just 1's, this will represent the vertices
+all_vertices <- rep(1, length = length(all_segments))
+
+#measure distances between every segment, using 1 for the vertex every single time
+all_distances_matrix <- riverdistancemat(seg = all_segments, 
+                                         vert = all_vertices,
+                                         rivers = target_network_clean,
+                                         stopiferror = F)
+
+#clean up
+rm(all_vertices)
+
+```
+
+### Exclusively Upstream
+
+We will then create a matrix of water flow from each barrier to every single segment (again using 1 for the vertex).
+
+```{r}
+#| label: direction of waterflow for every segment
+
+#create an empty dataframe to store the final output, the number of rows should equal that of one dimension of the above matrix
+direction_of_flow <- data.frame(RowId = 1:dim(all_distances_matrix)[1])
+
+#create an empty list to store the output before it goes into the dataframe, same length requirement
+temporary_storage <- vector(mode = "list", length = dim(all_distances_matrix)[1])
+
+for (i in 1:nrow(target_barriers)){#for each barrier in the original barriers dataset
+  
+  for (j in all_segments){#for every single segment that we have to check
+
+    #check each segment by getting the water flow direction from the barrier to the segment (using 1 for the vertex)
+    direction <- riverdirection(startseg = target_barriers[[i, "BarrierSegment"]],
+                                endseg = j,
+                                startvert = target_barriers[[i, "BarrierVertex"]],
+                                endvert = 1,
+                                rivers = target_network_clean,
+                                stopiferror = F,
+                                flowconnected = T)
+    
+    #add the direction to a list that temporarily stores the output
+    temporary_storage[[j]] <- direction
+    
+  }
+  
+  #once the list is completed (i.e. is length = matrix dim) add it as a new column in a dataframe. With col name = to segment number checked
+  direction_of_flow <- direction_of_flow |> 
+    mutate(!!as.character(i) := unlist(temporary_storage))
+  
+}
+
+#drop the RowId col as this is useless
+direction_of_flow <- select(direction_of_flow, -RowId)
+
+#clean up
+rm(temporary_storage, direction, i, j)
+
+```
+
+Once we have a matrix of distances between every segment and a matrix of water flow directions between the barriers and every segment we need to combine the two. First we will remove any instance in which the flow of water from the barrier to the segment is not exclusively "up" (i.e. the segment must be completely upstream of the barrier). To do this, we obtain a dataframe that gives the row and column index for each cell that contains "up".
+
+```{r}
+#| label: keep only "up"
+
+#for each instance in the table that has an "up", use the column index to figure out which barrier and the row index to figure out which segment was "up"
+where_is_up <- data.frame(which(direction_of_flow == "up", arr.ind = T))
+
+#rename the columns to make more sense
+where_is_up <- where_is_up |> 
+  rename(RiverSegment = row,
+         BarrierUniqueId = col)
+
+#clean up
+rm(direction_of_flow)
+
+```
+
+Then we need to translate the river segment and barrier unique ids in the dataframe to match the segment number associated with the barrier and the upstream point. For example, the  river segment and barrier unique id might be 53 and 1. This means that the segment that was found to be upstream was segment 53, and the barrier was the 1st barrier (not the 1st segment). To get the segment that the barrier is on, we match the unique id of the barrier with the segment listed in the main dataframe. By doing this match (AKA left_join) we can also carry over the distance to mouth for the barrier which is useful later.
+
+```{r}
+#| label: associated barrier number to segment
+
+#translate the column to the barrier segment
+translated_segments <- left_join(where_is_up, 
+                                 select(target_barriers, c(BarrierSegment, RowId, DistanceToMouth)), 
+                                 by = c("BarrierUniqueId" = "RowId"))
+
+#clean up
+rm(where_is_up)
+
+```
+
+Once we know the segment number of the barrier, the segment number of any completely upstream point, and the distance from the barrier segment to the mouth. We can use these segment numbers as row and index ids to find the distance between the two segments in the distance matrix we created earlier.
+
+```{r}
+#| label: find the distance between the two segments
+  
+#for each of these pairs find the correct lengths by using the matrices of distances and add it as a length column
+translated_segments <- translated_segments |> 
+  mutate(DistFromBarsegToRivseg = map2_dbl(.x = translated_segments$RiverSegment, 
+                                                   .y = translated_segments$BarrierSegment, 
+                                                   ~all_distances_matrix[.x, .y]))
+
+#clean up
+rm(all_distances_matrix)
+
+```
+
+### Longest Upstream
+
+Below we find for each barrier the upstream point that is the furthest away.
+
+```{r}
+#| label: find longest upstream
+
+#for each barrier (designated by the barrier column) find the longest length, and remove lengths of zero (because that is the longest distance in some cases)
+longest_upstream <- translated_segments |> 
+  group_by(BarrierSegment) |> 
+  slice(which.max(DistFromBarsegToRivseg)) |> 
+  ungroup() |> 
+  filter(DistFromBarsegToRivseg !=0)
+
+```
+
+### Total Length
+
+And then add that distance to the distance to river mouth to find the total river length for the river that each barrier sits on and the proportion of river that the barrier blocks.
+
+```{r}
+#| label: calculate the ratio of upstream to downstream
+
+#then for each barrier that remains, add the two distances together to get a total river distance from head to mouth
+longest_upstream <- longest_upstream |> 
+  rowwise() |> 
+  mutate(TotalRiverLength = sum(DistFromBarsegToRivseg, DistanceToMouth)) |> 
+  ungroup()
+
+#finally we can calculate a ratio of water blocked by the barrier
+ratio_blocked <- longest_upstream |> 
+  rowwise() |> 
+  mutate(RatioBlocked = DistFromBarsegToRivseg/TotalRiverLength) |> 
+  ungroup()
+
+#clean up
+rm(longest_upstream)
+
+```
+
+Finally we can add a ranking based on the table we created above.
+
+```{r}
+#| label: add ranking to barriers dataset 3
+
+#add a score per barrier distance
+ratio_blocked <- ratio_blocked |> 
+  mutate(BarPositionScore = case_when(RatioBlocked > 0.8 ~ 100,
+                                       (RatioBlocked <= 0.8 & RatioBlocked > 0.5) ~ 10,
+                                       (RatioBlocked <= 0.5 & RatioBlocked > 0.25) ~ 1,
+                                       RatioBlocked < 0.25 ~ 0))
+
+```
+
+And then add this score to our barrier dataset.
+
+```{r}
+#| label: add score to barrier 3
+
+#strip down to the essentials
+rat_block <- ratio_blocked |> 
+  select(BarrierUniqueId, BarPositionScore)
+
+#join to our main dataset
+target_barriers <- left_join(target_barriers, rat_block, by = c("RowId" = "BarrierUniqueId"))
+
+#clean up
+rm(rat_block)
+
+```
+
+## Uninterrupted Network Length Upstream
+
+::: {.callout-note}
+This metric is also discussed in detail in [issue 95](https://github.com/Northern-3/spatial-analyses/issues/95) and [issue 97](https://github.com/Northern-3/spatial-analyses/issues/97).
+:::
+
+The final metric we are going to use to score the barriers is the total length of uninterrupted stream network upstream of the barrier, this includes all tributaries and side channels, not just the main channel. This is another metric that sounds easy enough but can pose quite the challenge, mainly due to the term "uninterrupted".
+
+Assume a river network with 1 barrier, everything above the barrier contributes to the upstream, uninterrupted network length. Now assume a river network with 2 barriers, for 1 of the barriers (the one further upstream), everything upstream of the barrier contributes to the upstream, uninterrupted network length. However for the lower barrier, the upstream, uninterrupted network length is now the network, minus the area that has been blocked off by the second barrier. This gets more complex the more barriers added.
+
+To extend on above, assume a network with 3 barriers, all existing on and blocking the same watercourse. The highest barrier is simple, the second highest barrier can be calculated as above, however the third barrier no longer can be, because we would be double counting some areas. Thus to find the area of the lowest barrier we need to recursively check for nesting within any barriers upstream.
+
+Thus, roughly, the devised method is as follows:
+
+- calculate the upstream network length (regardless if interrupted or not) for all barriers
+- keep on hand the segment numbers that are upstream of each barrier
+- for each barriers' upstream network length, search through the segment numbers that are listed to be upstream
+- if any segment number upstream of the barrier matches the segment number of another barrier note it as such
+- for any barrier noted in this way, search through its' segment numbers to find any additional barriers using the same method
+- repeat this until all barriers and nested barriers are found
+- calculate the uninterrupted upstream network length as the original length minus the area of any barrier whos segment was noted to be upstream of the original barrier
+
+This contained a lot of repeated words and phrases however what this actually means is just that we should treat this like a network and node question and create a network graph.
+
+### Step 1: Find Total lengths
+
+Below we use a table created earlier to get a dataframe of barrier - segment pairs. Where for each barrier, all of the river segments that are confirmed to be upstream of the barrier are listed. For example, barrier X, which is on the 5th river segment, has the river segments 6, 18, 39, etc, upstream of the barrier.
+
+We then use the column that contains all of the river segments that are upstream, and pull out the segment length for each one from the original river network dataset.
+
+```{r}
+#| label: create the relationship table of each of the barriers and segments and get segment lengths
+
+#select key variables and pull lengths from main river network dataset
+river_segment_lengths <- translated_segments |> 
+  select(BarrierUniqueId, BarrierSegment, RiverSegment) |> 
+  mutate(LengthOfRiverSegment = target_network_clean$lengths[RiverSegment]) 
+
+```
+
+In the table that we just created there are rows in which the river segment upstream of the barrier is only the river segment that the barrier is on. This means that there is no additional river segments upstream of that barrier.
+
+Following this, we can then group the data by the barrier segment and sum the river segment lengths to get the total river length that is above each barrier. An important thing we need to do here is to make sure we keep the barrier unique id as this how we connect the results back to the main dataset. However, in some case there are more than 1 barrier unique ID's per barrier segment, when this happens we will store them in a list to be extracted back out later.
+
+```{r}
+#| label: calculate total length above
+
+#group by barrier and calculate the total river network length above each barrier
+total_length_p1 <- river_segment_lengths |> 
+  group_by(BarrierSegment) |> 
+  mutate(TotalLengthAboveBarrier = sum(unique(LengthOfRiverSegment)),
+         BarrierUniqueId = list(unique(BarrierUniqueId))) |> 
+  ungroup() |> 
+  select(-LengthOfRiverSegment) |>
+  unique()
+
+```
+
+### Step 2: Create a Network Graph
+
+However this is where things get tricky. As we highlight above, we are trying to work out uninterrupted stream length, which means that the total length is sans the total length of any barrier further upstream. And this is nested logic is nested.
+
+Above we calculated the total length for above each barrier, now we need to work out how,if, and where, each barrier is nested. To do this we need to do a network analysis. When we conduct a network analysis we can think of each barrier as a node, and the length of river upstream of the barrier as the nodes' value. To tell which nodes are connected we can look through the RiverSegment column (which tells us which river segments are upstream of each barrier) and keep any river segment that is also found in the barrier_segment column (which tells us which segment each barrier is on).
+
+Thus a table that looks like this after filtering:
+
+|Barrier Segment  |River Segment |
+|-----------------|--------------|
+|1                |1             |
+|1                |2             |
+|1                |9             |
+|1                |14            |
+
+would mean that barriers 2, 9, and 14, are all upstream of barrier 1, so the total length above barrier 1 would be the b1 length - (b2 length + b9 length + b14).
+
+The nested part of this logic is as follows, imaging the table looked like this: 
+
+|Barrier Segment  |River Segment |
+|-----------------|--------------|
+|1                |1             |
+|1                |2             |
+|1                |9             |
+|1                |14            |
+|2                |2             |
+|2                |11            |
+
+which would mean that, again, barriers 2, 9, and 14, are all upstream of barrier 1. But crucially, b11 is also further upstream of b2! Thus, the length above B1 would be:
+
+- b2 length - b11 length = b2.0 length
+- b1 length - (b2.0 length + b9 length + b14 length) = b1.0 length
+
+Noting how the length of b2 was calculated first, then the new length of b2 was subtracted from b1.
+
+```{r}
+#| label: keep only barriers
+
+#ensure that only barriers are nodes by keeping only river segments that contain a barrier.
+total_length <- total_length_p1 |> 
+  filter(RiverSegment %in% BarrierSegment)
+
+#In some cases we find that a barrier is on the very last vertex of its segment, and is not recorded as blocking itself. We must add the self block back in. We do this by finding missing pairs
+#Identify missing pairs
+missing_pairs <- total_length |> 
+  filter(!(RiverSegment %in% BarrierSegment)) |> 
+  mutate(BarrierSegment = RiverSegment)
+
+
+#we then need to add the correct length, which is pulled from the dataframe before we removed the barrier prematurely
+missing_lengths <- total_length_p1 |>
+  filter(BarrierSegment %in% missing_pairs$RiverSegment) |> 
+  select(TotalLengthAboveBarrier) |> 
+  unique() |> 
+  as.vector()
+
+#we can then add the length back on to the missing pairs dataset
+missing_pairs <- missing_pairs |> 
+  mutate(TotalLengthAboveBarrier = missing_lengths)
+
+#and then add the missing pair to the main dataset
+total_length <- rbind(total_length, missing_pairs)
+
+#we can then rename one of the columns to be more clear
+total_length <- total_length |> 
+  rename(BarrierUpstreamOfMain = RiverSegment)
+
+```
+
+That was a lot of explaining for two lines of code. lol.
+
+Next up we need to "flatten" the barrier segment and barrier upstream segment numbers. Right now, the barrier segment numbers are directly derived from the original river segment numbers, i.e. The river segment numbers might be 1,2,3,4,5,6,7,8,9. But we only have barriers on segments 1,2 and 6, thus when looking at the columns it seems like some numbers are missing. Normally this would not be that big of a deal, but the next few steps expect nodes at every integer from min to max. If there are missing nodes, it will create new ones. Thus it will create artificial nodes at 3,4,5,7,8,9 - even though we didn't want nodes there.
+
+Thus to avoid this, we flatten the barrier numbers.
+
+```{r}
+#| label: flatten barrier numbers
+
+#use the dense rank function to get the order from min to max, and use this as the new barrier numbers
+order_total_lengths <- total_length |> 
+  mutate(BarrierRank = dense_rank(BarrierSegment), 
+         BarrierUpstreamRank = dense_rank(BarrierUpstreamOfMain)) |> 
+  arrange(BarrierRank)
+
+```
+
+Early we spoke of the value of each node being the total length of river upstream of the barrier. We need to pull this out and save it as its own named vector. This length that we pull out is the total stream length upstream of the barrier, regardless of if it is blocked.
+
+```{r}
+#| label: get original area value of each node
+
+#get the area values
+total_length_upstream <- as.numeric(unique(order_total_lengths$TotalLengthAboveBarrier))
+
+#name the values so we can associate them back to the table
+names(total_length_upstream) <- as.character(unique(order_total_lengths$BarrierRank))
+
+```
+
+We now have everything we need to create the network diagram of each of the barriers. This makes use of the igraph package and take a 2 column matrix as an input. Column one is the node (main barrier) and column two is the nodes connected to the main node (barriers upstream).
+
+```{r}
+#| label: create the network diagram
+
+#pull out the two column and store as a matrix
+edge_list <- as.matrix(select(order_total_lengths, c(BarrierRank, BarrierUpstreamRank)))
+
+#create the graph from the edge list
+network_graph <- graph_from_edgelist(edge_list, directed = TRUE)
+
+```
+
+We can actually plot this graph, but it is so interwoven that it looks like a complete mess.
+
+```{r}
+#| label: plot just because
+
+#plot
+plot(network_graph, vertex.label = V(network_graph)$name, edge.arrow.size = 0.5, main = "Network Connections")
+
+```
+
+### Step 3: Calculate Uninterrupted Stream Length
+
+So now what we have, is a list of total lengths for each node, and a graph that explains how each node is connected. The next thing we need to do is calculate the uninterrupted length. When we are calculating the length above each barrier it is very important that we calculate the length in the right order. Essentially we want to start with barriers that have nothing above them, then barriers that only have one barrier above them, then 2 barriers above them, then 3. etc.
+
+Below we look at every node (barrier) and count the number of upstream nodes.
+
+```{r}
+#| label: count the number of upstream nodes
+
+#create a list to store the number of upstream connections each node has
+number_of_upstream_nodes <- vector(mode = "list", length = length(total_length_upstream))
+
+#create a vector of nodes that are going to be checked
+vec_of_nodes <- unique(order_total_lengths$BarrierRank)
+
+#for each node
+for (node in vec_of_nodes) {
+  
+  #find out the neighbors to the node that are "out" i.e. upstream
+  node_neighbor <- neighbors(network_graph, node, mode = "out")
+  
+  #store the neighbors in a list
+  number_of_upstream_nodes[[node]] <- node_neighbor
+
+}
+
+#name each of the items in the list, so that when we rearrange them we know which node is which
+names(number_of_upstream_nodes) <- vec_of_nodes
+
+#calculate the length of each vector in the list
+number_of_upstream_nodes <- sapply(number_of_upstream_nodes, length)
+
+```
+
+The output of this looks like `r head(number_of_upstream_nodes)` where the top row is the barrier id, and the bottom row is the number of barriers upstream.
+
+```{r}
+#| label: order asceding 
+
+#sort in ascending order
+nodes_ascending <- sort(number_of_upstream_nodes)
+
+```
+
+Which looks like this: `r head(nodes_ascending)`
+
+We can then order this named vector by number of upstream nodes in ascending order, so that barriers with the least number of upstream nodes come first. Once ordered we can swap the barrier id and the node count around so that barrier id becomes the vector value and node count becomes the vector name.
+
+```{r}
+#| label: and flip
+
+#and flip vector name and vector value
+nodes_ascending <- setNames(as.integer(names(nodes_ascending)), nodes_ascending)
+
+```
+
+Which looks like this: `r head(nodes_ascending)`
+
+We can then use this vector of nodes as the order in which to calculate each nodes area. The output of which looks like this:
+
+```{r}
+#| label: update the area of each node
+
+#create a copy called uninterrupted length to store the final output
+uninterrupted_length_upstream <- total_length_upstream 
+  
+#for each node in the specially order vector we created
+for (node in nodes_ascending){
+  
+  #get a list of all the upstream node neighbors
+  upstream_neighbors <- neighbors(network_graph, node, mode = "out")
+    
+  #make sure the node length is not zero (it shouldn't be)
+  if (length(upstream_neighbors) > 0){
+      
+    upstream_neighbors <- upstream_neighbors[upstream_neighbors != node]
+      
+    #update the area of the node
+    uninterrupted_length_upstream[node] <- uninterrupted_length_upstream[node] - sum(uninterrupted_length_upstream[upstream_neighbors])
+      
+  }
+
+}
+
+print(head(uninterrupted_length_upstream))
+
+```
+
+### Step 4: Connect Back to Barriers
+
+The final step is to connect these lengths back to the original barriers. We can do by first adding the lengths to the total lengths table using the "flattened" barrier segment numbers, and then use the original barrier segment numbers to connect back to the original dataset.
+
+```{r}
+#| label: connect back to original barriers data
+
+#convert updated lengths to a df
+uninterrupted_length_upstream <- data.frame(uninterrupted_length_upstream) |> 
+  mutate(flat_bar = row_number())
+
+#join to the main dataframe that contains the barrier ranks and segments
+unin_length_up_bar_seg <- left_join(order_total_lengths, uninterrupted_length_upstream, by = c("BarrierRank" = "flat_bar"))
+
+```
+
+### Step 5: Scoring
+
+We can now score, although we do need to change the units to match our scoring system.
+
+```{r}
+#| label: strip to essentials update units for scoring
+
+#strip down to just the components need to score the length upstream
+unin_length <- unin_length_up_bar_seg |> 
+  select(BarrierUniqueId, uninterrupted_length_upstream)
+
+#unpack (unnest) the barrier unique_id so that when we match each unique id that was stacked gets the same length but its own row
+unin_length <- unin_length |> 
+  unnest(BarrierUniqueId)
+
+#remove scientific notation as it makes things hard to read quickly
+options(scipen = 999)
+
+#add units and divide by 1000 to change numbers from m to km
+unin_length <- unin_length |> 
+  mutate(uninterrupted_length_upstream = 
+           uninterrupted_length_upstream/1000)
+
+```
+
+Scoring of this metric is based on the following four categories:
+
+|Value  |Description   |Score |
+|-------|--------------|------|
+|High   |> 1,000km     |100   |
+|Medium |500 - 1,000km |10    |
+|Low    |300 - 500km   |1     |
+|None   |<300km        |0     |
+
+However in our example case, (and I'm sure in alot of cases for coastal catchments), even the barrier with the largest upstream network does not receive a score greater than 0. As an alternative to this scoring system I have implemented a system in which the score is scaled from 0 to 100 based on the smallest and largest upstream distances for each network. Scaling is done via log base 10 on the score, and then a linear scaling to fix between 0 and 100, to stay close to the scaling that is used in the table above. This means that each barrier is ranked on importance with respect to its specific system. Although this differs to the other scores that are based on importance generally, this should work well, as most of the structure of the barriers analysis is based around sequentially inspecting individual networks.
+
+```{r}
+#| label: score upstream network
+
+#create the custom function
+upstream_log_score <- function(x, min_val, max_val, max_score = 100) {
+  
+  # Handle max and min values
+  if (x <= min_val) { return(0)
+  } else if (x >= max_val) {return(max_score)}
+  
+  # Apply log10 transformation, make sure to add 1 to stop negative values and subtract the min value to not "over cook" the value
+  log_transformed <- log10(x - min_val + 1)
+  
+  #scale the log transformed value from 0 to 100 on a linear scale
+  scaled_score <- (x - min_val) / (max_val - min_val) * max_score
+  
+  #return the value
+  return(scaled_score)
+
+}
+
+#apply the function to each row
+unin_length_scored <- unin_length |> 
+  rowwise() |> 
+  mutate(unin_length_up_score = upstream_log_score(x = uninterrupted_length_upstream,
+                                                   min_val = min(unin_length$uninterrupted_length_upstream),
+                                                   max_val = max(unin_length$uninterrupted_length_upstream))) |> 
+  ungroup()
+
+#rm(unin_length)
+
+```
+
+We can then add these scores to the main dataset.
+
+```{r}
+#| label: add to main 
+
+#keep only scores and id
+unin_length_scored <- unin_length_scored |> 
+  select(BarrierUniqueId, unin_length_up_score)
+
+target_barriers <- left_join(target_barriers, unin_length_scored, by = c("RowId" = "BarrierUniqueId"))
+
+#clean up
+rm(unin_length_scored)
+
+```
+
+## Final Scores
+
+All of the methods of prioritizing barriers area completed. They can now be combined to find an overall priority score for each barrier.
+
+```{r}
+#| label: final scores
+
+target_barriers <- target_barriers |> 
+  rowwise() |> 
+  mutate(FinalScore = sum(c(DistToBarUpScore, BarDownScore, BarPositionScore, unin_length_up_score), na.rm = T))
+
+```
+
+# Saving Results
+
+The barriers have now all been allocated their scores and can be saved for visual inspection.
+
+```{r}
+#| label: save to file
+
+st_write(target_barriers, glue("{save_path}/{focus_sub_basin_saving}_network_{net_num}_all_barriers_ranked.gpkg"), delete_dsn = T)
+
+```

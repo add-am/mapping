@@ -1,0 +1,803 @@
+---
+title: "Northern Three Spatial Analyses (Habitat: Broad Vegetation Groups)"
+author: "Adam Shand"
+date: "`r format(Sys.time(), '%d, %B, %Y')`"
+format: html
+params:
+  project_crs: "EPSG:7844"
+---
+
+::: {.callout-tip}
+## R Version
+For R session info at the time of rendering this script see @sec-sessioninfo.
+:::
+
+# Introduction
+
+This script contains the methods used to wrangle, analyse and present broad vegetation group data in the Northern Three regions. For a guide on downloading broad vegetation group data refer to the README document for the Spatial Analysis GitHub repo. Note that broad vegetation group data is actually a subset of regional ecosystem data, and thus only regional ecosystem data needs to be downloaded.
+
+Broad vegetation group data is currently not used in the technical report, however may potentially be used in the future to provide additional basin context, and to help "set the scene" for each basin in each region. broad vegetation group data is currently not scored, and is only a contextual dataset. The main objectives of this script are to:
+
+ - Create tabular summaries of the types of broad vegetation groups present in each basin.
+ - Create maps of land use types in each basin.
+ - Utilize the broad grouping to present understandable vegetation types.
+ - Create horizontal bar charts breaking down the proportional contribution of each vegetation type.
+
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, janitor, sf, tmap, grid, terra)
+
+```
+
+
+We also need to set up key variables for the script such as where we are going to save the outputs, and what coordinate reference system (crs) we are going to be using. Note that the crs is first established under 'params' at the start of the script.
+
+```{r}
+#| label: global vars and initial setup
+#| output: false
+
+#set project variables: crs factor and current_fyear
+proj_crs <- params$project_crs 
+
+#create a file path to help with saving things
+save_path <- here("outputs/n3_habitat_broad-vegetation-groups/")
+
+#bring that path to life
+dir.create(save_path)
+
+#create an extra off of this for maps and plots
+dir.create(glue("{save_path}/maps/"))
+dir.create(glue("{save_path}/plots/"))
+
+#turn off spherical geometry
+sf_use_s2(F)
+
+#turn off scientific notation
+options(scipen = 999)
+
+```
+
+# Load Data
+
+Now the script is set up we need to load in all of the required datasets. This will be broken into two segments:
+- Spatial data specific to the N3 region - such as the region, basin, and sub basin boundaries.
+- Broad Vegetation Group data (which is really just RE data).
+
+## Spatial Data
+
+Spatial data for the northern three regions should be readily available in the repo, the dataset is created by the n3_region-builder.qmd script in the repo that should be the first script run for new users. If the dataset is not available refer back to the README document in the GitHub repo. The other parts of spatial data here should go off without a hitch if the region-builder script has been run.
+
+```{r}
+#| label: load the n3 region
+#| output: false
+
+#read in the northern three spatial files and reduce down to only the components we need
+n3_region <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg")) |> 
+  filter(environment != "Marine") |> 
+  group_by(region, environment, basin_or_zone, sub_basin_or_sub_zone) |> summarise(geom = st_union(geom)) |> 
+  rename(basin = basin_or_zone, sub_basin = sub_basin_or_sub_zone) |> ungroup() |> 
+  st_cast() |> st_make_valid()
+
+#load a Queensland outline from the aims package
+qld <- get(data("gbr_feat", package = "gisaimsr")) |> filter(FEAT_NAME %in% c("Mainland", "Island")) |> 
+  st_transform(proj_crs)
+
+```
+
+## Broad Vegetation Groups (Obtained Using Regional Ecosystem Data)
+
+:::{.callout-note}
+Broad Vegetation Group data is obtained from the Regional Ecosystem dataset - it is a broader group classification of the same data.
+:::
+
+:::{.callout-note}
+This section of the code takes a significant chunk of time to run. Processes have been put in place to reduce the need to rerun this step, however the inclusion of any new regional ecosystem layers as they are published will need to be run through this step.
+:::
+
+:::{.callout-note}
+Only the newest and oldest RE layers are provided by QSpatial. If middle layers are missing, refer to README regarding download all layers. Note that the middle layers are not necessarily required for the script to run, but certain outputs benefit from the inclusion of additional layers.
+:::
+
+Regional ecosystem (RE) data (i.e. vegetation) is published to QSpatial by DES and covers the entirety of Queensland (for more info can go [here](https://www.qld.gov.au/environment/plants-animals/plants/ecosystems/descriptions)). Vegetation type is given via an RE code such as "11.1.3" where:
+
+ - 11 = bioregion (e.g. The Brigalow Belt).
+ - 1 = landzone (e.g. Tidal flats and beaches).
+ - 3 = vegetation community (e.g. Sedgelands on marine clay plains).
+ 
+Regional Ecosystem data is used by multiple scripts under the "habitat" banner in this repo. Because data is frequently used the raw data is stored in a generic data folder that is accessible by all habitat scripts. This is an exception to general repo data storage rules and is noted as such in the README.
+
+### Getting the Data
+
+The following code chunk executes a few key steps all at once, this is because running each of these steps takes a significant chunk of time and we can create an if-else statement that skips every single step if it has already been done. Some of these steps are quite detailed so we will spend some time here explaining each process. I have tried to highlight each step that is known to take a long time, here we will:
+
+ 1. Load the raw RE data and create the initial cropped versions of each layer. **Takes a long time.**
+    + Behind the scenes this will check if the cropped files already exists to save additional time.
+ 2. Combine each dataset together to form one large dataset called `re_data`.
+ 3. Select the dominant BVG and create custom groupings for each. (See table below).
+ 4. Calculate the area in km2 of each geometry (row) in the dataset **Takes a long time.**
+ 5. Union together all polygons belonging to the same group to improve the look of maps **Takes a long time.** 
+ 6. Save the dataset to the bvg folder to make the script run faster next time.
+
+This code chunk **will work no matter how many RE layers are in the folder.** However, this means that for n number of layers in the folder, the chunk will always load n layers. This can reduce the speed of the chunk particularly if you are only interested in the first and layer years.
+
+```{r}
+#| label: crop the RE layers to improve processing time
+#| output: false
+
+#create paths to where the final set of bvg data will be saved
+path1 <- here("data/n3_habitat_broad-vegetation-groups/broad_vegetation_groups.gpkg")
+
+if (file.exists(path1)){#if dataset exists, read it in and skip everything else
+  
+  bvg_map_data <- st_read(path1)
+  
+  #add units that were wiped during the save
+  bvg_map_data$area <- units::set_units(bvg_map_data$area, km^2) 
+  
+} else {#begin the process of creating the files
+  
+  #read in northern three spatial files and reduce down to a slightly different version than the one above
+  n3_bvg_boundary <- st_read(here("data/n3_region-builder/n3_region.gpkg")) |> filter(environment != "Marine") |> 
+    group_by(region, basin_or_zone, sub_basin_or_sub_zone) |> summarise(geom = st_union(geom)) |> 
+    rename(basin = basin_or_zone, sub_basin = sub_basin_or_sub_zone) |> 
+    ungroup() |> st_cast() |> st_make_valid()
+  
+  #get/set path to the raw layers and the edited layers
+  raw_path <- here("data/n3_habitat/re_raw/")
+  cropped_path <- here("data/n3_habitat_broad-vegetation-groups/re_broad_vegetation_groups_cropped/")
+  
+  #get list of files in the raw folder that contain "re_" and .gpkg" without their extension
+  file_list <- tools::file_path_sans_ext(list.files(raw_path, pattern = ".gpkg"))
+  
+  #create a vector to track objects created
+  years_loaded <- c()
+  
+  for (i in file_list){#for each file in list
+    
+    if (file.exists(glue("{cropped_path}/{i}_cropped.gpkg"))){#if the cropped version exists
+      writeLines("\n\nCropped file exists, data loaded from storage.\n")
+      
+      #read it in
+      re_layer <- st_read(glue("{cropped_path}/{i}_cropped.gpkg"))
+        
+      #edit the name
+      i <- str_remove_all(i, "^re_|_v12_2")
+        
+      #keep track of the new object names
+      years_loaded <- append(years_loaded, i)
+        
+      #assign it to the global environment
+      assign(i, re_layer)
+      
+    } else {#otherwise load in the raw version and crop it
+      writeLines("\nCropped file does not exists, data will be cropped, saved, then loaded.\n")
+      
+      #read in the original regional ecosystem layer
+      re_layer <- st_read(glue("{raw_path}/{i}.gpkg"))
+      
+      #and separate the data into "standard" geometries - polygons, and non-standard geometries - e.g. multisurfaces
+      standard_geoms <- re_layer |> filter(grepl("POLYGON", st_geometry_type(geom))) |> st_make_valid()
+      non_standard_geoms <- re_layer |> filter(grepl("MULTISURFACE", st_geometry_type(geom)))
+      
+      #save non-standard geoms to be edited
+      st_write(non_standard_geoms, glue("{cropped_path}/temporary_storage.gpkg"), delete_dsn = T)
+      
+      #use the gdalUtilies to open edit and save the file (it auto saves as a folder containing a shapefile)
+      gdalUtilities::ogr2ogr(glue("{cropped_path}/temporary_storage.gpkg"), glue("{cropped_path}/temporary_storage"), 
+                             explodecollections = T, nlt = 'CONVERT_TO_LINEAR', overwrite = T)
+      
+      #read back in the edited file
+      fixed_geoms <- st_read(glue("{cropped_path}/temporary_storage/temporary_storage.shp")) |> 
+        rename(geom = geometry) |> st_make_valid() |> rename(Shape_Length = Shape_Leng)
+      
+      #join the fixed data onto the standard data
+      re_layer <- rbind(standard_geoms, fixed_geoms)
+      
+      #transform the crs, then intersect over the bvg area
+      re_layer <- re_layer |> st_transform(proj_crs) |> st_intersection(n3_bvg_boundary)
+          
+      #save the file 
+      st_write(re_layer, glue("{cropped_path}/{i}_cropped.gpkg"), append = F)
+        
+      #edit the name
+      i <- str_remove_all(i, "^re_|_v12_2")
+    
+      #keep track of the new object names
+      years_loaded <- append(years_loaded, i)
+          
+      #assign it to the global environment
+      assign(i, re_layer)
+      
+    }
+    
+  }
+  
+  #clean up
+  rm(re_layer)
+  
+  for (i in years_loaded){#create a year column then assign it to the correct name again
+    writeLines("\nAssigning layer years.")
+    
+    #get the specific layer and add the year
+    data <- get(i) |> mutate(year = i) |> select(-any_of(c("OBJECTID", "Shape_Length", "Shape_Area")))
+    
+    #reassign data to the correct name
+    assign(i, data)
+
+  }
+  
+  #create a list containing all of the datasets that were loaded in
+  data_set_list <- lapply(years_loaded, function(x) get(x))
+  
+  #bind all datasets together
+  writeLines("\nBinding data.\n")
+  re_data <- do.call(rbind, data_set_list)
+  
+  #clean up
+  rm(list = years_loaded, data_set_list)
+  gc()
+  
+  #select columns we want, create custom vegetation names, extract only polygons, and calculate area of all polygons
+  bvg_map_data <- re_data |> select(region, basin, sub_basin, year, DBVG5M) |> 
+    mutate(vegetation = case_when(DBVG5M == 1 ~ "Rainforest and Scrubs", 
+                                  DBVG5M %in% c(2, 3, 4, 5, 6) ~  "Eucalypt Variations",
+                                  DBVG5M == 7 ~ "Callitris Woodland",
+                                  DBVG5M == 8 ~ "Melaleuca Open Woodlands",
+                                  DBVG5M %in% c(9, 10) ~ "Acacia Dominated",
+                                  DBVG5M == 11 ~ "Mixed Species Woodlands",
+                                  DBVG5M == 12 ~ "Other Coastal Communities",
+                                  DBVG5M == 13 ~ "Tussock Grasslands",
+                                  DBVG5M == 14 ~ "Hummock Grasslands",
+                                  DBVG5M == 15 ~ "Wetlands",
+                                  DBVG5M == 16 ~ "Mangroves and Saltmarshes",
+                                  DBVG5M == "non-remnant" ~ "Non-Remnant Vegetation",
+                                  DBVG5M == "water" ~ "Water",
+                                  DBVG5M == "plantation" ~ "Plantation",
+                                  T ~ NA))
+  
+   #create look up to optionally rename the geometry column
+  lookup <- c(geom = "Shape")
+  
+  #rename if needed
+  bvg_map_data <- bvg_map_data |> rename(any_of(lookup))
+  
+  #union features to improve map visibility then calculate area
+  writeLines("\nUnioning features and calculating area.\n")
+  bvg_map_data <- bvg_map_data |> group_by(region, basin, sub_basin, year, vegetation) |> 
+    summarise(geom = st_union(geom)) |> ungroup() |> mutate(area = st_area(geom))
+  
+  #update units on area
+  bvg_map_data$area <- units::set_units(bvg_map_data$area, km^2) 
+  
+  #save the file
+  st_write(bvg_map_data, path1, delete_dsn = T)
+  
+  #clean up and force a garbage collection
+  rm(re_data)
+  unlink(glue("{cropped_path}/temporary_storage.gpkg"))
+  unlink(glue("{cropped_path}/temporary_storage"), recursive = T)
+  gc()
+
+}
+
+```
+
+In this script we select the DBVG5M column (Dominant Broad Vegetation Groups at 1:5Million scale). However, in the original data there are 21 BVG groups, which is a bit many. Instead we create 14 custom groups, in summary:
+
+| Custom BVG Group Name      | Original BVG Group Name                                                             | BVG Group Code |
+|----------------------------|-------------------------------------------------------------------------------------|----------------|
+| Rainforest and Scrubs      | Rainforest and Scrubs                                                               | 1              |
+| Eucalypt Variations        | Wet eucalypt open forests, Eucalypt woodlands to open forests (mainly Eastern), Eucalypt open forests to     woodlands on floodplains, Eucalypt dry woodlands on inland depositional plains,  Eucalypt low open woodlands usually with spinifex understorey, | 2,3,4,5,6|
+| Callitris Woodland         | Callitris woodland - open forests                                                   | 7              |
+| Melaleuca Open Woodlands   | Melaleuca open-woodlands on depositional plains                                     | 8              |
+| Acacia Dominated           | Acacia aneura dominated open forests, woodlands and shrublands, Other acacia dominated open forests, woodlands and shrublands                                                                                                         | 9, 10          |
+| Mixed Species Woodlands    | Mixed species woodlands - open woodlands (inland bioregions) includes wooded downs  | 11             |
+| Other Coastal Communities  | Other coastal communities or heaths                                                 | 12             |
+| Tussock Grasslands         | Tussock grasslands, forblands                                                       | 13             |
+| Hummock Grasslands         | Hummock grasslands                                                                  | 14             |
+| Wetlands                   | Wetlands (swamps and lakes)                                                         | 15             |
+| Mangroves and Saltmarshes  | Mangroves and saltmarshes                                                           | 16             |
+| Sand*                      | Sand                                                                                | NA             |
+| Estuary*                   | Estuary                                                                             | NA             |
+| No Vegetation              | non-remnant                                                                         | non-remnant    |
+| Water                      | Water                                                                               | water          |
+| Plantation                 | Plantation                                                                          | plantation     |
+
+*These aren't present in the N3 region after cutting to the basins only.
+
+# Analyse Data
+
+Once we have boiled down the vegetation to the specific groups we want we can begin the analysis. Currently we are looking to calculate:
+
+ - The total area coverage by each bvg type in each basin for each year.
+ - The proportion of the total area that each vegetation covers.
+ - The change year on year of each vegetation.
+
+## Calculate Total Vegetation Coverage and Proportional Coverage
+
+Here we can group by region basin and year to get total cover, then use rowwise to divide by each vegetation type, and then group by the custom re to get a final sum and percent for each re in each basin in each year.
+
+```{r}
+#| label: calculate vegetation cover
+
+#calculate the total area of each basin for each year and the proportion each vegetation covers
+bvg_tbl_data <- bvg_map_data |> st_drop_geometry() |>  
+  group_by(region, basin, sub_basin, year) |> mutate(total_basin_area = sum(area)) |>
+  ungroup() |> 
+  rowwise() |> mutate(percent_coverage = as.numeric((area/total_basin_area)*100)) |> 
+  ungroup() |> 
+  group_by(region, basin, sub_basin, year, total_basin_area, vegetation) |> 
+  summarise(area = sum(area),
+            percent_coverage = sum(percent_coverage)) |> 
+  ungroup()
+
+```
+
+## Calculate Year on Year Change
+
+After calculating the area each vegetation types covers (and had previously covered) we can then do a year on year comparison to track the loss/gain over time. A good trick here is to order by vegetation type, so we can then use the lag() function to query the above row.
+
+```{r}
+#| label: calculate year on year change
+
+#create a set of rows for non remnant vegetation in the pre clear year (this is obviously 0 but helps with calculations below)
+non_rem_tbl <- bvg_tbl_data |> filter(year == "pre_clear") |> distinct(sub_basin, .keep_all = T) |> 
+  mutate(area = 0, percent_coverage = 0, vegetation = "Non-Remnant Vegetation")
+
+#add units to temp table
+non_rem_tbl$area <- units::set_units(non_rem_tbl$area, km^2)
+
+#bind these new rows to the main data
+bvg_tbl_data <- bind_rows(bvg_tbl_data, non_rem_tbl)
+
+#create a 0 value with units
+replace_value <- units::set_units(0, km^2)
+
+#order by RE type, group by basin and RE, then compare the row to the one above using lag(), replace na values with 0
+bvg_tbl_data <- bvg_tbl_data |> arrange(sub_basin, vegetation, year) |> 
+  group_by(basin, sub_basin, vegetation) |> 
+  mutate(y_on_y_area_change = area - lag(area),
+         y_on_y_percentage_change = percent_coverage - lag(percent_coverage)) |> 
+  mutate(across(matches("percent"), \(x) replace_na(x, 0)),
+         across(matches("area"), \(x) replace_na(x, replace_value)),
+         across(where(is.numeric), \(x) round(x, 5))) |> 
+  ungroup()
+
+```
+
+Once that is done we can save the full table to the outputs folder.
+
+```{r}
+#| label: save table
+
+#save full table
+write.csv(bvg_tbl_data, glue("{save_path}/bvg_full_table.csv"))
+
+```
+
+## Create Summary Table
+
+Even when looking at only the 14 custom BVG groups, that can still be a bit much to quickly review. So here we will also create a cut down summary table that highlights the top 5 BVGs in each basin.
+
+```{r}
+#| label: creat top 5 summary
+
+#select top 5
+bvg_top_5 <- bvg_tbl_data |> arrange(desc(area)) |> 
+  group_by(basin, year) |> slice(1:5) |> ungroup()
+ 
+#save full table
+write.csv(bvg_top_5, glue("{save_path}/bvg_top_5.csv"))
+
+```
+
+# Visualise Data
+
+In this section we will create a few visualizations:
+
+ - A horizontal stacked bar chart of the proportional coverage of each BVG group in each basin.
+ - A map of BVG groups in each basin
+ - A bar chart of percentage change over time
+ 
+## Horizontal Stacked Bar Chart
+
+The horizontal stacked bar chart will make use of the table version of the data as there is no spatial information required. First we will create a custom palette that ggplot will use as a reference for how to color groups.
+
+```{r}
+#| label: add a custom palette to table data
+
+#create custom palette: Acacia, Callitris, Eucalypt, Hummock, Mangroves, Melaleuca, Mixed, Non, Other, Plantation, Rainforest, Tussock, Water, Wetlands
+my_palette <- c("#FFBD5B", "#CCCC00", "#846030", "#FF9999", "#2A7E54", "#D5B58B", "#B8E08C",
+                "#B83D00", "#00C5C0", "#8C3FC5", "#004600", "#FFD597", "#75DBFF", "#3C6ABE")
+
+#assign names to my palette so ggplot can colour everything correctly
+names(my_palette) <- sort(unique(bvg_map_data$vegetation))
+
+```
+
+Then we will create the plots, looping for each basin and each year. Note that the way the palette works is by matching the names of the palette variable we created to the cell values in the vegetation column.
+
+```{r}
+#| label: create bar plots
+
+#list out basins
+sub_basins <- unique(n3_region$sub_basin)
+
+#get the newest year
+target_year <- tail(sort(unique(bvg_map_data$year)),1)
+
+for (i in sub_basins){#for each basin
+  
+  #select a specific basin and arrange the data appropriately
+  sub_basin_plot <- bvg_tbl_data |> filter(sub_basin == i, year == target_year) |> 
+    arrange(desc(percent_coverage)) |> 
+    mutate(vegetation = factor(vegetation, levels = unique(vegetation)))
+  
+  if (nrow(sub_basin_plot) != 0){
+    
+    #create a plot
+    plot <- ggplot(sub_basin_plot, aes(fill = vegetation, x = sub_basin, y = percent_coverage)) +
+      geom_bar(position = position_fill(reverse = T), stat = "identity") +
+      scale_fill_manual(values = my_palette) +
+      scale_x_discrete(expand = c(0.025, 0)) +
+      scale_y_continuous(expand = c(0, 0), labels = scales::percent_format(accuracy = 1)) +
+      labs(x = "", y = "", fill = glue("{i} \nBroad Vegetation Groups")) +
+      theme(axis.text.x = element_text(colour = "black"),
+            axis.text.y = element_blank(),
+            axis.line.x = element_line(colour = "black"),
+            axis.ticks.length = unit(-0.15, "cm"),
+            panel.background = element_blank()) +
+      coord_flip()
+        
+    #edit names
+    edit_i <- str_remove_all(str_to_lower(paste(i, target_year, sep = "_")), "_tbl")
+    
+    #save
+    ggsave(glue("{save_path}/plots/{edit_i}_broad_vegetation_groups_plot.png"), plot, width = 12, height = 4)
+    
+    if (unique(sub_basin_plot$sub_basin) != unique(sub_basin_plot$basin)){#if sub basin != basin
+      
+      #figure out what the basin actually is
+      actual_basin <- unique(sub_basin_plot$basin)
+          
+      #edit name for file editing
+      basin_name <- str_replace_all(str_to_lower(actual_basin), " ", "_")
+          
+      if (!file.exists(glue("{save_path}/plots/{basin_name}_basin_broad_vegetation_groups_plot.png"))){
+        
+        #select a specific basin and arrange the data appropriately
+        sub_basin_plot <- bvg_tbl_data |> filter(basin == actual_basin, year == target_year) |>
+          group_by(region, basin, vegetation) |> summarise(area = sum(area)) |>
+          group_by(region, basin) |> mutate(total_basin_area = sum(area)) |> 
+          ungroup() |> 
+          rowwise() |> mutate(percent_coverage = as.numeric((area/total_basin_area)*100)) |> 
+          ungroup() |> 
+          arrange(desc(percent_coverage)) |> 
+          mutate(vegetation = factor(vegetation, levels = unique(vegetation)))
+            
+        #create a plot
+        plot <- ggplot(sub_basin_plot, aes(fill = vegetation, x = basin, y = percent_coverage)) +
+          geom_bar(position = position_fill(reverse = T), stat = "identity") +
+          scale_fill_manual(values = my_palette) +
+          scale_x_discrete(expand = c(0.025, 0)) +
+          scale_y_continuous(expand = c(0, 0), labels = scales::percent_format(accuracy = 1)) +
+          labs(x = "", y = "", fill = glue("{i} Basin \nBroad Vegetation Groups")) +
+          theme(axis.text.x = element_text(colour = "black"),
+                axis.text.y = element_blank(),
+                axis.line.x = element_line(colour = "black"),
+                axis.ticks.length = unit(-0.15, "cm"),
+                panel.background = element_blank()) +
+          coord_flip()
+  
+        #save
+        ggsave(glue("{save_path}/plots/{basin_name}_basin_broad_vegetation_groups_plot.png"), plot, width = 12, height = 4)
+        
+      }
+    }
+  }
+}
+
+
+```
+
+Here is an example of how one of the plots looks, noting that the actual outputted version looks much nicer.
+
+```{r}
+#| label: show example plot
+
+plot
+
+```
+
+## Basin Maps
+
+We will then create the basin and sub basin maps, obviously these require spatial information and thus we will be using the spatial version of the dataset here. Again we need to create a custom palette however the method of implementation is slightly different as a different R package is used.
+
+```{r}
+#| label: add a custom palette to map data
+#| output: false
+
+#and an empty column to hold palette
+bvg_map_data$palette <- NA
+  
+for (i in 1:length(my_palette)){#for the length of the palette, match each element
+  
+  #using the custom palette we created earlier
+  bvg_map_data <- bvg_map_data |> mutate(palette = case_when(vegetation == names(my_palette)[i] ~ my_palette[[i]],
+                                                             T ~ palette))
+}
+
+```
+
+Then we will create the maps, looping for each basin. Note that the way the palette works this time is by having a specific row in the dataset that it used to colour each group.
+
+```{r}
+#| label: create maps
+
+#drop environment out of the n3 region dataset (just creates unnecessary clutter)
+n3_region <- n3_region |> 
+  group_by(region, basin, sub_basin) |> summarise(geom = st_union(geom)) |> 
+  ungroup() |> st_cast() |> st_make_valid()
+
+#list out sub basins
+sub_basins <- unique(n3_region$sub_basin)
+
+#note we are using the target_year variable created earlier
+for (i in sub_basins){#for each basin
+
+  #select basin from vegetation data
+  target_sub_basin <- bvg_map_data |> filter(sub_basin == i, year == target_year) |> 
+    filter(basin != "Cleveland Bay") |> 
+    arrange(desc(area)) |> 
+    mutate(vegetation = factor(vegetation, levels = unique(vegetation)))
+  
+  #check if data is empty
+  if (nrow(target_sub_basin) != 0){
+    
+    #get the basin outline from the n3 region dataset
+    sub_basin_outline <- n3_region |> filter(sub_basin == i)
+    
+    #get the region correct region
+    region_outline <- n3_region |> filter(region == unique(sub_basin_outline$region))
+      
+    #create a bbox of the vegetation data
+    veg_bbox <- st_as_sfc(st_bbox(target_sub_basin))
+      
+    #create an inset map
+    inset_map <- tm_shape(qld) +
+      tm_polygons(col = "grey80", border.col = "black") +
+      tm_shape(region_outline, is.master = T) +
+      tm_polygons(col = "grey90", border.col = "black") +
+      tm_shape(veg_bbox) +
+      tm_borders(lwd = 2, col = "red")
+      
+    #create a map of the area
+    map <- tm_shape(qld) +
+      tm_polygons(col = "grey80", border.col = "black") +
+      tm_shape(sub_basin_outline) +
+      tm_polygons(col = "grey90", border.col = "black") +
+      tm_shape(target_sub_basin, is.master = T) +
+      tm_fill(col = "palette") +
+      tm_add_legend(type = "fill", col = unique(target_sub_basin$palette), labels = unique(target_sub_basin$vegetation)) +
+      tm_shape(sub_basin_outline) +
+      tm_borders(col = "black") +
+      tm_layout(legend.frame = T, legend.bg.color = "White", asp = 1.1, 
+                legend.text.size = 0.7, legend.position = c("left", "bottom")) +
+      tm_grid(alpha = 0, labels.show = T, labels.cardinal = T, col = "Black") +
+      tm_xlab("Longitude", size = 0.7) +
+      tm_ylab("Latitude", size = 0.7) +
+      tm_scale_bar(width = 0.15, text.size = 0.7, position = c(0.3, 0))
+      
+    #figure out the aspect of the inset map and the view port
+    xy <- st_bbox(region_outline)
+    asp2 <- (xy$ymax - xy$ymin)/(xy$xmax - xy$xmin)
+    w <- 0.2
+    h <- asp2 * w
+    vp <- viewport(x = 0.985, y = 0.97, width = w, height = h, just = c("right", "top"))
+      
+    #edit names
+    edit_i <- str_remove_all(str_to_lower(paste(i, target_year, sep = "_")), "_map")
+        
+    #save the map as a png
+    tmap_save(map, filename = glue("{save_path}/maps/{edit_i}_broad_vegetation_groups_map.png"),
+              insets_tm = inset_map, insets_vp = vp)
+    
+    
+    if (unique(target_sub_basin$sub_basin) != unique(target_sub_basin$basin)){#if sub basin != basin
+      
+      #figure out what the basin actually is
+      actual_basin <- unique(target_sub_basin$basin)
+      
+      #edit name for file editing
+      basin_name <- str_replace_all(str_to_lower(actual_basin), " ", "_")
+        
+      if (!file.exists(glue("{save_path}/maps/{basin_name}_basin_broad_vegetation_groups_map.png"))){
+          
+        #select basin from vegetation data
+        target_basin <- bvg_map_data |> filter(basin == actual_basin)
+          
+        #get the basin outline from the n3 region dataset
+        basin_outline <- n3_region |> filter(basin == actual_basin)
+              
+        #get the region correct region
+        region_outline <- n3_region |> filter(region == unique(basin_outline$region))
+              
+        #create a bbox of the vegetation data
+        veg_bbox <- st_as_sfc(st_bbox(target_basin))
+              
+        #create an inset map
+        inset_map <- tm_shape(qld) +
+          tm_polygons(col = "grey80", border.col = "black") +
+          tm_shape(region_outline, is.master = T) +
+          tm_polygons(col = "grey90", border.col = "black") +
+          tm_shape(veg_bbox) +
+          tm_borders(lwd = 2, col = "red")
+              
+        #create a map of the area
+        map <- tm_shape(qld) +
+          tm_polygons(col = "grey80", border.col = "black") +
+          tm_shape(basin_outline) +
+          tm_polygons(col = "grey90", border.col = "black") +
+          tm_shape(target_basin, is.master = T) +
+          tm_fill(col = "palette") +
+          tm_add_legend(type = "fill", col = unique(target_basin$palette), labels = unique(target_basin$vegetation)) +
+          tm_shape(basin_outline) +
+          tm_borders(col = "black") +
+          tm_layout(legend.frame = T, legend.bg.color = "White", asp = 1.1, 
+                    legend.text.size = 0.7, legend.position = c("left", "bottom")) +
+          tm_grid(alpha = 0, labels.show = T, labels.cardinal = T, col = "Black") +
+          tm_xlab("Longitude", size = 0.7) +
+          tm_ylab("Latitude", size = 0.7) +
+          tm_scale_bar(width = 0.15, text.size = 0.7, position = c(0.3, 0))
+              
+        #figure out the aspect of the inset map and the view port
+        xy <- st_bbox(region_outline)
+        asp2 <- (xy$ymax - xy$ymin)/(xy$xmax - xy$xmin)
+        w <- 0.2
+        h <- asp2 * w
+        vp <- viewport(x = 0.985, y = 0.97, width = w, height = h, just = c("right", "top"))
+            
+        #save the map as a png
+        tmap_save(map, filename = glue("{save_path}/maps/{basin_name}_basin_broad_vegetation_groups_map.png"),
+                  insets_tm = inset_map, insets_vp = vp)
+          
+      }
+    }
+  }
+}
+
+```
+
+Here is an example of how one of the maps looks, noting that the actual outputted version looks much nicer.
+
+```{r}
+#| label: show example map
+
+map
+
+```
+
+## Vegetation Over Time
+
+Lastly we want to look at how the total amount of vegetation has changed over time. We will be using the percent change column in the table version to explore this.
+
+```{r}
+#| label: plot vegetation over time
+
+#list out sub_basins
+sub_basins <- unique(n3_region$sub_basin)
+
+for (i in sub_basins){
+  
+  #divide percent by 100 to correct for unit addition under 'scale_x_continuous()'
+  #drop remnant from year names
+  target_data <- bvg_tbl_data |> filter(sub_basin == i) |> 
+    group_by(region, basin, sub_basin, year, vegetation) |> summarise(y_on_y_percentage_change = sum(y_on_y_percentage_change)) |> 
+    ungroup() |> 
+    mutate(y_on_y_percentage_change = y_on_y_percentage_change/100) |> 
+    mutate(year = str_remove_all(year, "remnant_"))
+      
+  #check if data is empty
+  if (nrow(target_data) != 0){
+    
+    #change year to a factor to get the order right
+    target_data <- target_data |> mutate(year = factor(year, levels = unique(target_data$year)))
+      
+    #plot
+    plot <- ggplot(target_data, aes(y_on_y_percentage_change, year, fill = vegetation)) +
+      geom_bar(stat = "identity", position = "dodge") +
+      scale_y_discrete(limits = rev) +
+      scale_fill_manual(values = my_palette) +
+      scale_x_continuous(labels = scales::percent_format(accuracy = 0.1)) +
+      theme(axis.text.x = element_text(colour = "black"),
+            axis.line.x = element_line(colour = "black"),
+            axis.text.y = element_text(colour = "black"),
+            axis.line.y = element_line(colour = "black"),
+            axis.ticks.y = element_blank(),
+            panel.background = element_blank()) +
+      geom_vline(xintercept = 0) +
+      geom_hline(yintercept = seq(1.5, length(unique(target_data$year))-0.5, 1), 
+                 lwd = 0.5, colour = "grey80") +
+      labs(x = "Year on Year Change (%)", y = "Year", fill = glue("{i}\nBroad Vegetation Groups"))
+      
+    #edit names
+    edit_i <- str_replace_all(str_to_lower(i), " ", "_")
+      
+    #save
+    ggsave(glue("{save_path}/plots/{edit_i}_broad_vegetation_groups_change-over-time.png"), plot)
+      
+    if (unique(target_data$sub_basin) != unique(target_data$basin)){#if sub basin != basin
+      
+      #figure out what the basin actually is
+      actual_basin <- unique(target_data$basin)
+        
+      #edit name for file editing
+      basin_name <- str_replace_all(str_to_lower(actual_basin), " ", "_")
+        
+      if (!file.exists(glue("{save_path}/plots/{basin_name}_basin_broad_vegetation_groups_change-over-time.png"))){
+        
+        #divide percent by 100 to correct for unit addition under 'scale_x_continuous()'
+        #drop remnant from year names
+        target_data <- bvg_tbl_data |> filter(basin == actual_basin) |> 
+          group_by(region, basin, year, vegetation) |> summarise(y_on_y_percentage_change = sum(y_on_y_percentage_change)) |> 
+          ungroup() |> 
+          mutate(y_on_y_percentage_change = y_on_y_percentage_change/100) |> 
+          mutate(year = str_remove_all(year, "remnant_"))
+          
+        #change year to a factor to get the order right
+        target_data <- target_data |> mutate(year = factor(year, levels = unique(target_data$year)))
+          
+        #plot
+        plot <- ggplot(target_data, aes(y_on_y_percentage_change, year, fill = vegetation)) +
+          geom_bar(stat = "identity", position = "dodge") +
+          scale_y_discrete(limits = rev) +
+          scale_fill_manual(values = my_palette) +
+          scale_x_continuous(labels = scales::percent_format(accuracy = 0.1)) +
+          theme(axis.text.x = element_text(colour = "black"),
+                axis.line.x = element_line(colour = "black"),
+                axis.text.y = element_text(colour = "black"),
+                axis.line.y = element_line(colour = "black"),
+                axis.ticks.y = element_blank(),
+                panel.background = element_blank()) +
+          geom_vline(xintercept = 0) +
+          geom_hline(yintercept = seq(1.5, length(unique(target_data$year))-0.5, 1), 
+                     lwd = 0.5, colour = "grey80") +
+          labs(x = "Year on Year Change (%)", y = "Year", fill = glue("{actual_basin} Basin\nBroad Vegetation Groups"))
+          
+        #save
+        ggsave(glue("{save_path}/plots/{basin_name}_basin_broad_vegetation_groups_change-over-time.png"), plot)
+        
+      }
+    }
+  }
+}
+
+```
+
+Here is an example of how one of the change over time plots looks, noting that the actual outputted version looks much nicer.
+
+```{r}
+#| label: show example change over time plot
+
+plot
+
+```
+
+And that is everything, script complete.
+
+# Session Info {#sec-sessioninfo}
+
+Below is the session info at the time of rendering this script. Of greatest importance is to note the R version, and the "other attached packages" as these are the most significant drivers of success/failure. It is also good to check the "attached base packages" and "loaded via a namespace" packages as well. To check your session info use `sessionInfo()`.
+
+```{r}
+#| label: show session info
+
+sessionInfo()
+
+```

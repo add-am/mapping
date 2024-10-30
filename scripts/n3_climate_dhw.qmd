@@ -1,0 +1,544 @@
+---
+title: "Climate: Degree Heating Weeks"
+subtitle: "A Healthy Waters Partnership Analysis"
+description: "This script analyses and presents degree heating week data in the Northern Three reporting regions. The output of this is used in the Northern Three technical reports."
+author: "Adam Shand" 
+format: html
+params: 
+  target_fyear: 2024
+  disagg_factor: 5
+  project_crs: "EPSG:7844"
+---
+
+# Introduction
+
+This script contains the methods used to wrangle, analyse and present degree heating week (DHW) data in the Northern Three regions. For a guide on downloading DHW data refer to the README document for the Spatial Analysis GitHub repo. Note that DHW data should be downloaded automatically by this script.
+
+Degree Heating Weeks Data is predominantly used within the climate section of the technical report as a proxy for coral bleaching. The description of a degree heating week is a bit confusing, but as defined by NOAA: _"DHWs show the accumulated heat stress experienced by corals in the prior three months, it is a cumulative measure of both intensity and duration of heat stress"._ 
+
+Temperatures exceeding 1°C above the usual summertime maximum are sufficient to cause stress, including bleaching, and are the basis of a degree heating week. For example, a DHW of 2 is equivalent to one week of Hot Spot values persistently at 2°C, or two weeks of Hot Spot values persistently at 1°C above usual summertime maximum temperatures. Values over 4 have been shown to cause significant coral bleaching, and values over 8 have caused severe bleaching and significant mortality.
+
+The main objectives of this script are to:
+
+ - Automatically download all required DHW data
+ - Bin values into a clear and conscience legend
+ - Create a map of the current financial years' degree heating weeks
+ - Create a map of the past 5 years of degree heating weeks
+
+## Short History
+
+:::{.callout-note}
+October 2022: This data is currently provided free of charge by Angus Thompson at AIMS. He will provide a 5 year history along with other data such as coral. However, it is important that we understand and can effectively mimic his data should issues arise. This also allows us further customization of the end product without bothering Angus.
+:::
+
+:::{.callout-note}
+February 2023: We have been cleared to reproduce the same analysis in house, and are currently looking at changing the styling to match other in house analyses.
+:::
+
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, janitor, sf, tmap, exactextractr, terra, RColorBrewer, ggplot2)
+
+```
+
+Then we also need to set up key variables for the script, as well as the output location.
+
+```{r}
+#| label: global vars and initial setup
+
+#set project variables: crs factor and current_fyear
+proj_crs <- params$project_crs
+fac <- params$disagg_factor
+current_fyear <- params$target_fyear
+
+#create a file path to help with saving things
+save_path <- here(glue("outputs/n3_climate_dhw/{current_fyear}/"))
+
+#bring that path to life
+dir.create(save_path)
+
+#turn off spherical geometry
+sf_use_s2(F)
+
+#increase timeout length for slower download speeds
+options(timeout = 360)
+
+```
+
+# Load Data
+
+Now the script is set up we need to load in all of the required datasets. This will be broken into two segments:
+
+ - Spatial data specific to the N3 region - such as the region, basin, and sub basin boundaries.
+ - Degree Heating Week data
+
+## Spatial Data
+
+Load data from the data folder.
+
+::: {.callout-note}
+## WT Request
+A special request from the WT team is to use their marine boundary, rather than the marine boundary as defined by the NRM groups. Thus below we need to replace to NRM WT boundary with the custom version.
+:::
+
+``` {r}
+#| label: Load data
+
+#read in the custom function to clean column names into our specific style
+source("../functions/name_cleaning.R")
+
+#read in qld outlines data from the gisaimsr package, filter for land and islands, update crs
+qld <- get(data("gbr_feat", package = "gisaimsr")) |> 
+  name_cleaning() |> 
+  filter(FeatName %in% c("Mainland", "Island")) |> 
+  st_transform(proj_crs)
+
+#qld <- st_read(here("data/n3_prep_region-builder/qld_boundary.gpkg")) |> 
+#  name_cleaning()
+
+#read in the northern three data and cut down to marine region
+n3_marine_region <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg")) |> 
+  name_cleaning() |> 
+  filter(Environment == "Marine",
+         BasinOrZone != "Burdekin Marine",
+         Region != "Burdekin") |>
+  rename(Zone = BasinOrZone) |> 
+  mutate(Region = case_when(Region == "Burdekin" ~ "Dry Tropics",
+                           T ~ Region)) |> 
+  group_by(Region) |> 
+  summarise(geom = st_union(geom)) |> 
+  ungroup() |> st_cast()
+
+#read in the northern three data and cut down to everything but the marine region
+n3_basins <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg")) |> 
+  name_cleaning() |> 
+  filter(Environment != "Marine") |> 
+  rename(Basin = BasinOrZone) |> 
+  group_by(Region, Basin) |> 
+  summarise(geom = st_union(geom)) |> 
+  ungroup() |> st_cast() |> 
+  st_collection_extract("POLYGON")
+
+#create a point for Townsville
+tsv <- st_as_sf(data.frame(Place = "Townsville", x = "-19.2590", y = "146.8169"), coords = c("y", "x"), crs = proj_crs)
+
+```
+
+This is where the replacement will happen.
+
+```{r}
+#| label: replace WT outline with custom
+
+#read in the custom WT outline and edit to match the main dataset
+wt_custom <- st_read(here("data/archive/wt_full_marine.gpkg")) |>
+  name_cleaning() |> 
+  select(Name) |> 
+  rename(Region = Name)
+
+#remove old WT and add new
+n3_marine_region <- n3_marine_region |> 
+  filter(Region != "Wet Tropics") |> 
+  bind_rows(wt_custom)
+
+```
+
+## Degree Heating Week Data
+
+Load in the degree heating week data from NOAA's website, thanks to their handy servers we can request and load data directly inside this script.
+
+```{r}
+#| label: load in data from website
+
+#path to files
+path1 <- here("data/n3_climate_dhw/n3_dhw.nc")
+
+if (file.exists(path1)) {#if the full cut down version exists open that
+  
+  n3_dhw <- rast(path1)
+  
+} else { #create the cut down version
+  
+  #create folder save location for all the files
+  dowload_path <- here("data/n3_climate_dhw/dhw_world/")
+  dir.create(dowload_path)
+    
+  #create empty raster for file storing and empty vector for layer names
+  dhw_all <- rast()
+  lyr_names <- vector()
+  
+  #create a vector of numbers (dates) for download
+  date_vect <- 1986:current_fyear
+    
+  for (i in date_vect){#for each year in the vector
+    
+    #create fname for saving
+    fname <- glue("{dowload_path}/dhw_{i}.nc")
+    
+    if (i != format(Sys.time(), '%Y')){#if targeted is NOT the real year set url to the annual datasets
+
+      url <- glue("https://www.star.nesdis.noaa.gov/pub/socd/mecb/crw/data/5km/v3.1_op/nc/v1.0/annual/ct5km_dhw-max_v3.1_{i}.nc")
+      
+      if (file.exists(fname)){ #if the file is already downloaded open it from source and add it to the raster
+        
+        dhw_all <- c(dhw_all, rast(fname) |> subset(1))
+        
+        } else { #otherwise download the file using the url then append to the raster
+          
+          download.file(url, fname, mode = "wb")
+         
+          dhw_all <- c(dhw_all, rast(fname) |> subset(1))
+        }
+    
+    } else {#set the url to the rolling (year to date) datasets
+      
+      url <- glue("https://www.star.nesdis.noaa.gov/pub/sod/mecb/crw/data/5km/v3.1_op/nc/v1.0/daily/year-to-date/ct5km_dhw-max-ytd_v3.1_{i}0630.nc")
+      
+      if (file.exists(fname)){ #if the file is already downloaded open it from source and add it to the raster
+        
+        dhw_all <- c(dhw_all, rast(fname) |> subset(1))
+        
+        } else { #otherwise download the file using the url then append to the raster
+          
+          download.file(url, fname, mode = "wb")
+         
+          dhw_all <- c(dhw_all, rast(fname) |> subset(1))
+        }
+
+    }
+    
+    #keep track of layer names
+    lyr_names <- append(lyr_names, glue::glue("dhw_{i}"))
+      
+  }
+  
+  #set crs
+  crs(dhw_all) <- proj_crs
+  
+  #add names
+  names(dhw_all) <- lyr_names
+    
+  #crop the data
+  n3_dhw <- crop(dhw_all, n3_marine_region) |> mask(n3_marine_region)
+      
+  #save all years of data
+  writeCDF(n3_dhw, path1, overwrite = T)
+  
+  #reload data
+  n3_dhw <- rast(path1)
+    
+  #clean up
+  rm(url, fname, lyr_names, path1)
+
+}
+    
+```
+
+### Edit Data
+
+Although we download all DHW data from 1986 to present, currently we are only focused on the most recent 5 years of data. There is no long-term analysis of the data (yet). Below we filter by year to only get the most recent 5.
+
+```{r}
+#| label: subset data
+
+n3_dhw_5y <- n3_dhw[[time(n3_dhw) > as_date(glue("{current_fyear}-01-01")) %m-% months(48)]]
+
+```
+
+DHW data is provided with a scale from 0 to ~25, this is a bit excessive for our requirements and makes for a vague and messy legend. Angus Thompson (AIMS) has developed a binned legend to improve clarity of each group, these bins are as follows:
+
+ - "Low risk: 0 - 2 DHW"
+ - "Warning: 2 - 4 DHW"
+ - "Possible: 4 - 6 DHW"
+ - "Probable: 6 - 8 DHW"
+ - "Highly Likely: >8 DHW"
+ 
+With the legend titled "Bleaching Risk". The code below bins values in the raster.
+
+:::{.callout-note}
+NOAA have since updated the scale used for DHW as well, it is pending if we should adopt the same scale.
+:::
+
+```{r}
+#| label: prepare data for mapping first round
+
+#if the fac is not 1, interpolate the data to increase resolution
+if (fac > 1) {
+  n3_dhw_5y <- disagg(n3_dhw_5y, fac, "bilinear")
+}
+
+#get the raster as a tbl
+temp <- as_tibble(terra::as.data.frame(n3_dhw_5y, na.rm = F), .name_repair = "unique")
+
+#update all tbl values into 5 custom bins
+temp <- temp |> mutate(across(everything(), ~ case_when(. <= 2 ~ 1,
+                                                        . <= 4 ~ 2,
+                                                        . <= 6 ~ 3,
+                                                        . <= 8 ~ 4,
+                                                        . > 8 ~ 5)))
+
+#replace the original values with the binned values
+n3_dhw_5y <- setValues(n3_dhw_5y, as.matrix(temp))
+
+#clean up
+rm(temp)
+
+```
+
+# Visualise Data
+
+The two key visualizations this script creates area current year map and a past 5 years map. However before mapping, the legend labels and colours need to be set up.
+
+```{r}
+#| label: set extras for mapping
+
+#dhw colours as per categories and colour blind friendly brewer
+dhw_cols <- c("#2C7BB6", "#ABD9E9","#FFFFBF","#FDAE61","#D7191C")
+
+#dhw labels for each bin
+dhw_lab <- c("Low likelihood of bleaching (0 - 2 DHW)",
+             "Bleaching warning likely (2 - 4 DHW)",
+             "Bleaching possible (4 - 6 DHW)",
+             "Bleaching probable (6 - 8 DHW)",
+             "Severe bleaching likely (>8 DHW)")
+
+#create a vector of the three n3 regions
+n3_marine_names <- unique(n3_marine_region$Region)
+
+```
+
+## Current Finacial Year
+
+First we can plot a single year of data to get an idea of how things look.
+
+``` {r}
+#| label: plot map first round
+
+#using unique regions
+for (i in n3_marine_names) {
+  
+  #filter by region
+  region_basins <- n3_marine_region |> filter(Region == i)
+  
+  #get the associated basins
+  basins <- n3_basins |> filter(Region == i)
+  
+  #then mask again to the specific region
+  single_year_gbr <- trim(mask(n3_dhw_5y[[5]], vect(region_basins)))
+  
+  #plot
+  map <- tm_shape(single_year_gbr) +
+    tm_raster(legend.reverse = T, palette = dhw_cols, breaks = c(1:6), 
+              labels = dhw_lab, title = "Coral bleaching likelihood \n and number of DHW's") +
+    tm_shape(qld) +
+    tm_polygons(col = "grey80", border.col = "black") +
+    tm_shape(region_basins, is.master = T) +
+    tm_borders(col = "black") +
+    tm_shape(basins) +
+    tm_polygons(col = "grey90", border.col = "black") +
+    tm_shape(tsv) +
+    tm_symbols(size = 0.3, col = "white", border.col = "black", border.lwd = 2, shape = 23) +
+    tm_text("Place", shadow = T, xmod = -1.8, ymod = 0.1, size = 0.7) +
+    tm_layout(legend.frame = T, legend.bg.color = "White", asp = 1.1, legend.text.size = 0.7, 
+              legend.position = c("right", "bottom")) + 
+    tm_scale_bar(width = 0.15, text.size = 0.7, position = c(0.40, 0)) +
+    tm_compass(position = c("right", "top"))
+  
+  #edit variable name for better save path
+  i <- tolower(gsub(" ", "-", i))
+  
+  #save to unique variable for later
+  assign(glue("mean_map_{i}"), map)
+  
+  #save the map as a png
+  tmap_save(map, filename = glue("{save_path}/{i}_dhw.png"))
+  
+}
+
+```
+
+See below for an example of a one year map.
+
+```{r}
+#| label: show the current year map
+
+map
+
+```
+
+## Most Recent 5 Years
+
+Then we can create the 5 year map, please note that this was one of the previous outputs given by the AIMS team, which is the main reason this extra map is created. To make this map we can put each year side by side on one map to create a comparison of the currently targeted year and the 4 years proceeding it. 
+
+```{r}
+#| label: create 5year side by side map
+
+#using unique regions
+for (i in n3_marine_names) {
+  
+  #filter all basins by region
+  region_basins <- n3_marine_region |> filter(Region == i)
+  
+  #get the associated basins
+  basins <- n3_basins |> filter(Region == i)
+  
+  #create counter for j loop
+  count <- 0
+  
+  #using years vector created by data sourcing script
+  for (j in time(n3_dhw_5y)){
+    
+    #track counter
+    count <- count + 1
+    
+    #mask to the specific region and year
+    single_year_region <- trim(mask(n3_dhw_5y[[time(n3_dhw_5y) == j]], vect(region_basins)))
+  
+    #for the first map make a legend
+    if (count == 1){
+      
+      #plot
+      map <- tm_shape(single_year_region) +
+        tm_raster(palette = dhw_cols, breaks = c(1:6), labels = dhw_lab) +
+        tm_shape(qld) +
+        tm_polygons(col = "grey80", border.col = "black") +
+        tm_shape(region_basins, is.master = T) +
+        tm_borders(col = "black") +
+        tm_shape(basins) +
+        tm_polygons(col = "grey90", border.col = "black") +
+        tm_layout(asp = 5, legend.show = F, main.title = year(time(single_year_region)), main.title.position = "centre")
+      
+      #save the map
+      assign(glue("map{count}"), map)
+      
+      #make a legend map
+      legend_map <- tm_shape(single_year_region) + 
+        tm_raster(palette = dhw_cols, breaks = c(1:6), labels = dhw_lab, legend.reverse = T, 
+                  title = "Coral bleaching likelihood \n and number of DHW's") +
+        tm_layout(legend.only = T, legend.title.size = 3,
+                  legend.text.size = 1.6, legend.position = c(0, 0.3))
+      
+    #otherwise, no legend
+    } else {
+        
+      #plot
+      map <- tm_shape(single_year_region) +
+        tm_raster(palette = dhw_cols, breaks = c(1:6), labels = dhw_lab) +
+        tm_shape(qld) +
+        tm_polygons(col = "grey80", border.col = "black") +
+        tm_shape(region_basins, is.master = T) +
+        tm_borders(col = "black") +
+        tm_shape(basins) +
+        tm_polygons(col = "grey90", border.col = "black") +
+        tm_layout(asp = 5, legend.show = F, main.title = year(time(single_year_region)), main.title.position = "centre")
+      
+      #save the map
+      assign(glue("map{count}"), map)
+        
+    }
+  }  
+  
+  #arrange into two rows
+  facet_map <- tmap_arrange(map1, map2, map3, map4, map5, nrow = 2)
+  
+  #edit variable name for better save path
+  i_lower <- tolower(gsub(" ", "-", i))
+ 
+  #save the map as a png
+  tmap_save(facet_map, filename = glue("{save_path}/{i_lower}_dhw_fyear-{current_fyear}-to-{current_fyear-4}.png"))
+  
+  #save the legend seperately
+  tmap_save(legend_map, glue("{save_path}/{i_lower}_dhw_fyear-{current_fyear}-to-{current_fyear-4}_legend.png"))
+  
+}
+
+```
+
+Here is how that facet map looks.
+
+```{r}
+#| label: show the 5 year map
+#| output: true
+
+facet_map
+
+```
+
+# Save Data
+
+For the purposes of our report we will also need to save a summary table with some key statistics.
+
+```{r}
+#| label: create and save a summary table
+
+#create a function that extract the min, 25%, mean, 75%, and max, and adds the target region and year
+process_region_year <- function(region_name, year_index) {
+  
+  #what region are we looking at?
+  region_basins <- n3_marine_region |> 
+    filter(Region == region_name)
+  
+  #mask to the specific region and year
+  single_year_region <- trim(mask(n3_dhw_5y[[year_index]], vect(region_basins)))
+  
+  #extract the values for the region and calculate quantiles and create a data frame
+  quantiles <- quantile(values(single_year_region), na.rm = TRUE)
+  
+  #convert into a dataframe, this is also the output
+  data.frame(Region = region_name,
+             Year = str_split(time(n3_dhw_5y)[year_index], "-")[[1]][1],
+             Min = quantiles[1],
+             Per25 = quantiles[2],
+             Mean = quantiles[3],
+             Per75 = quantiles[4],
+             Max = quantiles[5],
+             row.names = NULL)
+}
+
+# create a data frame that has pairs for each region and year combination
+region_year_pairs <- expand.grid(Region = n3_marine_names, Year = 1:5)
+
+#run the custom function over every pair in the region year dataset, then bind the outputs together
+summary_statistics <- map2(region_year_pairs$Region, region_year_pairs$Year, 
+                           process_region_year) |> bind_rows()
+
+#save the table
+write_csv(summary_statistics, glue("{save_path}/dhw_summary.csv"))
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

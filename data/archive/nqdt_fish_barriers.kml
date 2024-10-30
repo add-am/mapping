@@ -1,0 +1,4508 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document id="FishBarriers09" xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd http://www.google.com/kml/ext/2.2 http://code.google.com/apis/kml/schema/kml22gx.xsd">
+	<name>FishBarriers09</name>
+	<snippet></snippet>
+	<description>FishBarriers09</description>
+	<Style id="IconStyle00">
+		<IconStyle>
+			<Icon>
+				<href>Layer0_Symbol_77c768e0_0.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<PolyStyle>
+			<color>ff000000</color>
+			<outline>0</outline>
+		</PolyStyle>
+	</Style>
+	<Folder id="FeatureLayer0">
+		<name>FishBarriers09</name>
+		<snippet></snippet>
+		<description>FishBarriers09</description>
+		<Placemark id="ID_00000">
+			<name>Clare Weir</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Clare Weir</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>0</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Clare Weir</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td>&lt;html&gt;
+
+&lt;head&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;div&gt;&lt;br&gt;
+
+&lt;!-- BalloonStyle background color:
+
+ffffffff
+
+--&gt;
+
+&lt;!-- Icon URL:
+
+http://webgis.bdtnrm.org.au/images/noentryfish.tif
+
+--&gt;
+
+&lt;table style="width: 620px; height: 723px;" cellpadding="0"
+
+cellspacing="0"&gt;
+
+&lt;tbody&gt;
+
+&lt;tr&gt;
+
+&lt;td co</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Work completed funded by others</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>147.236027,-19.856738,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00001">
+			<name>Burdekin Falls Dam</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Burdekin Falls Dam</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>1</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Burdekin Falls Dam</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td>&lt;html&gt;
+
+&lt;head&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;div&gt;&lt;span style="font-style: italic;"&gt;&lt;/span&gt;&lt;br&gt;
+
+&lt;!-- BalloonStyle background color:
+
+ffffffff
+
+--&gt;
+
+&lt;!-- Icon URL:
+
+http://webgis.bdtnrm.org.au/images/noentryfish.tif
+
+--&gt;
+
+&lt;table style="width: 620px; height: 723px;" cellpadding</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Work not completed</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>147.139348,-20.644858,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00002">
+			<name>Aplins Weir</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Aplins Weir</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>2</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Aplins Weir</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td>&lt;html&gt;
+
+&lt;head&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;div&gt;&lt;span style="font-style: italic;"&gt;&lt;/span&gt;&lt;br&gt;
+
+&lt;!-- BalloonStyle background color:
+
+ffffffff
+
+--&gt;
+
+&lt;!-- Icon URL:http://webgis.bdtnrm.org.au/images/noentryfish.tif
+
+--&gt;
+
+&lt;table style="width: 620px; height: 723px;" cellpadding=</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Work not completed</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>146.780861,-19.304105,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00003">
+			<name>Giru Weir</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Giru Weir</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>3</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Giru Weir</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td>&lt;html&gt;
+
+&lt;head&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;div&gt;&lt;span style="font-style: italic;"&gt;&lt;/span&gt;&lt;br&gt;
+
+&lt;!-- BalloonStyle background color:
+
+ffffffff
+
+--&gt;
+
+&lt;!-- Icon URL:http://webgis.bdtnrm.org.au/images/noentryfish.tif
+
+--&gt;
+
+&lt;table style="width: 620px; height: 723px;" cellpadding=</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Work not completed funded by others</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>147.11288,-19.510226,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00004">
+			<name>6 Sand Dams on Lower Burdekin River (BAR397B)</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>6 Sand Dams on Lower Burdekin River (BAR397B)</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>4</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>6 Sand Dams on Lower Burdekin River (BAR397B)</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td>&lt;html&gt;
+
+&lt;head&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;div&gt;&lt;span style="font-style: italic;"&gt;&lt;/span&gt;&lt;br&gt;
+
+&lt;!-- BalloonStyle background color:
+
+ffffffff
+
+--&gt;
+
+&lt;!-- Icon URL:
+
+http://webgis.bdtnrm.org.au/images/noentryfish.tif
+
+--&gt;
+
+&lt;table style="width: 620px; height: 723px;" cellpadding</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Work completed</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>147.333146,-19.795463,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00005">
+			<name>Charters Towers Weir</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Charters Towers Weir</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>5</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Charters Towers Weir</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td>&lt;html&gt;
+
+&lt;head&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;div&gt;&lt;span style="font-style: italic;"&gt;&lt;/span&gt;&lt;br&gt;
+
+&lt;!-- BalloonStyle background color:
+
+ffffffff
+
+--&gt;
+
+&lt;!-- Icon URL:
+
+http://webgis.bdtnrm.org.au/images/noentryfish.tif
+
+--&gt;
+
+&lt;table style="width: 620px; height: 723px;" cellpadding</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Work not completed</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>146.307053,-19.966193,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00006">
+			<name>Val Bird Weir</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Val Bird Weir</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>6</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Val Bird Weir</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td>&lt;html&gt;
+
+&lt;head&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;div&gt;&lt;span style="font-style: italic;"&gt;&lt;/span&gt;&lt;br&gt;
+
+&lt;!-- BalloonStyle background color:
+
+ffffffff
+
+--&gt;
+
+&lt;!-- Icon URL:
+
+http://webgis.bdtnrm.org.au/images/noentryfish.tif
+
+--&gt;
+
+&lt;table style="width: 620px; height: 723px;" cellpadding</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Work not completed</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>147.095593,-19.563763,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00007">
+			<name>Gorge Weir</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Gorge Weir</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>7</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Gorge Weir</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td>&lt;html&gt;
+
+&lt;head&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;div&gt;&lt;span style="font-style: italic;"&gt;&lt;/span&gt;&lt;br&gt;
+
+&lt;!-- BalloonStyle background color:
+
+ffffffff
+
+--&gt;
+
+&lt;!-- Icon URL:
+
+http://webgis.bdtnrm.org.au/images/noentryfish.tif
+
+--&gt;
+
+&lt;table style="width: 620px; height: 723px;" cellpadding</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Further investigation</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>147.29084,-20.472523,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00008">
+			<name>Alligator Creek Weir</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Alligator Creek Weir</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>8</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Alligator Creek Weir</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td>&lt;html&gt;
+
+&lt;head&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;div&gt;&lt;span style="font-style: italic;"&gt;&lt;/span&gt;&lt;br&gt;
+
+&lt;!-- BalloonStyle background color:
+
+ffffffff
+
+--&gt;
+
+&lt;!-- Icon URL:
+
+http://webgis.bdtnrm.org.au/images/noentryfish.tif
+
+--&gt;
+
+&lt;table style="width: 572px; height: 519px;" cellpadding</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Work not completed</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>146.9705749655,-19.36302019095747,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00009">
+			<name>Bowen River Weir</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Bowen River Weir</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>9</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Bowen River Weir</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td>&lt;html&gt;
+
+&lt;head&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;div&gt;&lt;span style="font-style: italic;"&gt;&lt;/span&gt;&lt;br&gt;
+
+&lt;!-- BalloonStyle background color:
+
+ffffffff
+
+--&gt;
+
+&lt;!-- Icon URL:
+
+http://webgis.bdtnrm.org.au/images/noentryfish.tif
+
+--&gt;
+
+&lt;table style="width: 620px; height: 723px;" cellpadding</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Work completed funded by others</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>147.937324,-20.744215,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00010">
+			<name>Earth Bund across part of Sheepstation Creek system (BAR28)</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Earth Bund across part of Sheepstation Creek system (BAR28)</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>10</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Earth Bund across part of Sheepstation Creek system (BAR28)</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td>&lt;html&gt;
+
+&lt;head&gt;
+
+&lt;title&gt;Earth Bund across part of Sheepstation Creeky&lt;/title&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;div&gt;&lt;span style="font-style: italic;"&gt;&lt;/span&gt;&lt;br&gt;
+
+&lt;!-- BalloonStyle background color:
+
+ffffffff
+
+--&gt;
+
+&lt;!-- Icon URL:
+
+http://webgis.bdtnrm.org.au/images/noentryfish.ti</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Weeds removed</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>147.4364063657488,-19.43616677019206,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00011">
+			<name>Earth Bund at Sheepstation Creek (BAR23)</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Earth Bund at Sheepstation Creek (BAR23)</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>11</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Earth Bund at Sheepstation Creek (BAR23)</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td>&lt;html&gt;
+
+&lt;head&gt;
+
+&lt;title&gt;Earth Bund at Sheepstation Creek (BAR23)&lt;/title&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;div&gt;&lt;span style="font-style: italic;"&gt;&lt;/span&gt;&lt;br&gt;
+
+&lt;!-- BalloonStyle background color:
+
+ffffffff
+
+--&gt;
+
+&lt;!-- Icon URL:
+
+http://webgis.bdtnrm.org.au/images/noentryfish.tif
+
+--&gt;</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Weeds removed</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>147.374207,-19.466878,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00012">
+			<name>Earth Bund (BAR29)</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Earth Bund (BAR29)</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>12</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Earth Bund (BAR29)</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td>&lt;html&gt;
+
+&lt;head&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;div&gt;&lt;span style="font-style: italic;"&gt;&lt;/span&gt;&lt;br&gt;
+
+&lt;!-- BalloonStyle background color:
+
+ffffffff
+
+--&gt;
+
+&lt;!-- Icon URL:
+
+http://webgis.bdtnrm.org.au/images/noentryfish.tif
+
+--&gt;
+
+&lt;table style="width: 572px; height: 470px;" cellpadding</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Weeds removed</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>147.472817,-19.470492,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00013">
+			<name>Collinsville Elphinstone Road Crossing (BAR1006)</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Collinsville Elphinstone Road Crossing (BAR1006)</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>13</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Collinsville Elphinstone Road Crossing (BAR1006)</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td>&lt;html&gt;
+
+&lt;head&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;div&gt;&lt;br&gt;
+
+&lt;!-- BalloonStyle background color:
+
+ffffffff
+
+--&gt;
+
+&lt;!-- Icon URL:
+
+http://webgis.bdtnrm.org.au/images/noentryfish.tif
+
+--&gt;
+
+&lt;table style="width: 620px; height: 579px;" cellpadding="0"
+
+cellspacing="0"&gt;
+
+&lt;tbody&gt;
+
+&lt;tr&gt;
+
+&lt;td co</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Being removed from priority list</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>148.233061,-21.156398,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00014">
+			<name>Earth Bund (BAR25)</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Earth Bund (BAR25)</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>14</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Earth Bund (BAR25)</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td>&lt;html&gt;
+
+&lt;head&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;div&gt;&lt;br&gt;
+
+&lt;!-- BalloonStyle background color:
+
+ffffffff
+
+--&gt;
+
+&lt;!-- Icon URL:
+
+http://webgis.bdtnrm.org.au/images/noentryfish.tif
+
+--&gt;
+
+&lt;table style="width: 620px; height: 579px;" cellpadding="0"
+
+cellspacing="0"&gt;
+
+&lt;tbody&gt;
+
+&lt;tr&gt;
+
+&lt;td co</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Weeds removed</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>147.4038593252339,-19.44827347377532,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00015">
+			<name>Kirknie Creek Road Crossing (BAR828)</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Kirknie Creek Road Crossing (BAR828)</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>15</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Kirknie Creek Road Crossing (BAR828)</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td>&lt;html&gt;
+
+&lt;head&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;div&gt;&lt;br&gt;
+
+&lt;!-- BalloonStyle background color:
+
+ffffffff
+
+--&gt;
+
+&lt;!-- Icon URL:
+
+http://webgis.bdtnrm.org.au/images/noentryfish.tif
+
+--&gt;
+
+&lt;table style="width: 620px; height: 723px;" cellpadding="0"
+
+cellspacing="0"&gt;
+
+&lt;tbody&gt;
+
+&lt;tr&gt;
+
+&lt;td co</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Work completed</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>147.4959044955902,-19.95655691403452,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00016">
+			<name>Rail Crossing (BAR1033)</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Rail Crossing (BAR1033)</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>16</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Rail Crossing (BAR1033)</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td>&lt;html&gt;
+
+&lt;head&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;div&gt;&lt;br&gt;
+
+&lt;!-- BalloonStyle background color:
+
+ffffffff
+
+--&gt;
+
+&lt;!-- Icon URL:
+
+http://webgis.bdtnrm.org.au/images/noentryfish.tif
+
+--&gt;
+
+&lt;table style="width: 620px; height: 579px;" cellpadding="0"
+
+cellspacing="0"&gt;
+
+&lt;tbody&gt;
+
+&lt;tr&gt;
+
+&lt;td co</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Weeds removed</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>147.36697,-19.503115,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00017">
+			<name>Weir (BAR54)</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Weir (BAR54)</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>17</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Weir (BAR54)</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td>&lt;html&gt;
+
+&lt;head&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;div&gt;&lt;br&gt;
+
+&lt;!-- BalloonStyle background color:
+
+ffffffff
+
+--&gt;
+
+&lt;!-- Icon URL:
+
+http://webgis.bdtnrm.org.au/images/noentryfish.tif
+
+--&gt;
+
+&lt;table style="width: 620px; height: 509px;" cellpadding="0"
+
+cellspacing="0"&gt;
+
+&lt;tbody&gt;
+
+&lt;tr&gt;
+
+&lt;td co</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Work not taking place</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>146.494111,-19.123451,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00018">
+			<name>Road Crossing (BAR871)</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Road Crossing (BAR871)</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>18</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Road Crossing (BAR871)</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td>&lt;html&gt;
+
+&lt;head&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;div&gt;&lt;br&gt;
+
+&lt;!-- BalloonStyle background color:
+
+ffffffff
+
+--&gt;
+
+&lt;!-- Icon URL:
+
+http://webgis.bdtnrm.org.au/images/noentryfish.tif
+
+--&gt;
+
+&lt;table style="width: 620px; height: 509px;" cellpadding="0"
+
+cellspacing="0"&gt;
+
+&lt;tbody&gt;
+
+&lt;tr&gt;
+
+&lt;td co</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Weeds removed</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>147.508861,-19.698311,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00019">
+			<name>Earth Bund (BAR20)</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Earth Bund (BAR20)</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>19</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Earth Bund (BAR20)</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td>&lt;html&gt;
+
+&lt;head&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;div&gt;&lt;br&gt;
+
+&lt;!-- BalloonStyle background color:
+
+ffffffff
+
+--&gt;
+
+&lt;!-- Icon URL:
+
+http://webgis.bdtnrm.org.au/images/noentryfish.tif
+
+--&gt;
+
+&lt;table style="width: 620px; height: 509px;" cellpadding="0"
+
+cellspacing="0"&gt;
+
+&lt;tbody&gt;
+
+&lt;tr&gt;
+
+&lt;td co</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Weeds removed</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>147.336955,-19.447641,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00020">
+			<name>Road Crossing (BAR870)</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Road Crossing (BAR870)</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>20</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Road Crossing (BAR870)</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td>&lt;html&gt;
+
+&lt;head&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;div&gt;&lt;br&gt;
+
+&lt;!-- BalloonStyle background color:
+
+ffffffff
+
+--&gt;
+
+&lt;!-- Icon URL:
+
+http://webgis.bdtnrm.org.au/images/noentryfish.tif
+
+--&gt;
+
+&lt;table style="width: 620px; height: 509px;" cellpadding="0"
+
+cellspacing="0"&gt;
+
+&lt;tbody&gt;
+
+&lt;tr&gt;
+
+&lt;td co</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Weeds removed</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>147.506512,-19.697918,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00021">
+			<name>Road Crossing (BAR869)</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Road Crossing (BAR869)</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>21</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Road Crossing (BAR869)</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td>&lt;html&gt;
+
+&lt;head&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;div&gt;&lt;br&gt;
+
+&lt;!-- BalloonStyle background color:
+
+ffffffff
+
+--&gt;
+
+&lt;!-- Icon URL:
+
+http://webgis.bdtnrm.org.au/images/noentryfish.tif
+
+--&gt;
+
+&lt;table style="width: 620px; height: 509px;" cellpadding="0"
+
+cellspacing="0"&gt;
+
+&lt;tbody&gt;
+
+&lt;tr&gt;
+
+&lt;td co</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Weeds removed</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>147.50417,-19.682712,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00022">
+			<name>Weed Choke (BAR53)</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Weed Choke (BAR53)</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>22</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Weed Choke (BAR53)</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td>&lt;html&gt;
+
+&lt;head&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;div&gt;&lt;span style="font-style: italic;"&gt;&lt;/span&gt;&lt;br&gt;
+
+&lt;!-- BalloonStyle background color:
+
+ffffffff
+
+--&gt;
+
+&lt;!-- Icon URL:
+
+http://webgis.bdtnrm.org.au/images/noentryfish.tif
+
+--&gt;
+
+&lt;table style="width: 620px; height: 723px;" cellpadding</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Being removed from priority list</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>147.439712,-19.576424,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00023">
+			<name>Ross River Dam</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Ross River Dam</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>23</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Ross River Dam</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td>&lt;html&gt;
+
+&lt;head&gt;
+
+&lt;title&gt;Earth Bund across Barramundi Creek tributary&lt;/title&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;div&gt;&lt;span style="font-style: italic;"&gt;&lt;/span&gt;&lt;br&gt;
+
+&lt;!-- BalloonStyle background color:
+
+ffffffff
+
+--&gt;
+
+&lt;!-- Icon URL:
+
+http://webgis.bdtnrm.org.au/images/noentryfish.tif</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Work not completed</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>146.7350632353623,-19.41086253451465,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00024">
+			<name>Black Weir</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Black Weir</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>24</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Black Weir</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td>&lt;html&gt;
+
+&lt;head&gt;
+
+&lt;title&gt;Earth Bund across Barramundi Creek tributary&lt;/title&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;div&gt;&lt;span style="font-style: italic;"&gt;&lt;/span&gt;&lt;br&gt;
+
+&lt;!-- BalloonStyle background color:
+
+ffffffff
+
+--&gt;
+
+&lt;!-- Icon URL:
+
+http://webgis.bdtnrm.org.au/images/noentryfish.tif</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Work not completed</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>146.735909,-19.317016,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00025">
+			<name>Gleesons Weir</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Gleesons Weir</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>25</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Gleesons Weir</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td>&lt;html&gt;
+
+&lt;head&gt;
+
+&lt;title&gt;Earth Bund across Barramundi Creek tributary&lt;/title&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;div&gt;&lt;span style="font-style: italic;"&gt;&lt;/span&gt;&lt;br&gt;
+
+&lt;!-- BalloonStyle background color:
+
+ffffffff
+
+--&gt;
+
+&lt;!-- Icon URL:
+
+http://webgis.bdtnrm.org.au/images/noentryfish.tif</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Work not completed</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>146.745023,-19.31742,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00026">
+			<name>Tondara Road Crossing (BAR552)</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Tondara Road Crossing (BAR552)</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>26</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Tondara Road Crossing (BAR552)</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td>&lt;html&gt;
+
+&lt;head&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;div&gt;&lt;br&gt;
+
+&lt;!-- BalloonStyle background color:
+
+ffffffff
+
+--&gt;
+
+&lt;!-- Icon URL:
+
+http://webgis.bdtnrm.org.au/images/noentryfish.tif
+
+--&gt;
+
+&lt;table style="width: 620px; height: 723px;" cellpadding="0"
+
+cellspacing="0"&gt;
+
+&lt;tbody&gt;
+
+&lt;tr&gt;
+
+&lt;td co</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Work completed</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>147.5825804078123,-20.13470378882302,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00027">
+			<name>Collinsville Elphinstone Road Crossing (BAR1010)</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Collinsville Elphinstone Road Crossing (BAR1010)</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>27</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Collinsville Elphinstone Road Crossing (BAR1010)</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td>&lt;html&gt;
+
+&lt;head&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;div&gt;&lt;span style="font-style: italic;"&gt;&lt;/span&gt;&lt;br&gt;
+
+&lt;!-- BalloonStyle background color:
+
+ffffffff
+
+--&gt;
+
+&lt;!-- Icon URL:
+
+http://webgis.bdtnrm.org.au/images/noentryfish.tif
+
+--&gt;
+
+&lt;table style="width: 572px; height: 470px;" cellpadding</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Work completed</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>148.136077,-20.983051,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00028">
+			<name>Minor Road Crossing (BAR1009)</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Minor Road Crossing (BAR1009)</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>28</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Minor Road Crossing (BAR1009)</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td>&lt;html&gt;
+
+&lt;head&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;div&gt;&lt;span style="font-style: italic;"&gt;&lt;/span&gt;&lt;br&gt;
+
+&lt;!-- BalloonStyle background color:
+
+ffffffff
+
+--&gt;
+
+&lt;!-- Icon URL:http://webgis.bdtnrm.org.au/images/noentryfish.tif
+
+--&gt;
+
+&lt;table style="width: 620px; height: 723px;" cellpadding=</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Work completed</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>148.3193889147943,-21.31038745895538,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00029">
+			<name>Earth Bund (BAR61)</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Earth Bund (BAR61)</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>29</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Earth Bund (BAR61)</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td>&lt;html&gt;
+
+&lt;head&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;div&gt;&lt;br&gt;
+
+&lt;!-- BalloonStyle background color:
+
+ffffffff
+
+--&gt;
+
+&lt;!-- Icon URL:
+
+http://webgis.bdtnrm.org.au/images/noentryfish.tif
+
+--&gt;
+
+&lt;table style="width: 620px; height: 509px;" cellpadding="0"
+
+cellspacing="0"&gt;
+
+&lt;tbody&gt;
+
+&lt;tr&gt;
+
+&lt;td co</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Work completed funded by others</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>147.13859,-19.489456,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00030">
+			<name>Earth Bund across Barramundi Creek tributary (BAR19)</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Earth Bund across Barramundi Creek tributary (BAR19)</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>30</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Earth Bund across Barramundi Creek tributary (BAR19)</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td>&lt;html&gt;
+
+&lt;head&gt;
+
+&lt;title&gt;Earth Bund across Barramundi Creek tributary&lt;/title&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;div&gt;&lt;span style="font-style: italic;"&gt;&lt;/span&gt;&lt;br&gt;
+
+&lt;!-- BalloonStyle background color:
+
+ffffffff
+
+--&gt;
+
+&lt;!-- Icon URL:
+
+http://webgis.bdtnrm.org.au/images/noentryfish.tif</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Work completed funded by others</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>147.144873,-19.498721,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00031">
+			<name>Weed Choke Lower Sheepstation Creek (BAR62)</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Weed Choke Lower Sheepstation Creek (BAR62)</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>31</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Weed Choke Lower Sheepstation Creek (BAR62)</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td></td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Weeds removed</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>147.150661935183,-19.49437205695757,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00032">
+			<name>Road Crossing Sheepstation Creek (BAR539)</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Road Crossing Sheepstation Creek (BAR539)</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>32</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Road Crossing Sheepstation Creek (BAR539)</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td></td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Weeds removed</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>147.3309711263066,-19.51238993496669,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00033">
+			<name>Weed Choke Sheepstation Creek east branch (BAR1038)</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Weed Choke Sheepstation Creek east branch (BAR1038)</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>33</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Weed Choke Sheepstation Creek east branch (BAR1038)</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td></td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Weeds removed</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>147.377485735352,-19.48937995944907,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00034">
+			<name>Weed Choke Saltwater Creek1 (BAR1040)</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Weed Choke Saltwater Creek1 (BAR1040)</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>34</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Weed Choke Saltwater Creek1 (BAR1040)</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td></td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Weeds removed</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>147.5166248654923,-19.77152503417058,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00035">
+			<name>Earth Bund Plantation Creek (BAR1075)</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Earth Bund Plantation Creek (BAR1075)</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>35</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Earth Bund Plantation Creek (BAR1075)</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td></td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Being removed from priority list</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>147.4902743806282,-19.53521473469271,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00036">
+			<name>Earth Bund Plantation Creek (BAR1076)</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Earth Bund Plantation Creek (BAR1076)</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>36</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Earth Bund Plantation Creek (BAR1076)</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td></td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Being removed from priority list</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>147.4896497389911,-19.54022854421404,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00037">
+			<name>Earth Bund Barramundi Creek (BAR64)</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Earth Bund Barramundi Creek (BAR64)</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>37</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Earth Bund Barramundi Creek (BAR64)</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td></td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Work completed funded by others</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>147.150661935183,-19.49437205695757,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00038">
+			<name>Farm track Barramundi Creek (BAR1092)</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Farm track Barramundi Creek (BAR1092)</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>38</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Farm track Barramundi Creek (BAR1092)</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td></td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Work completed funded by others</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>147.1233239054723,-19.53177780560838,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00039">
+			<name>Weed Choke Barramundi Creek (BAR1078)</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Weed Choke Barramundi Creek (BAR1078)</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>39</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Weed Choke Barramundi Creek (BAR1078)</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td></td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Weeds removed</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>147.1239334015438,-19.52901565510431,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00040">
+			<name>Earth Bund Alva and Kalamia Creek (BAR1071)</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Earth Bund Alva and Kalamia Creek (BAR1071)</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>40</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Earth Bund Alva and Kalamia Creek (BAR1071)</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td></td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Weeds removed</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>147.4805481298304,-19.47179658514208,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00041">
+			<name>Earth Bund Rita Island Distributaries (BAR1082)</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Earth Bund Rita Island Distributaries (BAR1082)</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>41</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Earth Bund Rita Island Distributaries (BAR1082)</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td></td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Being removed from priority list</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>147.5495945035925,-19.62638521903292,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00042">
+			<name>Earth Bund Rita Island Distributaries (BAR1084)</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Earth Bund Rita Island Distributaries (BAR1084)</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>42</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Earth Bund Rita Island Distributaries (BAR1084)</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td></td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Being removed from priority list</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>147.5403316528934,-19.64372745371482,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00043">
+			<name>Road Crossing Burdekin River (BAR563)</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Road Crossing Burdekin River (BAR563)</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>43</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Road Crossing Burdekin River (BAR563)</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td></td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Being removed from priority list</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>146.5736513442096,-20.14632407130091,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00044">
+			<name>Road Crossing Stuart Creek (BAR1091)</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Road Crossing Stuart Creek (BAR1091)</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>44</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Road Crossing Stuart Creek (BAR1091)</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td></td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Work completed funded by others</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>146.8402389013987,-19.34414754389508,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00045">
+			<name>Minor road Hazelwood Creek (BAR1013)</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>Minor road Hazelwood Creek (BAR1013)</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>45</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>Minor road Hazelwood Creek (BAR1013)</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td></td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Being removed from priority list</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>148.3079620658985,-21.18712521761707,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00046">
+			<name>EUNGELLA DAM (BAR2)</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>EUNGELLA DAM (BAR2)</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>46</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>EUNGELLA DAM (BAR2)</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td></td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Work not completed</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>148.3894554213585,-21.13626268465859,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark id="ID_00047">
+			<name>6 Sand Dams on Lower Burdekin River (BAR397A)</name>
+			<snippet></snippet>
+			<description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+
+<head>
+
+<META http-equiv="Content-Type" content="text/html">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body style="margin:0px 0px 0px 0px;overflow:auto;background:#FFFFFF;">
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-collapse:collapse;padding:3px 3px 3px 3px">
+
+<tr style="text-align:center;font-weight:bold;background:#9CBCE2">
+
+<td>6 Sand Dams on Lower Burdekin River (BAR397A)</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<table style="font-family:Arial,Verdana,Times;font-size:12px;text-align:left;width:100%;border-spacing:0px; padding:3px 3px 3px 3px">
+
+<tr>
+
+<td>FID</td>
+
+<td>47</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>Name</td>
+
+<td>6 Sand Dams on Lower Burdekin River (BAR397A)</td>
+
+</tr>
+
+<tr>
+
+<td>Descr</td>
+
+<td>&lt;html&gt;
+
+&lt;head&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;div&gt;&lt;span style="font-style: italic;"&gt;&lt;/span&gt;&lt;br&gt;
+
+&lt;!-- BalloonStyle background color:
+
+ffffffff
+
+--&gt;
+
+&lt;!-- Icon URL:
+
+http://webgis.bdtnrm.org.au/images/noentryfish.tif
+
+--&gt;
+
+&lt;table style="width: 620px; height: 723px;" cellpadding</td>
+
+</tr>
+
+<tr bgcolor="#D4E4F3">
+
+<td>WorkDone</td>
+
+<td>Work completed funded by others</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>]]></description>
+			<styleUrl>#IconStyle00</styleUrl>
+			<Point>
+				<coordinates>147.333146,-19.795463,0</coordinates>
+			</Point>
+		</Placemark>
+	</Folder>
+</Document>
+</kml>

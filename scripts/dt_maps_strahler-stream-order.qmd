@@ -1,0 +1,148 @@
+---
+title: "Strahler Stream Order"
+subtitle: "A Healthy Waters Partnership Analysis"
+description: "This script creates a map of all streams in the Dry Tropics region colour by stream order. The output of this is used in the Dry Tropics Technical Report."
+author: "Adam Shand"
+format: html
+params:
+  project_crs: "EPSG:7844"
+---
+# Introduction
+
+The purpose of this script is to create a map that defines the strahler stream order of all watercourses in the Dry Tropics region.
+
+Currently this map is only used in the appendix of the methods document, but the strahler stream order concept is used in multiple indicators including fish barriers, impoundment length, and riparian habitat
+
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, sf, tmap, janitor, grid, RcolorBrewer)
+
+```
+
+
+We also need to set up key variables for the script such as where we are going to save the outputs, and what coordinate reference system (crs) we are going to be using.
+
+```{r}
+#| label: global vars and initial setup
+
+#set project variables: crs factor
+proj_crs <- params$project_crs
+
+#create a file path to help with saving things
+save_path <- here("outputs/dt_maps_strahler-stream-order/")
+
+#this script does not use any unique data
+
+#bring that path to life
+dir.create(save_path)
+
+#turn off spherical geometry
+sf_use_s2(F)
+
+```
+
+# Load Data
+
+This script does not need any data of its own. However it does pull data from the two most important scripts in this repo.
+
+## Basic files
+
+Now the script is set up we need to load in all of the required datasets. Spatial data for the northern three regions should be readily available in the repo, the dataset is created by the n3_region-builder.qmd script in the repo that should be the first script run for new users. If the dataset is not available refer back to the README document in the GitHub repo. The other parts of spatial data here should go off without a hitch if the region-builder script has been run.
+
+```{r}
+#| label: load the n3 region
+#read in the custom function to clean column names into our specific style
+source("../functions/name_cleaning.R")
+
+#read in the northern three spatial files 
+n3_region <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg")) |> 
+  name_cleaning()
+
+#select only the dry tropics region and only the land component
+dt_land <- n3_region |> 
+  filter(Region == "Dry Tropics",
+         Environment != "Marine")
+
+#load a Queensland outline from the aims package
+qld <- get(data("gbr_feat", package = "gisaimsr")) |> 
+  name_cleaning() |> 
+  filter(FeatName %in% c("Mainland", "Island")) |> 
+  st_transform(proj_crs)
+
+```
+
+## Watercourse Lines
+
+Next we will get the watercourse lines, we can pull this from the dataset that is created by the n3_watercourse-builder.qmd script that should be the second script that is run in this repo.
+
+```{r}
+#| label: watercourse lines
+
+#load in all watercourse data
+n3_watercourse <- st_read(here("data/n3_prep_watercourse-builder/n3_watercourse.gpkg")) |> 
+  name_cleaning()
+
+#select only the lines component, only for the dry tropics region, and only of stream order >= 2, <100
+dt_wat_lines <- n3_watercourse |>
+  st_collection_extract("LINESTRING") |> 
+  filter(Region == "Dry Tropics",
+         StreamOrder >= 2 & StreamOrder < 100)
+
+#make stream order a factor a reorder from high to low
+dt_wat_lines <- dt_wat_lines |> 
+  mutate(StreamOrder = factor(StreamOrder),
+         StreamOrder = fct_relevel(StreamOrder, as.character(sort(unique(dt_wat_lines$StreamOrder), decreasing = T))))
+
+```
+
+# Create Map
+
+Then we can create a map, colouring the streams by their strahler stream order.
+
+```{r}
+#| label: create the strahler map
+
+#calculate extent of query area
+dt_bbox <- st_bbox(dt_land)
+dt_focus_area <- st_as_sfc(dt_bbox)
+
+#rename variable
+dt_wat_lines <- dt_wat_lines |> rename(any_of(c('Strahler Stream Order' = "StreamOrder")))
+
+#create an inset map
+inset_map <- tm_shape(qld) +
+  tm_polygons(col = "grey80", border.col = "black") +
+  tm_shape(dt_land, is.master = T) +
+  tm_polygons(col = "grey90", border.col = "black") +
+  tm_shape(dt_focus_area) +
+  tm_borders(lwd = 2, col = "red")
+
+#create the main map
+map <- tm_shape(dt_focus_area) +
+  tm_borders(alpha = 0) +
+  tm_shape(qld) +
+  tm_polygons(col = "grey80", border.col = "black") +
+  tm_shape(dt_land) +
+  tm_polygons(col = "grey90", border.col = "black") +
+  tm_shape(dt_wat_lines) +
+  tm_lines(col = "Strahler Stream Order", style = "cat", palette = "-Oranges") +
+  tm_layout(legend.bg.color = "white", legend.frame = "black", asp = 1.1, legend.position = c("left", "bottom")) 
+
+#figure out the aspect of the inset map and the view port
+asp2 <- (dt_bbox$ymax - dt_bbox$ymin)/(dt_bbox$xmax - dt_bbox$xmin)
+w <- 0.2
+h <- asp2 * w
+vp <- viewport(x = 0.98, y = 0.97, width = w, height = h, just = c("right", "top"))
+
+#save map
+tmap_save(map, glue("{save_path}/strahler_stream_order.png"), 
+          insets_tm = inset_map, insets_vp = vp)
+
+```
+

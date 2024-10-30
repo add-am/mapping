@@ -1,0 +1,310 @@
+---
+title: "Northern Three Spatial Analyses (Freshwater: Impoundment Length)"
+author: "Adam Shand"
+date: "`r format(Sys.time(), '%d, %B, %Y')`"
+format: html
+params:
+  project_crs: "EPSG:7844"
+---
+
+::: {.callout-tip}
+## R Version
+For R session info at the time of rendering this script see @sec-sessioninfo.
+:::
+
+# Introduction
+
+This is a simple script to produce a map of sampling locations for the Impoundment Length indicator category in the Freshwater environment for the Dry Tropics region.
+
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, sf, tmap, janitor, dataaimsr, riverdist, igraph)
+
+```
+
+
+Then set the coordinate reference system and save location.
+
+```{r}
+#| label: global vars and initial setup
+
+#set crs 
+proj_crs <- params$project_crs
+
+#create a file path to help with saving things
+save_path <- here("outputs/dt_habitat_impoundment-length/")
+
+#create a data path as well
+data_path <- here("data/dt_habitat_impoundment-length/")
+
+#bring that path to life
+dir.create(save_path)
+
+#turn off S2 mapping
+sf_use_s2(FALSE)
+
+```
+
+# Load Data
+
+Next we load in the data, refer to the README in the GitHub repo if data is missing.
+
+```{r}
+#| label: load core datasets
+
+#please note if the data is not in the basin builder folder, try running the basin builder script
+dry_tropics <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg")) |>
+  filter(environment != "Marine", region == "Dry Tropics")
+
+#read in qld outlines data from the gisaimsr package, filter for land and islands, update crs
+qld <- get(data("gbr_feat", package = "gisaimsr")) |> filter(FEAT_NAME %in% c("Mainland", "Island")) |> 
+  st_transform(proj_crs)
+
+#read in the impounded waters - we will use this for our streams
+impounded_waters <- st_read(glue("{data_path}/impounded_and_not_impounded_waters.gpkg")) |> st_transform(proj_crs)
+
+#create a townsville point coord
+tsv <- st_as_sf(data.frame(place = "Townsville", x = "-19.2590", y = "146.8169"), coords = c("y", "x"), crs = proj_crs)
+
+```
+
+## Load River Data
+
+```{r}
+#| label: load secondary data
+
+n3_watercourse <- st_read(here("data/n3_prep_watercourse-builder/n3_watercourse.gpkg"))
+
+ross <- n3_watercourse |> 
+  filter(basin_or_zone == "Ross",
+         stream_order > 1, stream_order < 100)
+
+```
+
+### Pick out unique watercourses
+
+```{r}
+#| label: assign unique watercourse IDs
+
+#run st_intersects for every geometry in the watercourse dataset. This creates a relationship between every geometry that says which other geometry it is connected to
+unique_ross_id <- st_intersects(ross)
+
+#we then make a connection graph
+connection_graph <- graph_from_adj_list(unique_ross_id)
+
+#and extract the membership component (essentially which group of connections does each geometry belong to)
+watercourse_memberships <- components(connection_graph)$membership
+
+#this membership component becomes the unique ID assigned to each distinct watercourse
+ross$unique_river_id <- watercourse_memberships
+
+#we then need to calculate the length of every geometry individually, before then calculating the total length of each unique watercourse, making sure to separate by sub basin for those that cross boundaries
+ross <- ross |> 
+  mutate(length = st_length(geom)) |> 
+  group_by(sub_basin_or_sub_zone, unique_river_id) |>
+  mutate(length = sum(length)) |> 
+  ungroup()
+
+```
+
+Find the biggest three per sub basin - we could look at all of them, but for most sub basins, there is usually at most 3 significant river systems.
+
+```{r}
+
+numbers_to_keep <- ross |> 
+  select(sub_basin_or_sub_zone, unique_river_id, length) |> 
+  st_drop_geometry() |> 
+  unique() |> 
+  group_by(sub_basin_or_sub_zone) |> 
+  slice_max(order_by = length, n = 3) |> 
+  ungroup() 
+
+ross_top_3 <- semi_join(ross, numbers_to_keep)
+
+st_write(ross_top_3, "test.gpkg", delete_dsn = T)
+
+```
+
+## Load Barrier Data
+
+We can then pull in the barrier data.
+
+::: {.callout-note}
+For this script to be effective the fish barriers scripts must have been run before hand
+:::
+
+```{r}
+#| label: load barriers data
+
+#load in the barriers data from the fish barriers script set.
+barriers <- st_read(here("data/dt_habitat_fish-barriers/dt_fish_barriers.gpkg"))
+
+```
+
+```{r}
+#| label: draw lines to watercourse
+
+#add a unique identifier for each row
+barriers <- barriers |> 
+  mutate(special_id = row_number())
+
+#we then run the nearest points function
+lines_from_point_to_watercourse <- st_sf(geom = st_nearest_points(barriers, 
+                                                                  ross_top_3), crs = proj_crs)
+
+#add each of the vectors
+nearest_points <- lines_from_point_to_watercourse |> 
+  mutate(special_id = rep(barriers$special_id, 
+                          each = nrow(ross_top_3)),
+         construct = rep(barriers$construct,
+                         each = nrow(ross_top_3)))
+
+#we can then measure the length of each line casted, group by the variables we just added, and pick the line with the shortest length
+nearest_points <- nearest_points |> 
+  mutate(length = st_length(geom)) |> 
+  group_by(across(-c(geom, length))) |> 
+  filter(length == min(length)) |> 
+  ungroup()
+
+#check if length is equal to or less than 100 (i.e. if barrier is within 100m of watercourse) and select only those that are
+nearest_points <- nearest_points |> 
+  mutate(in_proximity = case_when(length > units::set_units(100, "m") ~ FALSE, T ~ TRUE)) |> 
+  filter(in_proximity) |> 
+  select(special_id)
+
+#then we can extract the second pair of geometries from the line strings to find the end points of each line. which will be the closest point on the waterbody to the line
+snap_to_points <- st_cast(nearest_points, "POINT")[seq(2, nrow(nearest_points), by = 2),]
+
+#find the nearest feature
+snap_to_points$nearest_feature <- st_nearest_feature(snap_to_points, ross_top_3)
+
+#pull out the row index in the watercourse dataset for its own col
+ross_top_3 <- ross_top_3 |> 
+  mutate(row_index = row_number())
+
+#join the datasets by adding the unique watercourse information to the preexisting barriers based on the row index (which ever feature was the closest)
+snap_to_points <- left_join(snap_to_points, 
+                            st_drop_geometry(ross_top_3), 
+                            by = c("nearest_feature" = "row_index"))
+
+#edit the data to keep just what we need
+#snap_to_points <- snap_to_points |> 
+  #select(-c(geographic_area, stream_order, special_id, nearest_feature))
+
+#clean up
+rm(lines_from_point_to_watercourse, nearest_points)
+
+ross_san_bohle <- ross |> 
+  filter(sub_basin_or_sub_zone %in% c("Alligator Creek", "Ross River (Lower)", "Stuart Creek", "Ross River (Upper)")) |> 
+  filter(stream_order >= 3) |> 
+  mutate(length = st_length(geom))
+
+sum(ross_san_bohle$length)/1000
+
+st_write(ross_san_bohle, "test3.gpkg")
+
+impounded_waters <- impounded_waters |> 
+  mutate(length = st_length(geom))
+
+sum(filter(impounded_waters, ReportArea == "Ross")$length)/1000
+
+```
+
+
+
+```{r}
+
+
+#we then need to calculate the length of every geometry individually, before then calculating the total length of each unique watercourse, making sure to separate by sub basin for those that cross boundaries
+filtered_test_location_watercourse <- filtered_test_location_watercourse |> 
+  mutate(length = st_length(geom)) |> 
+  group_by(sub_basin_or_sub_zone, unique_river_id) |>
+  mutate(length = sum(length)) |> 
+  ungroup()
+
+#there are a few examples where a watercourse with a unique ID crosses into another sub basin. In this case
+#we take the longer of the two watercourses with the same unique ID. To create truly, 100% unique IDs.
+unique_watercourse <- filtered_test_location_watercourse |> 
+  group_by(unique_river_id) |> 
+  filter(length == max(length)) |> 
+  ungroup()
+
+#clean up
+rm(unique_watercourse_id, watercourse_memberships, connection_graph, filtered_test_location_watercourse)
+
+```
+
+# Maipulate Data
+
+Before we can create the map we just need to manipulate the data to remove unnecessary visual clutter.
+
+```{r}
+#| label: clean up data
+
+#adjust the names of the streams to suit
+impounded_waters <- impounded_waters |> 
+  mutate(Impounded = case_when(Impounded == "Y" ~ "Yes", Impounded == "N" ~ "No")) |> 
+  rename("Impounded Waters" = "Impounded")
+
+```
+
+# Create Map
+
+And finally we can produce the required maps to be used in our technical report style.
+
+```{r}
+#| label: create map
+
+#create a map of the area
+map <- tm_shape(qld) +
+  tm_polygons(col = "grey80", border.col = "black") +
+  tm_shape(dry_tropics) +
+  tm_polygons(border.col = "black") +
+  tm_shape(impounded_waters, is.master = T) +
+  tm_lines("Impounded Waters", palette = c("blue", "red")) +
+  tm_shape(tsv) +
+  tm_symbols(size = 0.5, col = "white", border.col = "black", border.lwd = 2, shape = 23) +
+  tm_text("place", shadow = T, xmod = -2.5, ymod = 0.1) +
+  tm_layout(legend.frame = T, legend.bg.color = "White", asp = 1.1, 
+            legend.text.size = 0.7, legend.position = c("left", "bottom")) +
+  tm_scale_bar(width = 0.15, text.size = 0.7, position = c(0.23, 0)) +
+  tm_compass(position = c("right", "top"))
+
+#save the map as a png
+tmap_save(map, filename = glue("{save_path}/Impoundment-Length.png"))
+
+```
+
+Script complete :) Below is an interactive example of the maps created.
+
+```{r}
+#| label: interactive map example
+
+tmap_mode("view")
+
+map
+
+```
+
+
+# Session Info {#sec-sessioninfo}
+
+Below is the session info at the time of rendering this script. Of greatest importance is to note the R version, and the "other attached packages" as these are the most significant drivers of success/failure. It is also good to check the "attached base packages" and "loaded via a namespace" packages as well. To check your session info use `sessionInfo()`.
+
+```{r}
+#| label: show session info
+
+sessionInfo()
+
+```
+
+
+
+
+

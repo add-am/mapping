@@ -1,0 +1,220 @@
+---
+title: "Freshwater Water Quality Exploratory Data Analysis"
+subtitle: "A Healthy Waters Partnership Analysis"
+description: "Script 3 in a series of script designed to analyse, score, and present freshwater water quality in the Dry Tropics region. The output of this is used in the Dry Tropics Technical Report."
+author: "Adam Shand"
+format: html
+params:
+  project_crs: "EPSG:7844"
+  target_fyear: 2023
+  sites_removed: FALSE  
+---
+
+:::{.callout-note}
+The Water Quality suite of scripts currently do not adhere to the CamelCase naming rules. This is due to filtering and code that relies on snake_case naming to work. This will take a significant amount of time to overhaul.
+:::
+
+# Introduction
+
+The purpose of this script is to create stylised figures ready to be presented within the technical report. Figures will include boxplots and line plots.
+
+In the future this script may be expanded to include more unique and customisable code/figures.
+
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, janitor, ggplot2)
+
+```
+
+```{r}
+
+#turn off scientific notation
+options(scipen = 999)
+
+#establish what financial year we are looking at
+current_fyear <- params$target_fyear
+
+#determine if we want the dataset to be the one with removed sites, or the original
+removed <- params$sites_removed
+
+#set a path directly to the data as, thanks to script one, this is the only data we will need. Note the years in the name.
+data_path <- glue("{here()}/data/dt_water-quality_freshwater/processed/{current_fyear-1}-{current_fyear}_freshwater_wq_all")
+
+#get a date variable (this is important for naming as it is anticipated multiple runs of the script will be required).
+date <- format(Sys.time(), "%Y-%m-%d")
+
+#create a file path for the year of data that is being looked at
+year_folder <- glue("{here()}/outputs/dt_water-quality_freshwater_s3-figures/{current_fyear-1}-{current_fyear}_figures/")
+
+#create that folder
+dir.create(year_folder, recursive = T)
+
+#create a file path to help with saving things, make sure to include date
+save_path <- glue("{year_folder}/figures_created_on_{date}/")
+
+#create folder
+dir.create(save_path, recursive = T)
+
+```
+
+# Load Data
+
+Data for this script is provided in a single spreadsheet that was prepared by script 1 in this series of scripts. Please note that script 1 may have removed some offending values, if this is the case a warning will notify as such.
+
+```{r}
+#| label: load data
+#| warning: true
+
+if (file.exists(glue("{data_path}_sites_removed.csv")) & removed == T){ #if post removed exists, and that is what you want
+  
+  #read in data
+  freshwater_wq_all <- read_csv(glue("{data_path}_sites_removed.csv"))
+  
+  #provide a notifying warning
+  warning("The data that has been loaded in has had some values removed as per the QA/QC checks 
+          performed in script 1 of this series. Please confirm this is the dataset you would like
+          to use.")
+  
+} else if (file.exists(glue("data_path}.csv"))){ #if a dataset that never needed removal exists
+  
+  #read in data
+  freshwater_wq_all <- read_csv(glue("{data_path}.csv"))
+  
+} else { #otherwise, take the pre removal dataset
+  
+  #read in data
+  freshwater_wq_all <- read_csv(glue("{data_path}_pre_removal.csv"))
+    
+}
+
+#convert columns to factors and give them the custom order we use in the technical report
+freshwater_wq_all <- freshwater_wq_all |> 
+  mutate(across(c(Basin, Sub_Basin, Watercourse), factor),
+         Basin = fct_relevel(Basin, "Ross", "Black"), 
+         Sub_Basin = fct_relevel(Sub_Basin, "Upper Ross River", "Lower Ross River", "Bohle River", "Black River", 
+                                 "Bluewater Creek", "Rollingstone Creek", "Crystal Creek"), 
+         Watercourse = fct_relevel(Watercourse, "Ross Lake", "Aplins Weir", "Gleesons Weir",
+                                   "Blacks Weir", "Bohle Mid-Field", "Bohle Far-Field", "Black River", 
+                                   "Althaus Creek", "Bluewater Creek","Sleeper Log Creek", "Leichhardt Creek",
+                                   "Saltwater Creek",  "Rollingstone Creek", "Ollera Creek", "Crystal Creek",
+                                   "Paluma Lake"))
+
+#cut off data that is past the targeted financial year - this is important to be able to replicate old graphs
+freshwater_wq_target <- freshwater_wq_all |> filter(FY <= current_fyear)
+
+```
+
+# Boxplots
+
+First we will create the boxplots that are used in the appendix of the technical report. Noting that most boxplots share the same core features and just have variations around their y scale.
+
+```{r}
+#| label: create boxplots 
+
+#create custom log function for tick breaks
+base_breaks <- function(n = 10){
+    function(x) {
+        axisTicks(log10(range(x, na.rm = TRUE)), log = TRUE, n = n)
+    }
+}
+
+#boxplot data only requires the current year to work
+boxplot_data <- freshwater_wq_target |> filter(FY == current_fyear)
+
+theme_set(theme_bw(8))
+
+#create a custom colour scheme
+boxplot_colours <- c("#A6CEE3", "#1F78B4", "#B15928","#FFFF99","#E31A1C","#B2DF8A","#33A02C",
+                     "#CAB2D6", "#6A3D9A","#666666", "#FB9A99", "#FDBF6F", "#FF7F00")
+
+for (i in unique(boxplot_data$Indicator)){#for each of the indicators
+  
+  if (str_detect(i, "DO")){#if the indicator is dissolved oxygen (high or low)
+    
+    #keep both the high and low DO data points
+    target_data <- boxplot_data |> filter(Indicator %in% c("High_DO", "Low_DO"))
+  
+    #otherwise, select only the data points for the specific indicator
+  } else {target_data <- boxplot_data |> filter(Indicator == i)}
+  
+  #pick out the associated units
+  units <- unique(target_data$Units)
+  
+  #start the main plot which contains features consistent across all indicators
+  box_plot <- ggplot(target_data) +
+    geom_boxplot(mapping = aes(x = Watercourse, y = Values, fill = Sub_Basin, alpha = 0.3), show.legend = FALSE) +
+    scale_fill_manual(values = boxplot_colours) +
+    annotate(geom = "text", x = "Blacks Weir", y = 140, label = "Ross Freshwater Basin", size = 3, hjust = 0.4) +
+    annotate(geom = "text", x = "Bluewater Creek", y = 140, label = "Black Freshwater Basin", size = 3, hjust = 0.5) +
+    geom_point(mapping = aes(x = Watercourse, y = WQO), color = "blue", shape = 23, fill = "blue", size = 2 ) +
+    geom_point(mapping = aes(x = Watercourse, y = SF), color = "red", shape = 24, fill = "red", size = 2) +
+    theme_bw() + 
+    theme(panel.border = element_rect(), panel.grid.major = element_blank(), 
+          panel.grid.minor = element_blank(),
+          axis.text.x = element_text(angle = 90, vjust = 0.5, size = 7), 
+          axis.title = element_text(size = 10)) +
+    ylab(glue("{i} ({units})")) +
+    scale_y_continuous(trans = scales::log_trans(), breaks = base_breaks(), labels = prettyNum)
+  
+  if(str_detect(i, "DO")){#if the indicator is dissolved oxygen (high or low)
+    
+    #add DO specific plot features, such as additional WQO and SF values and a custom units name
+    box_plot <- box_plot +
+      geom_point(target_data |> filter(Indicator == "Low_DO"), 
+                 mapping = aes(x = Watercourse, y = WQO), color = "purple", shape = 23, fill = "purple", size = 2) +
+      geom_point(target_data |> filter(Indicator == "Low_DO"), 
+                 mapping = aes(x = Watercourse, y = SF), color = "brown", shape = 24, fill = "brown", size = 2) +
+      ylab(glue("DO ({units})"))
+
+  }
+  
+  #save plot
+  ggsave(filename = glue("{save_path}/boxplot_{i}.png"), plot = box_plot, width = 16.2, height = 10, units = "cm")
+  
+}
+
+```
+
+# Lineplots
+
+Then we will create line plots that are also presented in the appendix.
+
+```{r}
+#| label: create lineplots
+
+#create a custom color palette
+lineplot_colours <- c("#A6CEE3", "#9ECAE1", "#1F78B4","#084594", "#B15928", "#BF812D", "#01665E","#E31A1C", "#FB6A4A",
+                      "#99000D","#B2DF8A","#33A02C", "#005824", "#CAB2D6", "#6A3D9A","#666666")
+
+#assign names to each colour so ggplot can match the name to the colour
+names(lineplot_colours) <- levels(unique(freshwater_wq_target$Watercourse))
+
+for (i in unique(freshwater_wq_target$Indicator)){#for each indicator
+  
+  #select the data 
+  target_data <- freshwater_wq_target |> filter(Indicator == i) |> 
+    filter(!is.na(Values))
+  
+  #and the units
+  units <- unique(target_data$Units)
+  
+  #plot
+  line_plot <- ggplot(target_data) +
+    geom_line(mapping = aes(x = Date, y = Values, color = Watercourse)) +
+    scale_color_manual(values = lineplot_colours) +
+    geom_line(mapping = aes(x = Date, y = WQO), color = "black") +
+    facet_wrap(~Sub_Basin, scales = "free") +
+    ylab(glue("{i} ({units})"))
+  
+  #save
+  ggsave(filename = glue("{save_path}/lineplot_{i}.png"), plot = line_plot, width = 16, height = 20, units = "cm")
+    
+}
+
+```

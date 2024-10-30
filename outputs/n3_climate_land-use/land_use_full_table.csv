@@ -1,0 +1,1624 @@
+Region,Basin,SubBasin,Landuse,Year,TotalAreaKm2,LanduseKm2,LanduseProportionOfTotalPercent,AreaChangeYearToYear,PercentageChangeYearToYear,XyearToXyear
+Burdekin,NA,NA,Conservation,1999,137677.3,6136.9,4.5,0,0,1999 to 1999
+Burdekin,NA,NA,Conservation,2009,138172.3,7666,5.5,1529.1,24.9,2009 to 1999
+Burdekin,NA,NA,Conservation,2016,137390.5,8475.8,6.2,809.7,10.6,2016 to 2009
+Burdekin,NA,NA,Conservation,2021,134183.7,11427.4,8.5,2951.6,34.8,2021 to 2016
+Dry Tropics,NA,NA,Conservation,1999,2934.1,835.1,28.5,0,0,1999 to 1999
+Dry Tropics,NA,NA,Conservation,2009,2936.9,980.9,33.4,145.8,17.5,2009 to 1999
+Dry Tropics,NA,NA,Conservation,2016,2934.5,1025.9,35,45,4.6,2016 to 2009
+Dry Tropics,NA,NA,Conservation,2021,2902.1,1030.8,35.5,4.8,0.5,2021 to 2016
+Mackay Whitsunday Isaac,NA,NA,Conservation,1999,13270.8,3050.9,23,0,0,1999 to 1999
+Mackay Whitsunday Isaac,NA,NA,Conservation,2009,13222.8,3116.8,23.6,65.9,2.2,2009 to 1999
+Mackay Whitsunday Isaac,NA,NA,Conservation,2016,13215.7,3224.1,24.4,107.3,3.4,2016 to 2009
+Mackay Whitsunday Isaac,NA,NA,Conservation,2021,13114.9,2331,17.8,-893.1,-27.7,2021 to 2016
+Wet Tropics,NA,NA,Conservation,1999,22793,7204.6,31.6,0,0,1999 to 1999
+Wet Tropics,NA,NA,Conservation,2009,22721.2,9995.4,44,2790.8,38.7,2009 to 1999
+Wet Tropics,NA,NA,Conservation,2015,22687.3,11054.9,48.7,1059.5,10.6,2015 to 2009
+Wet Tropics,NA,NA,Conservation,2021,22153.6,10992.8,49.6,-62.1,-0.6,2021 to 2015
+Burdekin,NA,NA,Dryland Agriculture,1999,137677.3,1223.1,0.9,0,0,1999 to 1999
+Burdekin,NA,NA,Dryland Agriculture,2009,138172.3,1276.3,0.9,53.2,4.4,2009 to 1999
+Burdekin,NA,NA,Dryland Agriculture,2016,137390.5,1346.2,1,69.9,5.5,2016 to 2009
+Burdekin,NA,NA,Dryland Agriculture,2021,134183.7,1376,1,29.8,2.2,2021 to 2016
+Dry Tropics,NA,NA,Dryland Agriculture,1999,2934.1,2.6,0.1,0,0,1999 to 1999
+Dry Tropics,NA,NA,Dryland Agriculture,2009,2936.9,3.5,0.1,0.8,31.3,2009 to 1999
+Dry Tropics,NA,NA,Dryland Agriculture,2016,2934.5,3.2,0.1,-0.3,-8.1,2016 to 2009
+Dry Tropics,NA,NA,Dryland Agriculture,2021,2902.1,1.7,0.1,-1.4,-45.2,2021 to 2016
+Mackay Whitsunday Isaac,NA,NA,Dryland Agriculture,1999,13270.8,4,0,0,0,1999 to 1999
+Mackay Whitsunday Isaac,NA,NA,Dryland Agriculture,2009,13222.8,66.8,0.5,62.7,1551.7,2009 to 1999
+Mackay Whitsunday Isaac,NA,NA,Dryland Agriculture,2016,13215.7,9.6,0.1,-57.2,-85.7,2016 to 2009
+Mackay Whitsunday Isaac,NA,NA,Dryland Agriculture,2021,13114.9,15.1,0.1,5.5,58.1,2021 to 2016
+Wet Tropics,NA,NA,Dryland Agriculture,1999,22793,1917.6,8.4,0,0,1999 to 1999
+Wet Tropics,NA,NA,Dryland Agriculture,2009,22721.2,1901.8,8.4,-15.8,-0.8,2009 to 1999
+Wet Tropics,NA,NA,Dryland Agriculture,2015,22687.3,1816.5,8,-85.3,-4.5,2015 to 2009
+Wet Tropics,NA,NA,Dryland Agriculture,2021,22153.6,1850.8,8.4,34.3,1.9,2021 to 2015
+Burdekin,NA,NA,Forestry,1999,137677.3,1223.3,0.9,0,0,1999 to 1999
+Burdekin,NA,NA,Forestry,2009,138172.3,858,0.6,-365.3,-29.9,2009 to 1999
+Burdekin,NA,NA,Forestry,2016,137390.5,787.8,0.6,-70.2,-8.2,2016 to 2009
+Burdekin,NA,NA,Forestry,2021,134183.7,788.7,0.6,0.8,0.1,2021 to 2016
+Dry Tropics,NA,NA,Forestry,1999,2934.1,251.7,8.6,0,0,1999 to 1999
+Dry Tropics,NA,NA,Forestry,2009,2936.9,123.1,4.2,-128.7,-51.1,2009 to 1999
+Dry Tropics,NA,NA,Forestry,2016,2934.5,123,4.2,-0.1,-0.1,2016 to 2009
+Dry Tropics,NA,NA,Forestry,2021,2902.1,123,4.2,-0,-0,2021 to 2016
+Mackay Whitsunday Isaac,NA,NA,Forestry,1999,13270.8,936.3,7.1,0,0,1999 to 1999
+Mackay Whitsunday Isaac,NA,NA,Forestry,2009,13222.8,859,6.5,-77.3,-8.3,2009 to 1999
+Mackay Whitsunday Isaac,NA,NA,Forestry,2016,13215.7,736.8,5.6,-122.2,-14.2,2016 to 2009
+Mackay Whitsunday Isaac,NA,NA,Forestry,2021,13114.9,730.1,5.6,-6.7,-0.9,2021 to 2016
+Wet Tropics,NA,NA,Forestry,1999,22793,4388.7,19.3,0,0,1999 to 1999
+Wet Tropics,NA,NA,Forestry,2009,22721.2,1675.2,7.4,-2713.5,-61.8,2009 to 1999
+Wet Tropics,NA,NA,Forestry,2015,22687.3,589.7,2.6,-1085.5,-64.8,2015 to 2009
+Wet Tropics,NA,NA,Forestry,2021,22153.6,646.3,2.9,56.6,9.6,2021 to 2015
+Burdekin,NA,NA,Grazing,1999,137677.3,124779.6,90.6,0,0,1999 to 1999
+Burdekin,NA,NA,Grazing,2009,138172.3,123954.1,89.7,-825.5,-0.7,2009 to 1999
+Burdekin,NA,NA,Grazing,2016,137390.5,122322.4,89,-1631.7,-1.3,2016 to 2009
+Burdekin,NA,NA,Grazing,2021,134183.7,116046.5,86.5,-6275.9,-5.1,2021 to 2016
+Dry Tropics,NA,NA,Grazing,1999,2934.1,1398.9,47.7,0,0,1999 to 1999
+Dry Tropics,NA,NA,Grazing,2009,2936.9,1350.3,46,-48.6,-3.5,2009 to 1999
+Dry Tropics,NA,NA,Grazing,2016,2934.5,1289.9,44,-60.4,-4.5,2016 to 2009
+Dry Tropics,NA,NA,Grazing,2021,2902.1,1252,43.1,-37.9,-2.9,2021 to 2016
+Mackay Whitsunday Isaac,NA,NA,Grazing,1999,13270.8,6103,46,0,0,1999 to 1999
+Mackay Whitsunday Isaac,NA,NA,Grazing,2009,13222.8,6023.5,45.6,-79.5,-1.3,2009 to 1999
+Mackay Whitsunday Isaac,NA,NA,Grazing,2016,13215.7,6096.9,46.1,73.4,1.2,2016 to 2009
+Mackay Whitsunday Isaac,NA,NA,Grazing,2021,13114.9,6847.3,52.2,750.4,12.3,2021 to 2016
+Wet Tropics,NA,NA,Grazing,1999,22793,7355.8,32.3,0,0,1999 to 1999
+Wet Tropics,NA,NA,Grazing,2009,22721.2,7229.1,31.8,-126.7,-1.7,2009 to 1999
+Wet Tropics,NA,NA,Grazing,2015,22687.3,7319.8,32.3,90.7,1.3,2015 to 2009
+Wet Tropics,NA,NA,Grazing,2021,22153.6,6678.9,30.1,-640.9,-8.8,2021 to 2015
+Burdekin,NA,NA,Irrigated Agriculture,1999,137677.3,1016,0.7,0,0,1999 to 1999
+Burdekin,NA,NA,Irrigated Agriculture,2009,138172.3,990.3,0.7,-25.7,-2.5,2009 to 1999
+Burdekin,NA,NA,Irrigated Agriculture,2021,134183.7,1119.4,0.8,129.1,13,2021 to 2009
+Burdekin,NA,NA,Irrigated Agriculture,2016,137390.5,983.5,0.7,-135.9,-12.1,2016 to 2021
+Dry Tropics,NA,NA,Irrigated Agriculture,1999,2934.1,15.2,0.5,0,0,1999 to 1999
+Dry Tropics,NA,NA,Irrigated Agriculture,2009,2936.9,14.6,0.5,-0.7,-4.4,2009 to 1999
+Dry Tropics,NA,NA,Irrigated Agriculture,2016,2934.5,14.3,0.5,-0.3,-2.2,2016 to 2009
+Dry Tropics,NA,NA,Irrigated Agriculture,2021,2902.1,31.1,1.1,16.8,117.9,2021 to 2016
+Mackay Whitsunday Isaac,NA,NA,Irrigated Agriculture,1999,13270.8,1753.4,13.2,0,0,1999 to 1999
+Mackay Whitsunday Isaac,NA,NA,Irrigated Agriculture,2009,13222.8,1662.9,12.6,-90.5,-5.2,2009 to 1999
+Mackay Whitsunday Isaac,NA,NA,Irrigated Agriculture,2016,13215.7,1619.2,12.3,-43.7,-2.6,2016 to 2009
+Mackay Whitsunday Isaac,NA,NA,Irrigated Agriculture,2021,13114.9,1756.7,13.4,137.5,8.5,2021 to 2016
+Wet Tropics,NA,NA,Irrigated Agriculture,1999,22793,350.5,1.5,0,0,1999 to 1999
+Wet Tropics,NA,NA,Irrigated Agriculture,2009,22721.2,323.2,1.4,-27.3,-7.8,2009 to 1999
+Wet Tropics,NA,NA,Irrigated Agriculture,2015,22687.3,316.7,1.4,-6.4,-2,2015 to 2009
+Wet Tropics,NA,NA,Irrigated Agriculture,2021,22153.6,593.7,2.7,277,87.4,2021 to 2015
+Burdekin,NA,NA,Mining,1999,137677.3,87.4,0.1,0,0,1999 to 1999
+Burdekin,NA,NA,Mining,2009,138172.3,126.3,0.1,38.9,44.5,2009 to 1999
+Burdekin,NA,NA,Mining,2016,137390.5,150.8,0.1,24.5,19.4,2016 to 2009
+Burdekin,NA,NA,Mining,2021,134183.7,214.2,0.2,63.4,42.1,2021 to 2016
+Dry Tropics,NA,NA,Mining,1999,2934.1,7.5,0.3,0,0,1999 to 1999
+Dry Tropics,NA,NA,Mining,2009,2936.9,9.4,0.3,2,26.6,2009 to 1999
+Dry Tropics,NA,NA,Mining,2016,2934.5,10.8,0.4,1.3,13.9,2016 to 2009
+Dry Tropics,NA,NA,Mining,2021,2902.1,10.8,0.4,0.1,0.7,2021 to 2016
+Mackay Whitsunday Isaac,NA,NA,Mining,1999,13270.8,7.3,0.1,0,0,1999 to 1999
+Mackay Whitsunday Isaac,NA,NA,Mining,2009,13222.8,9.1,0.1,1.8,24.3,2009 to 1999
+Mackay Whitsunday Isaac,NA,NA,Mining,2016,13215.7,10.7,0.1,1.5,16.9,2016 to 2009
+Mackay Whitsunday Isaac,NA,NA,Mining,2021,13114.9,11.2,0.1,0.5,4.7,2021 to 2016
+Wet Tropics,NA,NA,Mining,1999,22793,8.9,0,0,0,1999 to 1999
+Wet Tropics,NA,NA,Mining,2009,22721.2,10.9,0,1.9,21.4,2009 to 1999
+Wet Tropics,NA,NA,Mining,2015,22687.3,11.5,0.1,0.7,6.2,2015 to 2009
+Wet Tropics,NA,NA,Mining,2021,22153.6,13.1,0.1,1.6,14,2021 to 2015
+Burdekin,NA,NA,Urban/Intensive,1999,137677.3,286.4,0.2,0,0,1999 to 1999
+Burdekin,NA,NA,Urban/Intensive,2009,138172.3,370,0.3,83.6,29.2,2009 to 1999
+Burdekin,NA,NA,Urban/Intensive,2016,137390.5,398.6,0.3,28.6,7.7,2016 to 2009
+Burdekin,NA,NA,Urban/Intensive,2021,134183.7,301.7,0.2,-96.9,-24.3,2021 to 2016
+Dry Tropics,NA,NA,Urban/Intensive,1999,2934.1,250.6,8.5,0,0,1999 to 1999
+Dry Tropics,NA,NA,Urban/Intensive,2009,2936.9,284.9,9.7,34.3,13.7,2009 to 1999
+Dry Tropics,NA,NA,Urban/Intensive,2016,2934.5,298.8,10.2,13.8,4.9,2016 to 2009
+Dry Tropics,NA,NA,Urban/Intensive,2021,2902.1,285.7,9.8,-13,-4.4,2021 to 2016
+Mackay Whitsunday Isaac,NA,NA,Urban/Intensive,1999,13270.8,466.9,3.5,0,0,1999 to 1999
+Mackay Whitsunday Isaac,NA,NA,Urban/Intensive,2009,13222.8,534.8,4,67.8,14.5,2009 to 1999
+Mackay Whitsunday Isaac,NA,NA,Urban/Intensive,2016,13215.7,566.2,4.3,31.4,5.9,2016 to 2009
+Mackay Whitsunday Isaac,NA,NA,Urban/Intensive,2021,13114.9,449.3,3.4,-116.8,-20.6,2021 to 2016
+Wet Tropics,NA,NA,Urban/Intensive,1999,22793,705.1,3.1,0,0,1999 to 1999
+Wet Tropics,NA,NA,Urban/Intensive,2009,22721.2,745.8,3.3,40.7,5.8,2009 to 1999
+Wet Tropics,NA,NA,Urban/Intensive,2015,22687.3,755.1,3.3,9.3,1.2,2015 to 2009
+Wet Tropics,NA,NA,Urban/Intensive,2021,22153.6,538.1,2.4,-217,-28.7,2021 to 2015
+Burdekin,NA,NA,Water,1999,137677.3,2924.7,2.1,0,0,1999 to 1999
+Burdekin,NA,NA,Water,2009,138172.3,2931.3,2.1,6.6,0.2,2009 to 1999
+Burdekin,NA,NA,Water,2016,137390.5,2925.4,2.1,-5.9,-0.2,2016 to 2009
+Burdekin,NA,NA,Water,2021,134183.7,2909.9,2.2,-15.5,-0.5,2021 to 2016
+Dry Tropics,NA,NA,Water,1999,2934.1,172.4,5.9,0,0,1999 to 1999
+Dry Tropics,NA,NA,Water,2009,2936.9,170.3,5.8,-2.1,-1.2,2009 to 1999
+Dry Tropics,NA,NA,Water,2016,2934.5,168.7,5.7,-1.5,-0.9,2016 to 2009
+Dry Tropics,NA,NA,Water,2021,2902.1,167,5.8,-1.7,-1,2021 to 2016
+Mackay Whitsunday Isaac,NA,NA,Water,1999,13270.8,948.9,7.2,0,0,1999 to 1999
+Mackay Whitsunday Isaac,NA,NA,Water,2009,13222.8,949.8,7.2,0.9,0.1,2009 to 1999
+Mackay Whitsunday Isaac,NA,NA,Water,2016,13215.7,952.2,7.2,2.4,0.3,2016 to 2009
+Mackay Whitsunday Isaac,NA,NA,Water,2021,13114.9,974.1,7.4,21.9,2.3,2021 to 2016
+Wet Tropics,NA,NA,Water,1999,22793,861.8,3.8,0,0,1999 to 1999
+Wet Tropics,NA,NA,Water,2009,22721.2,839.9,3.7,-21.9,-2.5,2009 to 1999
+Wet Tropics,NA,NA,Water,2015,22687.3,823.2,3.6,-16.8,-2,2015 to 2009
+Wet Tropics,NA,NA,Water,2021,22153.6,839.9,3.8,16.7,2,2021 to 2015
+Burdekin,Burdekin,NA,Conservation,1999,133517.7,5572.9,4.2,0,0,1999 to 1999
+Burdekin,Burdekin,NA,Conservation,2009,134012.4,7081.3,5.3,1508.5,27.1,2009 to 1999
+Burdekin,Burdekin,NA,Conservation,2016,133233.2,7879.7,5.9,798.4,11.3,2016 to 2009
+Burdekin,Burdekin,NA,Conservation,2021,130114.9,10873.9,8.4,2994.2,38,2021 to 2016
+Burdekin,Haughton,NA,Conservation,1999,4159.6,564.1,13.6,0,0,1999 to 1999
+Burdekin,Haughton,NA,Conservation,2009,4159.8,584.7,14.1,20.7,3.7,2009 to 1999
+Burdekin,Haughton,NA,Conservation,2016,4157.3,596.1,14.3,11.3,1.9,2016 to 2009
+Burdekin,Haughton,NA,Conservation,2021,4068.8,553.5,13.6,-42.6,-7.1,2021 to 2016
+Dry Tropics,Black,NA,Conservation,1999,1157.6,338.5,29.2,0,0,1999 to 1999
+Dry Tropics,Black,NA,Conservation,2009,1156.8,482.1,41.7,143.6,42.4,2009 to 1999
+Dry Tropics,Black,NA,Conservation,2016,1157.4,516.2,44.6,34.1,7.1,2016 to 2009
+Dry Tropics,Black,NA,Conservation,2021,1145.9,492.6,43,-23.6,-4.6,2021 to 2016
+Dry Tropics,Ross,NA,Conservation,1999,1776.5,496.6,28,0,0,1999 to 1999
+Dry Tropics,Ross,NA,Conservation,2009,1780.1,498.8,28,2.2,0.4,2009 to 1999
+Dry Tropics,Ross,NA,Conservation,2016,1777,509.7,28.7,10.9,2.2,2016 to 2009
+Dry Tropics,Ross,NA,Conservation,2021,1756.2,538.1,30.6,28.4,5.6,2021 to 2016
+Mackay Whitsunday Isaac,Don,NA,Conservation,1999,3922.2,230.5,5.9,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Don,NA,Conservation,2009,3874.2,243.8,6.3,13.3,5.8,2009 to 1999
+Mackay Whitsunday Isaac,Don,NA,Conservation,2016,3867.1,230.8,6,-13,-5.3,2016 to 2009
+Mackay Whitsunday Isaac,Don,NA,Conservation,2021,3752.8,207.3,5.5,-23.5,-10.2,2021 to 2016
+Mackay Whitsunday Isaac,O'Connell,NA,Conservation,1999,2445.9,663.1,27.1,0,0,1999 to 1999
+Mackay Whitsunday Isaac,O'Connell,NA,Conservation,2009,2445.9,691.1,28.3,28,4.2,2009 to 1999
+Mackay Whitsunday Isaac,O'Connell,NA,Conservation,2016,2445.9,704.4,28.8,13.3,1.9,2016 to 2009
+Mackay Whitsunday Isaac,O'Connell,NA,Conservation,2021,2446,511,20.9,-193.4,-27.5,2021 to 2016
+Mackay Whitsunday Isaac,Pioneer,NA,Conservation,1999,1571.1,395.8,25.2,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Pioneer,NA,Conservation,2009,1571.1,386.8,24.6,-9,-2.3,2009 to 1999
+Mackay Whitsunday Isaac,Pioneer,NA,Conservation,2016,1571.1,463.2,29.5,76.4,19.7,2016 to 2009
+Mackay Whitsunday Isaac,Pioneer,NA,Conservation,2021,1574.7,335.7,21.3,-127.5,-27.5,2021 to 2016
+Mackay Whitsunday Isaac,Plane,NA,Conservation,1999,2559.5,871.8,34.1,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Plane,NA,Conservation,2009,2559.5,872.8,34.1,1,0.1,2009 to 1999
+Mackay Whitsunday Isaac,Plane,NA,Conservation,2016,2559.5,830.9,32.5,-41.9,-4.8,2016 to 2009
+Mackay Whitsunday Isaac,Plane,NA,Conservation,2021,2569.8,400.3,15.6,-430.6,-51.8,2021 to 2016
+Mackay Whitsunday Isaac,Proserpine,NA,Conservation,1999,2772.1,889.6,32.1,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Proserpine,NA,Conservation,2009,2772.1,922.3,33.3,32.7,3.7,2009 to 1999
+Mackay Whitsunday Isaac,Proserpine,NA,Conservation,2016,2772.1,994.8,35.9,72.5,7.9,2016 to 2009
+Mackay Whitsunday Isaac,Proserpine,NA,Conservation,2021,2771.6,876.7,31.6,-118.1,-11.9,2021 to 2016
+Wet Tropics,Barron,NA,Conservation,1999,2381.9,227.6,9.6,0,0,1999 to 1999
+Wet Tropics,Barron,NA,Conservation,2009,2368.8,633.3,26.7,405.7,178.2,2009 to 1999
+Wet Tropics,Barron,NA,Conservation,2015,2385.5,788.6,33.1,155.2,24.5,2015 to 2009
+Wet Tropics,Barron,NA,Conservation,2021,2193.2,766.7,35,-21.9,-2.8,2021 to 2015
+Wet Tropics,Daintree,NA,Conservation,1999,2123.2,843.7,39.7,0,0,1999 to 1999
+Wet Tropics,Daintree,NA,Conservation,2009,2120.5,938.8,44.3,95.1,11.3,2009 to 1999
+Wet Tropics,Daintree,NA,Conservation,2015,2115.6,1824.3,86.2,885.5,94.3,2015 to 2009
+Wet Tropics,Daintree,NA,Conservation,2021,2104.6,1815.1,86.2,-9.3,-0.5,2021 to 2015
+Wet Tropics,Herbert,NA,Conservation,1999,10003.4,2616.3,26.2,0,0,1999 to 1999
+Wet Tropics,Herbert,NA,Conservation,2009,9996.8,2908,29.1,291.8,11.2,2009 to 1999
+Wet Tropics,Herbert,NA,Conservation,2015,9952.5,2912.3,29.3,4.3,0.1,2015 to 2009
+Wet Tropics,Herbert,NA,Conservation,2021,9873.2,3063.7,31,151.4,5.2,2021 to 2015
+Wet Tropics,Johnstone,NA,Conservation,1999,2460.7,697.3,28.3,0,0,1999 to 1999
+Wet Tropics,Johnstone,NA,Conservation,2009,2457.4,1305.9,53.1,608.5,87.3,2009 to 1999
+Wet Tropics,Johnstone,NA,Conservation,2015,2456.4,1326.4,54,20.5,1.6,2015 to 2009
+Wet Tropics,Johnstone,NA,Conservation,2021,2317.8,1290.9,55.7,-35.5,-2.7,2021 to 2015
+Wet Tropics,Mossman,NA,Conservation,1999,513.5,242.6,47.2,0,0,1999 to 1999
+Wet Tropics,Mossman,NA,Conservation,2009,498,382.8,76.9,140.2,57.8,2009 to 1999
+Wet Tropics,Mossman,NA,Conservation,2015,496,380.6,76.7,-2.2,-0.6,2015 to 2009
+Wet Tropics,Mossman,NA,Conservation,2021,465.4,339.8,73,-40.8,-10.7,2021 to 2015
+Wet Tropics,Mulgrave,NA,Conservation,1999,1333.4,698.6,52.4,0,0,1999 to 1999
+Wet Tropics,Mulgrave,NA,Conservation,2009,1333.7,955.2,71.6,256.6,36.7,2009 to 1999
+Wet Tropics,Mulgrave,NA,Conservation,2015,1333.4,954.5,71.6,-0.7,-0.1,2015 to 2009
+Wet Tropics,Mulgrave,NA,Conservation,2021,1319.7,936.7,71,-17.8,-1.9,2021 to 2015
+Wet Tropics,Murray,NA,Conservation,1999,1539.4,870.1,56.5,0,0,1999 to 1999
+Wet Tropics,Murray,NA,Conservation,2009,1537.4,1100.9,71.6,230.9,26.5,2009 to 1999
+Wet Tropics,Murray,NA,Conservation,2015,1538,1097.9,71.4,-3,-0.3,2015 to 2009
+Wet Tropics,Murray,NA,Conservation,2021,1524.4,1086.7,71.3,-11.2,-1,2021 to 2015
+Wet Tropics,Russell,NA,Conservation,1999,718.7,497.1,69.2,0,0,1999 to 1999
+Wet Tropics,Russell,NA,Conservation,2009,695.9,497.6,71.5,0.5,0.1,2009 to 1999
+Wet Tropics,Russell,NA,Conservation,2015,696.3,497.6,71.5,-0,-0,2015 to 2009
+Wet Tropics,Russell,NA,Conservation,2021,670.6,474.3,70.7,-23.3,-4.7,2021 to 2015
+Wet Tropics,Tully,NA,Conservation,1999,1718.8,511.3,29.7,0,0,1999 to 1999
+Wet Tropics,Tully,NA,Conservation,2009,1712.6,1272.9,74.3,761.6,148.9,2009 to 1999
+Wet Tropics,Tully,NA,Conservation,2015,1713.5,1272.7,74.3,-0.2,-0,2015 to 2009
+Wet Tropics,Tully,NA,Conservation,2021,1684.7,1218.9,72.4,-53.8,-4.2,2021 to 2015
+Burdekin,Burdekin,NA,Dryland Agriculture,1999,133517.7,1216,0.9,0,0,1999 to 1999
+Burdekin,Burdekin,NA,Dryland Agriculture,2009,134012.4,1269.6,0.9,53.6,4.4,2009 to 1999
+Burdekin,Burdekin,NA,Dryland Agriculture,2016,133233.2,1339.7,1,70.1,5.5,2016 to 2009
+Burdekin,Burdekin,NA,Dryland Agriculture,2021,130114.9,1375.6,1.1,35.9,2.7,2021 to 2016
+Burdekin,Haughton,NA,Dryland Agriculture,1999,4159.6,7.1,0.2,0,0,1999 to 1999
+Burdekin,Haughton,NA,Dryland Agriculture,2009,4159.8,6.7,0.2,-0.4,-5.5,2009 to 1999
+Burdekin,Haughton,NA,Dryland Agriculture,2016,4157.3,6.5,0.2,-0.2,-3,2016 to 2009
+Burdekin,Haughton,NA,Dryland Agriculture,2021,4068.8,0.4,0,-6.1,-94.5,2021 to 2016
+Dry Tropics,Black,NA,Dryland Agriculture,1999,1157.6,0.8,0.1,0,0,1999 to 1999
+Dry Tropics,Black,NA,Dryland Agriculture,2009,1156.8,1,0.1,0.2,21.9,2009 to 1999
+Dry Tropics,Black,NA,Dryland Agriculture,2016,1157.4,1.1,0.1,0.1,13.9,2016 to 2009
+Dry Tropics,Black,NA,Dryland Agriculture,2021,1145.9,1.1,0.1,-0,-0,2021 to 2016
+Dry Tropics,Ross,NA,Dryland Agriculture,1999,1776.5,1.8,0.1,0,0,1999 to 1999
+Dry Tropics,Ross,NA,Dryland Agriculture,2009,1780.1,2.4,0.1,0.6,35.5,2009 to 1999
+Dry Tropics,Ross,NA,Dryland Agriculture,2016,1777,2,0.1,-0.4,-17.1,2016 to 2009
+Dry Tropics,Ross,NA,Dryland Agriculture,2021,1756.2,0.6,0,-1.4,-70.8,2021 to 2016
+Mackay Whitsunday Isaac,Don,NA,Dryland Agriculture,1999,3922.2,0.5,0,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Don,NA,Dryland Agriculture,2009,3874.2,0.7,0,0.1,22.7,2009 to 1999
+Mackay Whitsunday Isaac,Don,NA,Dryland Agriculture,2016,3867.1,1.5,0,0.9,131.7,2016 to 2009
+Mackay Whitsunday Isaac,Don,NA,Dryland Agriculture,2021,3752.8,3.2,0.1,1.7,112,2021 to 2016
+Mackay Whitsunday Isaac,O'Connell,NA,Dryland Agriculture,1999,2445.9,0.8,0,0,0,1999 to 1999
+Mackay Whitsunday Isaac,O'Connell,NA,Dryland Agriculture,2009,2445.9,14.3,0.6,13.5,1765.7,2009 to 1999
+Mackay Whitsunday Isaac,O'Connell,NA,Dryland Agriculture,2016,2445.9,0.7,0,-13.6,-95.4,2016 to 2009
+Mackay Whitsunday Isaac,O'Connell,NA,Dryland Agriculture,2021,2446,6.5,0.3,5.9,894.7,2021 to 2016
+Mackay Whitsunday Isaac,Pioneer,NA,Dryland Agriculture,1999,1571.1,0.2,0,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Pioneer,NA,Dryland Agriculture,2009,1571.1,0.4,0,0.2,80.4,2009 to 1999
+Mackay Whitsunday Isaac,Pioneer,NA,Dryland Agriculture,2016,1571.1,0.3,0,-0.1,-31.2,2016 to 2009
+Mackay Whitsunday Isaac,Pioneer,NA,Dryland Agriculture,2021,1574.7,1.1,0.1,0.9,324.1,2021 to 2016
+Mackay Whitsunday Isaac,Plane,NA,Dryland Agriculture,1999,2559.5,0.8,0,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Plane,NA,Dryland Agriculture,2009,2559.5,1.8,0.1,1,137.1,2009 to 1999
+Mackay Whitsunday Isaac,Plane,NA,Dryland Agriculture,2016,2559.5,1.3,0,-0.5,-30.4,2016 to 2009
+Mackay Whitsunday Isaac,Plane,NA,Dryland Agriculture,2021,2569.8,1.2,0,-0.1,-5,2021 to 2016
+Mackay Whitsunday Isaac,Proserpine,NA,Dryland Agriculture,1999,2772.1,1.8,0.1,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Proserpine,NA,Dryland Agriculture,2009,2772.1,49.7,1.8,47.9,2704.1,2009 to 1999
+Mackay Whitsunday Isaac,Proserpine,NA,Dryland Agriculture,2016,2772.1,5.9,0.2,-43.8,-88.2,2016 to 2009
+Mackay Whitsunday Isaac,Proserpine,NA,Dryland Agriculture,2021,2771.6,3,0.1,-2.8,-48.4,2021 to 2016
+Wet Tropics,Barron,NA,Dryland Agriculture,1999,2381.9,73,3.1,0,0,1999 to 1999
+Wet Tropics,Barron,NA,Dryland Agriculture,2009,2368.8,73.8,3.1,0.8,1.1,2009 to 1999
+Wet Tropics,Barron,NA,Dryland Agriculture,2015,2385.5,64.9,2.7,-8.9,-12.1,2015 to 2009
+Wet Tropics,Barron,NA,Dryland Agriculture,2021,2193.2,74.3,3.4,9.5,14.6,2021 to 2015
+Wet Tropics,Daintree,NA,Dryland Agriculture,1999,2123.2,44.2,2.1,0,0,1999 to 1999
+Wet Tropics,Daintree,NA,Dryland Agriculture,2009,2120.5,41.7,2,-2.5,-5.6,2009 to 1999
+Wet Tropics,Daintree,NA,Dryland Agriculture,2015,2115.6,40.4,1.9,-1.3,-3.1,2015 to 2009
+Wet Tropics,Daintree,NA,Dryland Agriculture,2021,2104.6,38.2,1.8,-2.2,-5.4,2021 to 2015
+Wet Tropics,Herbert,NA,Dryland Agriculture,1999,10003.4,665.9,6.7,0,0,1999 to 1999
+Wet Tropics,Herbert,NA,Dryland Agriculture,2009,9996.8,691.8,6.9,26,3.9,2009 to 1999
+Wet Tropics,Herbert,NA,Dryland Agriculture,2015,9952.5,662.7,6.7,-29.1,-4.2,2015 to 2009
+Wet Tropics,Herbert,NA,Dryland Agriculture,2021,9873.2,674.6,6.8,11.9,1.8,2021 to 2015
+Wet Tropics,Johnstone,NA,Dryland Agriculture,1999,2460.7,360.1,14.6,0,0,1999 to 1999
+Wet Tropics,Johnstone,NA,Dryland Agriculture,2009,2457.4,318.2,12.9,-41.9,-11.6,2009 to 1999
+Wet Tropics,Johnstone,NA,Dryland Agriculture,2015,2456.4,293.8,12,-24.4,-7.7,2015 to 2009
+Wet Tropics,Johnstone,NA,Dryland Agriculture,2021,2317.8,308.1,13.3,14.3,4.9,2021 to 2015
+Wet Tropics,Mossman,NA,Dryland Agriculture,1999,513.5,51.9,10.1,0,0,1999 to 1999
+Wet Tropics,Mossman,NA,Dryland Agriculture,2009,498,47.8,9.6,-4.2,-8,2009 to 1999
+Wet Tropics,Mossman,NA,Dryland Agriculture,2015,496,46.6,9.4,-1.1,-2.4,2015 to 2009
+Wet Tropics,Mossman,NA,Dryland Agriculture,2021,465.4,44.5,9.6,-2.1,-4.6,2021 to 2015
+Wet Tropics,Mulgrave,NA,Dryland Agriculture,1999,1333.4,173.2,13,0,0,1999 to 1999
+Wet Tropics,Mulgrave,NA,Dryland Agriculture,2009,1333.7,165.8,12.4,-7.4,-4.3,2009 to 1999
+Wet Tropics,Mulgrave,NA,Dryland Agriculture,2015,1333.4,161.8,12.1,-4,-2.4,2015 to 2009
+Wet Tropics,Mulgrave,NA,Dryland Agriculture,2021,1319.7,154.8,11.7,-7,-4.3,2021 to 2015
+Wet Tropics,Murray,NA,Dryland Agriculture,1999,1539.4,218.7,14.2,0,0,1999 to 1999
+Wet Tropics,Murray,NA,Dryland Agriculture,2009,1537.4,235,15.3,16.3,7.5,2009 to 1999
+Wet Tropics,Murray,NA,Dryland Agriculture,2015,1538,236.9,15.4,1.9,0.8,2015 to 2009
+Wet Tropics,Murray,NA,Dryland Agriculture,2021,1524.4,245.7,16.1,8.7,3.7,2021 to 2015
+Wet Tropics,Russell,NA,Dryland Agriculture,1999,718.7,115.1,16,0,0,1999 to 1999
+Wet Tropics,Russell,NA,Dryland Agriculture,2009,695.9,105.3,15.1,-9.7,-8.5,2009 to 1999
+Wet Tropics,Russell,NA,Dryland Agriculture,2015,696.3,99.7,14.3,-5.7,-5.4,2015 to 2009
+Wet Tropics,Russell,NA,Dryland Agriculture,2021,670.6,96.2,14.3,-3.5,-3.5,2021 to 2015
+Wet Tropics,Tully,NA,Dryland Agriculture,1999,1718.8,215.7,12.5,0,0,1999 to 1999
+Wet Tropics,Tully,NA,Dryland Agriculture,2009,1712.6,222.4,13,6.7,3.1,2009 to 1999
+Wet Tropics,Tully,NA,Dryland Agriculture,2015,1713.5,209.7,12.2,-12.7,-5.7,2015 to 2009
+Wet Tropics,Tully,NA,Dryland Agriculture,2021,1684.7,214.4,12.7,4.7,2.2,2021 to 2015
+Burdekin,Burdekin,NA,Forestry,1999,133517.7,1190.7,0.9,0,0,1999 to 1999
+Burdekin,Burdekin,NA,Forestry,2009,134012.4,825.4,0.6,-365.3,-30.7,2009 to 1999
+Burdekin,Burdekin,NA,Forestry,2016,133233.2,755.2,0.6,-70.2,-8.5,2016 to 2009
+Burdekin,Burdekin,NA,Forestry,2021,130114.9,756.1,0.6,0.8,0.1,2021 to 2016
+Burdekin,Haughton,NA,Forestry,1999,4159.6,32.6,0.8,0,0,1999 to 1999
+Burdekin,Haughton,NA,Forestry,2009,4159.8,32.6,0.8,0,0,2009 to 1999
+Burdekin,Haughton,NA,Forestry,2016,4157.3,32.6,0.8,0,0,2016 to 2009
+Burdekin,Haughton,NA,Forestry,2021,4068.8,32.6,0.8,0,0,2021 to 2016
+Dry Tropics,Black,NA,Forestry,1999,1157.6,206.8,17.9,0,0,1999 to 1999
+Dry Tropics,Black,NA,Forestry,2009,1156.8,78.1,6.8,-128.7,-62.2,2009 to 1999
+Dry Tropics,Black,NA,Forestry,2016,1157.4,78,6.7,-0.1,-0.1,2016 to 2009
+Dry Tropics,Black,NA,Forestry,2021,1145.9,78,6.8,-0,-0,2021 to 2016
+Dry Tropics,Ross,NA,Forestry,1999,1776.5,45,2.5,0,0,1999 to 1999
+Dry Tropics,Ross,NA,Forestry,2009,1780.1,45,2.5,0,0,2009 to 1999
+Dry Tropics,Ross,NA,Forestry,2016,1777,45,2.5,0,0,2016 to 2009
+Dry Tropics,Ross,NA,Forestry,2021,1756.2,45,2.6,-0,-0,2021 to 2016
+Mackay Whitsunday Isaac,Don,NA,Forestry,1999,3922.2,0.2,0,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Don,NA,Forestry,2009,3874.2,0.2,0,0,0,2009 to 1999
+Mackay Whitsunday Isaac,Don,NA,Forestry,2016,3867.1,0.2,0,0,0,2016 to 2009
+Mackay Whitsunday Isaac,Don,NA,Forestry,2021,3752.8,0.2,0,0,0,2021 to 2016
+Mackay Whitsunday Isaac,O'Connell,NA,Forestry,1999,2445.9,197.4,8.1,0,0,1999 to 1999
+Mackay Whitsunday Isaac,O'Connell,NA,Forestry,2009,2445.9,167.4,6.8,-30,-15.2,2009 to 1999
+Mackay Whitsunday Isaac,O'Connell,NA,Forestry,2016,2445.9,158.4,6.5,-9,-5.4,2016 to 2009
+Mackay Whitsunday Isaac,O'Connell,NA,Forestry,2021,2446,149.1,6.1,-9.3,-5.9,2021 to 2016
+Mackay Whitsunday Isaac,Pioneer,NA,Forestry,1999,1571.1,365.2,23.2,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Pioneer,NA,Forestry,2009,1571.1,373,23.7,7.8,2.1,2009 to 1999
+Mackay Whitsunday Isaac,Pioneer,NA,Forestry,2016,1571.1,297.1,18.9,-75.9,-20.4,2016 to 2009
+Mackay Whitsunday Isaac,Pioneer,NA,Forestry,2021,1574.7,297.7,18.9,0.6,0.2,2021 to 2016
+Mackay Whitsunday Isaac,Plane,NA,Forestry,1999,2559.5,121.5,4.7,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Plane,NA,Forestry,2009,2559.5,107.7,4.2,-13.9,-11.4,2009 to 1999
+Mackay Whitsunday Isaac,Plane,NA,Forestry,2016,2559.5,146.4,5.7,38.7,36,2016 to 2009
+Mackay Whitsunday Isaac,Plane,NA,Forestry,2021,2569.8,148.4,5.8,1.9,1.3,2021 to 2016
+Mackay Whitsunday Isaac,Proserpine,NA,Forestry,1999,2772.1,251.9,9.1,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Proserpine,NA,Forestry,2009,2772.1,210.7,7.6,-41.2,-16.4,2009 to 1999
+Mackay Whitsunday Isaac,Proserpine,NA,Forestry,2016,2772.1,134.7,4.9,-76,-36.1,2016 to 2009
+Mackay Whitsunday Isaac,Proserpine,NA,Forestry,2021,2771.6,134.7,4.9,0,0,2021 to 2016
+Wet Tropics,Barron,NA,Forestry,1999,2381.9,771.1,32.4,0,0,1999 to 1999
+Wet Tropics,Barron,NA,Forestry,2009,2368.8,360.7,15.2,-410.4,-53.2,2009 to 1999
+Wet Tropics,Barron,NA,Forestry,2015,2385.5,204.6,8.6,-156.2,-43.3,2015 to 2009
+Wet Tropics,Barron,NA,Forestry,2021,2193.2,204.5,9.3,-0,-0,2021 to 2015
+Wet Tropics,Daintree,NA,Forestry,1999,2123.2,1000.4,47.1,0,0,1999 to 1999
+Wet Tropics,Daintree,NA,Forestry,2009,2120.5,903.4,42.6,-96.9,-9.7,2009 to 1999
+Wet Tropics,Herbert,NA,Forestry,1999,10003.4,513.6,5.1,0,0,1999 to 1999
+Wet Tropics,Herbert,NA,Forestry,2009,9996.8,346.7,3.5,-166.9,-32.5,2009 to 1999
+Wet Tropics,Herbert,NA,Forestry,2015,9952.5,343.2,3.4,-3.5,-1,2015 to 2009
+Wet Tropics,Herbert,NA,Forestry,2021,9873.2,371.2,3.8,28,8.2,2021 to 2015
+Wet Tropics,Johnstone,NA,Forestry,1999,2460.7,637.5,25.9,0,0,1999 to 1999
+Wet Tropics,Johnstone,NA,Forestry,2009,2457.4,22.4,0.9,-615.1,-96.5,2009 to 1999
+Wet Tropics,Mossman,NA,Forestry,1999,513.5,158.6,30.9,0,0,1999 to 1999
+Wet Tropics,Mossman,NA,Forestry,2009,498,0.1,0,-158.6,-100,2009 to 1999
+Wet Tropics,Mossman,NA,Forestry,2015,496,0,0,-0,-32.5,2015 to 2009
+Wet Tropics,Mossman,NA,Forestry,2021,465.4,0,0,0,0,2021 to 2015
+Wet Tropics,Mulgrave,NA,Forestry,1999,1333.4,251.8,18.9,0,0,1999 to 1999
+Wet Tropics,Mulgrave,NA,Forestry,2009,1333.7,1.2,0.1,-250.6,-99.5,2009 to 1999
+Wet Tropics,Mulgrave,NA,Forestry,2015,1333.4,1.2,0.1,0,0,2015 to 2009
+Wet Tropics,Mulgrave,NA,Forestry,2021,1319.7,1.2,0.1,0,0,2021 to 2015
+Wet Tropics,Murray,NA,Forestry,1999,1539.4,266.1,17.3,0,0,1999 to 1999
+Wet Tropics,Murray,NA,Forestry,2009,1537.4,40.7,2.6,-225.5,-84.7,2009 to 1999
+Wet Tropics,Murray,NA,Forestry,2015,1538,40.7,2.6,0,0.1,2015 to 2009
+Wet Tropics,Murray,NA,Forestry,2021,1524.4,40.7,2.7,0,0,2021 to 2015
+Wet Tropics,Russell,NA,Forestry,1999,718.7,23.2,3.2,0,0,1999 to 1999
+Wet Tropics,Tully,NA,Forestry,1999,1718.8,766.4,44.6,0,0,1999 to 1999
+Wet Tropics,Tully,NA,Forestry,2021,1684.7,28.7,1.7,-737.8,-96.3,2021 to 1999
+Burdekin,Burdekin,NA,Grazing,1999,133517.7,122412.9,91.7,0,0,1999 to 1999
+Burdekin,Burdekin,NA,Grazing,2009,134012.4,121625.3,90.8,-787.6,-0.6,2009 to 1999
+Burdekin,Burdekin,NA,Grazing,2016,133233.2,120015.4,90.1,-1609.9,-1.3,2016 to 2009
+Burdekin,Burdekin,NA,Grazing,2021,130114.9,113744.3,87.4,-6271.1,-5.2,2021 to 2016
+Burdekin,Haughton,NA,Grazing,1999,4159.6,2366.6,56.9,0,0,1999 to 1999
+Burdekin,Haughton,NA,Grazing,2009,4159.8,2328.8,56,-37.9,-1.6,2009 to 1999
+Burdekin,Haughton,NA,Grazing,2016,4157.3,2307,55.5,-21.7,-0.9,2016 to 2009
+Burdekin,Haughton,NA,Grazing,2021,4068.8,2302.2,56.6,-4.9,-0.2,2021 to 2016
+Dry Tropics,Black,NA,Grazing,1999,1157.6,499.5,43.1,0,0,1999 to 1999
+Dry Tropics,Black,NA,Grazing,2009,1156.8,479.9,41.5,-19.5,-3.9,2009 to 1999
+Dry Tropics,Black,NA,Grazing,2016,1157.4,443.8,38.3,-36.1,-7.5,2016 to 2009
+Dry Tropics,Black,NA,Grazing,2021,1145.9,456.9,39.9,13.1,2.9,2021 to 2016
+Dry Tropics,Ross,NA,Grazing,1999,1776.5,899.4,50.6,0,0,1999 to 1999
+Dry Tropics,Ross,NA,Grazing,2009,1780.1,870.4,48.9,-29.1,-3.2,2009 to 1999
+Dry Tropics,Ross,NA,Grazing,2016,1777,846.1,47.6,-24.3,-2.8,2016 to 2009
+Dry Tropics,Ross,NA,Grazing,2021,1756.2,795.1,45.3,-51,-6,2021 to 2016
+Mackay Whitsunday Isaac,Don,NA,Grazing,1999,3922.2,3167,80.7,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Don,NA,Grazing,2009,3874.2,3093.1,79.8,-73.9,-2.3,2009 to 1999
+Mackay Whitsunday Isaac,Don,NA,Grazing,2016,3867.1,3079.8,79.6,-13.3,-0.4,2016 to 2009
+Mackay Whitsunday Isaac,Don,NA,Grazing,2021,3752.8,2978.9,79.4,-100.9,-3.3,2021 to 2016
+Mackay Whitsunday Isaac,O'Connell,NA,Grazing,1999,2445.9,948.5,38.8,0,0,1999 to 1999
+Mackay Whitsunday Isaac,O'Connell,NA,Grazing,2009,2445.9,949.6,38.8,1.1,0.1,2009 to 1999
+Mackay Whitsunday Isaac,O'Connell,NA,Grazing,2016,2445.9,975.7,39.9,26.1,2.7,2016 to 2009
+Mackay Whitsunday Isaac,O'Connell,NA,Grazing,2021,2446,1173.9,48,198.2,20.3,2021 to 2016
+Mackay Whitsunday Isaac,Pioneer,NA,Grazing,1999,1571.1,338.4,21.5,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Pioneer,NA,Grazing,2009,1571.1,356.4,22.7,18.1,5.3,2009 to 1999
+Mackay Whitsunday Isaac,Pioneer,NA,Grazing,2016,1571.1,366.6,23.3,10.1,2.8,2016 to 2009
+Mackay Whitsunday Isaac,Pioneer,NA,Grazing,2021,1574.7,496.8,31.6,130.3,35.5,2021 to 2016
+Mackay Whitsunday Isaac,Plane,NA,Grazing,1999,2559.5,515.1,20.1,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Plane,NA,Grazing,2009,2559.5,550.7,21.5,35.6,6.9,2009 to 1999
+Mackay Whitsunday Isaac,Plane,NA,Grazing,2016,2559.5,560.6,21.9,9.9,1.8,2016 to 2009
+Mackay Whitsunday Isaac,Plane,NA,Grazing,2021,2569.8,965,37.6,404.4,72.1,2021 to 2016
+Mackay Whitsunday Isaac,Proserpine,NA,Grazing,1999,2772.1,1134.1,40.9,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Proserpine,NA,Grazing,2009,2772.1,1073.7,38.7,-60.4,-5.3,2009 to 1999
+Mackay Whitsunday Isaac,Proserpine,NA,Grazing,2016,2772.1,1114.3,40.2,40.6,3.8,2016 to 2009
+Mackay Whitsunday Isaac,Proserpine,NA,Grazing,2021,2771.6,1232.7,44.5,118.4,10.6,2021 to 2016
+Wet Tropics,Barron,NA,Grazing,1999,2381.9,856.3,35.9,0,0,1999 to 1999
+Wet Tropics,Barron,NA,Grazing,2009,2368.8,844.6,35.7,-11.7,-1.4,2009 to 1999
+Wet Tropics,Barron,NA,Grazing,2015,2385.5,874.3,36.6,29.7,3.5,2015 to 2009
+Wet Tropics,Barron,NA,Grazing,2021,2193.2,659.1,30.1,-215.2,-24.6,2021 to 2015
+Wet Tropics,Daintree,NA,Grazing,1999,2123.2,152.4,7.2,0,0,1999 to 1999
+Wet Tropics,Daintree,NA,Grazing,2009,2120.5,153.3,7.2,0.9,0.6,2009 to 1999
+Wet Tropics,Daintree,NA,Grazing,2015,2115.6,170,8,16.7,10.9,2015 to 2009
+Wet Tropics,Daintree,NA,Grazing,2021,2104.6,168.4,8,-1.6,-0.9,2021 to 2015
+Wet Tropics,Herbert,NA,Grazing,1999,10003.4,5494.8,54.9,0,0,1999 to 1999
+Wet Tropics,Herbert,NA,Grazing,2009,9996.8,5355.5,53.6,-139.3,-2.5,2009 to 1999
+Wet Tropics,Herbert,NA,Grazing,2015,9952.5,5343.4,53.7,-12.1,-0.2,2015 to 2009
+Wet Tropics,Herbert,NA,Grazing,2021,9873.2,5040.6,51.1,-302.8,-5.7,2021 to 2015
+Wet Tropics,Johnstone,NA,Grazing,1999,2460.7,560.4,22.8,0,0,1999 to 1999
+Wet Tropics,Johnstone,NA,Grazing,2009,2457.4,603.1,24.5,42.6,7.6,2009 to 1999
+Wet Tropics,Johnstone,NA,Grazing,2015,2456.4,628,25.6,24.9,4.1,2015 to 2009
+Wet Tropics,Johnstone,NA,Grazing,2021,2317.8,502.3,21.7,-125.7,-20,2021 to 2015
+Wet Tropics,Mossman,NA,Grazing,1999,513.5,13.7,2.7,0,0,1999 to 1999
+Wet Tropics,Mossman,NA,Grazing,2009,498,16.7,3.3,2.9,21.4,2009 to 1999
+Wet Tropics,Mossman,NA,Grazing,2015,496,16.6,3.4,-0,-0.2,2015 to 2009
+Wet Tropics,Mossman,NA,Grazing,2021,465.4,26.1,5.6,9.5,56.8,2021 to 2015
+Wet Tropics,Mulgrave,NA,Grazing,1999,1333.4,41.8,3.1,0,0,1999 to 1999
+Wet Tropics,Mulgrave,NA,Grazing,2009,1333.7,38.8,2.9,-3,-7.2,2009 to 1999
+Wet Tropics,Mulgrave,NA,Grazing,2015,1333.4,41,3.1,2.2,5.7,2015 to 2009
+Wet Tropics,Mulgrave,NA,Grazing,2021,1319.7,43.4,3.3,2.4,5.8,2021 to 2015
+Wet Tropics,Murray,NA,Grazing,1999,1539.4,80,5.2,0,0,1999 to 1999
+Wet Tropics,Murray,NA,Grazing,2009,1537.4,75.3,4.9,-4.6,-5.8,2009 to 1999
+Wet Tropics,Murray,NA,Grazing,2015,1538,82.9,5.4,7.6,10,2015 to 2009
+Wet Tropics,Murray,NA,Grazing,2021,1524.4,71.6,4.7,-11.3,-13.6,2021 to 2015
+Wet Tropics,Russell,NA,Grazing,1999,718.7,46.3,6.4,0,0,1999 to 1999
+Wet Tropics,Russell,NA,Grazing,2009,695.9,52.7,7.6,6.4,13.7,2009 to 1999
+Wet Tropics,Russell,NA,Grazing,2015,696.3,57.7,8.3,5.1,9.7,2015 to 2009
+Wet Tropics,Russell,NA,Grazing,2021,670.6,58.7,8.8,0.9,1.6,2021 to 2015
+Wet Tropics,Tully,NA,Grazing,1999,1718.8,110.1,6.4,0,0,1999 to 1999
+Wet Tropics,Tully,NA,Grazing,2009,1712.6,89.2,5.2,-20.9,-19,2009 to 1999
+Wet Tropics,Tully,NA,Grazing,2015,1713.5,105.8,6.2,16.6,18.6,2015 to 2009
+Wet Tropics,Tully,NA,Grazing,2021,1684.7,108.7,6.5,2.8,2.7,2021 to 2015
+Burdekin,Burdekin,NA,Irrigated Agriculture,1999,133517.7,250.2,0.2,0,0,1999 to 1999
+Burdekin,Burdekin,NA,Irrigated Agriculture,2009,134012.4,235,0.2,-15.3,-6.1,2009 to 1999
+Burdekin,Burdekin,NA,Irrigated Agriculture,2021,130114.9,318.4,0.2,83.4,35.5,2021 to 2009
+Burdekin,Burdekin,NA,Irrigated Agriculture,2016,133233.2,221.1,0.2,-97.3,-30.6,2016 to 2021
+Burdekin,Haughton,NA,Irrigated Agriculture,1999,4159.6,765.7,18.4,0,0,1999 to 1999
+Burdekin,Haughton,NA,Irrigated Agriculture,2009,4159.8,755.3,18.2,-10.4,-1.4,2009 to 1999
+Burdekin,Haughton,NA,Irrigated Agriculture,2016,4157.3,762.4,18.3,7.1,0.9,2016 to 2009
+Burdekin,Haughton,NA,Irrigated Agriculture,2021,4068.8,801,19.7,38.6,5.1,2021 to 2016
+Dry Tropics,Black,NA,Irrigated Agriculture,1999,1157.6,12.8,1.1,0,0,1999 to 1999
+Dry Tropics,Black,NA,Irrigated Agriculture,2009,1156.8,12.8,1.1,0,0.1,2009 to 1999
+Dry Tropics,Black,NA,Irrigated Agriculture,2016,1157.4,12.8,1.1,-0,-0.4,2016 to 2009
+Dry Tropics,Black,NA,Irrigated Agriculture,2021,1145.9,20.3,1.8,7.5,59,2021 to 2016
+Dry Tropics,Ross,NA,Irrigated Agriculture,2009,1780.1,1.8,0.1,0,0,1999 to 1999
+Dry Tropics,Ross,NA,Irrigated Agriculture,2021,1756.2,10.8,0.6,9,514.1,2021 to 2009
+Dry Tropics,Ross,NA,Irrigated Agriculture,2016,1777,1.5,0.1,-9.3,-86.2,2016 to 2021
+Dry Tropics,Ross,NA,Irrigated Agriculture,1999,1776.5,2.4,0.1,0.9,63.9,1999 to 2016
+Mackay Whitsunday Isaac,Don,NA,Irrigated Agriculture,1999,3922.2,82,2.1,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Don,NA,Irrigated Agriculture,2009,3874.2,71.5,1.8,-10.5,-12.9,2009 to 1999
+Mackay Whitsunday Isaac,Don,NA,Irrigated Agriculture,2016,3867.1,72.9,1.9,1.4,2,2016 to 2009
+Mackay Whitsunday Isaac,Don,NA,Irrigated Agriculture,2021,3752.8,210.5,5.6,137.6,188.8,2021 to 2016
+Mackay Whitsunday Isaac,O'Connell,NA,Irrigated Agriculture,1999,2445.9,369.1,15.1,0,0,1999 to 1999
+Mackay Whitsunday Isaac,O'Connell,NA,Irrigated Agriculture,2009,2445.9,343.1,14,-25.9,-7,2009 to 1999
+Mackay Whitsunday Isaac,O'Connell,NA,Irrigated Agriculture,2016,2445.9,322.6,13.2,-20.6,-6,2016 to 2009
+Mackay Whitsunday Isaac,O'Connell,NA,Irrigated Agriculture,2021,2446,321.9,13.2,-0.7,-0.2,2021 to 2016
+Mackay Whitsunday Isaac,Pioneer,NA,Irrigated Agriculture,1999,1571.1,357.2,22.7,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Pioneer,NA,Irrigated Agriculture,2009,1571.1,334,21.3,-23.3,-6.5,2009 to 1999
+Mackay Whitsunday Isaac,Pioneer,NA,Irrigated Agriculture,2016,1571.1,320.6,20.4,-13.4,-4,2016 to 2009
+Mackay Whitsunday Isaac,Pioneer,NA,Irrigated Agriculture,2021,1574.7,318.9,20.3,-1.7,-0.5,2021 to 2016
+Mackay Whitsunday Isaac,Plane,NA,Irrigated Agriculture,1999,2559.5,701.3,27.4,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Plane,NA,Irrigated Agriculture,2009,2559.5,665.3,26,-35.9,-5.1,2009 to 1999
+Mackay Whitsunday Isaac,Plane,NA,Irrigated Agriculture,2016,2559.5,654,25.6,-11.3,-1.7,2016 to 2009
+Mackay Whitsunday Isaac,Plane,NA,Irrigated Agriculture,2021,2569.8,657.8,25.6,3.8,0.6,2021 to 2016
+Mackay Whitsunday Isaac,Proserpine,NA,Irrigated Agriculture,1999,2772.1,243.9,8.8,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Proserpine,NA,Irrigated Agriculture,2009,2772.1,249.1,9,5.2,2.1,2009 to 1999
+Mackay Whitsunday Isaac,Proserpine,NA,Irrigated Agriculture,2016,2772.1,249.2,9,0.1,0.1,2016 to 2009
+Mackay Whitsunday Isaac,Proserpine,NA,Irrigated Agriculture,2021,2771.6,247.7,8.9,-1.4,-0.6,2021 to 2016
+Wet Tropics,Barron,NA,Irrigated Agriculture,1999,2381.9,149.4,6.3,0,0,1999 to 1999
+Wet Tropics,Barron,NA,Irrigated Agriculture,2009,2368.8,145.3,6.1,-4.1,-2.7,2009 to 1999
+Wet Tropics,Barron,NA,Irrigated Agriculture,2015,2385.5,134,5.6,-11.3,-7.8,2015 to 2009
+Wet Tropics,Barron,NA,Irrigated Agriculture,2021,2193.2,232,10.6,98,73.1,2021 to 2015
+Wet Tropics,Daintree,NA,Irrigated Agriculture,2009,2120.5,0.1,0,0,0,1999 to 1999
+Wet Tropics,Daintree,NA,Irrigated Agriculture,2015,2115.6,0.1,0,0,13.5,2015 to 2009
+Wet Tropics,Daintree,NA,Irrigated Agriculture,2021,2104.6,2.1,0.1,1.9,1383.8,2021 to 2015
+Wet Tropics,Herbert,NA,Irrigated Agriculture,1999,10003.4,189.9,1.9,0,0,1999 to 1999
+Wet Tropics,Herbert,NA,Irrigated Agriculture,2009,9996.8,168.1,1.7,-21.8,-11.5,2009 to 1999
+Wet Tropics,Herbert,NA,Irrigated Agriculture,2015,9952.5,174.1,1.7,6,3.6,2015 to 2009
+Wet Tropics,Herbert,NA,Irrigated Agriculture,2021,9873.2,213,2.2,39,22.4,2021 to 2015
+Wet Tropics,Johnstone,NA,Irrigated Agriculture,1999,2460.7,8.8,0.4,0,0,1999 to 1999
+Wet Tropics,Johnstone,NA,Irrigated Agriculture,2009,2457.4,8.9,0.4,0,0.5,2009 to 1999
+Wet Tropics,Johnstone,NA,Irrigated Agriculture,2015,2456.4,8.3,0.3,-0.6,-6.9,2015 to 2009
+Wet Tropics,Johnstone,NA,Irrigated Agriculture,2021,2317.8,77.4,3.3,69.1,834.9,2021 to 2015
+Wet Tropics,Mossman,NA,Irrigated Agriculture,1999,513.5,0.1,0,0,0,1999 to 1999
+Wet Tropics,Mossman,NA,Irrigated Agriculture,2009,498,0.1,0,-0,-9.2,2009 to 1999
+Wet Tropics,Mossman,NA,Irrigated Agriculture,2015,496,0.1,0,-0,-42.8,2015 to 2009
+Wet Tropics,Mossman,NA,Irrigated Agriculture,2021,465.4,0.7,0.2,0.7,1173.5,2021 to 2015
+Wet Tropics,Mulgrave,NA,Irrigated Agriculture,1999,1333.4,1.3,0.1,0,0,1999 to 1999
+Wet Tropics,Mulgrave,NA,Irrigated Agriculture,2009,1333.7,0.4,0,-1,-72.9,2009 to 1999
+Wet Tropics,Mulgrave,NA,Irrigated Agriculture,2015,1333.4,0,0,-0.3,-87.8,2015 to 2009
+Wet Tropics,Mulgrave,NA,Irrigated Agriculture,2021,1319.7,3.9,0.3,3.8,8599.5,2021 to 2015
+Wet Tropics,Murray,NA,Irrigated Agriculture,1999,1539.4,0.8,0.1,0,0,1999 to 1999
+Wet Tropics,Murray,NA,Irrigated Agriculture,2009,1537.4,0.3,0,-0.5,-64.7,2009 to 1999
+Wet Tropics,Murray,NA,Irrigated Agriculture,2015,1538,0.1,0,-0.2,-78.7,2015 to 2009
+Wet Tropics,Murray,NA,Irrigated Agriculture,2021,1524.4,8.4,0.5,8.3,13613.8,2021 to 2015
+Wet Tropics,Russell,NA,Irrigated Agriculture,2015,696.3,0,0,0,0,1999 to 1999
+Wet Tropics,Russell,NA,Irrigated Agriculture,2021,670.6,12,1.8,12,35985.5,2021 to 2015
+Wet Tropics,Tully,NA,Irrigated Agriculture,1999,1718.8,0.1,0,0,0,1999 to 1999
+Wet Tropics,Tully,NA,Irrigated Agriculture,2009,1712.6,0,0,-0.1,-53.5,2009 to 1999
+Wet Tropics,Tully,NA,Irrigated Agriculture,2015,1713.5,0.1,0,0,50.3,2015 to 2009
+Wet Tropics,Tully,NA,Irrigated Agriculture,2021,1684.7,44.3,2.6,44.2,62666.1,2021 to 2015
+Burdekin,Burdekin,NA,Mining,1999,133517.7,85.2,0.1,0,0,1999 to 1999
+Burdekin,Burdekin,NA,Mining,2009,134012.4,123.6,0.1,38.4,45.1,2009 to 1999
+Burdekin,Burdekin,NA,Mining,2016,133233.2,147.7,0.1,24.1,19.5,2016 to 2009
+Burdekin,Burdekin,NA,Mining,2021,130114.9,211,0.2,63.3,42.9,2021 to 2016
+Burdekin,Haughton,NA,Mining,1999,4159.6,2.2,0.1,0,0,1999 to 1999
+Burdekin,Haughton,NA,Mining,2009,4159.8,2.7,0.1,0.5,23.6,2009 to 1999
+Burdekin,Haughton,NA,Mining,2016,4157.3,3.1,0.1,0.5,17.2,2016 to 2009
+Burdekin,Haughton,NA,Mining,2021,4068.8,3.2,0.1,0.1,2.5,2021 to 2016
+Dry Tropics,Black,NA,Mining,1999,1157.6,4.4,0.4,0,0,1999 to 1999
+Dry Tropics,Black,NA,Mining,2009,1156.8,4.9,0.4,0.5,11.8,2009 to 1999
+Dry Tropics,Black,NA,Mining,2016,1157.4,5.3,0.5,0.4,7.6,2016 to 2009
+Dry Tropics,Black,NA,Mining,2021,1145.9,5.3,0.5,0,0,2021 to 2016
+Dry Tropics,Ross,NA,Mining,1999,1776.5,3.1,0.2,0,0,1999 to 1999
+Dry Tropics,Ross,NA,Mining,2009,1780.1,4.5,0.3,1.5,48,2009 to 1999
+Dry Tropics,Ross,NA,Mining,2016,1777,5.5,0.3,0.9,20.7,2016 to 2009
+Dry Tropics,Ross,NA,Mining,2021,1756.2,5.5,0.3,0.1,1.4,2021 to 2016
+Mackay Whitsunday Isaac,Don,NA,Mining,1999,3922.2,2.3,0.1,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Don,NA,Mining,2009,3874.2,2.8,0.1,0.5,23.3,2009 to 1999
+Mackay Whitsunday Isaac,Don,NA,Mining,2016,3867.1,3.4,0.1,0.6,21.2,2016 to 2009
+Mackay Whitsunday Isaac,Don,NA,Mining,2021,3752.8,4.1,0.1,0.7,21.3,2021 to 2016
+Mackay Whitsunday Isaac,O'Connell,NA,Mining,1999,2445.9,1.7,0.1,0,0,1999 to 1999
+Mackay Whitsunday Isaac,O'Connell,NA,Mining,2009,2445.9,1.8,0.1,0.1,8.2,2009 to 1999
+Mackay Whitsunday Isaac,O'Connell,NA,Mining,2016,2445.9,1.9,0.1,0,1.7,2016 to 2009
+Mackay Whitsunday Isaac,O'Connell,NA,Mining,2021,2446,1.9,0.1,0,0.2,2021 to 2016
+Mackay Whitsunday Isaac,Pioneer,NA,Mining,1999,1571.1,0.8,0.1,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Pioneer,NA,Mining,2009,1571.1,1,0.1,0.2,20.4,2009 to 1999
+Mackay Whitsunday Isaac,Pioneer,NA,Mining,2016,1571.1,1.4,0.1,0.3,32.5,2016 to 2009
+Mackay Whitsunday Isaac,Pioneer,NA,Mining,2021,1574.7,1.2,0.1,-0.2,-14.5,2021 to 2016
+Mackay Whitsunday Isaac,Plane,NA,Mining,1999,2559.5,1.6,0.1,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Plane,NA,Mining,2009,2559.5,2,0.1,0.5,30.2,2009 to 1999
+Mackay Whitsunday Isaac,Plane,NA,Mining,2016,2559.5,2.6,0.1,0.6,27.5,2016 to 2009
+Mackay Whitsunday Isaac,Plane,NA,Mining,2021,2569.8,2.5,0.1,-0.1,-2.9,2021 to 2016
+Mackay Whitsunday Isaac,Proserpine,NA,Mining,1999,2772.1,0.9,0,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Proserpine,NA,Mining,2009,2772.1,1.4,0.1,0.5,49.6,2009 to 1999
+Mackay Whitsunday Isaac,Proserpine,NA,Mining,2016,2772.1,1.4,0.1,0,1.7,2016 to 2009
+Mackay Whitsunday Isaac,Proserpine,NA,Mining,2021,2771.6,1.5,0.1,0,3.3,2021 to 2016
+Wet Tropics,Barron,NA,Mining,1999,2381.9,3.2,0.1,0,0,1999 to 1999
+Wet Tropics,Barron,NA,Mining,2009,2368.8,3.5,0.1,0.4,12,2009 to 1999
+Wet Tropics,Barron,NA,Mining,2015,2385.5,3.8,0.2,0.3,7.7,2015 to 2009
+Wet Tropics,Barron,NA,Mining,2021,2193.2,3.7,0.2,-0.1,-1.7,2021 to 2015
+Wet Tropics,Daintree,NA,Mining,1999,2123.2,0.1,0,0,0,1999 to 1999
+Wet Tropics,Herbert,NA,Mining,1999,10003.4,2.8,0,0,0,1999 to 1999
+Wet Tropics,Herbert,NA,Mining,2009,9996.8,3.7,0,1,35.1,2009 to 1999
+Wet Tropics,Herbert,NA,Mining,2015,9952.5,4,0,0.2,5.9,2015 to 2009
+Wet Tropics,Herbert,NA,Mining,2021,9873.2,5.5,0.1,1.5,38.3,2021 to 2015
+Wet Tropics,Johnstone,NA,Mining,1999,2460.7,0.9,0,0,0,1999 to 1999
+Wet Tropics,Johnstone,NA,Mining,2009,2457.4,1.2,0.1,0.4,46.8,2009 to 1999
+Wet Tropics,Johnstone,NA,Mining,2015,2456.4,1.2,0,-0,-1.7,2015 to 2009
+Wet Tropics,Johnstone,NA,Mining,2021,2317.8,1.2,0.1,-0,-0,2021 to 2015
+Wet Tropics,Mossman,NA,Mining,1999,513.5,0.3,0.1,0,0,1999 to 1999
+Wet Tropics,Mossman,NA,Mining,2009,498,0.3,0.1,0,9.5,2009 to 1999
+Wet Tropics,Mossman,NA,Mining,2015,496,0.3,0.1,0,0,2015 to 2009
+Wet Tropics,Mossman,NA,Mining,2021,465.4,0.4,0.1,0.1,18.1,2021 to 2015
+Wet Tropics,Mulgrave,NA,Mining,1999,1333.4,1,0.1,0,0,1999 to 1999
+Wet Tropics,Mulgrave,NA,Mining,2009,1333.7,1.1,0.1,0.1,8,2009 to 1999
+Wet Tropics,Mulgrave,NA,Mining,2015,1333.4,1.1,0.1,0,2.6,2015 to 2009
+Wet Tropics,Mulgrave,NA,Mining,2021,1319.7,1.2,0.1,0.1,5.6,2021 to 2015
+Wet Tropics,Murray,NA,Mining,1999,1539.4,0.3,0,0,0,1999 to 1999
+Wet Tropics,Murray,NA,Mining,2009,1537.4,0.3,0,0,0,2009 to 1999
+Wet Tropics,Murray,NA,Mining,2015,1538,0.4,0,0.1,48.3,2015 to 2009
+Wet Tropics,Murray,NA,Mining,2021,1524.4,0.4,0,0,0,2021 to 2015
+Wet Tropics,Russell,NA,Mining,1999,718.7,0.1,0,0,0,1999 to 1999
+Wet Tropics,Russell,NA,Mining,2009,695.9,0.1,0,0,39.3,2009 to 1999
+Wet Tropics,Russell,NA,Mining,2015,696.3,0.1,0,-0,-17.9,2015 to 2009
+Wet Tropics,Russell,NA,Mining,2021,670.6,0.1,0,-0,-4.6,2021 to 2015
+Wet Tropics,Tully,NA,Mining,1999,1718.8,0.4,0,0,0,1999 to 1999
+Wet Tropics,Tully,NA,Mining,2009,1712.6,0.5,0,0.2,40.2,2009 to 1999
+Wet Tropics,Tully,NA,Mining,2015,1713.5,0.6,0,0,8.7,2015 to 2009
+Wet Tropics,Tully,NA,Mining,2021,1684.7,0.6,0,0,6.3,2021 to 2015
+Burdekin,Burdekin,NA,Urban/Intensive,1999,133517.7,199.7,0.1,0,0,1999 to 1999
+Burdekin,Burdekin,NA,Urban/Intensive,2009,134012.4,254.2,0.2,54.5,27.3,2009 to 1999
+Burdekin,Burdekin,NA,Urban/Intensive,2016,133233.2,275.5,0.2,21.3,8.4,2016 to 2009
+Burdekin,Burdekin,NA,Urban/Intensive,2021,130114.9,230.4,0.2,-45.1,-16.4,2021 to 2016
+Burdekin,Haughton,NA,Urban/Intensive,1999,4159.6,86.7,2.1,0,0,1999 to 1999
+Burdekin,Haughton,NA,Urban/Intensive,2009,4159.8,115.8,2.8,29.1,33.5,2009 to 1999
+Burdekin,Haughton,NA,Urban/Intensive,2016,4157.3,123.1,3,7.3,6.3,2016 to 2009
+Burdekin,Haughton,NA,Urban/Intensive,2021,4068.8,71.3,1.8,-51.8,-42.1,2021 to 2016
+Dry Tropics,Black,NA,Urban/Intensive,1999,1157.6,62.7,5.4,0,0,1999 to 1999
+Dry Tropics,Black,NA,Urban/Intensive,2009,1156.8,67.3,5.8,4.6,7.3,2009 to 1999
+Dry Tropics,Black,NA,Urban/Intensive,2016,1157.4,69.5,6,2.2,3.2,2016 to 2009
+Dry Tropics,Black,NA,Urban/Intensive,2021,1145.9,62.1,5.4,-7.3,-10.6,2021 to 2016
+Dry Tropics,Ross,NA,Urban/Intensive,1999,1776.5,187.9,10.6,0,0,1999 to 1999
+Dry Tropics,Ross,NA,Urban/Intensive,2009,1780.1,217.6,12.2,29.7,15.8,2009 to 1999
+Dry Tropics,Ross,NA,Urban/Intensive,2016,1777,229.3,12.9,11.7,5.4,2016 to 2009
+Dry Tropics,Ross,NA,Urban/Intensive,2021,1756.2,223.6,12.7,-5.7,-2.5,2021 to 2016
+Mackay Whitsunday Isaac,Don,NA,Urban/Intensive,1999,3922.2,140,3.6,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Don,NA,Urban/Intensive,2009,3874.2,160.1,4.1,20.1,14.4,2009 to 1999
+Mackay Whitsunday Isaac,Don,NA,Urban/Intensive,2016,3867.1,174.3,4.5,14.2,8.9,2016 to 2009
+Mackay Whitsunday Isaac,Don,NA,Urban/Intensive,2021,3752.8,52.4,1.4,-121.9,-70,2021 to 2016
+Mackay Whitsunday Isaac,O'Connell,NA,Urban/Intensive,1999,2445.9,79.2,3.2,0,0,1999 to 1999
+Mackay Whitsunday Isaac,O'Connell,NA,Urban/Intensive,2009,2445.9,91.2,3.7,12,15.1,2009 to 1999
+Mackay Whitsunday Isaac,O'Connell,NA,Urban/Intensive,2016,2445.9,94.5,3.9,3.4,3.7,2016 to 2009
+Mackay Whitsunday Isaac,O'Connell,NA,Urban/Intensive,2021,2446,94.8,3.9,0.3,0.3,2021 to 2016
+Mackay Whitsunday Isaac,Pioneer,NA,Urban/Intensive,1999,1571.1,58.2,3.7,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Pioneer,NA,Urban/Intensive,2009,1571.1,64.4,4.1,6.2,10.6,2009 to 1999
+Mackay Whitsunday Isaac,Pioneer,NA,Urban/Intensive,2016,1571.1,66.8,4.3,2.4,3.8,2016 to 2009
+Mackay Whitsunday Isaac,Pioneer,NA,Urban/Intensive,2021,1574.7,68,4.3,1.2,1.7,2021 to 2016
+Mackay Whitsunday Isaac,Plane,NA,Urban/Intensive,1999,2559.5,120.1,4.7,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Plane,NA,Urban/Intensive,2009,2559.5,135.6,5.3,15.5,12.9,2009 to 1999
+Mackay Whitsunday Isaac,Plane,NA,Urban/Intensive,2016,2559.5,141.3,5.5,5.8,4.3,2016 to 2009
+Mackay Whitsunday Isaac,Plane,NA,Urban/Intensive,2021,2569.8,136.4,5.3,-5,-3.5,2021 to 2016
+Mackay Whitsunday Isaac,Proserpine,NA,Urban/Intensive,1999,2772.1,69.5,2.5,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Proserpine,NA,Urban/Intensive,2009,2772.1,83.5,3,14.1,20.3,2009 to 1999
+Mackay Whitsunday Isaac,Proserpine,NA,Urban/Intensive,2016,2772.1,89.1,3.2,5.6,6.7,2016 to 2009
+Mackay Whitsunday Isaac,Proserpine,NA,Urban/Intensive,2021,2771.6,97.8,3.5,8.6,9.7,2021 to 2016
+Wet Tropics,Barron,NA,Urban/Intensive,1999,2381.9,224.2,9.4,0,0,1999 to 1999
+Wet Tropics,Barron,NA,Urban/Intensive,2009,2368.8,229.9,9.7,5.7,2.5,2009 to 1999
+Wet Tropics,Barron,NA,Urban/Intensive,2015,2385.5,237.5,10,7.6,3.3,2015 to 2009
+Wet Tropics,Barron,NA,Urban/Intensive,2021,2193.2,173.9,7.9,-63.6,-26.8,2021 to 2015
+Wet Tropics,Daintree,NA,Urban/Intensive,1999,2123.2,23.5,1.1,0,0,1999 to 1999
+Wet Tropics,Daintree,NA,Urban/Intensive,2009,2120.5,27.1,1.3,3.6,15.3,2009 to 1999
+Wet Tropics,Daintree,NA,Urban/Intensive,2015,2115.6,27.3,1.3,0.3,1,2015 to 2009
+Wet Tropics,Daintree,NA,Urban/Intensive,2021,2104.6,27.4,1.3,0.1,0.4,2021 to 2015
+Wet Tropics,Herbert,NA,Urban/Intensive,1999,10003.4,88.3,0.9,0,0,1999 to 1999
+Wet Tropics,Herbert,NA,Urban/Intensive,2009,9996.8,94.5,0.9,6.2,7,2009 to 1999
+Wet Tropics,Herbert,NA,Urban/Intensive,2015,9952.5,98.4,1,3.9,4.1,2015 to 2009
+Wet Tropics,Herbert,NA,Urban/Intensive,2021,9873.2,80.9,0.8,-17.5,-17.8,2021 to 2015
+Wet Tropics,Johnstone,NA,Urban/Intensive,1999,2460.7,144,5.9,0,0,1999 to 1999
+Wet Tropics,Johnstone,NA,Urban/Intensive,2009,2457.4,146,5.9,2,1.4,2009 to 1999
+Wet Tropics,Johnstone,NA,Urban/Intensive,2015,2456.4,147.1,6,1,0.7,2015 to 2009
+Wet Tropics,Johnstone,NA,Urban/Intensive,2021,2317.8,81.5,3.5,-65.6,-44.6,2021 to 2015
+Wet Tropics,Mossman,NA,Urban/Intensive,1999,513.5,25.7,5,0,0,1999 to 1999
+Wet Tropics,Mossman,NA,Urban/Intensive,2009,498,29.6,6,4,15.4,2009 to 1999
+Wet Tropics,Mossman,NA,Urban/Intensive,2015,496,31.1,6.3,1.4,4.8,2015 to 2009
+Wet Tropics,Mossman,NA,Urban/Intensive,2021,465.4,33.1,7.1,2.1,6.7,2021 to 2015
+Wet Tropics,Mulgrave,NA,Urban/Intensive,1999,1333.4,74.3,5.6,0,0,1999 to 1999
+Wet Tropics,Mulgrave,NA,Urban/Intensive,2009,1333.7,82.4,6.2,8.1,10.9,2009 to 1999
+Wet Tropics,Mulgrave,NA,Urban/Intensive,2015,1333.4,84.7,6.4,2.3,2.8,2015 to 2009
+Wet Tropics,Mulgrave,NA,Urban/Intensive,2021,1319.7,87.6,6.6,2.9,3.4,2021 to 2015
+Wet Tropics,Murray,NA,Urban/Intensive,1999,1539.4,36.5,2.4,0,0,1999 to 1999
+Wet Tropics,Murray,NA,Urban/Intensive,2009,1537.4,31.7,2.1,-4.8,-13,2009 to 1999
+Wet Tropics,Murray,NA,Urban/Intensive,2015,1538,26.5,1.7,-5.3,-16.6,2015 to 2009
+Wet Tropics,Murray,NA,Urban/Intensive,2021,1524.4,18.2,1.2,-8.2,-31.1,2021 to 2015
+Wet Tropics,Russell,NA,Urban/Intensive,1999,718.7,17.5,2.4,0,0,1999 to 1999
+Wet Tropics,Russell,NA,Urban/Intensive,2009,695.9,20.7,3,3.2,18.4,2009 to 1999
+Wet Tropics,Russell,NA,Urban/Intensive,2015,696.3,21.8,3.1,1.1,5.1,2015 to 2009
+Wet Tropics,Russell,NA,Urban/Intensive,2021,670.6,10.1,1.5,-11.7,-53.6,2021 to 2015
+Wet Tropics,Tully,NA,Urban/Intensive,1999,1718.8,71.1,4.1,0,0,1999 to 1999
+Wet Tropics,Tully,NA,Urban/Intensive,2009,1712.6,83.7,4.9,12.7,17.8,2009 to 1999
+Wet Tropics,Tully,NA,Urban/Intensive,2015,1713.5,80.7,4.7,-3,-3.6,2015 to 2009
+Wet Tropics,Tully,NA,Urban/Intensive,2021,1684.7,25.3,1.5,-55.5,-68.7,2021 to 2015
+Burdekin,Burdekin,NA,Water,1999,133517.7,2590.1,1.9,0,0,1999 to 1999
+Burdekin,Burdekin,NA,Water,2009,134012.4,2598,1.9,7.9,0.3,2009 to 1999
+Burdekin,Burdekin,NA,Water,2016,133233.2,2598.9,2,0.9,0,2016 to 2009
+Burdekin,Burdekin,NA,Water,2021,130114.9,2605.2,2,6.3,0.2,2021 to 2016
+Burdekin,Haughton,NA,Water,1999,4159.6,334.6,8,0,0,1999 to 1999
+Burdekin,Haughton,NA,Water,2009,4159.8,333.3,8,-1.3,-0.4,2009 to 1999
+Burdekin,Haughton,NA,Water,2016,4157.3,326.5,7.9,-6.8,-2,2016 to 2009
+Burdekin,Haughton,NA,Water,2021,4068.8,304.7,7.5,-21.8,-6.7,2021 to 2016
+Dry Tropics,Black,NA,Water,1999,1157.6,32.1,2.8,0,0,1999 to 1999
+Dry Tropics,Black,NA,Water,2009,1156.8,30.6,2.6,-1.5,-4.5,2009 to 1999
+Dry Tropics,Black,NA,Water,2016,1157.4,30.7,2.6,0,0.1,2016 to 2009
+Dry Tropics,Black,NA,Water,2021,1145.9,29.4,2.6,-1.3,-4.1,2021 to 2016
+Dry Tropics,Ross,NA,Water,1999,1776.5,140.3,7.9,0,0,1999 to 1999
+Dry Tropics,Ross,NA,Water,2009,1780.1,139.6,7.8,-0.7,-0.5,2009 to 1999
+Dry Tropics,Ross,NA,Water,2016,1777,138.1,7.8,-1.6,-1.1,2016 to 2009
+Dry Tropics,Ross,NA,Water,2021,1756.2,137.6,7.8,-0.5,-0.3,2021 to 2016
+Mackay Whitsunday Isaac,Don,NA,Water,1999,3922.2,299.7,7.6,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Don,NA,Water,2009,3874.2,302.1,7.8,2.4,0.8,2009 to 1999
+Mackay Whitsunday Isaac,Don,NA,Water,2016,3867.1,304.2,7.9,2.1,0.7,2016 to 2009
+Mackay Whitsunday Isaac,Don,NA,Water,2021,3752.8,296.1,7.9,-8,-2.6,2021 to 2016
+Mackay Whitsunday Isaac,O'Connell,NA,Water,1999,2445.9,186.1,7.6,0,0,1999 to 1999
+Mackay Whitsunday Isaac,O'Connell,NA,Water,2009,2445.9,187.3,7.7,1.3,0.7,2009 to 1999
+Mackay Whitsunday Isaac,O'Connell,NA,Water,2016,2445.9,187.7,7.7,0.4,0.2,2016 to 2009
+Mackay Whitsunday Isaac,O'Connell,NA,Water,2021,2446,186.9,7.6,-0.8,-0.4,2021 to 2016
+Mackay Whitsunday Isaac,Pioneer,NA,Water,1999,1571.1,55.1,3.5,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Pioneer,NA,Water,2009,1571.1,55,3.5,-0.1,-0.2,2009 to 1999
+Mackay Whitsunday Isaac,Pioneer,NA,Water,2016,1571.1,55.1,3.5,0.1,0.2,2016 to 2009
+Mackay Whitsunday Isaac,Pioneer,NA,Water,2021,1574.7,55.2,3.5,0.1,0.1,2021 to 2016
+Mackay Whitsunday Isaac,Plane,NA,Water,1999,2559.5,227.4,8.9,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Plane,NA,Water,2009,2559.5,223.6,8.7,-3.8,-1.7,2009 to 1999
+Mackay Whitsunday Isaac,Plane,NA,Water,2016,2559.5,222.5,8.7,-1.2,-0.5,2016 to 2009
+Mackay Whitsunday Isaac,Plane,NA,Water,2021,2569.8,258.3,10.1,35.9,16.1,2021 to 2016
+Mackay Whitsunday Isaac,Proserpine,NA,Water,1999,2772.1,180.6,6.5,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Proserpine,NA,Water,2009,2772.1,181.8,6.6,1.2,0.7,2009 to 1999
+Mackay Whitsunday Isaac,Proserpine,NA,Water,2016,2772.1,182.7,6.6,0.9,0.5,2016 to 2009
+Mackay Whitsunday Isaac,Proserpine,NA,Water,2021,2771.6,177.6,6.4,-5.2,-2.8,2021 to 2016
+Wet Tropics,Barron,NA,Water,1999,2381.9,77.2,3.2,0,0,1999 to 1999
+Wet Tropics,Barron,NA,Water,2009,2368.8,77.7,3.3,0.5,0.7,2009 to 1999
+Wet Tropics,Barron,NA,Water,2015,2385.5,78,3.3,0.3,0.4,2015 to 2009
+Wet Tropics,Barron,NA,Water,2021,2193.2,79.1,3.6,1,1.3,2021 to 2015
+Wet Tropics,Daintree,NA,Water,1999,2123.2,59,2.8,0,0,1999 to 1999
+Wet Tropics,Daintree,NA,Water,2009,2120.5,56.1,2.6,-2.9,-4.9,2009 to 1999
+Wet Tropics,Daintree,NA,Water,2015,2115.6,53.5,2.5,-2.6,-4.7,2015 to 2009
+Wet Tropics,Daintree,NA,Water,2021,2104.6,53.5,2.5,0,0,2021 to 2015
+Wet Tropics,Herbert,NA,Water,1999,10003.4,431.9,4.3,0,0,1999 to 1999
+Wet Tropics,Herbert,NA,Water,2009,9996.8,428.5,4.3,-3.4,-0.8,2009 to 1999
+Wet Tropics,Herbert,NA,Water,2015,9952.5,414.4,4.2,-14.1,-3.3,2015 to 2009
+Wet Tropics,Herbert,NA,Water,2021,9873.2,423.6,4.3,9.2,2.2,2021 to 2015
+Wet Tropics,Johnstone,NA,Water,1999,2460.7,51.7,2.1,0,0,1999 to 1999
+Wet Tropics,Johnstone,NA,Water,2009,2457.4,51.6,2.1,-0,-0.1,2009 to 1999
+Wet Tropics,Johnstone,NA,Water,2015,2456.4,51.6,2.1,0,0,2015 to 2009
+Wet Tropics,Johnstone,NA,Water,2021,2317.8,56.4,2.4,4.7,9.2,2021 to 2015
+Wet Tropics,Mossman,NA,Water,1999,513.5,20.6,4,0,0,1999 to 1999
+Wet Tropics,Mossman,NA,Water,2009,498,20.7,4.2,0.1,0.6,2009 to 1999
+Wet Tropics,Mossman,NA,Water,2015,496,20.7,4.2,0,0.1,2015 to 2009
+Wet Tropics,Mossman,NA,Water,2021,465.4,20.7,4.5,0,0,2021 to 2015
+Wet Tropics,Mulgrave,NA,Water,1999,1333.4,91.3,6.9,0,0,1999 to 1999
+Wet Tropics,Mulgrave,NA,Water,2009,1333.7,89,6.7,-2.4,-2.6,2009 to 1999
+Wet Tropics,Mulgrave,NA,Water,2015,1333.4,89,6.7,0,0,2015 to 2009
+Wet Tropics,Mulgrave,NA,Water,2021,1319.7,90.9,6.9,1.9,2.2,2021 to 2015
+Wet Tropics,Murray,NA,Water,1999,1539.4,67,4.3,0,0,1999 to 1999
+Wet Tropics,Murray,NA,Water,2009,1537.4,53.1,3.5,-13.8,-20.7,2009 to 1999
+Wet Tropics,Murray,NA,Water,2015,1538,52.6,3.4,-0.5,-1,2015 to 2009
+Wet Tropics,Murray,NA,Water,2021,1524.4,52.6,3.4,0,0,2021 to 2015
+Wet Tropics,Russell,NA,Water,1999,718.7,19.5,2.7,0,0,1999 to 1999
+Wet Tropics,Russell,NA,Water,2009,695.9,19.4,2.8,-0,-0.1,2009 to 1999
+Wet Tropics,Russell,NA,Water,2015,696.3,19.4,2.8,0,0,2015 to 2009
+Wet Tropics,Russell,NA,Water,2021,670.6,19.2,2.9,-0.3,-1.4,2021 to 2015
+Wet Tropics,Tully,NA,Water,1999,1718.8,43.7,2.5,0,0,1999 to 1999
+Wet Tropics,Tully,NA,Water,2009,1712.6,43.7,2.6,0,0,2009 to 1999
+Wet Tropics,Tully,NA,Water,2015,1713.5,43.9,2.6,0.2,0.4,2015 to 2009
+Wet Tropics,Tully,NA,Water,2021,1684.7,43.9,2.6,0,0.1,2021 to 2015
+Burdekin,Burdekin,Belyando,Conservation,1999,36777.9,645.1,1.8,0,0,1999 to 1999
+Burdekin,Burdekin,Belyando,Conservation,2009,37000.2,810.6,2.2,165.5,25.7,2009 to 1999
+Burdekin,Burdekin,Belyando,Conservation,2016,36069.3,815.9,2.3,5.3,0.7,2016 to 2009
+Burdekin,Burdekin,Belyando,Conservation,2021,35439,849.5,2.4,33.6,4.1,2021 to 2016
+Burdekin,Burdekin,Broke Bogie,Conservation,1999,12006.2,767,6.4,0,0,1999 to 1999
+Burdekin,Burdekin,Broke Bogie,Conservation,2009,12202.7,883.8,7.2,116.7,15.2,2009 to 1999
+Burdekin,Burdekin,Broke Bogie,Conservation,2016,12233.3,960.6,7.9,76.8,8.7,2016 to 2009
+Burdekin,Burdekin,Broke Bogie,Conservation,2021,11728.8,910.3,7.8,-50.2,-5.2,2021 to 2016
+Burdekin,Burdekin,Cape Campaspe,Conservation,1999,20636,673.8,3.3,0,0,1999 to 1999
+Burdekin,Burdekin,Cape Campaspe,Conservation,2009,20639.9,673.5,3.3,-0.3,-0,2009 to 1999
+Burdekin,Burdekin,Cape Campaspe,Conservation,2016,20594,672.7,3.3,-0.9,-0.1,2016 to 2009
+Burdekin,Burdekin,Cape Campaspe,Conservation,2021,20457.9,584.8,2.9,-87.9,-13.1,2021 to 2016
+Burdekin,Burdekin,Lower Burdekin,Conservation,1999,3797.4,46.8,1.2,0,0,1999 to 1999
+Burdekin,Burdekin,Lower Burdekin,Conservation,2009,3804.7,46.4,1.2,-0.4,-0.9,2009 to 1999
+Burdekin,Burdekin,Lower Burdekin,Conservation,2016,3805.7,46.4,1.2,0,0.1,2016 to 2009
+Burdekin,Burdekin,Lower Burdekin,Conservation,2021,3760.1,184.9,4.9,138.5,298.7,2021 to 2016
+Burdekin,Burdekin,Suttor,Conservation,1999,19599.8,405.3,2.1,0,0,1999 to 1999
+Burdekin,Burdekin,Suttor,Conservation,2009,19664.5,421.9,2.1,16.7,4.1,2009 to 1999
+Burdekin,Burdekin,Suttor,Conservation,2016,19570.9,420.6,2.1,-1.3,-0.3,2016 to 2009
+Burdekin,Burdekin,Suttor,Conservation,2021,18220.2,373.3,2,-47.3,-11.2,2021 to 2016
+Burdekin,Burdekin,Upper Burdekin,Conservation,1999,40700.5,3034.9,7.5,0,0,1999 to 1999
+Burdekin,Burdekin,Upper Burdekin,Conservation,2009,40700.4,4245.1,10.4,1210.2,39.9,2009 to 1999
+Burdekin,Burdekin,Upper Burdekin,Conservation,2016,40960.1,4963.6,12.1,718.5,16.9,2016 to 2009
+Burdekin,Burdekin,Upper Burdekin,Conservation,2021,40508.9,7971.1,19.7,3007.5,60.6,2021 to 2016
+Burdekin,Haughton,Haughton,Conservation,1999,4159.6,564.1,13.6,0,0,1999 to 1999
+Burdekin,Haughton,Haughton,Conservation,2009,4159.8,584.7,14.1,20.7,3.7,2009 to 1999
+Burdekin,Haughton,Haughton,Conservation,2016,4157.3,596.1,14.3,11.3,1.9,2016 to 2009
+Burdekin,Haughton,Haughton,Conservation,2021,4068.8,553.5,13.6,-42.6,-7.1,2021 to 2016
+Dry Tropics,Black,Black River,Conservation,1999,305.5,37.8,12.4,0,0,1999 to 1999
+Dry Tropics,Black,Black River,Conservation,2009,305,36.3,11.9,-1.6,-4.2,2009 to 1999
+Dry Tropics,Black,Black River,Conservation,2016,305.1,38.5,12.6,2.2,6.2,2016 to 2009
+Dry Tropics,Black,Black River,Conservation,2021,301.7,50.5,16.7,12,31.1,2021 to 2016
+Dry Tropics,Black,Bluewater Creek,Conservation,1999,296.6,30.6,10.3,0,0,1999 to 1999
+Dry Tropics,Black,Bluewater Creek,Conservation,2009,296.4,49.2,16.6,18.6,60.8,2009 to 1999
+Dry Tropics,Black,Bluewater Creek,Conservation,2016,296.9,81.4,27.4,32.2,65.5,2016 to 2009
+Dry Tropics,Black,Bluewater Creek,Conservation,2021,291.7,81.3,27.9,-0.1,-0.1,2021 to 2016
+Dry Tropics,Black,Crystal Creek,Conservation,1999,239.9,136.9,57.1,0,0,1999 to 1999
+Dry Tropics,Black,Crystal Creek,Conservation,2009,239.9,185,77.1,48.1,35.1,2009 to 1999
+Dry Tropics,Black,Crystal Creek,Conservation,2016,239.7,184.8,77.1,-0.2,-0.1,2016 to 2009
+Dry Tropics,Black,Crystal Creek,Conservation,2021,239.1,160.1,66.9,-24.8,-13.4,2021 to 2016
+Dry Tropics,Black,Palm Islands,Conservation,1999,86.4,84.4,97.7,0,0,1999 to 1999
+Dry Tropics,Black,Palm Islands,Conservation,2009,86.4,84.4,97.7,0,0,2009 to 1999
+Dry Tropics,Black,Palm Islands,Conservation,2016,86.4,84.3,97.6,-0.1,-0.1,2016 to 2009
+Dry Tropics,Black,Palm Islands,Conservation,2021,86.4,84.3,97.6,0,0,2021 to 2016
+Dry Tropics,Black,Paluma Lake,Conservation,1999,5.1,2.7,52.4,0,0,1999 to 1999
+Dry Tropics,Black,Paluma Lake,Conservation,2009,5.1,2.7,53.2,0,1.4,2009 to 1999
+Dry Tropics,Black,Paluma Lake,Conservation,2016,5.1,2.7,53.2,0,0,2016 to 2009
+Dry Tropics,Black,Paluma Lake,Conservation,2021,5.1,2.7,53.2,0,0,2021 to 2016
+Dry Tropics,Black,Rollingstone Creek,Conservation,1999,224.2,46.1,20.6,0,0,1999 to 1999
+Dry Tropics,Black,Rollingstone Creek,Conservation,2009,224.2,124.5,55.5,78.4,170.1,2009 to 1999
+Dry Tropics,Black,Rollingstone Creek,Conservation,2016,224.3,124.4,55.5,-0.1,-0.1,2016 to 2009
+Dry Tropics,Black,Rollingstone Creek,Conservation,2021,222,113.7,51.2,-10.7,-8.6,2021 to 2016
+Dry Tropics,Ross,Alligator Creek,Conservation,1999,368.4,232.2,63,0,0,1999 to 1999
+Dry Tropics,Ross,Alligator Creek,Conservation,2009,369.3,232,62.8,-0.2,-0.1,2009 to 1999
+Dry Tropics,Ross,Alligator Creek,Conservation,2016,369.6,234.2,63.4,2.2,1,2016 to 2009
+Dry Tropics,Ross,Alligator Creek,Conservation,2021,360.4,233.9,64.9,-0.3,-0.1,2021 to 2016
+Dry Tropics,Ross,Bohle River,Conservation,1999,332.3,50,15,0,0,1999 to 1999
+Dry Tropics,Ross,Bohle River,Conservation,2009,333,57.2,17.2,7.3,14.5,2009 to 1999
+Dry Tropics,Ross,Bohle River,Conservation,2016,331.3,68.1,20.6,10.9,19,2016 to 2009
+Dry Tropics,Ross,Bohle River,Conservation,2021,328.8,66.9,20.4,-1.2,-1.7,2021 to 2016
+Dry Tropics,Ross,Magnetic Island,Conservation,1999,50.8,42.9,84.5,0,0,1999 to 1999
+Dry Tropics,Ross,Magnetic Island,Conservation,2009,50.8,42.6,83.9,-0.3,-0.7,2009 to 1999
+Dry Tropics,Ross,Magnetic Island,Conservation,2016,50.8,42.4,83.6,-0.2,-0.4,2016 to 2009
+Dry Tropics,Ross,Magnetic Island,Conservation,2021,50.8,42.4,83.6,0,0,2021 to 2016
+Dry Tropics,Ross,Ross River (Lower),Conservation,1999,134.4,51.9,38.6,0,0,1999 to 1999
+Dry Tropics,Ross,Ross River (Lower),Conservation,2009,134,48.7,36.3,-3.2,-6.2,2009 to 1999
+Dry Tropics,Ross,Ross River (Lower),Conservation,2016,134,47,35.1,-1.7,-3.4,2016 to 2009
+Dry Tropics,Ross,Ross River (Lower),Conservation,2021,134,46.4,34.7,-0.6,-1.3,2021 to 2016
+Dry Tropics,Ross,Ross River (Upper),Conservation,1999,765.7,98.4,12.9,0,0,1999 to 1999
+Dry Tropics,Ross,Ross River (Upper),Conservation,2009,768,98.4,12.8,0,0,2009 to 1999
+Dry Tropics,Ross,Ross River (Upper),Conservation,2016,768.7,98.4,12.8,0,0,2016 to 2009
+Dry Tropics,Ross,Ross River (Upper),Conservation,2021,761.3,129,16.9,30.5,31,2021 to 2016
+Dry Tropics,Ross,Stuart Creek,Conservation,1999,124.9,21.2,17,0,0,1999 to 1999
+Dry Tropics,Ross,Stuart Creek,Conservation,2009,125,19.8,15.9,-1.4,-6.6,2009 to 1999
+Dry Tropics,Ross,Stuart Creek,Conservation,2016,122.7,19.5,15.9,-0.3,-1.8,2016 to 2009
+Dry Tropics,Ross,Stuart Creek,Conservation,2021,120.9,19.5,16.1,-0,-0.1,2021 to 2016
+Mackay Whitsunday Isaac,Don,Don,Conservation,1999,3922.2,230.5,5.9,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Don,Don,Conservation,2009,3874.2,243.8,6.3,13.3,5.8,2009 to 1999
+Mackay Whitsunday Isaac,Don,Don,Conservation,2016,3867.1,230.8,6,-13,-5.3,2016 to 2009
+Mackay Whitsunday Isaac,Don,Don,Conservation,2021,3752.8,207.3,5.5,-23.5,-10.2,2021 to 2016
+Mackay Whitsunday Isaac,O'Connell,O'Connell,Conservation,1999,2445.9,663.1,27.1,0,0,1999 to 1999
+Mackay Whitsunday Isaac,O'Connell,O'Connell,Conservation,2009,2445.9,691.1,28.3,28,4.2,2009 to 1999
+Mackay Whitsunday Isaac,O'Connell,O'Connell,Conservation,2016,2445.9,704.4,28.8,13.3,1.9,2016 to 2009
+Mackay Whitsunday Isaac,O'Connell,O'Connell,Conservation,2021,2446,511,20.9,-193.4,-27.5,2021 to 2016
+Mackay Whitsunday Isaac,Pioneer,Pioneer,Conservation,1999,1571.1,395.8,25.2,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Pioneer,Pioneer,Conservation,2009,1571.1,386.8,24.6,-9,-2.3,2009 to 1999
+Mackay Whitsunday Isaac,Pioneer,Pioneer,Conservation,2016,1571.1,463.2,29.5,76.4,19.7,2016 to 2009
+Mackay Whitsunday Isaac,Pioneer,Pioneer,Conservation,2021,1574.7,335.7,21.3,-127.5,-27.5,2021 to 2016
+Mackay Whitsunday Isaac,Plane,Plane,Conservation,1999,2559.5,871.8,34.1,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Plane,Plane,Conservation,2009,2559.5,872.8,34.1,1,0.1,2009 to 1999
+Mackay Whitsunday Isaac,Plane,Plane,Conservation,2016,2559.5,830.9,32.5,-41.9,-4.8,2016 to 2009
+Mackay Whitsunday Isaac,Plane,Plane,Conservation,2021,2569.8,400.3,15.6,-430.6,-51.8,2021 to 2016
+Mackay Whitsunday Isaac,Proserpine,Proserpine,Conservation,1999,2772.1,889.6,32.1,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Proserpine,Proserpine,Conservation,2009,2772.1,922.3,33.3,32.7,3.7,2009 to 1999
+Mackay Whitsunday Isaac,Proserpine,Proserpine,Conservation,2016,2772.1,994.8,35.9,72.5,7.9,2016 to 2009
+Mackay Whitsunday Isaac,Proserpine,Proserpine,Conservation,2021,2771.6,876.7,31.6,-118.1,-11.9,2021 to 2016
+Wet Tropics,Barron,Barron,Conservation,1999,2381.9,227.6,9.6,0,0,1999 to 1999
+Wet Tropics,Barron,Barron,Conservation,2009,2368.8,633.3,26.7,405.7,178.2,2009 to 1999
+Wet Tropics,Barron,Barron,Conservation,2015,2385.5,788.6,33.1,155.2,24.5,2015 to 2009
+Wet Tropics,Barron,Barron,Conservation,2021,2193.2,766.7,35,-21.9,-2.8,2021 to 2015
+Wet Tropics,Daintree,Daintree,Conservation,1999,2123.2,843.7,39.7,0,0,1999 to 1999
+Wet Tropics,Daintree,Daintree,Conservation,2009,2120.5,938.8,44.3,95.1,11.3,2009 to 1999
+Wet Tropics,Daintree,Daintree,Conservation,2015,2115.6,1824.3,86.2,885.5,94.3,2015 to 2009
+Wet Tropics,Daintree,Daintree,Conservation,2021,2104.6,1815.1,86.2,-9.3,-0.5,2021 to 2015
+Wet Tropics,Herbert,Herbert,Conservation,1999,10003.4,2616.3,26.2,0,0,1999 to 1999
+Wet Tropics,Herbert,Herbert,Conservation,2009,9996.8,2908,29.1,291.8,11.2,2009 to 1999
+Wet Tropics,Herbert,Herbert,Conservation,2015,9952.5,2912.3,29.3,4.3,0.1,2015 to 2009
+Wet Tropics,Herbert,Herbert,Conservation,2021,9873.2,3063.7,31,151.4,5.2,2021 to 2015
+Wet Tropics,Johnstone,Johnstone,Conservation,1999,2460.7,697.3,28.3,0,0,1999 to 1999
+Wet Tropics,Johnstone,Johnstone,Conservation,2009,2457.4,1305.9,53.1,608.5,87.3,2009 to 1999
+Wet Tropics,Johnstone,Johnstone,Conservation,2015,2456.4,1326.4,54,20.5,1.6,2015 to 2009
+Wet Tropics,Johnstone,Johnstone,Conservation,2021,2317.8,1290.9,55.7,-35.5,-2.7,2021 to 2015
+Wet Tropics,Mossman,Mossman,Conservation,1999,513.5,242.6,47.2,0,0,1999 to 1999
+Wet Tropics,Mossman,Mossman,Conservation,2009,498,382.8,76.9,140.2,57.8,2009 to 1999
+Wet Tropics,Mossman,Mossman,Conservation,2015,496,380.6,76.7,-2.2,-0.6,2015 to 2009
+Wet Tropics,Mossman,Mossman,Conservation,2021,465.4,339.8,73,-40.8,-10.7,2021 to 2015
+Wet Tropics,Mulgrave,Mulgrave,Conservation,1999,1333.4,698.6,52.4,0,0,1999 to 1999
+Wet Tropics,Mulgrave,Mulgrave,Conservation,2009,1333.7,955.2,71.6,256.6,36.7,2009 to 1999
+Wet Tropics,Mulgrave,Mulgrave,Conservation,2015,1333.4,954.5,71.6,-0.7,-0.1,2015 to 2009
+Wet Tropics,Mulgrave,Mulgrave,Conservation,2021,1319.7,936.7,71,-17.8,-1.9,2021 to 2015
+Wet Tropics,Murray,Murray,Conservation,1999,1539.4,870.1,56.5,0,0,1999 to 1999
+Wet Tropics,Murray,Murray,Conservation,2009,1537.4,1100.9,71.6,230.9,26.5,2009 to 1999
+Wet Tropics,Murray,Murray,Conservation,2015,1538,1097.9,71.4,-3,-0.3,2015 to 2009
+Wet Tropics,Murray,Murray,Conservation,2021,1524.4,1086.7,71.3,-11.2,-1,2021 to 2015
+Wet Tropics,Russell,Russell,Conservation,1999,718.7,497.1,69.2,0,0,1999 to 1999
+Wet Tropics,Russell,Russell,Conservation,2009,695.9,497.6,71.5,0.5,0.1,2009 to 1999
+Wet Tropics,Russell,Russell,Conservation,2015,696.3,497.6,71.5,-0,-0,2015 to 2009
+Wet Tropics,Russell,Russell,Conservation,2021,670.6,474.3,70.7,-23.3,-4.7,2021 to 2015
+Wet Tropics,Tully,Tully,Conservation,1999,1718.8,511.3,29.7,0,0,1999 to 1999
+Wet Tropics,Tully,Tully,Conservation,2009,1712.6,1272.9,74.3,761.6,148.9,2009 to 1999
+Wet Tropics,Tully,Tully,Conservation,2015,1713.5,1272.7,74.3,-0.2,-0,2015 to 2009
+Wet Tropics,Tully,Tully,Conservation,2021,1684.7,1218.9,72.4,-53.8,-4.2,2021 to 2015
+Burdekin,Burdekin,Belyando,Dryland Agriculture,1999,36777.9,159.2,0.4,0,0,1999 to 1999
+Burdekin,Burdekin,Belyando,Dryland Agriculture,2009,37000.2,162,0.4,2.8,1.7,2009 to 1999
+Burdekin,Burdekin,Belyando,Dryland Agriculture,2016,36069.3,164.4,0.5,2.4,1.5,2016 to 2009
+Burdekin,Burdekin,Belyando,Dryland Agriculture,2021,35439,150.5,0.4,-13.9,-8.5,2021 to 2016
+Burdekin,Burdekin,Broke Bogie,Dryland Agriculture,1999,12006.2,3.7,0,0,0,1999 to 1999
+Burdekin,Burdekin,Broke Bogie,Dryland Agriculture,2009,12202.7,5,0,1.3,36.4,2009 to 1999
+Burdekin,Burdekin,Broke Bogie,Dryland Agriculture,2016,12233.3,5.3,0,0.3,5.3,2016 to 2009
+Burdekin,Burdekin,Broke Bogie,Dryland Agriculture,2021,11728.8,4.9,0,-0.4,-6.9,2021 to 2016
+Burdekin,Burdekin,Cape Campaspe,Dryland Agriculture,1999,20636,2.3,0,0,0,1999 to 1999
+Burdekin,Burdekin,Cape Campaspe,Dryland Agriculture,2009,20639.9,1.8,0,-0.5,-22,2009 to 1999
+Burdekin,Burdekin,Cape Campaspe,Dryland Agriculture,2016,20594,1.5,0,-0.3,-16.6,2016 to 2009
+Burdekin,Burdekin,Lower Burdekin,Dryland Agriculture,2009,3804.7,0,0,0,0,1999 to 1999
+Burdekin,Burdekin,Lower Burdekin,Dryland Agriculture,2016,3805.7,0,0,0,0,2016 to 2009
+Burdekin,Burdekin,Lower Burdekin,Dryland Agriculture,2021,3760.1,0,0,0,0,2021 to 2016
+Burdekin,Burdekin,Suttor,Dryland Agriculture,1999,19599.8,1044.3,5.3,0,0,1999 to 1999
+Burdekin,Burdekin,Suttor,Dryland Agriculture,2009,19664.5,1092.4,5.6,48.1,4.6,2009 to 1999
+Burdekin,Burdekin,Suttor,Dryland Agriculture,2016,19570.9,1161.3,5.9,68.8,6.3,2016 to 2009
+Burdekin,Burdekin,Suttor,Dryland Agriculture,2021,18220.2,1219.2,6.7,58,5,2021 to 2016
+Burdekin,Burdekin,Upper Burdekin,Dryland Agriculture,1999,40700.5,6.5,0,0,0,1999 to 1999
+Burdekin,Burdekin,Upper Burdekin,Dryland Agriculture,2009,40700.4,8.4,0,1.9,29.1,2009 to 1999
+Burdekin,Burdekin,Upper Burdekin,Dryland Agriculture,2016,40960.1,7.3,0,-1.1,-12.8,2016 to 2009
+Burdekin,Burdekin,Upper Burdekin,Dryland Agriculture,2021,40508.9,1,0,-6.3,-86.3,2021 to 2016
+Burdekin,Haughton,Haughton,Dryland Agriculture,1999,4159.6,7.1,0.2,0,0,1999 to 1999
+Burdekin,Haughton,Haughton,Dryland Agriculture,2009,4159.8,6.7,0.2,-0.4,-5.5,2009 to 1999
+Burdekin,Haughton,Haughton,Dryland Agriculture,2016,4157.3,6.5,0.2,-0.2,-3,2016 to 2009
+Burdekin,Haughton,Haughton,Dryland Agriculture,2021,4068.8,0.4,0,-6.1,-94.5,2021 to 2016
+Dry Tropics,Black,Black River,Dryland Agriculture,1999,305.5,0.3,0.1,0,0,1999 to 1999
+Dry Tropics,Black,Black River,Dryland Agriculture,2009,305,0.1,0,-0.2,-63.9,2009 to 1999
+Dry Tropics,Black,Black River,Dryland Agriculture,2016,305.1,0.2,0.1,0.1,105,2016 to 2009
+Dry Tropics,Black,Black River,Dryland Agriculture,2021,301.7,0.2,0.1,0,0,2021 to 2016
+Dry Tropics,Black,Bluewater Creek,Dryland Agriculture,1999,296.6,0.1,0,0,0,1999 to 1999
+Dry Tropics,Black,Crystal Creek,Dryland Agriculture,1999,239.9,0,0,0,0,1999 to 1999
+Dry Tropics,Black,Crystal Creek,Dryland Agriculture,2009,239.9,0.1,0.1,0.1,700.3,2009 to 1999
+Dry Tropics,Black,Crystal Creek,Dryland Agriculture,2016,239.7,0.2,0.1,0,18.9,2016 to 2009
+Dry Tropics,Black,Crystal Creek,Dryland Agriculture,2021,239.1,0.2,0.1,-0,-0,2021 to 2016
+Dry Tropics,Black,Rollingstone Creek,Dryland Agriculture,1999,224.2,0.4,0.2,0,0,1999 to 1999
+Dry Tropics,Black,Rollingstone Creek,Dryland Agriculture,2009,224.2,0.8,0.3,0.3,79.7,2009 to 1999
+Dry Tropics,Black,Rollingstone Creek,Dryland Agriculture,2016,224.3,0.8,0.3,0,0,2016 to 2009
+Dry Tropics,Black,Rollingstone Creek,Dryland Agriculture,2021,222,0.8,0.3,-0,-0,2021 to 2016
+Dry Tropics,Ross,Alligator Creek,Dryland Agriculture,1999,368.4,0.6,0.2,0,0,1999 to 1999
+Dry Tropics,Ross,Alligator Creek,Dryland Agriculture,2009,369.3,1,0.3,0.4,59.2,2009 to 1999
+Dry Tropics,Ross,Alligator Creek,Dryland Agriculture,2016,369.6,1,0.3,0,0,2016 to 2009
+Dry Tropics,Ross,Alligator Creek,Dryland Agriculture,2021,360.4,0.2,0,-0.8,-82,2021 to 2016
+Dry Tropics,Ross,Bohle River,Dryland Agriculture,1999,332.3,0.3,0.1,0,0,1999 to 1999
+Dry Tropics,Ross,Bohle River,Dryland Agriculture,2009,333,0.5,0.2,0.3,105.6,2009 to 1999
+Dry Tropics,Ross,Bohle River,Dryland Agriculture,2016,331.3,0.2,0.1,-0.4,-68.2,2016 to 2009
+Dry Tropics,Ross,Bohle River,Dryland Agriculture,2021,328.8,0.2,0.1,0,0,2021 to 2016
+Dry Tropics,Ross,Ross River (Upper),Dryland Agriculture,1999,765.7,0.6,0.1,0,0,1999 to 1999
+Dry Tropics,Ross,Ross River (Upper),Dryland Agriculture,2009,768,0.6,0.1,0,0,2009 to 1999
+Dry Tropics,Ross,Ross River (Upper),Dryland Agriculture,2016,768.7,0.5,0.1,-0.1,-10.4,2016 to 2009
+Dry Tropics,Ross,Ross River (Upper),Dryland Agriculture,2021,761.3,0.2,0,-0.3,-63.6,2021 to 2016
+Dry Tropics,Ross,Stuart Creek,Dryland Agriculture,1999,124.9,0.3,0.3,0,0,1999 to 1999
+Dry Tropics,Ross,Stuart Creek,Dryland Agriculture,2009,125,0.3,0.3,0,0,2009 to 1999
+Dry Tropics,Ross,Stuart Creek,Dryland Agriculture,2016,122.7,0.3,0.3,0,0,2016 to 2009
+Dry Tropics,Ross,Stuart Creek,Dryland Agriculture,2021,120.9,0.1,0,-0.3,-84,2021 to 2016
+Mackay Whitsunday Isaac,Don,Don,Dryland Agriculture,1999,3922.2,0.5,0,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Don,Don,Dryland Agriculture,2009,3874.2,0.7,0,0.1,22.7,2009 to 1999
+Mackay Whitsunday Isaac,Don,Don,Dryland Agriculture,2016,3867.1,1.5,0,0.9,131.7,2016 to 2009
+Mackay Whitsunday Isaac,Don,Don,Dryland Agriculture,2021,3752.8,3.2,0.1,1.7,112,2021 to 2016
+Mackay Whitsunday Isaac,O'Connell,O'Connell,Dryland Agriculture,1999,2445.9,0.8,0,0,0,1999 to 1999
+Mackay Whitsunday Isaac,O'Connell,O'Connell,Dryland Agriculture,2009,2445.9,14.3,0.6,13.5,1765.7,2009 to 1999
+Mackay Whitsunday Isaac,O'Connell,O'Connell,Dryland Agriculture,2016,2445.9,0.7,0,-13.6,-95.4,2016 to 2009
+Mackay Whitsunday Isaac,O'Connell,O'Connell,Dryland Agriculture,2021,2446,6.5,0.3,5.9,894.7,2021 to 2016
+Mackay Whitsunday Isaac,Pioneer,Pioneer,Dryland Agriculture,1999,1571.1,0.2,0,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Pioneer,Pioneer,Dryland Agriculture,2009,1571.1,0.4,0,0.2,80.4,2009 to 1999
+Mackay Whitsunday Isaac,Pioneer,Pioneer,Dryland Agriculture,2016,1571.1,0.3,0,-0.1,-31.2,2016 to 2009
+Mackay Whitsunday Isaac,Pioneer,Pioneer,Dryland Agriculture,2021,1574.7,1.1,0.1,0.9,324.1,2021 to 2016
+Mackay Whitsunday Isaac,Plane,Plane,Dryland Agriculture,1999,2559.5,0.8,0,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Plane,Plane,Dryland Agriculture,2009,2559.5,1.8,0.1,1,137.1,2009 to 1999
+Mackay Whitsunday Isaac,Plane,Plane,Dryland Agriculture,2016,2559.5,1.3,0,-0.5,-30.4,2016 to 2009
+Mackay Whitsunday Isaac,Plane,Plane,Dryland Agriculture,2021,2569.8,1.2,0,-0.1,-5,2021 to 2016
+Mackay Whitsunday Isaac,Proserpine,Proserpine,Dryland Agriculture,1999,2772.1,1.8,0.1,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Proserpine,Proserpine,Dryland Agriculture,2009,2772.1,49.7,1.8,47.9,2704.1,2009 to 1999
+Mackay Whitsunday Isaac,Proserpine,Proserpine,Dryland Agriculture,2016,2772.1,5.9,0.2,-43.8,-88.2,2016 to 2009
+Mackay Whitsunday Isaac,Proserpine,Proserpine,Dryland Agriculture,2021,2771.6,3,0.1,-2.8,-48.4,2021 to 2016
+Wet Tropics,Barron,Barron,Dryland Agriculture,1999,2381.9,73,3.1,0,0,1999 to 1999
+Wet Tropics,Barron,Barron,Dryland Agriculture,2009,2368.8,73.8,3.1,0.8,1.1,2009 to 1999
+Wet Tropics,Barron,Barron,Dryland Agriculture,2015,2385.5,64.9,2.7,-8.9,-12.1,2015 to 2009
+Wet Tropics,Barron,Barron,Dryland Agriculture,2021,2193.2,74.3,3.4,9.5,14.6,2021 to 2015
+Wet Tropics,Daintree,Daintree,Dryland Agriculture,1999,2123.2,44.2,2.1,0,0,1999 to 1999
+Wet Tropics,Daintree,Daintree,Dryland Agriculture,2009,2120.5,41.7,2,-2.5,-5.6,2009 to 1999
+Wet Tropics,Daintree,Daintree,Dryland Agriculture,2015,2115.6,40.4,1.9,-1.3,-3.1,2015 to 2009
+Wet Tropics,Daintree,Daintree,Dryland Agriculture,2021,2104.6,38.2,1.8,-2.2,-5.4,2021 to 2015
+Wet Tropics,Herbert,Herbert,Dryland Agriculture,1999,10003.4,665.9,6.7,0,0,1999 to 1999
+Wet Tropics,Herbert,Herbert,Dryland Agriculture,2009,9996.8,691.8,6.9,26,3.9,2009 to 1999
+Wet Tropics,Herbert,Herbert,Dryland Agriculture,2015,9952.5,662.7,6.7,-29.1,-4.2,2015 to 2009
+Wet Tropics,Herbert,Herbert,Dryland Agriculture,2021,9873.2,674.6,6.8,11.9,1.8,2021 to 2015
+Wet Tropics,Johnstone,Johnstone,Dryland Agriculture,1999,2460.7,360.1,14.6,0,0,1999 to 1999
+Wet Tropics,Johnstone,Johnstone,Dryland Agriculture,2009,2457.4,318.2,12.9,-41.9,-11.6,2009 to 1999
+Wet Tropics,Johnstone,Johnstone,Dryland Agriculture,2015,2456.4,293.8,12,-24.4,-7.7,2015 to 2009
+Wet Tropics,Johnstone,Johnstone,Dryland Agriculture,2021,2317.8,308.1,13.3,14.3,4.9,2021 to 2015
+Wet Tropics,Mossman,Mossman,Dryland Agriculture,1999,513.5,51.9,10.1,0,0,1999 to 1999
+Wet Tropics,Mossman,Mossman,Dryland Agriculture,2009,498,47.8,9.6,-4.2,-8,2009 to 1999
+Wet Tropics,Mossman,Mossman,Dryland Agriculture,2015,496,46.6,9.4,-1.1,-2.4,2015 to 2009
+Wet Tropics,Mossman,Mossman,Dryland Agriculture,2021,465.4,44.5,9.6,-2.1,-4.6,2021 to 2015
+Wet Tropics,Mulgrave,Mulgrave,Dryland Agriculture,1999,1333.4,173.2,13,0,0,1999 to 1999
+Wet Tropics,Mulgrave,Mulgrave,Dryland Agriculture,2009,1333.7,165.8,12.4,-7.4,-4.3,2009 to 1999
+Wet Tropics,Mulgrave,Mulgrave,Dryland Agriculture,2015,1333.4,161.8,12.1,-4,-2.4,2015 to 2009
+Wet Tropics,Mulgrave,Mulgrave,Dryland Agriculture,2021,1319.7,154.8,11.7,-7,-4.3,2021 to 2015
+Wet Tropics,Murray,Murray,Dryland Agriculture,1999,1539.4,218.7,14.2,0,0,1999 to 1999
+Wet Tropics,Murray,Murray,Dryland Agriculture,2009,1537.4,235,15.3,16.3,7.5,2009 to 1999
+Wet Tropics,Murray,Murray,Dryland Agriculture,2015,1538,236.9,15.4,1.9,0.8,2015 to 2009
+Wet Tropics,Murray,Murray,Dryland Agriculture,2021,1524.4,245.7,16.1,8.7,3.7,2021 to 2015
+Wet Tropics,Russell,Russell,Dryland Agriculture,1999,718.7,115.1,16,0,0,1999 to 1999
+Wet Tropics,Russell,Russell,Dryland Agriculture,2009,695.9,105.3,15.1,-9.7,-8.5,2009 to 1999
+Wet Tropics,Russell,Russell,Dryland Agriculture,2015,696.3,99.7,14.3,-5.7,-5.4,2015 to 2009
+Wet Tropics,Russell,Russell,Dryland Agriculture,2021,670.6,96.2,14.3,-3.5,-3.5,2021 to 2015
+Wet Tropics,Tully,Tully,Dryland Agriculture,1999,1718.8,215.7,12.5,0,0,1999 to 1999
+Wet Tropics,Tully,Tully,Dryland Agriculture,2009,1712.6,222.4,13,6.7,3.1,2009 to 1999
+Wet Tropics,Tully,Tully,Dryland Agriculture,2015,1713.5,209.7,12.2,-12.7,-5.7,2015 to 2009
+Wet Tropics,Tully,Tully,Dryland Agriculture,2021,1684.7,214.4,12.7,4.7,2.2,2021 to 2015
+Burdekin,Burdekin,Belyando,Forestry,1999,36777.9,468.4,1.3,0,0,1999 to 1999
+Burdekin,Burdekin,Belyando,Forestry,2009,37000.2,468.4,1.3,-0,-0,2009 to 1999
+Burdekin,Burdekin,Belyando,Forestry,2016,36069.3,468.4,1.3,0,0,2016 to 2009
+Burdekin,Burdekin,Belyando,Forestry,2021,35439,468.9,1.3,0.5,0.1,2021 to 2016
+Burdekin,Burdekin,Broke Bogie,Forestry,1999,12006.2,277.7,2.3,0,0,1999 to 1999
+Burdekin,Burdekin,Broke Bogie,Forestry,2009,12202.7,277.7,2.3,0,0,2009 to 1999
+Burdekin,Burdekin,Broke Bogie,Forestry,2016,12233.3,207.5,1.7,-70.2,-25.3,2016 to 2009
+Burdekin,Burdekin,Broke Bogie,Forestry,2021,11728.8,207.9,1.8,0.4,0.2,2021 to 2016
+Burdekin,Burdekin,Upper Burdekin,Forestry,1999,40700.5,444.6,1.1,0,0,1999 to 1999
+Burdekin,Burdekin,Upper Burdekin,Forestry,2009,40700.4,79.3,0.2,-365.2,-82.2,2009 to 1999
+Burdekin,Burdekin,Upper Burdekin,Forestry,2016,40960.1,79.3,0.2,-0,-0,2016 to 2009
+Burdekin,Burdekin,Upper Burdekin,Forestry,2021,40508.9,79.2,0.2,-0.1,-0.1,2021 to 2016
+Burdekin,Haughton,Haughton,Forestry,1999,4159.6,32.6,0.8,0,0,1999 to 1999
+Burdekin,Haughton,Haughton,Forestry,2009,4159.8,32.6,0.8,0,0,2009 to 1999
+Burdekin,Haughton,Haughton,Forestry,2016,4157.3,32.6,0.8,0,0,2016 to 2009
+Burdekin,Haughton,Haughton,Forestry,2021,4068.8,32.6,0.8,0,0,2021 to 2016
+Dry Tropics,Black,Black River,Forestry,1999,305.5,13.2,4.3,0,0,1999 to 1999
+Dry Tropics,Black,Black River,Forestry,2009,305,13.2,4.3,-0.1,-0.5,2009 to 1999
+Dry Tropics,Black,Black River,Forestry,2016,305.1,13.2,4.3,0,0,2016 to 2009
+Dry Tropics,Black,Black River,Forestry,2021,301.7,13.2,4.4,-0,-0,2021 to 2016
+Dry Tropics,Black,Bluewater Creek,Forestry,1999,296.6,13.6,4.6,0,0,1999 to 1999
+Dry Tropics,Black,Bluewater Creek,Forestry,2009,296.4,10.5,3.5,-3.2,-23.3,2009 to 1999
+Dry Tropics,Black,Bluewater Creek,Forestry,2016,296.9,10.5,3.5,0,0,2016 to 2009
+Dry Tropics,Black,Bluewater Creek,Forestry,2021,291.7,10.5,3.6,0,0,2021 to 2016
+Dry Tropics,Black,Crystal Creek,Forestry,1999,239.9,48.2,20.1,0,0,1999 to 1999
+Dry Tropics,Black,Crystal Creek,Forestry,2009,239.9,0,0,-48.1,-99.9,2009 to 1999
+Dry Tropics,Black,Crystal Creek,Forestry,2016,239.7,0,0,0,0,2016 to 2009
+Dry Tropics,Black,Crystal Creek,Forestry,2021,239.1,0,0,-0,-0,2021 to 2016
+Dry Tropics,Black,Paluma Lake,Forestry,1999,5.1,0.3,6.7,0,0,1999 to 1999
+Dry Tropics,Black,Paluma Lake,Forestry,2009,5.1,0.3,6,-0,-11.2,2009 to 1999
+Dry Tropics,Black,Paluma Lake,Forestry,2016,5.1,0.3,6,0,0,2016 to 2009
+Dry Tropics,Black,Paluma Lake,Forestry,2021,5.1,0.3,6,0,0,2021 to 2016
+Dry Tropics,Black,Rollingstone Creek,Forestry,1999,224.2,131.4,58.6,0,0,1999 to 1999
+Dry Tropics,Black,Rollingstone Creek,Forestry,2009,224.2,54.2,24.2,-77.2,-58.8,2009 to 1999
+Dry Tropics,Black,Rollingstone Creek,Forestry,2016,224.3,54.1,24.1,-0.1,-0.1,2016 to 2009
+Dry Tropics,Black,Rollingstone Creek,Forestry,2021,222,54.1,24.4,-0,-0,2021 to 2016
+Dry Tropics,Ross,Ross River (Upper),Forestry,1999,765.7,45,5.9,0,0,1999 to 1999
+Dry Tropics,Ross,Ross River (Upper),Forestry,2009,768,45,5.9,0,0,2009 to 1999
+Dry Tropics,Ross,Ross River (Upper),Forestry,2016,768.7,45,5.8,0,0,2016 to 2009
+Dry Tropics,Ross,Ross River (Upper),Forestry,2021,761.3,45,5.9,-0,-0,2021 to 2016
+Mackay Whitsunday Isaac,Don,Don,Forestry,1999,3922.2,0.2,0,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Don,Don,Forestry,2009,3874.2,0.2,0,0,0,2009 to 1999
+Mackay Whitsunday Isaac,Don,Don,Forestry,2016,3867.1,0.2,0,0,0,2016 to 2009
+Mackay Whitsunday Isaac,Don,Don,Forestry,2021,3752.8,0.2,0,0,0,2021 to 2016
+Mackay Whitsunday Isaac,O'Connell,O'Connell,Forestry,1999,2445.9,197.4,8.1,0,0,1999 to 1999
+Mackay Whitsunday Isaac,O'Connell,O'Connell,Forestry,2009,2445.9,167.4,6.8,-30,-15.2,2009 to 1999
+Mackay Whitsunday Isaac,O'Connell,O'Connell,Forestry,2016,2445.9,158.4,6.5,-9,-5.4,2016 to 2009
+Mackay Whitsunday Isaac,O'Connell,O'Connell,Forestry,2021,2446,149.1,6.1,-9.3,-5.9,2021 to 2016
+Mackay Whitsunday Isaac,Pioneer,Pioneer,Forestry,1999,1571.1,365.2,23.2,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Pioneer,Pioneer,Forestry,2009,1571.1,373,23.7,7.8,2.1,2009 to 1999
+Mackay Whitsunday Isaac,Pioneer,Pioneer,Forestry,2016,1571.1,297.1,18.9,-75.9,-20.4,2016 to 2009
+Mackay Whitsunday Isaac,Pioneer,Pioneer,Forestry,2021,1574.7,297.7,18.9,0.6,0.2,2021 to 2016
+Mackay Whitsunday Isaac,Plane,Plane,Forestry,1999,2559.5,121.5,4.7,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Plane,Plane,Forestry,2009,2559.5,107.7,4.2,-13.9,-11.4,2009 to 1999
+Mackay Whitsunday Isaac,Plane,Plane,Forestry,2016,2559.5,146.4,5.7,38.7,36,2016 to 2009
+Mackay Whitsunday Isaac,Plane,Plane,Forestry,2021,2569.8,148.4,5.8,1.9,1.3,2021 to 2016
+Mackay Whitsunday Isaac,Proserpine,Proserpine,Forestry,1999,2772.1,251.9,9.1,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Proserpine,Proserpine,Forestry,2009,2772.1,210.7,7.6,-41.2,-16.4,2009 to 1999
+Mackay Whitsunday Isaac,Proserpine,Proserpine,Forestry,2016,2772.1,134.7,4.9,-76,-36.1,2016 to 2009
+Mackay Whitsunday Isaac,Proserpine,Proserpine,Forestry,2021,2771.6,134.7,4.9,0,0,2021 to 2016
+Wet Tropics,Barron,Barron,Forestry,1999,2381.9,771.1,32.4,0,0,1999 to 1999
+Wet Tropics,Barron,Barron,Forestry,2009,2368.8,360.7,15.2,-410.4,-53.2,2009 to 1999
+Wet Tropics,Barron,Barron,Forestry,2015,2385.5,204.6,8.6,-156.2,-43.3,2015 to 2009
+Wet Tropics,Barron,Barron,Forestry,2021,2193.2,204.5,9.3,-0,-0,2021 to 2015
+Wet Tropics,Daintree,Daintree,Forestry,1999,2123.2,1000.4,47.1,0,0,1999 to 1999
+Wet Tropics,Daintree,Daintree,Forestry,2009,2120.5,903.4,42.6,-96.9,-9.7,2009 to 1999
+Wet Tropics,Herbert,Herbert,Forestry,1999,10003.4,513.6,5.1,0,0,1999 to 1999
+Wet Tropics,Herbert,Herbert,Forestry,2009,9996.8,346.7,3.5,-166.9,-32.5,2009 to 1999
+Wet Tropics,Herbert,Herbert,Forestry,2015,9952.5,343.2,3.4,-3.5,-1,2015 to 2009
+Wet Tropics,Herbert,Herbert,Forestry,2021,9873.2,371.2,3.8,28,8.2,2021 to 2015
+Wet Tropics,Johnstone,Johnstone,Forestry,1999,2460.7,637.5,25.9,0,0,1999 to 1999
+Wet Tropics,Johnstone,Johnstone,Forestry,2009,2457.4,22.4,0.9,-615.1,-96.5,2009 to 1999
+Wet Tropics,Mossman,Mossman,Forestry,1999,513.5,158.6,30.9,0,0,1999 to 1999
+Wet Tropics,Mossman,Mossman,Forestry,2009,498,0.1,0,-158.6,-100,2009 to 1999
+Wet Tropics,Mossman,Mossman,Forestry,2015,496,0,0,-0,-32.5,2015 to 2009
+Wet Tropics,Mossman,Mossman,Forestry,2021,465.4,0,0,0,0,2021 to 2015
+Wet Tropics,Mulgrave,Mulgrave,Forestry,1999,1333.4,251.8,18.9,0,0,1999 to 1999
+Wet Tropics,Mulgrave,Mulgrave,Forestry,2009,1333.7,1.2,0.1,-250.6,-99.5,2009 to 1999
+Wet Tropics,Mulgrave,Mulgrave,Forestry,2015,1333.4,1.2,0.1,0,0,2015 to 2009
+Wet Tropics,Mulgrave,Mulgrave,Forestry,2021,1319.7,1.2,0.1,0,0,2021 to 2015
+Wet Tropics,Murray,Murray,Forestry,1999,1539.4,266.1,17.3,0,0,1999 to 1999
+Wet Tropics,Murray,Murray,Forestry,2009,1537.4,40.7,2.6,-225.5,-84.7,2009 to 1999
+Wet Tropics,Murray,Murray,Forestry,2015,1538,40.7,2.6,0,0.1,2015 to 2009
+Wet Tropics,Murray,Murray,Forestry,2021,1524.4,40.7,2.7,0,0,2021 to 2015
+Wet Tropics,Russell,Russell,Forestry,1999,718.7,23.2,3.2,0,0,1999 to 1999
+Wet Tropics,Tully,Tully,Forestry,1999,1718.8,766.4,44.6,0,0,1999 to 1999
+Wet Tropics,Tully,Tully,Forestry,2021,1684.7,28.7,1.7,-737.8,-96.3,2021 to 1999
+Burdekin,Burdekin,Belyando,Grazing,1999,36777.9,34978.4,95.1,0,0,1999 to 1999
+Burdekin,Burdekin,Belyando,Grazing,2009,37000.2,35014.2,94.6,35.8,0.1,2009 to 1999
+Burdekin,Burdekin,Belyando,Grazing,2016,36069.3,34068.7,94.5,-945.5,-2.7,2016 to 2009
+Burdekin,Burdekin,Belyando,Grazing,2021,35439,33369.8,94.2,-698.8,-2.1,2021 to 2016
+Burdekin,Burdekin,Broke Bogie,Grazing,1999,12006.2,10703.2,89.1,0,0,1999 to 1999
+Burdekin,Burdekin,Broke Bogie,Grazing,2009,12202.7,10764.4,88.2,61.2,0.6,2009 to 1999
+Burdekin,Burdekin,Broke Bogie,Grazing,2016,12233.3,10773.4,88.1,9,0.1,2016 to 2009
+Burdekin,Burdekin,Broke Bogie,Grazing,2021,11728.8,10294.9,87.8,-478.5,-4.4,2021 to 2016
+Burdekin,Burdekin,Cape Campaspe,Grazing,1999,20636,19491.5,94.5,0,0,1999 to 1999
+Burdekin,Burdekin,Cape Campaspe,Grazing,2009,20639.9,19492.3,94.4,0.8,0,2009 to 1999
+Burdekin,Burdekin,Cape Campaspe,Grazing,2016,20594,19445,94.4,-47.3,-0.2,2016 to 2009
+Burdekin,Burdekin,Cape Campaspe,Grazing,2021,20457.9,19400.7,94.8,-44.3,-0.2,2021 to 2016
+Burdekin,Burdekin,Lower Burdekin,Grazing,1999,3797.4,3327.3,87.6,0,0,1999 to 1999
+Burdekin,Burdekin,Lower Burdekin,Grazing,2009,3804.7,3331,87.5,3.7,0.1,2009 to 1999
+Burdekin,Burdekin,Lower Burdekin,Grazing,2016,3805.7,3329.5,87.5,-1.5,-0,2016 to 2009
+Burdekin,Burdekin,Lower Burdekin,Grazing,2021,3760.1,3145.6,83.7,-183.9,-5.5,2021 to 2016
+Burdekin,Burdekin,Suttor,Grazing,1999,19599.8,17668.3,90.1,0,0,1999 to 1999
+Burdekin,Burdekin,Suttor,Grazing,2009,19664.5,17628.3,89.6,-40,-0.2,2009 to 1999
+Burdekin,Burdekin,Suttor,Grazing,2016,19570.9,17462.6,89.2,-165.7,-0.9,2016 to 2009
+Burdekin,Burdekin,Suttor,Grazing,2021,18220.2,16059.1,88.1,-1403.5,-8,2021 to 2016
+Burdekin,Burdekin,Upper Burdekin,Grazing,1999,40700.5,36244.2,89.1,0,0,1999 to 1999
+Burdekin,Burdekin,Upper Burdekin,Grazing,2009,40700.4,35395.2,87,-849.1,-2.3,2009 to 1999
+Burdekin,Burdekin,Upper Burdekin,Grazing,2016,40960.1,34936.2,85.3,-459,-1.3,2016 to 2009
+Burdekin,Burdekin,Upper Burdekin,Grazing,2021,40508.9,31474.1,77.7,-3462,-9.9,2021 to 2016
+Burdekin,Haughton,Haughton,Grazing,1999,4159.6,2366.6,56.9,0,0,1999 to 1999
+Burdekin,Haughton,Haughton,Grazing,2009,4159.8,2328.8,56,-37.9,-1.6,2009 to 1999
+Burdekin,Haughton,Haughton,Grazing,2016,4157.3,2307,55.5,-21.7,-0.9,2016 to 2009
+Burdekin,Haughton,Haughton,Grazing,2021,4068.8,2302.2,56.6,-4.9,-0.2,2021 to 2016
+Dry Tropics,Black,Black River,Grazing,1999,305.5,216.8,71,0,0,1999 to 1999
+Dry Tropics,Black,Black River,Grazing,2009,305,214.6,70.4,-2.2,-1,2009 to 1999
+Dry Tropics,Black,Black River,Grazing,2016,305.1,211.3,69.3,-3.3,-1.5,2016 to 2009
+Dry Tropics,Black,Black River,Grazing,2021,301.7,194.7,64.6,-16.5,-7.8,2021 to 2016
+Dry Tropics,Black,Bluewater Creek,Grazing,1999,296.6,222.2,74.9,0,0,1999 to 1999
+Dry Tropics,Black,Bluewater Creek,Grazing,2009,296.4,205.4,69.3,-16.7,-7.5,2009 to 1999
+Dry Tropics,Black,Bluewater Creek,Grazing,2016,296.9,172.8,58.2,-32.6,-15.9,2016 to 2009
+Dry Tropics,Black,Bluewater Creek,Grazing,2021,291.7,168.5,57.8,-4.3,-2.5,2021 to 2016
+Dry Tropics,Black,Crystal Creek,Grazing,1999,239.9,29.3,12.2,0,0,1999 to 1999
+Dry Tropics,Black,Crystal Creek,Grazing,2009,239.9,28.6,11.9,-0.6,-2.1,2009 to 1999
+Dry Tropics,Black,Crystal Creek,Grazing,2016,239.7,28.5,11.9,-0.1,-0.5,2016 to 2009
+Dry Tropics,Black,Crystal Creek,Grazing,2021,239.1,53.5,22.4,25,87.8,2021 to 2016
+Dry Tropics,Black,Rollingstone Creek,Grazing,1999,224.2,31.3,14,0,0,1999 to 1999
+Dry Tropics,Black,Rollingstone Creek,Grazing,2009,224.2,31.3,14,0,0.1,2009 to 1999
+Dry Tropics,Black,Rollingstone Creek,Grazing,2016,224.3,31.3,13.9,-0.1,-0.2,2016 to 2009
+Dry Tropics,Black,Rollingstone Creek,Grazing,2021,222,40.1,18.1,8.9,28.4,2021 to 2016
+Dry Tropics,Ross,Alligator Creek,Grazing,1999,368.4,80.8,21.9,0,0,1999 to 1999
+Dry Tropics,Ross,Alligator Creek,Grazing,2009,369.3,80.2,21.7,-0.5,-0.6,2009 to 1999
+Dry Tropics,Ross,Alligator Creek,Grazing,2016,369.6,78.4,21.2,-1.9,-2.3,2016 to 2009
+Dry Tropics,Ross,Alligator Creek,Grazing,2021,360.4,69.4,19.3,-9,-11.4,2021 to 2016
+Dry Tropics,Ross,Bohle River,Grazing,1999,332.3,200.2,60.3,0,0,1999 to 1999
+Dry Tropics,Ross,Bohle River,Grazing,2009,333,172.7,51.9,-27.5,-13.7,2009 to 1999
+Dry Tropics,Ross,Bohle River,Grazing,2016,331.3,151.9,45.8,-20.9,-12.1,2016 to 2009
+Dry Tropics,Ross,Bohle River,Grazing,2021,328.8,148.7,45.2,-3.1,-2.1,2021 to 2016
+Dry Tropics,Ross,Ross River (Lower),Grazing,1999,134.4,0.7,0.5,0,0,1999 to 1999
+Dry Tropics,Ross,Ross River (Lower),Grazing,2009,134,0.2,0.2,-0.5,-66,2009 to 1999
+Dry Tropics,Ross,Ross River (Lower),Grazing,2016,134,0,0,-0.2,-92.6,2016 to 2009
+Dry Tropics,Ross,Ross River (Lower),Grazing,2021,134,0,0,0,0,2021 to 2016
+Dry Tropics,Ross,Ross River (Upper),Grazing,1999,765.7,545.8,71.3,0,0,1999 to 1999
+Dry Tropics,Ross,Ross River (Upper),Grazing,2009,768,545.9,71.1,0.1,0,2009 to 1999
+Dry Tropics,Ross,Ross River (Upper),Grazing,2016,768.7,545.8,71,-0.1,-0,2016 to 2009
+Dry Tropics,Ross,Ross River (Upper),Grazing,2021,761.3,509.4,66.9,-36.4,-6.7,2021 to 2016
+Dry Tropics,Ross,Stuart Creek,Grazing,1999,124.9,71.9,57.6,0,0,1999 to 1999
+Dry Tropics,Ross,Stuart Creek,Grazing,2009,125,71.3,57,-0.7,-0.9,2009 to 1999
+Dry Tropics,Ross,Stuart Creek,Grazing,2016,122.7,70,57,-1.3,-1.8,2016 to 2009
+Dry Tropics,Ross,Stuart Creek,Grazing,2021,120.9,67.5,55.8,-2.5,-3.5,2021 to 2016
+Mackay Whitsunday Isaac,Don,Don,Grazing,1999,3922.2,3167,80.7,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Don,Don,Grazing,2009,3874.2,3093.1,79.8,-73.9,-2.3,2009 to 1999
+Mackay Whitsunday Isaac,Don,Don,Grazing,2016,3867.1,3079.8,79.6,-13.3,-0.4,2016 to 2009
+Mackay Whitsunday Isaac,Don,Don,Grazing,2021,3752.8,2978.9,79.4,-100.9,-3.3,2021 to 2016
+Mackay Whitsunday Isaac,O'Connell,O'Connell,Grazing,1999,2445.9,948.5,38.8,0,0,1999 to 1999
+Mackay Whitsunday Isaac,O'Connell,O'Connell,Grazing,2009,2445.9,949.6,38.8,1.1,0.1,2009 to 1999
+Mackay Whitsunday Isaac,O'Connell,O'Connell,Grazing,2016,2445.9,975.7,39.9,26.1,2.7,2016 to 2009
+Mackay Whitsunday Isaac,O'Connell,O'Connell,Grazing,2021,2446,1173.9,48,198.2,20.3,2021 to 2016
+Mackay Whitsunday Isaac,Pioneer,Pioneer,Grazing,1999,1571.1,338.4,21.5,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Pioneer,Pioneer,Grazing,2009,1571.1,356.4,22.7,18.1,5.3,2009 to 1999
+Mackay Whitsunday Isaac,Pioneer,Pioneer,Grazing,2016,1571.1,366.6,23.3,10.1,2.8,2016 to 2009
+Mackay Whitsunday Isaac,Pioneer,Pioneer,Grazing,2021,1574.7,496.8,31.6,130.3,35.5,2021 to 2016
+Mackay Whitsunday Isaac,Plane,Plane,Grazing,1999,2559.5,515.1,20.1,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Plane,Plane,Grazing,2009,2559.5,550.7,21.5,35.6,6.9,2009 to 1999
+Mackay Whitsunday Isaac,Plane,Plane,Grazing,2016,2559.5,560.6,21.9,9.9,1.8,2016 to 2009
+Mackay Whitsunday Isaac,Plane,Plane,Grazing,2021,2569.8,965,37.6,404.4,72.1,2021 to 2016
+Mackay Whitsunday Isaac,Proserpine,Proserpine,Grazing,1999,2772.1,1134.1,40.9,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Proserpine,Proserpine,Grazing,2009,2772.1,1073.7,38.7,-60.4,-5.3,2009 to 1999
+Mackay Whitsunday Isaac,Proserpine,Proserpine,Grazing,2016,2772.1,1114.3,40.2,40.6,3.8,2016 to 2009
+Mackay Whitsunday Isaac,Proserpine,Proserpine,Grazing,2021,2771.6,1232.7,44.5,118.4,10.6,2021 to 2016
+Wet Tropics,Barron,Barron,Grazing,1999,2381.9,856.3,35.9,0,0,1999 to 1999
+Wet Tropics,Barron,Barron,Grazing,2009,2368.8,844.6,35.7,-11.7,-1.4,2009 to 1999
+Wet Tropics,Barron,Barron,Grazing,2015,2385.5,874.3,36.6,29.7,3.5,2015 to 2009
+Wet Tropics,Barron,Barron,Grazing,2021,2193.2,659.1,30.1,-215.2,-24.6,2021 to 2015
+Wet Tropics,Daintree,Daintree,Grazing,1999,2123.2,152.4,7.2,0,0,1999 to 1999
+Wet Tropics,Daintree,Daintree,Grazing,2009,2120.5,153.3,7.2,0.9,0.6,2009 to 1999
+Wet Tropics,Daintree,Daintree,Grazing,2015,2115.6,170,8,16.7,10.9,2015 to 2009
+Wet Tropics,Daintree,Daintree,Grazing,2021,2104.6,168.4,8,-1.6,-0.9,2021 to 2015
+Wet Tropics,Herbert,Herbert,Grazing,1999,10003.4,5494.8,54.9,0,0,1999 to 1999
+Wet Tropics,Herbert,Herbert,Grazing,2009,9996.8,5355.5,53.6,-139.3,-2.5,2009 to 1999
+Wet Tropics,Herbert,Herbert,Grazing,2015,9952.5,5343.4,53.7,-12.1,-0.2,2015 to 2009
+Wet Tropics,Herbert,Herbert,Grazing,2021,9873.2,5040.6,51.1,-302.8,-5.7,2021 to 2015
+Wet Tropics,Johnstone,Johnstone,Grazing,1999,2460.7,560.4,22.8,0,0,1999 to 1999
+Wet Tropics,Johnstone,Johnstone,Grazing,2009,2457.4,603.1,24.5,42.6,7.6,2009 to 1999
+Wet Tropics,Johnstone,Johnstone,Grazing,2015,2456.4,628,25.6,24.9,4.1,2015 to 2009
+Wet Tropics,Johnstone,Johnstone,Grazing,2021,2317.8,502.3,21.7,-125.7,-20,2021 to 2015
+Wet Tropics,Mossman,Mossman,Grazing,1999,513.5,13.7,2.7,0,0,1999 to 1999
+Wet Tropics,Mossman,Mossman,Grazing,2009,498,16.7,3.3,2.9,21.4,2009 to 1999
+Wet Tropics,Mossman,Mossman,Grazing,2015,496,16.6,3.4,-0,-0.2,2015 to 2009
+Wet Tropics,Mossman,Mossman,Grazing,2021,465.4,26.1,5.6,9.5,56.8,2021 to 2015
+Wet Tropics,Mulgrave,Mulgrave,Grazing,1999,1333.4,41.8,3.1,0,0,1999 to 1999
+Wet Tropics,Mulgrave,Mulgrave,Grazing,2009,1333.7,38.8,2.9,-3,-7.2,2009 to 1999
+Wet Tropics,Mulgrave,Mulgrave,Grazing,2015,1333.4,41,3.1,2.2,5.7,2015 to 2009
+Wet Tropics,Mulgrave,Mulgrave,Grazing,2021,1319.7,43.4,3.3,2.4,5.8,2021 to 2015
+Wet Tropics,Murray,Murray,Grazing,1999,1539.4,80,5.2,0,0,1999 to 1999
+Wet Tropics,Murray,Murray,Grazing,2009,1537.4,75.3,4.9,-4.6,-5.8,2009 to 1999
+Wet Tropics,Murray,Murray,Grazing,2015,1538,82.9,5.4,7.6,10,2015 to 2009
+Wet Tropics,Murray,Murray,Grazing,2021,1524.4,71.6,4.7,-11.3,-13.6,2021 to 2015
+Wet Tropics,Russell,Russell,Grazing,1999,718.7,46.3,6.4,0,0,1999 to 1999
+Wet Tropics,Russell,Russell,Grazing,2009,695.9,52.7,7.6,6.4,13.7,2009 to 1999
+Wet Tropics,Russell,Russell,Grazing,2015,696.3,57.7,8.3,5.1,9.7,2015 to 2009
+Wet Tropics,Russell,Russell,Grazing,2021,670.6,58.7,8.8,0.9,1.6,2021 to 2015
+Wet Tropics,Tully,Tully,Grazing,1999,1718.8,110.1,6.4,0,0,1999 to 1999
+Wet Tropics,Tully,Tully,Grazing,2009,1712.6,89.2,5.2,-20.9,-19,2009 to 1999
+Wet Tropics,Tully,Tully,Grazing,2015,1713.5,105.8,6.2,16.6,18.6,2015 to 2009
+Wet Tropics,Tully,Tully,Grazing,2021,1684.7,108.7,6.5,2.8,2.7,2021 to 2015
+Burdekin,Burdekin,Belyando,Irrigated Agriculture,1999,36777.9,2.8,0,0,0,1999 to 1999
+Burdekin,Burdekin,Belyando,Irrigated Agriculture,2009,37000.2,2.8,0,0,0,2009 to 1999
+Burdekin,Burdekin,Belyando,Irrigated Agriculture,2021,35439,20.2,0.1,17.4,615.2,2021 to 2009
+Burdekin,Burdekin,Broke Bogie,Irrigated Agriculture,1999,12006.2,4.1,0,0,0,1999 to 1999
+Burdekin,Burdekin,Broke Bogie,Irrigated Agriculture,2009,12202.7,0.4,0,-3.7,-90,2009 to 1999
+Burdekin,Burdekin,Broke Bogie,Irrigated Agriculture,2016,12233.3,0.4,0,0,7.1,2016 to 2009
+Burdekin,Burdekin,Broke Bogie,Irrigated Agriculture,2021,11728.8,0.9,0,0.5,112.5,2021 to 2016
+Burdekin,Burdekin,Cape Campaspe,Irrigated Agriculture,1999,20636,2.4,0,0,0,1999 to 1999
+Burdekin,Burdekin,Cape Campaspe,Irrigated Agriculture,2009,20639.9,1.9,0,-0.5,-20.6,2009 to 1999
+Burdekin,Burdekin,Cape Campaspe,Irrigated Agriculture,2016,20594,1.3,0,-0.6,-32.3,2016 to 2009
+Burdekin,Burdekin,Cape Campaspe,Irrigated Agriculture,2021,20457.9,5.1,0,3.8,299.2,2021 to 2016
+Burdekin,Burdekin,Lower Burdekin,Irrigated Agriculture,1999,3797.4,234.3,6.2,0,0,1999 to 1999
+Burdekin,Burdekin,Lower Burdekin,Irrigated Agriculture,2009,3804.7,226.4,5.9,-7.9,-3.4,2009 to 1999
+Burdekin,Burdekin,Lower Burdekin,Irrigated Agriculture,2016,3805.7,218.8,5.7,-7.6,-3.4,2016 to 2009
+Burdekin,Burdekin,Lower Burdekin,Irrigated Agriculture,2021,3760.1,240,6.4,21.2,9.7,2021 to 2016
+Burdekin,Burdekin,Suttor,Irrigated Agriculture,2021,18220.2,34.5,0.2,0,0,1999 to 1999
+Burdekin,Burdekin,Upper Burdekin,Irrigated Agriculture,1999,40700.5,6.7,0,0,0,1999 to 1999
+Burdekin,Burdekin,Upper Burdekin,Irrigated Agriculture,2009,40700.4,3.5,0,-3.2,-47.9,2009 to 1999
+Burdekin,Burdekin,Upper Burdekin,Irrigated Agriculture,2016,40960.1,0.6,0,-2.9,-82.9,2016 to 2009
+Burdekin,Burdekin,Upper Burdekin,Irrigated Agriculture,2021,40508.9,17.7,0,17.1,2872.5,2021 to 2016
+Burdekin,Haughton,Haughton,Irrigated Agriculture,1999,4159.6,765.7,18.4,0,0,1999 to 1999
+Burdekin,Haughton,Haughton,Irrigated Agriculture,2009,4159.8,755.3,18.2,-10.4,-1.4,2009 to 1999
+Burdekin,Haughton,Haughton,Irrigated Agriculture,2016,4157.3,762.4,18.3,7.1,0.9,2016 to 2009
+Burdekin,Haughton,Haughton,Irrigated Agriculture,2021,4068.8,801,19.7,38.6,5.1,2021 to 2016
+Dry Tropics,Black,Black River,Irrigated Agriculture,1999,305.5,0.4,0.1,0,0,1999 to 1999
+Dry Tropics,Black,Black River,Irrigated Agriculture,2009,305,0.1,0,-0.3,-71.2,2009 to 1999
+Dry Tropics,Black,Black River,Irrigated Agriculture,2016,305.1,0.1,0,-0,-15.9,2016 to 2009
+Dry Tropics,Black,Black River,Irrigated Agriculture,2021,301.7,2.1,0.7,2,1856.4,2021 to 2016
+Dry Tropics,Black,Bluewater Creek,Irrigated Agriculture,1999,296.6,0.2,0.1,0,0,1999 to 1999
+Dry Tropics,Black,Bluewater Creek,Irrigated Agriculture,2009,296.4,0.3,0.1,0.1,79.6,2009 to 1999
+Dry Tropics,Black,Bluewater Creek,Irrigated Agriculture,2016,296.9,0.3,0.1,0,12.8,2016 to 2009
+Dry Tropics,Black,Bluewater Creek,Irrigated Agriculture,2021,291.7,1.2,0.4,0.9,284.9,2021 to 2016
+Dry Tropics,Black,Crystal Creek,Irrigated Agriculture,1999,239.9,11.5,4.8,0,0,1999 to 1999
+Dry Tropics,Black,Crystal Creek,Irrigated Agriculture,2009,239.9,11.7,4.9,0.2,2,2009 to 1999
+Dry Tropics,Black,Crystal Creek,Irrigated Agriculture,2016,239.7,11.6,4.8,-0.1,-1,2016 to 2009
+Dry Tropics,Black,Crystal Creek,Irrigated Agriculture,2021,239.1,13.8,5.8,2.2,19.3,2021 to 2016
+Dry Tropics,Black,Rollingstone Creek,Irrigated Agriculture,1999,224.2,0.7,0.3,0,0,1999 to 1999
+Dry Tropics,Black,Rollingstone Creek,Irrigated Agriculture,2009,224.2,0.7,0.3,-0,-3.7,2009 to 1999
+Dry Tropics,Black,Rollingstone Creek,Irrigated Agriculture,2016,224.3,0.8,0.3,0.1,8,2016 to 2009
+Dry Tropics,Black,Rollingstone Creek,Irrigated Agriculture,2021,222,3.2,1.4,2.4,314.3,2021 to 2016
+Dry Tropics,Ross,Alligator Creek,Irrigated Agriculture,2009,369.3,0.1,0,0,0,1999 to 1999
+Dry Tropics,Ross,Alligator Creek,Irrigated Agriculture,2021,360.4,2.1,0.6,2,1912.1,2021 to 2009
+Dry Tropics,Ross,Bohle River,Irrigated Agriculture,2016,331.3,0.1,0,0,0,1999 to 1999
+Dry Tropics,Ross,Bohle River,Irrigated Agriculture,2021,328.8,4.5,1.4,4.5,8615.1,2021 to 2016
+Dry Tropics,Ross,Ross River (Lower),Irrigated Agriculture,2021,134,0,0,0,0,1999 to 1999
+Dry Tropics,Ross,Ross River (Upper),Irrigated Agriculture,1999,765.7,0.2,0,0,0,1999 to 1999
+Dry Tropics,Ross,Ross River (Upper),Irrigated Agriculture,2016,768.7,0.3,0,0.1,29.6,2016 to 1999
+Dry Tropics,Ross,Ross River (Upper),Irrigated Agriculture,2021,761.3,3,0.4,2.7,993.1,2021 to 2016
+Dry Tropics,Ross,Stuart Creek,Irrigated Agriculture,1999,124.9,2.2,1.8,0,0,1999 to 1999
+Dry Tropics,Ross,Stuart Creek,Irrigated Agriculture,2009,125,1.6,1.3,-0.6,-26.1,2009 to 1999
+Dry Tropics,Ross,Stuart Creek,Irrigated Agriculture,2016,122.7,1.2,0.9,-0.5,-29.3,2016 to 2009
+Dry Tropics,Ross,Stuart Creek,Irrigated Agriculture,2021,120.9,1.1,0.9,-0,-3.6,2021 to 2016
+Mackay Whitsunday Isaac,Don,Don,Irrigated Agriculture,1999,3922.2,82,2.1,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Don,Don,Irrigated Agriculture,2009,3874.2,71.5,1.8,-10.5,-12.9,2009 to 1999
+Mackay Whitsunday Isaac,Don,Don,Irrigated Agriculture,2016,3867.1,72.9,1.9,1.4,2,2016 to 2009
+Mackay Whitsunday Isaac,Don,Don,Irrigated Agriculture,2021,3752.8,210.5,5.6,137.6,188.8,2021 to 2016
+Mackay Whitsunday Isaac,O'Connell,O'Connell,Irrigated Agriculture,1999,2445.9,369.1,15.1,0,0,1999 to 1999
+Mackay Whitsunday Isaac,O'Connell,O'Connell,Irrigated Agriculture,2009,2445.9,343.1,14,-25.9,-7,2009 to 1999
+Mackay Whitsunday Isaac,O'Connell,O'Connell,Irrigated Agriculture,2016,2445.9,322.6,13.2,-20.6,-6,2016 to 2009
+Mackay Whitsunday Isaac,O'Connell,O'Connell,Irrigated Agriculture,2021,2446,321.9,13.2,-0.7,-0.2,2021 to 2016
+Mackay Whitsunday Isaac,Pioneer,Pioneer,Irrigated Agriculture,1999,1571.1,357.2,22.7,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Pioneer,Pioneer,Irrigated Agriculture,2009,1571.1,334,21.3,-23.3,-6.5,2009 to 1999
+Mackay Whitsunday Isaac,Pioneer,Pioneer,Irrigated Agriculture,2016,1571.1,320.6,20.4,-13.4,-4,2016 to 2009
+Mackay Whitsunday Isaac,Pioneer,Pioneer,Irrigated Agriculture,2021,1574.7,318.9,20.3,-1.7,-0.5,2021 to 2016
+Mackay Whitsunday Isaac,Plane,Plane,Irrigated Agriculture,1999,2559.5,701.3,27.4,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Plane,Plane,Irrigated Agriculture,2009,2559.5,665.3,26,-35.9,-5.1,2009 to 1999
+Mackay Whitsunday Isaac,Plane,Plane,Irrigated Agriculture,2016,2559.5,654,25.6,-11.3,-1.7,2016 to 2009
+Mackay Whitsunday Isaac,Plane,Plane,Irrigated Agriculture,2021,2569.8,657.8,25.6,3.8,0.6,2021 to 2016
+Mackay Whitsunday Isaac,Proserpine,Proserpine,Irrigated Agriculture,1999,2772.1,243.9,8.8,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Proserpine,Proserpine,Irrigated Agriculture,2009,2772.1,249.1,9,5.2,2.1,2009 to 1999
+Mackay Whitsunday Isaac,Proserpine,Proserpine,Irrigated Agriculture,2016,2772.1,249.2,9,0.1,0.1,2016 to 2009
+Mackay Whitsunday Isaac,Proserpine,Proserpine,Irrigated Agriculture,2021,2771.6,247.7,8.9,-1.4,-0.6,2021 to 2016
+Wet Tropics,Barron,Barron,Irrigated Agriculture,1999,2381.9,149.4,6.3,0,0,1999 to 1999
+Wet Tropics,Barron,Barron,Irrigated Agriculture,2009,2368.8,145.3,6.1,-4.1,-2.7,2009 to 1999
+Wet Tropics,Barron,Barron,Irrigated Agriculture,2015,2385.5,134,5.6,-11.3,-7.8,2015 to 2009
+Wet Tropics,Barron,Barron,Irrigated Agriculture,2021,2193.2,232,10.6,98,73.1,2021 to 2015
+Wet Tropics,Daintree,Daintree,Irrigated Agriculture,2009,2120.5,0.1,0,0,0,1999 to 1999
+Wet Tropics,Daintree,Daintree,Irrigated Agriculture,2015,2115.6,0.1,0,0,13.5,2015 to 2009
+Wet Tropics,Daintree,Daintree,Irrigated Agriculture,2021,2104.6,2.1,0.1,1.9,1383.8,2021 to 2015
+Wet Tropics,Herbert,Herbert,Irrigated Agriculture,1999,10003.4,189.9,1.9,0,0,1999 to 1999
+Wet Tropics,Herbert,Herbert,Irrigated Agriculture,2009,9996.8,168.1,1.7,-21.8,-11.5,2009 to 1999
+Wet Tropics,Herbert,Herbert,Irrigated Agriculture,2015,9952.5,174.1,1.7,6,3.6,2015 to 2009
+Wet Tropics,Herbert,Herbert,Irrigated Agriculture,2021,9873.2,213,2.2,39,22.4,2021 to 2015
+Wet Tropics,Johnstone,Johnstone,Irrigated Agriculture,1999,2460.7,8.8,0.4,0,0,1999 to 1999
+Wet Tropics,Johnstone,Johnstone,Irrigated Agriculture,2009,2457.4,8.9,0.4,0,0.5,2009 to 1999
+Wet Tropics,Johnstone,Johnstone,Irrigated Agriculture,2015,2456.4,8.3,0.3,-0.6,-6.9,2015 to 2009
+Wet Tropics,Johnstone,Johnstone,Irrigated Agriculture,2021,2317.8,77.4,3.3,69.1,834.9,2021 to 2015
+Wet Tropics,Mossman,Mossman,Irrigated Agriculture,1999,513.5,0.1,0,0,0,1999 to 1999
+Wet Tropics,Mossman,Mossman,Irrigated Agriculture,2009,498,0.1,0,-0,-9.2,2009 to 1999
+Wet Tropics,Mossman,Mossman,Irrigated Agriculture,2015,496,0.1,0,-0,-42.8,2015 to 2009
+Wet Tropics,Mossman,Mossman,Irrigated Agriculture,2021,465.4,0.7,0.2,0.7,1173.5,2021 to 2015
+Wet Tropics,Mulgrave,Mulgrave,Irrigated Agriculture,1999,1333.4,1.3,0.1,0,0,1999 to 1999
+Wet Tropics,Mulgrave,Mulgrave,Irrigated Agriculture,2009,1333.7,0.4,0,-1,-72.9,2009 to 1999
+Wet Tropics,Mulgrave,Mulgrave,Irrigated Agriculture,2015,1333.4,0,0,-0.3,-87.8,2015 to 2009
+Wet Tropics,Mulgrave,Mulgrave,Irrigated Agriculture,2021,1319.7,3.9,0.3,3.8,8599.5,2021 to 2015
+Wet Tropics,Murray,Murray,Irrigated Agriculture,1999,1539.4,0.8,0.1,0,0,1999 to 1999
+Wet Tropics,Murray,Murray,Irrigated Agriculture,2009,1537.4,0.3,0,-0.5,-64.7,2009 to 1999
+Wet Tropics,Murray,Murray,Irrigated Agriculture,2015,1538,0.1,0,-0.2,-78.7,2015 to 2009
+Wet Tropics,Murray,Murray,Irrigated Agriculture,2021,1524.4,8.4,0.5,8.3,13613.8,2021 to 2015
+Wet Tropics,Russell,Russell,Irrigated Agriculture,2015,696.3,0,0,0,0,1999 to 1999
+Wet Tropics,Russell,Russell,Irrigated Agriculture,2021,670.6,12,1.8,12,35985.5,2021 to 2015
+Wet Tropics,Tully,Tully,Irrigated Agriculture,1999,1718.8,0.1,0,0,0,1999 to 1999
+Wet Tropics,Tully,Tully,Irrigated Agriculture,2009,1712.6,0,0,-0.1,-53.5,2009 to 1999
+Wet Tropics,Tully,Tully,Irrigated Agriculture,2015,1713.5,0.1,0,0,50.3,2015 to 2009
+Wet Tropics,Tully,Tully,Irrigated Agriculture,2021,1684.7,44.3,2.6,44.2,62666.1,2021 to 2015
+Burdekin,Burdekin,Belyando,Mining,1999,36777.9,1,0,0,0,1999 to 1999
+Burdekin,Burdekin,Belyando,Mining,2009,37000.2,1.8,0,0.7,73,2009 to 1999
+Burdekin,Burdekin,Belyando,Mining,2016,36069.3,4.2,0,2.4,139.1,2016 to 2009
+Burdekin,Burdekin,Belyando,Mining,2021,35439,27.2,0.1,23,547.2,2021 to 2016
+Burdekin,Burdekin,Broke Bogie,Mining,1999,12006.2,40.3,0.3,0,0,1999 to 1999
+Burdekin,Burdekin,Broke Bogie,Mining,2009,12202.7,52.8,0.4,12.5,31,2009 to 1999
+Burdekin,Burdekin,Broke Bogie,Mining,2016,12233.3,69,0.6,16.2,30.7,2016 to 2009
+Burdekin,Burdekin,Broke Bogie,Mining,2021,11728.8,83,0.7,14,20.3,2021 to 2016
+Burdekin,Burdekin,Cape Campaspe,Mining,1999,20636,6.4,0,0,0,1999 to 1999
+Burdekin,Burdekin,Cape Campaspe,Mining,2009,20639.9,6.7,0,0.4,5.6,2009 to 1999
+Burdekin,Burdekin,Cape Campaspe,Mining,2016,20594,7.7,0,1,14.5,2016 to 2009
+Burdekin,Burdekin,Cape Campaspe,Mining,2021,20457.9,9.3,0,1.6,20.6,2021 to 2016
+Burdekin,Burdekin,Lower Burdekin,Mining,1999,3797.4,0.1,0,0,0,1999 to 1999
+Burdekin,Burdekin,Lower Burdekin,Mining,2009,3804.7,0.6,0,0.5,381.5,2009 to 1999
+Burdekin,Burdekin,Lower Burdekin,Mining,2016,3805.7,0.8,0,0.2,34.8,2016 to 2009
+Burdekin,Burdekin,Lower Burdekin,Mining,2021,3760.1,0.8,0,-0,-0,2021 to 2016
+Burdekin,Burdekin,Suttor,Mining,1999,19599.8,8.4,0,0,0,1999 to 1999
+Burdekin,Burdekin,Suttor,Mining,2009,19664.5,26.8,0.1,18.4,219.9,2009 to 1999
+Burdekin,Burdekin,Suttor,Mining,2016,19570.9,30,0.2,3.1,11.7,2016 to 2009
+Burdekin,Burdekin,Suttor,Mining,2021,18220.2,51.5,0.3,21.6,72,2021 to 2016
+Burdekin,Burdekin,Upper Burdekin,Mining,1999,40700.5,29,0.1,0,0,1999 to 1999
+Burdekin,Burdekin,Upper Burdekin,Mining,2009,40700.4,34.9,0.1,5.9,20.2,2009 to 1999
+Burdekin,Burdekin,Upper Burdekin,Mining,2016,40960.1,36,0.1,1.1,3.2,2016 to 2009
+Burdekin,Burdekin,Upper Burdekin,Mining,2021,40508.9,39.2,0.1,3.2,8.8,2021 to 2016
+Burdekin,Haughton,Haughton,Mining,1999,4159.6,2.2,0.1,0,0,1999 to 1999
+Burdekin,Haughton,Haughton,Mining,2009,4159.8,2.7,0.1,0.5,23.6,2009 to 1999
+Burdekin,Haughton,Haughton,Mining,2016,4157.3,3.1,0.1,0.5,17.2,2016 to 2009
+Burdekin,Haughton,Haughton,Mining,2021,4068.8,3.2,0.1,0.1,2.5,2021 to 2016
+Dry Tropics,Black,Black River,Mining,1999,305.5,3.2,1.1,0,0,1999 to 1999
+Dry Tropics,Black,Black River,Mining,2009,305,3.2,1.1,0,0,2009 to 1999
+Dry Tropics,Black,Black River,Mining,2016,305.1,3.2,1.1,0,0,2016 to 2009
+Dry Tropics,Black,Black River,Mining,2021,301.7,3.2,1.1,0,0,2021 to 2016
+Dry Tropics,Black,Bluewater Creek,Mining,1999,296.6,1,0.3,0,0,1999 to 1999
+Dry Tropics,Black,Bluewater Creek,Mining,2009,296.4,1.6,0.5,0.6,59.3,2009 to 1999
+Dry Tropics,Black,Bluewater Creek,Mining,2016,296.9,1.9,0.6,0.3,20.5,2016 to 2009
+Dry Tropics,Black,Bluewater Creek,Mining,2021,291.7,1.9,0.7,0,0,2021 to 2016
+Dry Tropics,Black,Crystal Creek,Mining,1999,239.9,0,0,0,0,1999 to 1999
+Dry Tropics,Black,Crystal Creek,Mining,2009,239.9,0,0,0,0,2009 to 1999
+Dry Tropics,Black,Palm Islands,Mining,1999,86.4,0.1,0.1,0,0,1999 to 1999
+Dry Tropics,Black,Palm Islands,Mining,2009,86.4,0,0,-0.1,-80.9,2009 to 1999
+Dry Tropics,Black,Palm Islands,Mining,2016,86.4,0,0,0,0,2016 to 2009
+Dry Tropics,Black,Palm Islands,Mining,2021,86.4,0,0,0,0,2021 to 2016
+Dry Tropics,Black,Rollingstone Creek,Mining,1999,224.2,0,0,0,0,1999 to 1999
+Dry Tropics,Black,Rollingstone Creek,Mining,2009,224.2,0,0,0,94.2,2009 to 1999
+Dry Tropics,Black,Rollingstone Creek,Mining,2016,224.3,0.1,0.1,0.1,175.9,2016 to 2009
+Dry Tropics,Black,Rollingstone Creek,Mining,2021,222,0.1,0.1,0,0,2021 to 2016
+Dry Tropics,Ross,Alligator Creek,Mining,1999,368.4,0.1,0,0,0,1999 to 1999
+Dry Tropics,Ross,Alligator Creek,Mining,2009,369.3,0.1,0,0,11.8,2009 to 1999
+Dry Tropics,Ross,Alligator Creek,Mining,2016,369.6,0.3,0.1,0.1,127.3,2016 to 2009
+Dry Tropics,Ross,Alligator Creek,Mining,2021,360.4,0.3,0.1,0.1,29.9,2021 to 2016
+Dry Tropics,Ross,Bohle River,Mining,1999,332.3,0.8,0.2,0,0,1999 to 1999
+Dry Tropics,Ross,Bohle River,Mining,2009,333,1.4,0.4,0.6,68.2,2009 to 1999
+Dry Tropics,Ross,Bohle River,Mining,2016,331.3,1.6,0.5,0.2,14.6,2016 to 2009
+Dry Tropics,Ross,Bohle River,Mining,2021,328.8,1.6,0.5,0,0,2021 to 2016
+Dry Tropics,Ross,Ross River (Lower),Mining,1999,134.4,0.1,0.1,0,0,1999 to 1999
+Dry Tropics,Ross,Ross River (Lower),Mining,2009,134,0.1,0.1,0,14.6,2009 to 1999
+Dry Tropics,Ross,Ross River (Lower),Mining,2016,134,0.1,0.1,0,0,2016 to 2009
+Dry Tropics,Ross,Ross River (Lower),Mining,2021,134,0.1,0.1,0,0,2021 to 2016
+Dry Tropics,Ross,Ross River (Upper),Mining,1999,765.7,0.6,0.1,0,0,1999 to 1999
+Dry Tropics,Ross,Ross River (Upper),Mining,2009,768,0.8,0.1,0.1,18.2,2009 to 1999
+Dry Tropics,Ross,Ross River (Upper),Mining,2016,768.7,1.1,0.1,0.3,40.2,2016 to 2009
+Dry Tropics,Ross,Ross River (Upper),Mining,2021,761.3,1.1,0.1,0,0,2021 to 2016
+Dry Tropics,Ross,Stuart Creek,Mining,1999,124.9,1.4,1.1,0,0,1999 to 1999
+Dry Tropics,Ross,Stuart Creek,Mining,2009,125,2.1,1.7,0.8,55,2009 to 1999
+Dry Tropics,Ross,Stuart Creek,Mining,2016,122.7,2.4,2,0.3,13.3,2016 to 2009
+Dry Tropics,Ross,Stuart Creek,Mining,2021,120.9,2.4,2,0,0,2021 to 2016
+Mackay Whitsunday Isaac,Don,Don,Mining,1999,3922.2,2.3,0.1,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Don,Don,Mining,2009,3874.2,2.8,0.1,0.5,23.3,2009 to 1999
+Mackay Whitsunday Isaac,Don,Don,Mining,2016,3867.1,3.4,0.1,0.6,21.2,2016 to 2009
+Mackay Whitsunday Isaac,Don,Don,Mining,2021,3752.8,4.1,0.1,0.7,21.3,2021 to 2016
+Mackay Whitsunday Isaac,O'Connell,O'Connell,Mining,1999,2445.9,1.7,0.1,0,0,1999 to 1999
+Mackay Whitsunday Isaac,O'Connell,O'Connell,Mining,2009,2445.9,1.8,0.1,0.1,8.2,2009 to 1999
+Mackay Whitsunday Isaac,O'Connell,O'Connell,Mining,2016,2445.9,1.9,0.1,0,1.7,2016 to 2009
+Mackay Whitsunday Isaac,O'Connell,O'Connell,Mining,2021,2446,1.9,0.1,0,0.2,2021 to 2016
+Mackay Whitsunday Isaac,Pioneer,Pioneer,Mining,1999,1571.1,0.8,0.1,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Pioneer,Pioneer,Mining,2009,1571.1,1,0.1,0.2,20.4,2009 to 1999
+Mackay Whitsunday Isaac,Pioneer,Pioneer,Mining,2016,1571.1,1.4,0.1,0.3,32.5,2016 to 2009
+Mackay Whitsunday Isaac,Pioneer,Pioneer,Mining,2021,1574.7,1.2,0.1,-0.2,-14.5,2021 to 2016
+Mackay Whitsunday Isaac,Plane,Plane,Mining,1999,2559.5,1.6,0.1,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Plane,Plane,Mining,2009,2559.5,2,0.1,0.5,30.2,2009 to 1999
+Mackay Whitsunday Isaac,Plane,Plane,Mining,2016,2559.5,2.6,0.1,0.6,27.5,2016 to 2009
+Mackay Whitsunday Isaac,Plane,Plane,Mining,2021,2569.8,2.5,0.1,-0.1,-2.9,2021 to 2016
+Mackay Whitsunday Isaac,Proserpine,Proserpine,Mining,1999,2772.1,0.9,0,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Proserpine,Proserpine,Mining,2009,2772.1,1.4,0.1,0.5,49.6,2009 to 1999
+Mackay Whitsunday Isaac,Proserpine,Proserpine,Mining,2016,2772.1,1.4,0.1,0,1.7,2016 to 2009
+Mackay Whitsunday Isaac,Proserpine,Proserpine,Mining,2021,2771.6,1.5,0.1,0,3.3,2021 to 2016
+Wet Tropics,Barron,Barron,Mining,1999,2381.9,3.2,0.1,0,0,1999 to 1999
+Wet Tropics,Barron,Barron,Mining,2009,2368.8,3.5,0.1,0.4,12,2009 to 1999
+Wet Tropics,Barron,Barron,Mining,2015,2385.5,3.8,0.2,0.3,7.7,2015 to 2009
+Wet Tropics,Barron,Barron,Mining,2021,2193.2,3.7,0.2,-0.1,-1.7,2021 to 2015
+Wet Tropics,Daintree,Daintree,Mining,1999,2123.2,0.1,0,0,0,1999 to 1999
+Wet Tropics,Herbert,Herbert,Mining,1999,10003.4,2.8,0,0,0,1999 to 1999
+Wet Tropics,Herbert,Herbert,Mining,2009,9996.8,3.7,0,1,35.1,2009 to 1999
+Wet Tropics,Herbert,Herbert,Mining,2015,9952.5,4,0,0.2,5.9,2015 to 2009
+Wet Tropics,Herbert,Herbert,Mining,2021,9873.2,5.5,0.1,1.5,38.3,2021 to 2015
+Wet Tropics,Johnstone,Johnstone,Mining,1999,2460.7,0.9,0,0,0,1999 to 1999
+Wet Tropics,Johnstone,Johnstone,Mining,2009,2457.4,1.2,0.1,0.4,46.8,2009 to 1999
+Wet Tropics,Johnstone,Johnstone,Mining,2015,2456.4,1.2,0,-0,-1.7,2015 to 2009
+Wet Tropics,Johnstone,Johnstone,Mining,2021,2317.8,1.2,0.1,-0,-0,2021 to 2015
+Wet Tropics,Mossman,Mossman,Mining,1999,513.5,0.3,0.1,0,0,1999 to 1999
+Wet Tropics,Mossman,Mossman,Mining,2009,498,0.3,0.1,0,9.5,2009 to 1999
+Wet Tropics,Mossman,Mossman,Mining,2015,496,0.3,0.1,0,0,2015 to 2009
+Wet Tropics,Mossman,Mossman,Mining,2021,465.4,0.4,0.1,0.1,18.1,2021 to 2015
+Wet Tropics,Mulgrave,Mulgrave,Mining,1999,1333.4,1,0.1,0,0,1999 to 1999
+Wet Tropics,Mulgrave,Mulgrave,Mining,2009,1333.7,1.1,0.1,0.1,8,2009 to 1999
+Wet Tropics,Mulgrave,Mulgrave,Mining,2015,1333.4,1.1,0.1,0,2.6,2015 to 2009
+Wet Tropics,Mulgrave,Mulgrave,Mining,2021,1319.7,1.2,0.1,0.1,5.6,2021 to 2015
+Wet Tropics,Murray,Murray,Mining,1999,1539.4,0.3,0,0,0,1999 to 1999
+Wet Tropics,Murray,Murray,Mining,2009,1537.4,0.3,0,0,0,2009 to 1999
+Wet Tropics,Murray,Murray,Mining,2015,1538,0.4,0,0.1,48.3,2015 to 2009
+Wet Tropics,Murray,Murray,Mining,2021,1524.4,0.4,0,0,0,2021 to 2015
+Wet Tropics,Russell,Russell,Mining,1999,718.7,0.1,0,0,0,1999 to 1999
+Wet Tropics,Russell,Russell,Mining,2009,695.9,0.1,0,0,39.3,2009 to 1999
+Wet Tropics,Russell,Russell,Mining,2015,696.3,0.1,0,-0,-17.9,2015 to 2009
+Wet Tropics,Russell,Russell,Mining,2021,670.6,0.1,0,-0,-4.6,2021 to 2015
+Wet Tropics,Tully,Tully,Mining,1999,1718.8,0.4,0,0,0,1999 to 1999
+Wet Tropics,Tully,Tully,Mining,2009,1712.6,0.5,0,0.2,40.2,2009 to 1999
+Wet Tropics,Tully,Tully,Mining,2015,1713.5,0.6,0,0,8.7,2015 to 2009
+Wet Tropics,Tully,Tully,Mining,2021,1684.7,0.6,0,0,6.3,2021 to 2015
+Burdekin,Burdekin,Belyando,Urban/Intensive,1999,36777.9,37,0.1,0,0,1999 to 1999
+Burdekin,Burdekin,Belyando,Urban/Intensive,2009,37000.2,44.5,0.1,7.5,20.3,2009 to 1999
+Burdekin,Burdekin,Belyando,Urban/Intensive,2016,36069.3,47.6,0.1,3.2,7.1,2016 to 2009
+Burdekin,Burdekin,Belyando,Urban/Intensive,2021,35439,29.5,0.1,-18.2,-38.1,2021 to 2016
+Burdekin,Burdekin,Broke Bogie,Urban/Intensive,1999,12006.2,22.5,0.2,0,0,1999 to 1999
+Burdekin,Burdekin,Broke Bogie,Urban/Intensive,2009,12202.7,27.1,0.2,4.6,20.5,2009 to 1999
+Burdekin,Burdekin,Broke Bogie,Urban/Intensive,2016,12233.3,24.7,0.2,-2.3,-8.6,2016 to 2009
+Burdekin,Burdekin,Broke Bogie,Urban/Intensive,2021,11728.8,34.4,0.3,9.7,39.2,2021 to 2016
+Burdekin,Burdekin,Cape Campaspe,Urban/Intensive,1999,20636,19.3,0.1,0,0,1999 to 1999
+Burdekin,Burdekin,Cape Campaspe,Urban/Intensive,2009,20639.9,22,0.1,2.6,13.7,2009 to 1999
+Burdekin,Burdekin,Cape Campaspe,Urban/Intensive,2016,20594,23.8,0.1,1.8,8.2,2016 to 2009
+Burdekin,Burdekin,Cape Campaspe,Urban/Intensive,2021,20457.9,20.1,0.1,-3.6,-15.3,2021 to 2016
+Burdekin,Burdekin,Lower Burdekin,Urban/Intensive,1999,3797.4,12.5,0.3,0,0,1999 to 1999
+Burdekin,Burdekin,Lower Burdekin,Urban/Intensive,2009,3804.7,23.7,0.6,11.3,90.5,2009 to 1999
+Burdekin,Burdekin,Lower Burdekin,Urban/Intensive,2016,3805.7,33.6,0.9,9.8,41.3,2016 to 2009
+Burdekin,Burdekin,Lower Burdekin,Urban/Intensive,2021,3760.1,12.5,0.3,-21,-62.7,2021 to 2016
+Burdekin,Burdekin,Suttor,Urban/Intensive,1999,19599.8,20.7,0.1,0,0,1999 to 1999
+Burdekin,Burdekin,Suttor,Urban/Intensive,2009,19664.5,32.7,0.2,12,58,2009 to 1999
+Burdekin,Burdekin,Suttor,Urban/Intensive,2016,19570.9,32.8,0.2,0.1,0.2,2016 to 2009
+Burdekin,Burdekin,Suttor,Urban/Intensive,2021,18220.2,17.2,0.1,-15.6,-47.6,2021 to 2016
+Burdekin,Burdekin,Upper Burdekin,Urban/Intensive,1999,40700.5,87.8,0.2,0,0,1999 to 1999
+Burdekin,Burdekin,Upper Burdekin,Urban/Intensive,2009,40700.4,104.3,0.3,16.5,18.8,2009 to 1999
+Burdekin,Burdekin,Upper Burdekin,Urban/Intensive,2016,40960.1,113.1,0.3,8.8,8.4,2016 to 2009
+Burdekin,Burdekin,Upper Burdekin,Urban/Intensive,2021,40508.9,116.7,0.3,3.7,3.2,2021 to 2016
+Burdekin,Haughton,Haughton,Urban/Intensive,1999,4159.6,86.7,2.1,0,0,1999 to 1999
+Burdekin,Haughton,Haughton,Urban/Intensive,2009,4159.8,115.8,2.8,29.1,33.5,2009 to 1999
+Burdekin,Haughton,Haughton,Urban/Intensive,2016,4157.3,123.1,3,7.3,6.3,2016 to 2009
+Burdekin,Haughton,Haughton,Urban/Intensive,2021,4068.8,71.3,1.8,-51.8,-42.1,2021 to 2016
+Dry Tropics,Black,Black River,Urban/Intensive,1999,305.5,25.3,8.3,0,0,1999 to 1999
+Dry Tropics,Black,Black River,Urban/Intensive,2009,305,29,9.5,3.8,14.9,2009 to 1999
+Dry Tropics,Black,Black River,Urban/Intensive,2016,305.1,30.1,9.9,1,3.5,2016 to 2009
+Dry Tropics,Black,Black River,Urban/Intensive,2021,301.7,29.2,9.7,-0.9,-2.9,2021 to 2016
+Dry Tropics,Black,Bluewater Creek,Urban/Intensive,1999,296.6,20.5,6.9,0,0,1999 to 1999
+Dry Tropics,Black,Bluewater Creek,Urban/Intensive,2009,296.4,20.8,7,0.3,1.7,2009 to 1999
+Dry Tropics,Black,Bluewater Creek,Urban/Intensive,2016,296.9,21.4,7.2,0.6,2.7,2016 to 2009
+Dry Tropics,Black,Bluewater Creek,Urban/Intensive,2021,291.7,20.6,7.1,-0.8,-3.7,2021 to 2016
+Dry Tropics,Black,Crystal Creek,Urban/Intensive,1999,239.9,7.8,3.3,0,0,1999 to 1999
+Dry Tropics,Black,Crystal Creek,Urban/Intensive,2009,239.9,8.1,3.4,0.3,4,2009 to 1999
+Dry Tropics,Black,Crystal Creek,Urban/Intensive,2016,239.7,8.4,3.5,0.3,3.5,2016 to 2009
+Dry Tropics,Black,Crystal Creek,Urban/Intensive,2021,239.1,5.3,2.2,-3.1,-36.7,2021 to 2016
+Dry Tropics,Black,Palm Islands,Urban/Intensive,1999,86.4,1.2,1.4,0,0,1999 to 1999
+Dry Tropics,Black,Palm Islands,Urban/Intensive,2009,86.4,1.2,1.4,0,0,2009 to 1999
+Dry Tropics,Black,Palm Islands,Urban/Intensive,2016,86.4,1.3,1.6,0.1,8.9,2016 to 2009
+Dry Tropics,Black,Palm Islands,Urban/Intensive,2021,86.4,1.3,1.6,-0,-0,2021 to 2016
+Dry Tropics,Black,Rollingstone Creek,Urban/Intensive,1999,224.2,7.9,3.5,0,0,1999 to 1999
+Dry Tropics,Black,Rollingstone Creek,Urban/Intensive,2009,224.2,8,3.6,0.2,2.2,2009 to 1999
+Dry Tropics,Black,Rollingstone Creek,Urban/Intensive,2016,224.3,8.2,3.7,0.2,2.4,2016 to 2009
+Dry Tropics,Black,Rollingstone Creek,Urban/Intensive,2021,222,5.6,2.5,-2.6,-31.5,2021 to 2016
+Dry Tropics,Ross,Alligator Creek,Urban/Intensive,1999,368.4,26.7,7.2,0,0,1999 to 1999
+Dry Tropics,Ross,Alligator Creek,Urban/Intensive,2009,369.3,27.7,7.5,1.1,4,2009 to 1999
+Dry Tropics,Ross,Alligator Creek,Urban/Intensive,2016,369.6,27.9,7.5,0.2,0.6,2016 to 2009
+Dry Tropics,Ross,Alligator Creek,Urban/Intensive,2021,360.4,26.6,7.4,-1.4,-4.9,2021 to 2016
+Dry Tropics,Ross,Bohle River,Urban/Intensive,1999,332.3,61.3,18.4,0,0,1999 to 1999
+Dry Tropics,Ross,Bohle River,Urban/Intensive,2009,333,80.8,24.3,19.5,31.9,2009 to 1999
+Dry Tropics,Ross,Bohle River,Urban/Intensive,2016,331.3,89,26.9,8.3,10.2,2016 to 2009
+Dry Tropics,Ross,Bohle River,Urban/Intensive,2021,328.8,86.7,26.4,-2.3,-2.6,2021 to 2016
+Dry Tropics,Ross,Magnetic Island,Urban/Intensive,1999,50.8,5.2,10.3,0,0,1999 to 1999
+Dry Tropics,Ross,Magnetic Island,Urban/Intensive,2009,50.8,5.6,11,0.3,6.6,2009 to 1999
+Dry Tropics,Ross,Magnetic Island,Urban/Intensive,2016,50.8,5.8,11.4,0.2,3.7,2016 to 2009
+Dry Tropics,Ross,Magnetic Island,Urban/Intensive,2021,50.8,5.8,11.4,-0,-0,2021 to 2016
+Dry Tropics,Ross,Ross River (Lower),Urban/Intensive,1999,134.4,70.1,52.2,0,0,1999 to 1999
+Dry Tropics,Ross,Ross River (Lower),Urban/Intensive,2009,134,74.3,55.4,4.2,5.9,2009 to 1999
+Dry Tropics,Ross,Ross River (Lower),Urban/Intensive,2016,134,76.4,57,2.1,2.8,2016 to 2009
+Dry Tropics,Ross,Ross River (Lower),Urban/Intensive,2021,134,76.9,57.4,0.6,0.8,2021 to 2016
+Dry Tropics,Ross,Ross River (Upper),Urban/Intensive,1999,765.7,15.1,2,0,0,1999 to 1999
+Dry Tropics,Ross,Ross River (Upper),Urban/Intensive,2009,768,17.3,2.3,2.2,14.4,2009 to 1999
+Dry Tropics,Ross,Ross River (Upper),Urban/Intensive,2016,768.7,17.6,2.3,0.2,1.4,2016 to 2009
+Dry Tropics,Ross,Ross River (Upper),Urban/Intensive,2021,761.3,13.8,1.8,-3.8,-21.4,2021 to 2016
+Dry Tropics,Ross,Stuart Creek,Urban/Intensive,1999,124.9,9.5,7.6,0,0,1999 to 1999
+Dry Tropics,Ross,Stuart Creek,Urban/Intensive,2009,125,11.9,9.5,2.4,25.4,2009 to 1999
+Dry Tropics,Ross,Stuart Creek,Urban/Intensive,2016,122.7,12.6,10.3,0.7,6,2016 to 2009
+Dry Tropics,Ross,Stuart Creek,Urban/Intensive,2021,120.9,13.8,11.4,1.2,9.6,2021 to 2016
+Mackay Whitsunday Isaac,Don,Don,Urban/Intensive,1999,3922.2,140,3.6,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Don,Don,Urban/Intensive,2009,3874.2,160.1,4.1,20.1,14.4,2009 to 1999
+Mackay Whitsunday Isaac,Don,Don,Urban/Intensive,2016,3867.1,174.3,4.5,14.2,8.9,2016 to 2009
+Mackay Whitsunday Isaac,Don,Don,Urban/Intensive,2021,3752.8,52.4,1.4,-121.9,-70,2021 to 2016
+Mackay Whitsunday Isaac,O'Connell,O'Connell,Urban/Intensive,1999,2445.9,79.2,3.2,0,0,1999 to 1999
+Mackay Whitsunday Isaac,O'Connell,O'Connell,Urban/Intensive,2009,2445.9,91.2,3.7,12,15.1,2009 to 1999
+Mackay Whitsunday Isaac,O'Connell,O'Connell,Urban/Intensive,2016,2445.9,94.5,3.9,3.4,3.7,2016 to 2009
+Mackay Whitsunday Isaac,O'Connell,O'Connell,Urban/Intensive,2021,2446,94.8,3.9,0.3,0.3,2021 to 2016
+Mackay Whitsunday Isaac,Pioneer,Pioneer,Urban/Intensive,1999,1571.1,58.2,3.7,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Pioneer,Pioneer,Urban/Intensive,2009,1571.1,64.4,4.1,6.2,10.6,2009 to 1999
+Mackay Whitsunday Isaac,Pioneer,Pioneer,Urban/Intensive,2016,1571.1,66.8,4.3,2.4,3.8,2016 to 2009
+Mackay Whitsunday Isaac,Pioneer,Pioneer,Urban/Intensive,2021,1574.7,68,4.3,1.2,1.7,2021 to 2016
+Mackay Whitsunday Isaac,Plane,Plane,Urban/Intensive,1999,2559.5,120.1,4.7,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Plane,Plane,Urban/Intensive,2009,2559.5,135.6,5.3,15.5,12.9,2009 to 1999
+Mackay Whitsunday Isaac,Plane,Plane,Urban/Intensive,2016,2559.5,141.3,5.5,5.8,4.3,2016 to 2009
+Mackay Whitsunday Isaac,Plane,Plane,Urban/Intensive,2021,2569.8,136.4,5.3,-5,-3.5,2021 to 2016
+Mackay Whitsunday Isaac,Proserpine,Proserpine,Urban/Intensive,1999,2772.1,69.5,2.5,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Proserpine,Proserpine,Urban/Intensive,2009,2772.1,83.5,3,14.1,20.3,2009 to 1999
+Mackay Whitsunday Isaac,Proserpine,Proserpine,Urban/Intensive,2016,2772.1,89.1,3.2,5.6,6.7,2016 to 2009
+Mackay Whitsunday Isaac,Proserpine,Proserpine,Urban/Intensive,2021,2771.6,97.8,3.5,8.6,9.7,2021 to 2016
+Wet Tropics,Barron,Barron,Urban/Intensive,1999,2381.9,224.2,9.4,0,0,1999 to 1999
+Wet Tropics,Barron,Barron,Urban/Intensive,2009,2368.8,229.9,9.7,5.7,2.5,2009 to 1999
+Wet Tropics,Barron,Barron,Urban/Intensive,2015,2385.5,237.5,10,7.6,3.3,2015 to 2009
+Wet Tropics,Barron,Barron,Urban/Intensive,2021,2193.2,173.9,7.9,-63.6,-26.8,2021 to 2015
+Wet Tropics,Daintree,Daintree,Urban/Intensive,1999,2123.2,23.5,1.1,0,0,1999 to 1999
+Wet Tropics,Daintree,Daintree,Urban/Intensive,2009,2120.5,27.1,1.3,3.6,15.3,2009 to 1999
+Wet Tropics,Daintree,Daintree,Urban/Intensive,2015,2115.6,27.3,1.3,0.3,1,2015 to 2009
+Wet Tropics,Daintree,Daintree,Urban/Intensive,2021,2104.6,27.4,1.3,0.1,0.4,2021 to 2015
+Wet Tropics,Herbert,Herbert,Urban/Intensive,1999,10003.4,88.3,0.9,0,0,1999 to 1999
+Wet Tropics,Herbert,Herbert,Urban/Intensive,2009,9996.8,94.5,0.9,6.2,7,2009 to 1999
+Wet Tropics,Herbert,Herbert,Urban/Intensive,2015,9952.5,98.4,1,3.9,4.1,2015 to 2009
+Wet Tropics,Herbert,Herbert,Urban/Intensive,2021,9873.2,80.9,0.8,-17.5,-17.8,2021 to 2015
+Wet Tropics,Johnstone,Johnstone,Urban/Intensive,1999,2460.7,144,5.9,0,0,1999 to 1999
+Wet Tropics,Johnstone,Johnstone,Urban/Intensive,2009,2457.4,146,5.9,2,1.4,2009 to 1999
+Wet Tropics,Johnstone,Johnstone,Urban/Intensive,2015,2456.4,147.1,6,1,0.7,2015 to 2009
+Wet Tropics,Johnstone,Johnstone,Urban/Intensive,2021,2317.8,81.5,3.5,-65.6,-44.6,2021 to 2015
+Wet Tropics,Mossman,Mossman,Urban/Intensive,1999,513.5,25.7,5,0,0,1999 to 1999
+Wet Tropics,Mossman,Mossman,Urban/Intensive,2009,498,29.6,6,4,15.4,2009 to 1999
+Wet Tropics,Mossman,Mossman,Urban/Intensive,2015,496,31.1,6.3,1.4,4.8,2015 to 2009
+Wet Tropics,Mossman,Mossman,Urban/Intensive,2021,465.4,33.1,7.1,2.1,6.7,2021 to 2015
+Wet Tropics,Mulgrave,Mulgrave,Urban/Intensive,1999,1333.4,74.3,5.6,0,0,1999 to 1999
+Wet Tropics,Mulgrave,Mulgrave,Urban/Intensive,2009,1333.7,82.4,6.2,8.1,10.9,2009 to 1999
+Wet Tropics,Mulgrave,Mulgrave,Urban/Intensive,2015,1333.4,84.7,6.4,2.3,2.8,2015 to 2009
+Wet Tropics,Mulgrave,Mulgrave,Urban/Intensive,2021,1319.7,87.6,6.6,2.9,3.4,2021 to 2015
+Wet Tropics,Murray,Murray,Urban/Intensive,1999,1539.4,36.5,2.4,0,0,1999 to 1999
+Wet Tropics,Murray,Murray,Urban/Intensive,2009,1537.4,31.7,2.1,-4.8,-13,2009 to 1999
+Wet Tropics,Murray,Murray,Urban/Intensive,2015,1538,26.5,1.7,-5.3,-16.6,2015 to 2009
+Wet Tropics,Murray,Murray,Urban/Intensive,2021,1524.4,18.2,1.2,-8.2,-31.1,2021 to 2015
+Wet Tropics,Russell,Russell,Urban/Intensive,1999,718.7,17.5,2.4,0,0,1999 to 1999
+Wet Tropics,Russell,Russell,Urban/Intensive,2009,695.9,20.7,3,3.2,18.4,2009 to 1999
+Wet Tropics,Russell,Russell,Urban/Intensive,2015,696.3,21.8,3.1,1.1,5.1,2015 to 2009
+Wet Tropics,Russell,Russell,Urban/Intensive,2021,670.6,10.1,1.5,-11.7,-53.6,2021 to 2015
+Wet Tropics,Tully,Tully,Urban/Intensive,1999,1718.8,71.1,4.1,0,0,1999 to 1999
+Wet Tropics,Tully,Tully,Urban/Intensive,2009,1712.6,83.7,4.9,12.7,17.8,2009 to 1999
+Wet Tropics,Tully,Tully,Urban/Intensive,2015,1713.5,80.7,4.7,-3,-3.6,2015 to 2009
+Wet Tropics,Tully,Tully,Urban/Intensive,2021,1684.7,25.3,1.5,-55.5,-68.7,2021 to 2015
+Burdekin,Burdekin,Belyando,Water,1999,36777.9,485.9,1.3,0,0,1999 to 1999
+Burdekin,Burdekin,Belyando,Water,2009,37000.2,496,1.3,10,2.1,2009 to 1999
+Burdekin,Burdekin,Belyando,Water,2016,36069.3,500,1.4,4,0.8,2016 to 2009
+Burdekin,Burdekin,Belyando,Water,2021,35439,523.3,1.5,23.3,4.7,2021 to 2016
+Burdekin,Burdekin,Broke Bogie,Water,1999,12006.2,187.7,1.6,0,0,1999 to 1999
+Burdekin,Burdekin,Broke Bogie,Water,2009,12202.7,191.5,1.6,3.8,2,2009 to 1999
+Burdekin,Burdekin,Broke Bogie,Water,2016,12233.3,192.4,1.6,0.9,0.4,2016 to 2009
+Burdekin,Burdekin,Broke Bogie,Water,2021,11728.8,192.4,1.6,0.1,0,2021 to 2016
+Burdekin,Burdekin,Cape Campaspe,Water,1999,20636,440.3,2.1,0,0,1999 to 1999
+Burdekin,Burdekin,Cape Campaspe,Water,2009,20639.9,441.7,2.1,1.4,0.3,2009 to 1999
+Burdekin,Burdekin,Cape Campaspe,Water,2016,20594,442,2.1,0.4,0.1,2016 to 2009
+Burdekin,Burdekin,Cape Campaspe,Water,2021,20457.9,437.9,2.1,-4.1,-0.9,2021 to 2016
+Burdekin,Burdekin,Lower Burdekin,Water,1999,3797.4,176.4,4.6,0,0,1999 to 1999
+Burdekin,Burdekin,Lower Burdekin,Water,2009,3804.7,176.7,4.6,0.2,0.1,2009 to 1999
+Burdekin,Burdekin,Lower Burdekin,Water,2016,3805.7,176.7,4.6,-0,-0,2016 to 2009
+Burdekin,Burdekin,Lower Burdekin,Water,2021,3760.1,176.3,4.7,-0.4,-0.2,2021 to 2016
+Burdekin,Burdekin,Suttor,Water,1999,19599.8,452.8,2.3,0,0,1999 to 1999
+Burdekin,Burdekin,Suttor,Water,2009,19664.5,462.3,2.4,9.5,2.1,2009 to 1999
+Burdekin,Burdekin,Suttor,Water,2016,19570.9,463.7,2.4,1.3,0.3,2016 to 2009
+Burdekin,Burdekin,Suttor,Water,2021,18220.2,465.3,2.6,1.6,0.3,2021 to 2016
+Burdekin,Burdekin,Upper Burdekin,Water,1999,40700.5,846.9,2.1,0,0,1999 to 1999
+Burdekin,Burdekin,Upper Burdekin,Water,2009,40700.4,829.8,2,-17,-2,2009 to 1999
+Burdekin,Burdekin,Upper Burdekin,Water,2016,40960.1,824.1,2,-5.7,-0.7,2016 to 2009
+Burdekin,Burdekin,Upper Burdekin,Water,2021,40508.9,809.9,2,-14.2,-1.7,2021 to 2016
+Burdekin,Haughton,Haughton,Water,1999,4159.6,334.6,8,0,0,1999 to 1999
+Burdekin,Haughton,Haughton,Water,2009,4159.8,333.3,8,-1.3,-0.4,2009 to 1999
+Burdekin,Haughton,Haughton,Water,2016,4157.3,326.5,7.9,-6.8,-2,2016 to 2009
+Burdekin,Haughton,Haughton,Water,2021,4068.8,304.7,7.5,-21.8,-6.7,2021 to 2016
+Dry Tropics,Black,Black River,Water,1999,305.5,8.4,2.8,0,0,1999 to 1999
+Dry Tropics,Black,Black River,Water,2009,305,8.5,2.8,0.1,0.8,2009 to 1999
+Dry Tropics,Black,Black River,Water,2016,305.1,8.5,2.8,0,0.1,2016 to 2009
+Dry Tropics,Black,Black River,Water,2021,301.7,8.6,2.8,0,0.5,2021 to 2016
+Dry Tropics,Black,Bluewater Creek,Water,1999,296.6,8.5,2.9,0,0,1999 to 1999
+Dry Tropics,Black,Bluewater Creek,Water,2009,296.4,8.5,2.9,0.1,0.9,2009 to 1999
+Dry Tropics,Black,Bluewater Creek,Water,2016,296.9,8.5,2.9,-0,-0.1,2016 to 2009
+Dry Tropics,Black,Bluewater Creek,Water,2021,291.7,7.6,2.6,-1,-11.3,2021 to 2016
+Dry Tropics,Black,Crystal Creek,Water,1999,239.9,6.2,2.6,0,0,1999 to 1999
+Dry Tropics,Black,Crystal Creek,Water,2009,239.9,6.2,2.6,0,0.2,2009 to 1999
+Dry Tropics,Black,Crystal Creek,Water,2016,239.7,6.2,2.6,0,0.5,2016 to 2009
+Dry Tropics,Black,Crystal Creek,Water,2021,239.1,6.2,2.6,-0,-0.8,2021 to 2016
+Dry Tropics,Black,Palm Islands,Water,1999,86.4,0.6,0.7,0,0,1999 to 1999
+Dry Tropics,Black,Palm Islands,Water,2009,86.4,0.7,0.8,0.1,14.8,2009 to 1999
+Dry Tropics,Black,Palm Islands,Water,2016,86.4,0.7,0.8,0,0,2016 to 2009
+Dry Tropics,Black,Palm Islands,Water,2021,86.4,0.7,0.8,0,0,2021 to 2016
+Dry Tropics,Black,Paluma Lake,Water,1999,5.1,2.1,40.8,0,0,1999 to 1999
+Dry Tropics,Black,Paluma Lake,Water,2009,5.1,2.1,40.8,0,0,2009 to 1999
+Dry Tropics,Black,Paluma Lake,Water,2016,5.1,2.1,40.8,0,0,2016 to 2009
+Dry Tropics,Black,Paluma Lake,Water,2021,5.1,2.1,40.8,-0,-0,2021 to 2016
+Dry Tropics,Black,Rollingstone Creek,Water,1999,224.2,6.3,2.8,0,0,1999 to 1999
+Dry Tropics,Black,Rollingstone Creek,Water,2009,224.2,4.6,2.1,-1.7,-26.9,2009 to 1999
+Dry Tropics,Black,Rollingstone Creek,Water,2016,224.3,4.6,2.1,0,0,2016 to 2009
+Dry Tropics,Black,Rollingstone Creek,Water,2021,222,4.3,2,-0.3,-6.1,2021 to 2016
+Dry Tropics,Ross,Alligator Creek,Water,1999,368.4,28.2,7.6,0,0,1999 to 1999
+Dry Tropics,Ross,Alligator Creek,Water,2009,369.3,28.2,7.6,0.1,0.2,2009 to 1999
+Dry Tropics,Ross,Alligator Creek,Water,2016,369.6,27.9,7.6,-0.3,-1,2016 to 2009
+Dry Tropics,Ross,Alligator Creek,Water,2021,360.4,27.9,7.7,-0,-0,2021 to 2016
+Dry Tropics,Ross,Bohle River,Water,1999,332.3,19.7,5.9,0,0,1999 to 1999
+Dry Tropics,Ross,Bohle River,Water,2009,333,20.4,6.1,0.6,3.1,2009 to 1999
+Dry Tropics,Ross,Bohle River,Water,2016,331.3,20.4,6.2,0.1,0.3,2016 to 2009
+Dry Tropics,Ross,Bohle River,Water,2021,328.8,20.2,6.1,-0.3,-1.3,2021 to 2016
+Dry Tropics,Ross,Magnetic Island,Water,1999,50.8,2.6,5.2,0,0,1999 to 1999
+Dry Tropics,Ross,Magnetic Island,Water,2009,50.8,2.6,5.1,-0.1,-2.2,2009 to 1999
+Dry Tropics,Ross,Magnetic Island,Water,2016,50.8,2.5,5,-0,-1.1,2016 to 2009
+Dry Tropics,Ross,Magnetic Island,Water,2021,50.8,2.5,5,0,0,2021 to 2016
+Dry Tropics,Ross,Ross River (Lower),Water,1999,134.4,11.5,8.5,0,0,1999 to 1999
+Dry Tropics,Ross,Ross River (Lower),Water,2009,134,10.6,7.9,-0.8,-7.4,2009 to 1999
+Dry Tropics,Ross,Ross River (Lower),Water,2016,134,10.5,7.8,-0.2,-1.5,2016 to 2009
+Dry Tropics,Ross,Ross River (Lower),Water,2021,134,10.5,7.8,0,0.1,2021 to 2016
+Dry Tropics,Ross,Ross River (Upper),Water,1999,765.7,59.9,7.8,0,0,1999 to 1999
+Dry Tropics,Ross,Ross River (Upper),Water,2009,768,60,7.8,0.1,0.1,2009 to 1999
+Dry Tropics,Ross,Ross River (Upper),Water,2016,768.7,60,7.8,0,0,2016 to 2009
+Dry Tropics,Ross,Ross River (Upper),Water,2021,761.3,60,7.9,-0,-0,2021 to 2016
+Dry Tropics,Ross,Stuart Creek,Water,1999,124.9,18.3,14.7,0,0,1999 to 1999
+Dry Tropics,Ross,Stuart Creek,Water,2009,125,17.8,14.3,-0.5,-2.6,2009 to 1999
+Dry Tropics,Ross,Stuart Creek,Water,2016,122.7,16.7,13.6,-1.2,-6.4,2016 to 2009
+Dry Tropics,Ross,Stuart Creek,Water,2021,120.9,16.5,13.6,-0.2,-1.3,2021 to 2016
+Mackay Whitsunday Isaac,Don,Don,Water,1999,3922.2,299.7,7.6,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Don,Don,Water,2009,3874.2,302.1,7.8,2.4,0.8,2009 to 1999
+Mackay Whitsunday Isaac,Don,Don,Water,2016,3867.1,304.2,7.9,2.1,0.7,2016 to 2009
+Mackay Whitsunday Isaac,Don,Don,Water,2021,3752.8,296.1,7.9,-8,-2.6,2021 to 2016
+Mackay Whitsunday Isaac,O'Connell,O'Connell,Water,1999,2445.9,186.1,7.6,0,0,1999 to 1999
+Mackay Whitsunday Isaac,O'Connell,O'Connell,Water,2009,2445.9,187.3,7.7,1.3,0.7,2009 to 1999
+Mackay Whitsunday Isaac,O'Connell,O'Connell,Water,2016,2445.9,187.7,7.7,0.4,0.2,2016 to 2009
+Mackay Whitsunday Isaac,O'Connell,O'Connell,Water,2021,2446,186.9,7.6,-0.8,-0.4,2021 to 2016
+Mackay Whitsunday Isaac,Pioneer,Pioneer,Water,1999,1571.1,55.1,3.5,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Pioneer,Pioneer,Water,2009,1571.1,55,3.5,-0.1,-0.2,2009 to 1999
+Mackay Whitsunday Isaac,Pioneer,Pioneer,Water,2016,1571.1,55.1,3.5,0.1,0.2,2016 to 2009
+Mackay Whitsunday Isaac,Pioneer,Pioneer,Water,2021,1574.7,55.2,3.5,0.1,0.1,2021 to 2016
+Mackay Whitsunday Isaac,Plane,Plane,Water,1999,2559.5,227.4,8.9,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Plane,Plane,Water,2009,2559.5,223.6,8.7,-3.8,-1.7,2009 to 1999
+Mackay Whitsunday Isaac,Plane,Plane,Water,2016,2559.5,222.5,8.7,-1.2,-0.5,2016 to 2009
+Mackay Whitsunday Isaac,Plane,Plane,Water,2021,2569.8,258.3,10.1,35.9,16.1,2021 to 2016
+Mackay Whitsunday Isaac,Proserpine,Proserpine,Water,1999,2772.1,180.6,6.5,0,0,1999 to 1999
+Mackay Whitsunday Isaac,Proserpine,Proserpine,Water,2009,2772.1,181.8,6.6,1.2,0.7,2009 to 1999
+Mackay Whitsunday Isaac,Proserpine,Proserpine,Water,2016,2772.1,182.7,6.6,0.9,0.5,2016 to 2009
+Mackay Whitsunday Isaac,Proserpine,Proserpine,Water,2021,2771.6,177.6,6.4,-5.2,-2.8,2021 to 2016
+Wet Tropics,Barron,Barron,Water,1999,2381.9,77.2,3.2,0,0,1999 to 1999
+Wet Tropics,Barron,Barron,Water,2009,2368.8,77.7,3.3,0.5,0.7,2009 to 1999
+Wet Tropics,Barron,Barron,Water,2015,2385.5,78,3.3,0.3,0.4,2015 to 2009
+Wet Tropics,Barron,Barron,Water,2021,2193.2,79.1,3.6,1,1.3,2021 to 2015
+Wet Tropics,Daintree,Daintree,Water,1999,2123.2,59,2.8,0,0,1999 to 1999
+Wet Tropics,Daintree,Daintree,Water,2009,2120.5,56.1,2.6,-2.9,-4.9,2009 to 1999
+Wet Tropics,Daintree,Daintree,Water,2015,2115.6,53.5,2.5,-2.6,-4.7,2015 to 2009
+Wet Tropics,Daintree,Daintree,Water,2021,2104.6,53.5,2.5,0,0,2021 to 2015
+Wet Tropics,Herbert,Herbert,Water,1999,10003.4,431.9,4.3,0,0,1999 to 1999
+Wet Tropics,Herbert,Herbert,Water,2009,9996.8,428.5,4.3,-3.4,-0.8,2009 to 1999
+Wet Tropics,Herbert,Herbert,Water,2015,9952.5,414.4,4.2,-14.1,-3.3,2015 to 2009
+Wet Tropics,Herbert,Herbert,Water,2021,9873.2,423.6,4.3,9.2,2.2,2021 to 2015
+Wet Tropics,Johnstone,Johnstone,Water,1999,2460.7,51.7,2.1,0,0,1999 to 1999
+Wet Tropics,Johnstone,Johnstone,Water,2009,2457.4,51.6,2.1,-0,-0.1,2009 to 1999
+Wet Tropics,Johnstone,Johnstone,Water,2015,2456.4,51.6,2.1,0,0,2015 to 2009
+Wet Tropics,Johnstone,Johnstone,Water,2021,2317.8,56.4,2.4,4.7,9.2,2021 to 2015
+Wet Tropics,Mossman,Mossman,Water,1999,513.5,20.6,4,0,0,1999 to 1999
+Wet Tropics,Mossman,Mossman,Water,2009,498,20.7,4.2,0.1,0.6,2009 to 1999
+Wet Tropics,Mossman,Mossman,Water,2015,496,20.7,4.2,0,0.1,2015 to 2009
+Wet Tropics,Mossman,Mossman,Water,2021,465.4,20.7,4.5,0,0,2021 to 2015
+Wet Tropics,Mulgrave,Mulgrave,Water,1999,1333.4,91.3,6.9,0,0,1999 to 1999
+Wet Tropics,Mulgrave,Mulgrave,Water,2009,1333.7,89,6.7,-2.4,-2.6,2009 to 1999
+Wet Tropics,Mulgrave,Mulgrave,Water,2015,1333.4,89,6.7,0,0,2015 to 2009
+Wet Tropics,Mulgrave,Mulgrave,Water,2021,1319.7,90.9,6.9,1.9,2.2,2021 to 2015
+Wet Tropics,Murray,Murray,Water,1999,1539.4,67,4.3,0,0,1999 to 1999
+Wet Tropics,Murray,Murray,Water,2009,1537.4,53.1,3.5,-13.8,-20.7,2009 to 1999
+Wet Tropics,Murray,Murray,Water,2015,1538,52.6,3.4,-0.5,-1,2015 to 2009
+Wet Tropics,Murray,Murray,Water,2021,1524.4,52.6,3.4,0,0,2021 to 2015
+Wet Tropics,Russell,Russell,Water,1999,718.7,19.5,2.7,0,0,1999 to 1999
+Wet Tropics,Russell,Russell,Water,2009,695.9,19.4,2.8,-0,-0.1,2009 to 1999
+Wet Tropics,Russell,Russell,Water,2015,696.3,19.4,2.8,0,0,2015 to 2009
+Wet Tropics,Russell,Russell,Water,2021,670.6,19.2,2.9,-0.3,-1.4,2021 to 2015
+Wet Tropics,Tully,Tully,Water,1999,1718.8,43.7,2.5,0,0,1999 to 1999
+Wet Tropics,Tully,Tully,Water,2009,1712.6,43.7,2.6,0,0,2009 to 1999
+Wet Tropics,Tully,Tully,Water,2015,1713.5,43.9,2.6,0.2,0.4,2015 to 2009
+Wet Tropics,Tully,Tully,Water,2021,1684.7,43.9,2.6,0,0.1,2021 to 2015

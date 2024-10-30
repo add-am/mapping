@@ -1,0 +1,27 @@
+Region,Basin,Sub_Basin,Watercourse,Sub_Basin_Area,Sub_Basin_Proportion_of_Basin,DIN,FRP,High_DO,Low_DO,TP,Turbidity,Nutrients,Min_DO,Phys_Chem,Overall_WQ,DIN_Weighted,FRP_Weighted,High_DO_Weighted,Low_DO_Weighted,TP_Weighted,Turbidity_Weighted,Nutrients_Weighted,Phys_Chem_Weighted,Overall_WQ_Weighted,High_DO_Grade,Low_DO_Grade,TP_Grade,Turbidity_Grade,Nutrients_Grade,Min_DO_Grade,Phys_Chem_Grade,Overall_WQ_Grade,DIN_Weighted_Grade,FRP_Weighted_Grade,High_DO_Weighted_Grade,Low_DO_Weighted_Grade,TP_Weighted_Grade,Turbidity_Weighted_Grade,Nutrients_Weighted_Grade,Phys_Chem_Weighted_Grade,Overall_WQ_Weighted_Grade
+DT,Ross,Upper Ross River,Ross Lake,458,0.32,90,90,90,90,61,90,75,90,90,82,28.8,28.8,28.8,28.8,19.5,28.8,24.2,28.8,26.5,A,A,B,A,B,A,A,A,D,D,D,D,E,D,D,D,D
+DT,Ross,Lower Ross River,Aplins Weir,786,0.56,61,90,80,55,NA,90,61,55,72,67,34.2,50.4,45,31.3,NA,50.4,34.2,40.9,37.5,B,C,NA,A,B,C,B,B,D,C,C,D,NA,C,D,D,D
+DT,Ross,Lower Ross River,Gleesons Weir,786,0.56,90,NA,90,5,NA,90,90,5,47,68,50.4,NA,50.4,3.3,NA,50.4,50.4,26.9,38.6,A,E,NA,A,A,E,C,B,C,NA,C,E,NA,C,C,D,D
+DT,Ross,Lower Ross River,Blacks Weir,786,0.56,58,NA,90,14,90,90,74,14,52,63,32.7,NA,50.4,8.4,50.4,50.4,41.5,29.4,35.5,A,E,A,A,B,E,C,B,D,NA,C,E,C,C,C,D,D
+DT,Ross,Bohle River,Bohle Mid-Field,169,0.12,36,NA,90,57,0,67,18,57,62,40,4.4,NA,10.8,6.9,0,8.1,2.2,7.5,4.8,A,C,E,B,E,C,B,D,E,NA,E,E,E,E,E,E,E
+DT,Ross,Bohle River,Bohle Far-Field,169,0.12,60,NA,90,41,0,66,30,41,53,42,7.3,NA,10.8,4.9,0,8,3.6,6.5,5.1,A,C,E,B,D,C,C,C,E,NA,E,E,E,E,E,E,E
+DT,Black,Black River,Black River,250,0.37,63,90,47,90,61,90,62,47,68,65,23.6,33.3,17.7,33.3,22.6,33.3,23.1,25.5,24.3,C,A,B,A,B,C,B,B,D,D,E,D,D,D,D,D,D
+DT,Black,Bluewater Creek,Althaus Creek,162,0.24,90,90,90,90,48,0,69,90,45,57,21.6,21.6,21.6,21.6,11.7,0,16.6,10.8,13.7,A,A,C,E,B,A,C,C,D,D,D,D,E,E,E,E,E
+DT,Black,Bluewater Creek,Bluewater Creek,162,0.24,66,90,80,66,90,90,78,66,78,78,16,21.6,19.2,16,21.6,21.6,18.8,18.8,18.8,B,B,A,A,B,B,B,B,E,D,E,E,D,D,E,E,E
+DT,Black,Bluewater Creek,Sleeper Log Creek,162,0.24,71,90,90,20,90,0,80,20,10,45,17.1,21.6,21.6,4.9,21.6,0,19.4,2.4,10.9,A,E,A,E,B,E,E,C,E,D,D,E,D,E,E,E,E
+DT,Black,Rollingstone Creek,Leichhardt Creek,145,0.21,90,90,90,61,90,90,90,61,75,82,19.3,19.3,19.3,13.2,19.3,19.3,19.3,16.3,17.8,A,B,A,A,A,B,B,A,E,E,E,E,E,E,E,E,E
+DT,Black,Rollingstone Creek,Saltwater Creek,145,0.21,90,90,90,90,90,75,90,90,82,86,19.3,19.3,19.3,19.3,19.3,16.2,19.3,17.8,18.6,A,A,A,B,A,A,A,A,E,E,E,E,E,E,E,E,E
+DT,Black,Rollingstone Creek,Rollingstone Creek,145,0.21,61,90,90,40,90,90,75,40,65,70,13.3,19.3,19.3,8.7,19.3,19.3,16.3,14,15.2,A,D,A,A,B,D,B,B,E,E,E,E,E,E,E,E,E
+DT,Black,Crystal Creek,Ollera Creek,116,0.17,71,90,90,0,90,90,80,0,45,62,12.2,15.5,15.5,0,15.5,15.5,13.9,7.7,10.8,A,E,A,A,B,E,C,B,E,E,E,E,E,E,E,E,E
+DT,Black,Crystal Creek,Crystal Creek,116,0.17,68,90,90,90,90,90,79,90,90,84,11.8,15.5,15.5,15.5,15.5,15.5,13.6,15.5,14.5,A,A,A,A,B,A,A,A,E,E,E,E,E,E,E,E,E
+DT,Black,Paluma Dam,Paluma Lake,2,0,40,90,90,55,90,90,65,55,72,69,0.1,0.3,0.3,0.2,0.3,0.3,0.2,0.2,0.2,A,C,A,A,B,C,B,B,E,E,E,E,E,E,E,E,E
+DT,Ross,Upper Ross River,NA,458,0.32,90,90,90,90,61,90,75,NA,90,82,28.8,28.8,28.8,28.8,19.5,28.8,24.2,28.8,26.5,A,A,B,A,B,NA,A,A,D,D,D,D,E,D,D,D,D
+DT,Ross,Lower Ross River,NA,786,0.56,69,90,86,25,90,90,75,NA,57,66,39.1,50.4,48.6,14.4,50.4,50.4,42.1,32.4,37.2,A,D,A,A,B,NA,C,B,D,C,C,E,C,C,C,D,D
+DT,Ross,Bohle River,NA,169,0.12,48,NA,90,49,0,66,24,NA,58,41,5.8,NA,10.8,5.9,0,8,2.9,7,4.9,A,C,E,B,D,NA,C,C,E,NA,E,E,E,E,E,E,E
+DT,Black,Black River,NA,250,0.37,63,90,47,90,61,90,62,NA,68,65,23.6,33.3,17.7,33.3,22.6,33.3,23.1,25.5,24.3,C,A,B,A,B,NA,B,B,D,D,E,D,D,D,D,D,D
+DT,Black,Bluewater Creek,NA,162,0.24,76,90,86,59,76,30,76,NA,44,60,18.3,21.6,20.8,14.2,18.3,7.2,18.3,10.7,14.5,A,C,B,D,B,NA,C,C,E,D,E,E,E,E,E,E,E
+DT,Black,Rollingstone Creek,NA,145,0.21,80,90,90,63,90,85,85,NA,74,79,17.3,19.3,19.3,13.7,19.3,18.3,18.3,16,17.2,A,B,A,A,A,NA,B,B,E,E,E,E,E,E,E,E,E
+DT,Black,Crystal Creek,NA,116,0.17,69,90,90,45,90,90,79,NA,67,73,12,15.5,15.5,7.7,15.5,15.5,13.7,11.6,12.7,A,C,A,A,B,NA,B,B,E,E,E,E,E,E,E,E,E
+DT,Black,Paluma Dam,NA,2,0,40,90,90,55,90,90,65,NA,72,69,0.1,0.3,0.3,0.2,0.3,0.3,0.2,0.2,0.2,A,C,A,A,B,NA,B,B,E,E,E,E,E,E,E,E,E
+DT,Ross,NA,NA,1413,NA,66,90,88,44,37,82,58,NA,63,60,73.7,79.2,88.2,49.1,69.9,87.2,69.1,68.1,68.6,A,C,D,A,C,NA,B,C,B,B,A,C,B,A,B,B,B
+DT,Black,NA,NA,675,NA,71,90,84,60,82,70,77,NA,63,70,71.3,90,73.6,69.1,76,74.5,73.6,64,68.8,A,C,A,B,B,NA,B,B,B,A,B,B,B,B,B,B,B

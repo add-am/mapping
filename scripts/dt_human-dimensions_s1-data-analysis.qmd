@@ -1,0 +1,659 @@
+---
+title: "Human Dimension Script 1 - Data Analysis"
+subtitle: "A Healthy Waters Partnership Analysis"
+description: "Script 1 in a series of scripts designed to analyse and present human dimensions data (from the SELTMP program) in the Dry Tropics reporting region."
+author: "Adam Shand"
+date: "`r format(Sys.time(), '%d, %B, %Y')`"
+format: html
+params:
+  project_crs: "EPSG:7844"
+---
+
+# Introduction
+
+This script is part of a series of script that experiment with the human dimensions data provided via the SELTMP surveys. The aim of this script is to clean and analyse data from the 2021 and 2024 surveys to understand if and how things have changed.
+
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, sf, tmap, janitor, readxl, ggplot2, RColorBrewer, zoon)
+
+```
+
+Then we also need to set up key variables for the script, as well as the output location.
+
+```{r}
+#| label: create save path and establish project crs
+
+#set project crs
+proj_crs <- params$project_crs
+
+#create the file path to save data
+save_path <- glue(here("outputs/dt_human-dimensions_s1-data-analysis/"))
+
+#and to read data
+data_path <- glue(here("data/dt_human-dimensions/"))
+
+#bring the path to life
+dir.create(save_path, recursive = T)
+
+#turn off s2 geometry
+sf_use_s2(FALSE)
+
+```
+
+# Load Data
+
+We then need to load in the raw data from each of the surveys. We will also grab metadata about each of the questions as well.
+
+It is important to flag here that unfortunately the HD data cannot follow our tidy column naming rules (those which we have a function for). The reason for this is that the column names, e.g. "rec_wildlife", are repeated as cell values within a question column in the metadata sheet, and we need to match them up later.
+
+To do this we would need to recreate the column name, naming function, that we have, for cell values within a column - but apparently this is incredibly annoying to do. So this is the path of least resistence. 
+
+```{r}
+#| label: remove island data
+
+#read in the custom function to clean column names into our specific style
+source("../functions/name_cleaning.R")
+
+#read in the 2021 data. Do not use the name cleaning function
+hd_21_results <- read_excel(path = glue("{data_path}/seltmp_2021.xlsx"), 
+                       sheet = "Raw_Data_Formatted_Full", 
+                       na = c("", "NA", "NULL", "null"))
+
+#and the 2024 data. Do not use the name cleaning function
+hd_24_results <- read_excel(path = glue("{data_path}/seltmp_2024.xlsx"), 
+                       sheet = "Merged and Formatted Data", 
+                       na = c("", "NA", "NULL", "null"))
+
+#read metadata in, important information is spread across multiple sheets
+question_metadata_1 <- read_excel(path = glue("{data_path}/seltmp_2021.xlsx"), 
+                                sheet = "Variable_Information_By_Region", 
+                                na = c("", "NA", "NULL", "null")) |> name_cleaning()
+
+question_metadata_2 <- read_excel(path = glue("{data_path}/seltmp_2021.xlsx"), 
+                                sheet = "Variable_Information_Formatted", 
+                                na = c("", "NA", "NULL", "null")) |> name_cleaning()
+
+answer_metadata <- read_excel(path = glue("{data_path}/seltmp_2021.xlsx"), 
+                              sheet = "Variable_Values_Sorted", 
+                              na = c("", "NA", "NULL", "null")) |> name_cleaning()
+
+```
+
+# Clean Data
+
+## Results Data
+
+Currently the results data is provided for all five reporting regions. But we only care about Townsville so we need to cut down to that. Further, we don't want to include the Burdekin post codes either.
+
+```{r}
+#| label: filter results for just HWP
+
+#for 2021, townsville is "2" (there shouldn't be any burdekin post codes to begin with)
+hd_21_results <- hd_21_results |> 
+  filter(region == 2,
+         !postcode %in% c(4820, 4807, 4809, 4808, 4806, 4724, 4721, 4743, 4744, 4728)) |> 
+  select(!region)
+
+#for 2024 townsville is "2", remove all burdekin post codes
+hd_24_results <- hd_24_results |> 
+  filter(region == 2,
+         !postcode %in% c(4820, 4807, 4809, 4808, 4806, 4724, 4721, 4743, 4744, 4728)) |> 
+  select(!region)
+
+```
+
+Some of the questions are also region specific, and thus have not been answered by the Townsville audience, but they are currently still included in the dataset. Below we remove these questions by checking for any column that has had zero responses.
+
+```{r}
+#| label: remove unaswer question
+
+#remove questions that are completely unanswered (i.e. they weren't an option for our survey)
+hd_21_results <- hd_21_results |> 
+  select_if(where(~ any(!is.na(.))))
+
+#remove questions that are completely unaswered (i.e. they weren't an option for our survey)
+hd_24_results <- hd_24_results |> 
+  select_if(where(~ any(!is.na(.))))
+
+```
+
+## Question Metadata
+
+Question metadata is also divided across the five regions.
+
+We will tackle the first question metadata sheet.
+
+```{r}
+#| label: filter metadata for just HWP 1
+
+#select just the townsville rows by eliminating all other regions, and keep only columns of interest
+question_metadata_1 <- question_metadata_1 |> 
+  filter(!str_detect(Variable, "^F|^f|^m|^w")) |> 
+  select(Variable, Label)
+
+#there is also a few special questions that need to be manually removed
+question_metadata_1 <- question_metadata_1 |> 
+  filter(!Variable %in% c("q1b"))
+
+#and we will rename the columns to be helpful and concise
+colnames(question_metadata_1)[c(1,2)] <- c("QuestionCode", "QuestionLong")
+
+#finally we will strip unncessary information from the long question column
+question_metadata_1 <- question_metadata_1 |> 
+  mutate(QuestionLong = str_remove(QuestionLong, "T\\d*\\w*_*\\d* - "))
+
+```
+
+Then the second one.
+
+```{r}
+#| label: filter metadata for just HWP 2
+
+#extract the Townsville column
+question_metadata_2 <- question_metadata_2 |> 
+  select(TownsvilleVariable, ShortLabel)
+
+#remove questions that are NA - these belong to other regions
+question_metadata_2 <- question_metadata_2 |> 
+  filter(!is.na(TownsvilleVariable))
+
+#split the main column into two
+question_metadata_2 <- question_metadata_2 |> 
+  separate_wider_delim(cols = TownsvilleVariable, names = c("QuestionCode", NA), 
+                       delim = " - ", too_few = "align_start", too_many = "merge")
+
+#drop a addtional row manually
+question_metadata_2 <- question_metadata_2 |> 
+  filter(QuestionCode != "uniqueid")
+
+```
+
+and then we can merge them together so we have all relevant information.
+
+```{r}
+#| label: combine question metadata sheets
+
+#merge
+question_metadata <- merge(question_metadata_1, question_metadata_2, by = "QuestionCode")
+
+#clean up
+rm(question_metadata_1, question_metadata_2)
+
+```
+
+Next we need to streamline the questions, most codes are preceeded by a "t" - short for Townsville, or "q" short for question. These are no longer needed.
+
+```{r}
+#| label: streamline question codes
+
+#remove t and q from question metadata
+question_metadata <- question_metadata |> 
+  mutate(QuestionCode = str_remove(QuestionCode, "^t"),
+         QuestionCode = str_remove(QuestionCode, "^q(?=\\d)"))
+
+```
+
+## Answer Metadata
+
+While answer metadata is not divided across five regions, it does need its NA values filled forward.
+
+```{r}
+#| label: fill forward NAs
+
+#use the zoo package to fill forward values
+answer_metadata$Value <- na.locf(answer_metadata$Value)
+
+#and we will rename the columns to be helpful and concise
+colnames(answer_metadata)[c(1,2,3)] <- c("QuestionCode", "ResponseCode", "ResponseLong")
+
+```
+
+We also need to make sure that the format of the question code is the same between this sheet and the question metadata sheet.
+
+```{r}
+#| label: standardise question code
+
+#remove q and "w" from answer metadata
+answer_metadata <- answer_metadata |> 
+  mutate(QuestionCode = str_remove(QuestionCode, "^q(?=\\d)|^w(?=\\d)"))
+
+#manually remove some answer information that is only relevant to other regions
+answer_metadata <- answer_metadata |> 
+  filter(!QuestionCode %in% c("1b", "11_13", "11_14", "11_15", "13_9", "13_10", "13_11", "13_12",
+                              "13_13", "13_14", "13_15", "13_16", "17_9", "17_10", "18_13"))
+
+```
+
+## Merge Metadata
+
+We can then merge the metadata together into one unified sheet.
+
+Please note that there are some variables that are not found across both sheets, these are:
+
+`r setdiff(question_metadata$QuestionCode, answer_metadata$QuestionCode)`
+
+The reason that they aren't found in the answer metadata sheet is that these questions are free-form, i.e. text. Thus it would be impossible to have a list of possible answers to these questions.
+
+```{r}
+#| label: merge all metadata
+
+#merge datasets
+all_metadata <- merge(question_metadata, answer_metadata, by = "QuestionCode", all.x = T)
+
+#clean up
+rm(answer_metadata, question_metadata)
+
+```
+
+## Merge All Data
+
+Following the merge of the metadata sheet, we can then merge the metadata into the results data to have a complete singular sheet.
+
+By comparing the two we can see that there are very few differences: 
+
+`r setdiff(all_metadata$ShortLabel, colnames(hd_21_results))`
+
+and this applies to both the 21 (above) and 24 (below) datasets.
+
+`r setdiff(all_metadata$ShortLabel, colnames(hd_24_results))`
+
+Noting that LGA and quota_group are not required variables, and both ways: 
+
+`r setdiff(colnames(hd_21_results), all_metadata$ShortLabel)`
+
+`r setdiff(colnames(hd_24_results), all_metadata$ShortLabel)`
+
+Where the only difference is uniqueid - i.e. the id of the respondent.
+
+Thus, knowing that there are no missing variables of interest, we can pivot the results data into longer format:
+
+```{r}
+#| label: pivot results
+
+#pivot results longer
+hd_21_results <- hd_21_results |> 
+  mutate(across(everything(), as.character)) |> 
+  pivot_longer(cols = which(names(hd_21_results) == "path"):ncol(hd_21_results), #we don't the exact index that the first answer starts at
+               names_to = "ShortLabel",
+               values_to = "Answer") |> 
+  mutate(Year = 2021, .before = ShortLabel)
+
+#pivot results longer
+hd_24_results <- hd_24_results |> 
+  mutate(across(everything(), as.character)) |> 
+  pivot_longer(cols = which(names(hd_24_results) == "path"):ncol(hd_24_results), #we don't the exact index that the first answer starts at
+               names_to = "ShortLabel",
+               values_to = "Answer") |> 
+  mutate(Year = 2024, .before = ShortLabel)
+
+#join datasets
+hd_results <- rbind(hd_21_results, hd_24_results)
+
+#clean up
+rm(hd_21_results, hd_24_results)
+
+```
+
+And then merge the results and metadata together.
+
+```{r}
+#| label: merge results and metadata
+
+#merge the two datasets
+full_hd <- merge(all_metadata, hd_results, by = "ShortLabel", all = T)
+
+#clean up
+rm(all_metadata, hd_results)
+
+```
+
+If we count the rows of data it is clear we have a metric f*ck ton. 
+
+`r nrow(full_hd)` to be precise.
+
+This is because we have multiplied every possible answer against every respondent, for every question, and then put them all into one column. However, the reason we did this is so that we can check what the respondent answered against the possible answers.
+
+Although not obvious as to why this is important right away, consider this:
+
+ - Answers given by a respondent are entered almost exclusively as numeric values, and usually between 1 and 10
+ - Questions are generally things such as "Do you agree with X?" Where 1 = disagree and 10 = agree
+      - In this case we can generally understand the meaning of the number
+ - However, other questions include "Do you do this action?" 1 = yes, 2 = no because A., 3 = no because B, 4 = no because C., etc.
+ - And there are several types of questions like this, each with unique possible answers
+      - You can see in this case it is impossible to understand the true meaning of the number without having a list of what all the possible answers for the question are.
+      
+We can still cut down the dataset though, by only keeping the respondents answer that matches the corresponding possible answer (which contains the context of the answer). This reduces the dataset slightly.
+
+```{r}
+#| label: cutdown full dataset
+
+#add a "save" flag for questions that dont have a set answer - i.e. text based responses
+full_hd <- full_hd |> 
+  mutate(Save = case_when(is.na(ResponseCode) ~ "save", T ~ NA))
+
+#cut down slightly by remove rows in which the answer does not match a possible answer, and the save column is not flagged
+full_hd <- full_hd |> 
+  filter((Answer == ResponseCode | Save == "save"))
+
+```
+
+## Categorise Questions
+
+Now that everything is together we need to add one more column of information that categorizes survey questions into a few groups:
+
+ - Continuous: Those based on "agreement", scaled from 1-10 with 1 being disagree and 10 being agree.
+ - Discrete: Those based on "I do this" or X amount, usually with 4 or 6 categorical responses (entered as 1-5).
+ - Text: Those with a text based response, such as "first word you think of about Townsville"
+ 
+Results from questions in each of these groups require different analysis. Roughly:
+
+- Continuous questions, we can compare the means
+- Discrete questions, we can compare the proportion of total for each categorical response
+- Text questions, are not easily analysed, so we will put those aside (although still flag the question type).
+
+Thus below, we will add a variable for each question that puts it into one of these three groups. 
+
+It is easily to detect text questions as they are inherently free form, and thus cannot have a set of response options. Knowing this we can actually re purpose the "save" column from earlier.
+
+We can also detect continuous questions with the knowledge that their range of possible responses can only ever be:
+
+ - "Very strongly disagree 1"
+ - "2"
+ - "3"
+ - "4"
+ - "5"
+ - "6"
+ - "7"
+ - "8"
+ - "9"
+ - "Very strongly agree 10"
+ 
+And then anything left over must be a discrete question, which have the widest range of possible (but still listed) responses.
+
+```{r}
+#| label: flag each type of question
+
+#create a vector of possible options
+continous_response_options <- c("Very strongly disagree 1", "2", "3", "4", "5", "6", "7", "8", "9",
+                                "Very strongly agree 10")
+
+#update column name for clarity
+full_hd <- full_hd |> 
+  rename(QuestionType = Save)
+
+#classify each question type
+full_hd <- full_hd |> 
+  mutate(QuestionType = case_when(QuestionType == "save" ~ "text",
+                                  ResponseLong %in% continous_response_options ~ "continuous",
+                                  T ~ "discrete"))
+
+#cleanup
+rm(continous_response_options)
+
+```
+
+## Separate Data
+
+Ironically, we are now going to separate the data into three different tables based on their question type. This is because the question type directly influences the type of analysis that is done, and it is just easier to keep them apart.
+
+```{r}
+#| label: separate data
+
+#split into three dataset
+continuous_hd_questions <- full_hd |> 
+  filter(QuestionType == "continuous")
+
+discrete_hd_questions <- full_hd |> 
+  filter(QuestionType == "discrete")
+
+text_hd_questions <- full_hd |> 
+  filter(QuestionType == "text")
+
+#clean up
+#rm(full_hd)
+
+```
+
+# Analyse Data
+
+Based on the three types of questions we can now analyse data easily and effectively.
+
+## Continuous Scale Questions
+
+Continuous questions can be analysed based on their mean. I.e. has the mean for the question change between years.
+
+```{r}
+#| label: compare mean based questions
+
+#filter for continuous questions
+continuous_hd_questions <- continuous_hd_questions |> 
+  mutate(Answer = as.numeric(Answer)) |> 
+  group_by(QuestionCode, Year) |> 
+  mutate(Mean = mean(Answer)) |> 
+  ungroup() |> 
+  select(!Answer) |> 
+  unique()
+
+```
+
+And then easily visualised for how every question has changed.
+
+```{r}
+#| label: visualise mean based question
+
+#make year a factor
+continuous_hd_questions <- continuous_hd_questions |> 
+  mutate(Year = as.factor(Year))
+
+#remove variables that are stopping us getting a unique mean per year, then get the unique row
+continuous_hd_questions <- continuous_hd_questions |> 
+  select(!c(uniqueid, response_id, ResponseCode, ResponseLong)) |> 
+  unique()
+
+#extract differences between years that are greater than 0.2
+big_diff <- continuous_hd_questions |>  
+  pivot_wider(names_from = Year, values_from = Mean) |>  
+  group_by(ShortLabel) |>  
+  mutate(Max = max(`2021`, `2024`),
+         Min = min(`2021`, `2024`),
+         Diff = `2024`-`2021`) |> 
+  arrange(desc(Diff)) |> 
+  filter(abs(Diff) > 0.2)
+
+#get all labels that sit on the right of the point and are also in the top 20%
+right_label <- continuous_hd_questions |> 
+  group_by(ShortLabel) |> 
+  arrange(desc(Mean)) |> 
+  top_n(1) |> 
+  filter(ShortLabel %in% big_diff$ShortLabel)
+
+#extract only those greater than 0.2 from the main dataset
+highlight <- continuous_hd_questions |> 
+  filter(ShortLabel %in% big_diff$ShortLabel)
+
+#create labels based on those that are greater than 0.2 and specify a colour
+plot_label <- big_diff |> 
+  pivot_longer(cols = c(`2021`, `2024`), names_to = "Year", values_to = "Mean") |> 
+  right_join(right_label) |> 
+  select(Year, ShortLabel, Mean = Max, Diff) |> 
+  mutate(Diff = round(Diff, 2)) |> 
+  rowwise() |> 
+  mutate(Sign = case_when(Diff > 0 ~ "+", T ~ "")) |> 
+  unite(Change, c(Sign, Diff), sep = "", na.rm = T)
+  
+
+#plot
+plot <- ggplot() +
+  coord_flip() + #make landscape
+  geom_line(data = continuous_hd_questions, aes(x = ShortLabel, y = Mean, group = ShortLabel), alpha = .3) + #fade out small changes
+  geom_point(data = continuous_hd_questions, aes(x = ShortLabel, y = Mean, colour = Year), size = 1.5, alpha = .3) + #fade out small changes
+  geom_line(data = highlight, aes(x = ShortLabel, y = Mean, group = ShortLabel)) + #highlight big changes
+  geom_point(data = highlight, aes(x = ShortLabel, y = Mean, colour = Year), size = 2) + #highlight big changes
+  geom_text(data = plot_label, aes(x = ShortLabel, y = Mean, label = Change, color = Year), size = 3, hjust = -.5, show.legend = FALSE) +
+  theme_bw() + 
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 10)) #for upper and lower scale lims
+
+  
+#save
+ggsave(glue("{save_path}/continuous_questions.png"), plot)
+
+```
+
+## Discrete Questions
+
+For discrete questions we need to do a little more work. Essentially we want to determine the proportion of the surveyed population that response for each of the options.
+
+```{r}
+#| label: compare discrete questions
+
+#remove uniqueid and response id as these can get in the way
+discrete_hd_questions <- discrete_hd_questions |> 
+  select(!c(uniqueid, response_id))
+
+#however for some of the questions, i.e. the stewardship questions, it is instead measured as proportion of responding population
+discrete_hd_questions <- discrete_hd_questions |> 
+  group_by(QuestionCode, Year, Answer) |> 
+  mutate(Count = n()) |> #count the number of responses for each option for the question
+  unique() |>
+  group_by(QuestionCode, Year) |> 
+  mutate(Total = sum(Count)) |> #count the total number of responses to each question
+  rowwise() |> 
+  mutate(Proportion = (Count/Total)*100) |>  #divide responses per question by total responses
+  ungroup()
+
+```
+
+We can then loop over each question (each question will get its own graph), and compare how the proportions for each response have changed.
+
+```{r}
+#| label: loop per question
+
+for (i in unique(discrete_hd_questions$ShortLabel)){
+  
+  #extract the question and remove confounding columns
+  specific_question <- discrete_hd_questions |> 
+    filter(ShortLabel == i) |> 
+    select(!c(Count, Total))
+  
+  #extract a suitable title
+  title <- unique(specific_question$ShortLabel)
+  
+  #and a suitable axis label
+  axis_label <- unique(specific_question$QuestionLong)
+  
+  #check if there is two years of data to compare against each other
+  if (length(unique(specific_question$Year)) < 2){} else{
+    
+    #make year into a factor
+    specific_question <- specific_question |> 
+      mutate(Year = as.factor(Year))
+    
+    #extract differences between years 
+    big_diff <- specific_question |>  
+      pivot_wider(names_from = Year, values_from = Proportion) |>  
+      group_by(ResponseLong) |>  
+      mutate(Max = max(`2021`, `2024`),
+             Min = min(`2021`, `2024`),
+             Diff = `2024`-`2021`) |> 
+      ungroup()
+    
+    #find out what a quarter of the rows would be (rounding up to nearest integer)
+    quarter_row <- ceiling(nrow(big_diff)/4)
+    
+    #find the largest 50% of changes (negative and positive changes)
+    big_diff <- big_diff |> 
+      filter(dense_rank(Diff) <= quarter_row | dense_rank(desc(Diff)) <= quarter_row)
+
+    #get all labels that sit on the right of the point and are also in the top 50% of changes for the group
+    right_label <- specific_question |> 
+      group_by(ResponseLong) |> 
+      arrange(desc(Proportion)) |> 
+      top_n(1) |> 
+      filter(ResponseLong %in% big_diff$ResponseLong)
+
+    #extract only those in the top 50% from the main dataset
+    highlight <- specific_question |> 
+      filter(ResponseLong %in% big_diff$ResponseLong)
+
+    #create labels based on those in the top 50%
+    plot_label <- big_diff |> 
+      pivot_longer(cols = c(`2021`, `2024`), names_to = "Year", values_to = "Proportion") |> 
+      right_join(right_label) |> 
+      select(Year, ResponseLong, Proportion = Max, Diff) |> 
+      mutate(Diff = round(Diff, 2)) |> 
+      rowwise() |> 
+      mutate(Sign = case_when(Diff > 0 ~ "+", T ~ "")) |> 
+      unite(Change, c(Sign, Diff), sep = "", na.rm = T) |> 
+      mutate(Change = paste0(Change, "%"))
+  
+    #plot
+    plot <- ggplot() +
+      coord_flip() + #make landscape
+      geom_line(data = specific_question, aes(x = ResponseLong, y = Proportion, group = ResponseLong), alpha = .3) + #fade out small changes
+      geom_point(data = specific_question, aes(x = ResponseLong, y = Proportion, colour = Year), size = 1.5, alpha = .3) + #fade out small changes
+      geom_line(data = highlight, aes(x = ResponseLong, y = Proportion, group = ResponseLong)) + #highlight big changes
+      geom_point(data = highlight, aes(x = ResponseLong, y = Proportion, colour = Year), size = 2) + #highlight big changes
+      geom_text(data = plot_label, aes(x = ResponseLong, y = Proportion, label = Change, color = Year), size = 3, hjust = -.5, show.legend = FALSE) +
+      theme_bw() + 
+      xlab(axis_label) +
+      scale_y_continuous(expand = c(0, 0), limits = c(0, 100)) #for upper and lower scale lims
+
+    #save
+    ggsave(glue("{save_path}/{title}.png"), plot)
+
+  }
+  
+}
+
+```
+
+For now this is where we will leave the analysis, as during the writing of this script we were informed that CSIRO might actually get funding to complete the analysis after all (typical). To Be Continued...
+
+
+
+## Additional Note
+
+I have done alot of behind the scenes work to determine exactly what variables have been used in the previous analysis that was conducted. Rather than step through the tedious process taken to determine this, I will just list below each of the variables/questions, and the names that they can be found under. For the 2021 Analysis, we looked at 5 themes, and each theme consisted of multiple questions. These questions have both a long code name, and a short code name, both are recorded below:
+
+|Theme                                                  |Question (Long Code)                |Question (Short Code) |Question Number |
+|-------------------------------------------------------|------------------------------------|----------------------|----------------|
+|Importance of Person Benefits                          |Lifestyle & Recreation              |BenLifestyle          |t11_2           |
+|Importance of Person Benefits                          |Social Opportunities                |BenFamily             |t11_3           |
+|Importance of Person Benefits                          |Experiencing Nature                 |BenNature             |t11_6           |
+|Importance of Person Benefits                          |Domestic Water Supply               |BenDomwater           |t11_7           |
+|Importance of waterway economic & non-monetary values  |Supports Biodiversity               |ValuesBiodiversity    |t12_1           |
+|Importance of waterway economic & non-monetary values  |Existence Value                     |ValuesExist           |t12_2           |
+|Importance of waterway economic & non-monetary values  |Recreation Opportunities            |ValuesRec             |t12_3           |
+|Importance of waterway economic & non-monetary values  |Knowledge & Traditional Bequest     |ValuesBequest         |t12_4           |
+|Importance of waterway economic & non-monetary values  |Traditional Owner Heritage          |ValuesIndigenous      |t12_5           |
+|Importance of waterway economic & non-monetary values  |Supports Local Economy              |ValuesEconomy         |t12_7           |
+|Importance of waterway economic & non-monetary values  |Scientific heritage Value           |ValuesLearning        |t12_8           |
+|Importance of waterway economic & non-monetary values  |Iconic Status                       |ValuesIcon            |t12_10          |
+|Dependence on regional waterways                       |Important to Life & Wellbeing       |BenWellbeing          |t11_1           |
+|Dependence on regional waterways                       |Contributions to culture            |BenCulture            |t11_5           |
+|Dependence on regional waterways                       |Pride in local waterways            |BenProud              |t11_9           |
+|Dependence on regional waterways                       |Influence choice to live in region  |BenWhylive            |t11_10          |
+|Dependence on regional waterways                       |Affected if water health declines   |BenPersaffected       |t11_12          |
+|Participation, fairness, trust in waterway governance  |Manage decisions made in a fair way |DmProcfair            |t18_7           |
+|Participation, fairness, trust in waterway governance  |Fair access to waterways            |DmFairacc             |t18_8           |
+|Participation, fairness, trust in waterway governance  |Able to influence management        |DmInf                 |t18_9           |
+|Participation, fairness, trust in waterway governance  |Able to have input to management    |DmInput               |t18_10          |
+|Participation, fairness, trust in waterway governance  |Trust the info from management inst |TrustInstit           |t18_11          |
+|Participation, fairness, trust in waterway governance  |Trust the science                   |TrustScience          |t18_12          |
+|Proportion of Pop that Conducts Stewardship Activities |Responsible anchoring               |StewAnchor            |t16_1           |
+|Proportion of Pop that Conducts Stewardship Activities |responsible fishing practices       |StewFish              |t16_2           |
+|Proportion of Pop that Conducts Stewardship Activities |Appropriate rubbish disposal        |StewRubbish           |t16_3           |
+|Proportion of Pop that Conducts Stewardship Activities |Report suspicious activities        |StewSuspicious        |t16_4           |
+|Proportion of Pop that Conducts Stewardship Activities |Report invasive pest species        |StewInvasives         |t16_5           |
+|Proportion of Pop that Conducts Stewardship Activities |Contribution to Enviro Monitoring   |StewMonitor           |t16_6           |
+|Proportion of Pop that Conducts Stewardship Activities |Participate in Local Cleanups       |StewCleanup           |t16_7           |
+|Proportion of Pop that Conducts Stewardship Activities |Participate in Enviro Restoration   |StewRestoration       |t16_8           |
+|Proportion of Pop that Conducts Stewardship Activities |Responsible 4wd'ing                 |Stew4Wd               |t16_9           |
+

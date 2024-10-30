@@ -1,0 +1,220 @@
+---
+title: "A replication of the Wet Tropics New Vegetation Method"
+subtitle: "A Healthy Waters Partnership Analysis"
+description: "This script explores the new riparian vegetation analysis method used by the Wet Tropics Waterways Partnership. The outputs of this script are currently used for demonstration purposes."
+author: "Adam Shand"
+format: html
+params:
+  project_crs: "EPSG:7844"
+---
+
+# Introduction
+
+This script is designed to replicate as best as possible the Wet Tropics Waterays new Vegetation methodology. The method utilises four key dataset:
+
+ - Biodiversity Status of Pre-clear Regional Ecosystems
+ - Biodiversity Status of 2021 Regional Ecosystems (or what ever year is most current at the time of assessment)
+ - High Value Regrowth 2021
+ - Riparian boundaries
+
+The 2021 RE data is combined with the HVR data, and them compared against the pre-clear RE data within the bounds of the Riparian boundaries dataset. The change in vegetation is logged.
+
+We will walk through a short example below.
+        
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, sf, tmap, janitor)
+
+```
+
+
+Then we also need to set up key variables for the script, as well as the output location.
+
+```{r}
+#| label: create save path and establish project crs
+
+#set project crs
+proj_crs <- params$project_crs
+
+#create a file path to help with saving outputs
+save_outputs <- here("outputs/dt_experiments_habitat_wt-method/")
+read_data <- here("data/dt_experiments_habitat_wt-method/")
+
+#bring the path to life
+dir.create(save_outputs)
+dir.create(read_data)
+
+#turn off s2 geometry
+sf_use_s2(FALSE)
+
+```
+
+# Load Data
+
+Now the script is set up we need to load in all of the required datasets. 
+
+First we will bring in our N3 region data and refine to a test region, which in this case will be the Barron Basin.
+
+```{r}
+#| label: load the barron
+
+
+#read in the custom function to clean column names into our specific style
+source("../functions/name_cleaning.R")
+
+#read the n3 region dataset
+n3_region <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg")) |> 
+  name_cleaning()
+
+#filter down to a test area
+barron <- n3_region |> 
+  filter(BasinOrZone == "Barron")
+
+```
+
+We can then get the riparian boundaries within the Barron Basin.
+
+```{r}
+#| label: barron riparian boundaries
+
+#read in the riparian boundaries
+rip_boundaries <- st_read(here("data/n3_habitat_riparian-vegetation/n3_riparian_boundaries_new.gpkg")) |> 
+  name_cleaning()
+
+#filter down to the test area
+barron_rip <- rip_boundaries |> 
+  filter(BasinOrZone == "Barron")
+
+#write to check visually
+#st_write(barron_rip, "barron_rip.gpkg")
+
+#read in the WT version (slightly smaller)
+wt_barrin_rip <- st_read(glue("{read_data}/individual_basins/Barron_riparianArea_50m.shp")) |> 
+  name_cleaning() |> 
+  st_transform(proj_crs)
+
+
+```
+
+And finally cut down the three lots of vegetation to also be within the riparian boundary
+
+```{r}
+#| label: cut down veg data
+
+#pull in full RE 2021 dataset from over at the generic habitat folder
+n3_re_2021 <- st_read(here("data/n3_habitat/re_remnant_2021_v12_2.gpkg")) |> 
+  name_cleaning()
+
+#intersect over the riparian boundary
+barron_re_2021 <- n3_re_2021 |> 
+  st_intersection(wt_barrin_rip)
+
+#pull in full preclear dataset from over at the generic habitat folder
+n3_re_pre <- st_read(here("data/n3_habitat/re_pre_clear_v12_2.gpkg")) |> 
+  name_cleaning()
+
+#intersect over the riparian boundary
+barron_re_pre <- n3_re_pre |> 
+  st_intersection(wt_barrin_rip)
+
+#pull in the hvr data
+hvr <- st_read(glue("{read_data}/high_value_regrowth.gpkg")) |> 
+  name_cleaning()
+
+#intersect over the riparian boundary
+barron_hvr <- hvr |> 
+  st_intersection(wt_barrin_rip)
+
+```
+
+# Edit Data
+
+We then perform som edits to out data, removing specific vegetation types we are not interested in:
+
+ - from the remnant vegetation dataset: "non-remnant", "water", and "estuary" are removed
+ - from both RE datasets, these BVG are removed:
+      + 12. Other coastal communities or heaths.
+      +	13. Tussock grasslands, forblands.
+      + 14. Hummock grasslands.
+      +	15. Wetlands (swamps and lakes): these are captured by wetland extent mapping for basins.
+      + 16. Mangroves and saltmarshes: these are captured by mangrove and saltmarsh extent mapping for estuary reporting zones.
+
+```{r}
+#| label: filter data
+
+#remove specific types from the 2021 data
+barron_re_2021_filter <- barron_re_2021 |> 
+  filter(!Dbvg5M %in% c("non-remnant", "water", "estuary")) #|> 
+  #filter(Environment != "Estuarine")
+
+
+#remove specific types from both RE dataset
+barron_re_2021_filter <- barron_re_2021_filter |> 
+  filter(!Dbvg5M %in% c("12", "13", "14", "15", "16"))
+
+
+barron_re_pre_filter <- barron_re_pre |> 
+  filter(!Dbvg5M %in% c("12", "13", "14", "15", "16"))# |> 
+  #filter(Environment != "Estuarine")
+
+barron_hvr_filter <- barron_hvr #|> 
+  #filter(Environment != "Estuarine")
+
+```
+
+We can then combine the 2021 and hvr data.
+
+```{r}
+#| label: combine 2021 and hvr
+
+temp1 <- barron_re_2021_filter |> 
+  select(Dbvg5M) |> 
+  rename("VegetationType" = Dbvg5M)
+
+temp2 <- barron_hvr_filter |> 
+  select(Hvr) |> 
+  rename("VegetationType" = Hvr)
+
+barron_both <- rbind(temp1, temp2)
+
+#and simply the geometry by unioning and removing holes
+barron_both <- barron_both |>
+  summarise()
+
+```
+
+# Calculate Areas
+
+And now we can calculate the areas of each. Noting for the moment we don't care about the vegetation type at all actually.
+
+```{r}
+#| label: calculate areas
+
+#calculate area of each
+barron_both <- barron_both |>  
+  st_transform("EPSG:7855") |> 
+  mutate(area = st_area(geom))
+
+
+barron_re_pre_filter <- barron_re_pre_filter |>
+  select(Dbvg5M) |> 
+  st_transform("EPSG:7855") |> 
+  mutate(area = st_area(geom))
+
+#convert from sf object to just a dataframe
+barron_both_df <- barron_both |> 
+  st_drop_geometry() |> 
+  summarise(area = sum(area))
+
+barron_pre_df <- barron_re_pre_filter |> 
+  st_drop_geometry() |> 
+  summarise(area = sum(area))
+
+```
+

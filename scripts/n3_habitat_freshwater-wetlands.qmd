@@ -1,0 +1,553 @@
+---
+title: "Northern Three Spatial Analyses (Habitat: Freshwater Wetlands)"
+author: "Adam Shand"
+date: "`r format(Sys.time(), '%d, %B, %Y')`"
+format: html
+params:
+  project_crs: "EPSG:7844"
+  target_fyear: 2023
+---
+
+::: {.callout-tip}
+## R Version
+For R session info at the time of rendering this script see @sec-sessioninfo.
+:::
+
+# Introduction
+
+This script contains the methods used to wrangle, analyse and present freshwater wetland data in the Northern Three regions. This data is a subset of the wetlands dataset, for a guide on downloading wetlands data refer to the README document for the Spatial Analysis GitHub repo.
+
+:::{.callout-note}
+Freshwater wetland data is currently used within the freshwater habitat and hydrology section of the technical report. The amount of freshwater wetlands lost/gained is the metric assessed. Therefore the main objectives of this script are to:
+:::
+
+ - Define vegetation that is classified as "freshwater wetlands"
+ - Select only this data
+ - Calculate the total amount of freshwater wetland coverage for each dataset.
+ - Create a tabular summary of the coverage
+ - Create maps of the coverage
+ - Create plots of the coverage and coverage change.
+
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, janitor, sf, tmap)
+
+```
+
+We also need to set up key variables for the script such as where we are going to save the outputs, and what coordinate reference system (crs) we are going to be using. Note that the crs is first established under 'params' at the start of the script.
+
+A side note here, because data is not updated every year, even when we create a new folder under a new financial year does not necessarily mean that there will be new results. E.g. the years of wetland data we have are currently 2001, 2005, 2009, 2013, 2017, and 2019. So if we were to put financial year 2001 or financial year 2003 we would still get the same results. 
+
+To make matters worse, the year of data (e.g. 2019) is not released on that same year, but at a later date. Specifically, the 2019 data was released in late 2023.
+
+Thus instead of trying to name folders with just the financial years we will name folders with financial years and data layer years using a translation as follows:
+
+fyear = 2023, data layer = 2019
+fyear = 2022/21/20, data layer = 2017
+fyear = 2019/18/17, data layer = 2013
+
+```{r}
+#| label: connection between fyear and data year
+
+#get the targeted financial year that was set in the yaml
+current_fyear <- params$target_fyear
+
+#get the data year that we should look at using this relationship
+data_year <- ifelse(current_fyear %in% c(2023), 2019,
+                    ifelse(current_fyear %in% c(2022, 2021, 2020), 2017,
+                           ifelse(current_fyear %in% c(2019, 2018, 2017), 2013)))
+
+#we also need to figure out what the most recent previous dataset is - this is useful later on (we dont need to bother going super far back)
+prev_data_year <- ifelse(data_year == 2019, 2017,
+                         ifelse(data_year == 2017, 2013,
+                                ifelse(data_year == 2013, 2009)))
+
+```
+
+
+```{r}
+#| label: global vars and initial setup
+#| echo: false
+
+#set project variables: crs factor
+proj_crs <- params$project_crs 
+
+#create a file path to help with saving things
+save_path <- here(glue("outputs/n3_habitat_freshwater-wetlands/fyear-{current_fyear}_data-{data_year}/"))
+data_path <- here("data/n3_habitat_freshwater-wetlands/")
+
+#bring that path to life
+dir.create(save_path)
+dir.create(data_path)
+
+#create an extra off of this for maps and plots
+dir.create(glue("{save_path}/maps/"))
+dir.create(glue("{save_path}/plots/"))
+
+#turn off spherical geometry
+sf_use_s2(F)
+
+#turn off scientific notation
+options(scipen = 999)
+
+```
+
+# Load Data
+
+Now the script is set up we need to load in all of the required datasets. This will be broken into two segments:
+- Spatial data specific to the N3 region - such as the region, basin, and sub basin boundaries.
+- Wetlands data.
+
+## Spatial Data
+
+Spatial data for the northern three regions should be readily available in the repo, the dataset is created by the n3_region-builder.qmd script in the repo that should be the first script run for new users. If the dataset is not available refer back to the README document in the GitHub repo. The other parts of spatial data here should go off without a hitch if the region-builder script has been run.
+
+```{r}
+#| label: load the n3 region
+#| output: false
+
+#read in the northern three spatial files and reduce down to only the components we need
+n3_region <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg")) |> 
+  filter(environment != "Marine") |> 
+  group_by(region, environment, basin_or_zone, sub_basin_or_sub_zone) |> summarise(geom = st_union(geom)) |> 
+  rename(basin = basin_or_zone, sub_basin = sub_basin_or_sub_zone) |> ungroup() |> 
+  st_cast() |> st_make_valid()
+
+#load a Queensland outline from the aims package
+qld <- get(data("gbr_feat", package = "gisaimsr")) |> filter(FEAT_NAME %in% c("Mainland", "Island")) |> 
+  st_transform(proj_crs)
+
+```
+
+## Wetlands Data
+
+:::{.callout-note}
+This section of the code takes a significant chunk of time to run. Processes have been put in place to reduce the need to rerun this step, however the inclusion of any new wetland layers as they are published will need to be run through this step.
+:::
+
+Wetland Data is published to QSpatial by DES and provides spatial information for all wetlands across Queensland. The data is a mix of multiple sources including the RE data used in other parts of habitat section in this repo. However, only the most recent year of wetland data is published to QSpatial and the rest have to be obtained via data request to either Adam Shand or Katharine Glanville. For additional information refer to the README.
+
+:::{.callout-note}
+Unlike other scripts in the n3_habitat section, this script will not run with missing years of data. Basically because you will either have all of the data or none of the data - so there is no point trying to make the code function with half a dataset. All years of data (currently 2001, 2005, 2009, 2013, 2017, and 2019) are required.
+:::
+
+### Getting the Data
+
+The following code chunk executes several key steps all at once, this is because running each of these steps takes a significant chunk of time and we can create an if-else statement that skips every single step if it has already been done. There are plenty of things that happen in this code chunk so we will spend some time explaining each process. I have tried to highlight each step that is known to take a long time, here we will:
+
+ 1. Read each layer of the raw wetland data files. **Takes a long time.**
+ 2. Cut each layer to only the N3 region. **Takes a long time.**
+ 3. Combine each layer into a single dataset. **Takes a long time.**
+ 4. Select:
+    - Only palustrine (fresh) wetlands: (WETCLASS_ == "Palustrine"),
+    - That cover >=80% of their polygon (i.e. they are the dominant wetland type),
+    - And are completely natural: (HYDROMOD == "H1").
+ 5. Merge (union) all polygons belonging to the same group to improve the look of maps. **Takes a long time.**
+ 6. Calculate the total area covered by each of the groups of wetlands. **Takes a long time.**
+
+```{r}
+#| label: load in wetland data
+#| output: false
+
+#get path to raw data and edited data
+raw_data_path <- glue("{data_path}/all_qld_wetlands.gdb")
+edit_data_path <- glue("{data_path}/n3_wetlands.gpkg")
+
+if (file.exists(edit_data_path)){#if dataset exists, read it in
+  
+  wetland_map_data <- st_read(edit_data_path)
+
+} else {#begin the process of creating the files
+  
+  #create tracker for data loaded
+  years_loaded <- c()
+  
+  #get a list of layer names in the data
+  layers <- st_layers(raw_data_path)
+  layers <- layers[[1]][str_detect(layers[[1]], "AREAS_2")]
+  
+  for (i in layers){#for the total number of layers
+    
+    #create func to update multisurface geometries to simply multipolygons
+    ensure_multipolygons <- function(x) {
+      tmp1 <- tempfile(fileext = ".gpkg")
+      tmp2 <- tempfile(fileext = ".gpkg")
+      st_write(x, tmp1)
+      gdalUtilities::ogr2ogr(tmp1, tmp2, f = "GPKG", nlt = "MULTIPOLYGON")
+      y <- st_read(tmp2)
+      st_sf(st_drop_geometry(x), geom = st_geometry(y))
+    }
+    
+    #read in the layer, update the crs, update geometries using func crop the data to the n3_region, add year information
+    temp <- st_read(dsn = raw_data_path, layer = i) |> st_transform(proj_crs) |> 
+      ensure_multipolygons() |> st_intersection(n3_region) |> mutate(year = i)
+    
+    #filter for specific groups and clean up columns
+    temp <- temp |> filter(ECO_WSYS_H == "PAL",
+                           HYD_MOD_H == "H1",
+                           OTH_WPCT_H == "DOM") |> 
+      rename(vegetation = ECO_WSYS_H) |> 
+      select(region, basin, sub_basin, year, vegetation)
+
+    #keep track of the new object names
+    years_loaded <- append(years_loaded, i)
+    
+    #assign it to the global environment
+    assign(i, temp)
+        
+  }
+
+  #create a list containing all of the datasets that were loaded in
+  data_set_list <- lapply(years_loaded, function(x) get(x))
+    
+  #bind all datasets together
+  wetland_map_data <- do.call(rbind, data_set_list)
+  
+  #calculate area, take only polygons, rename variables
+  wetland_map_data <- wetland_map_data |> group_by(region, basin, sub_basin, year, vegetation) |> 
+    summarise(geom = st_union(geom)) |> 
+    mutate(area_m = st_area(geom)) |> 
+    st_collection_extract(type = "POLYGON", warn = F) |> 
+    mutate(vegetation = "Wetlands") |> 
+    ungroup()
+  
+  #update units to be km2
+  wetland_map_data$area <- units::set_units(wetland_map_data$area_m, km^2)
+  
+  #drop m version
+  wetland_map_data <- wetland_map_data |> select(!area_m)
+
+  #save the spatial data
+  st_write(wetland_map_data, edit_data_path, append = F)
+  
+  #clean up
+  rm(list = years_loaded)
+  rm(temp, layers, data_set_list, path1, raw_files, raw_folder, years_loaded, i, i_edit, j)
+  
+}
+
+``` 
+
+# Analyse Data
+
+Once we have got just the data we want we can begin the analysis. Currently we are looking to calculate:
+
+ - The total area covered by wetlands in each basin for each year.
+ - The change year on year of wetland coverage.
+
+## Calculate Total Vegetation Coverage
+
+Because we are not interested in look at different types of freshwater wetlands the total area has actually already been calculated in the data processing stage.
+
+## Calculate Year on Year Change
+
+We can therefore straight away do a year on year comparison to track the loss/gain over time. A good trick here is to order by sub basin then year, so we can then use the lag() function to query the above row.
+
+```{r}
+#| label: calculate year on year change
+
+#update units (units are missing on repeat runs of the same script)
+wetland_map_data$area <- units::set_units(wetland_map_data$area, km^2)
+
+#drop geometry as this is not needed for this analysis
+wetland_tbl_data <- wetland_map_data |> st_drop_geometry()
+
+#create basin version
+basin_temp <- wetland_tbl_data |> filter(basin != sub_basin) |> 
+  group_by(region, basin, year, vegetation) |> 
+  summarise(area = sum(area)) |> 
+  ungroup() |> 
+  mutate(sub_basin = basin)
+
+#join together
+wetland_tbl_data <- rbind(wetland_tbl_data, basin_temp)
+
+#create a 0 value with units
+replace_value <- units::set_units(0, km^2)
+
+#order by RE type, group by sub basin and RE, then compare the row to the one above using lag(), replace na values with 0
+wetland_tbl_data <- wetland_tbl_data |> arrange(sub_basin, year) |> 
+  group_by(basin, sub_basin, vegetation) |> 
+  mutate(y_on_y_veg_area_change = area - lag(area),
+         y_on_y_veg_percent_change = (y_on_y_veg_area_change/lag(area))*100) |>
+  mutate(across(matches("percent"), \(x) as.vector(x)),
+         across(matches("percent"), \(x) replace_na(x, 0)),
+         across(matches("area"), \(x) replace_na(x, replace_value)),
+         across(where(is.numeric), \(x) round(x, 5))) |> 
+  ungroup()
+
+```
+
+## Calculate Standardised Scores
+
+We can then use the percent change year on year to calculate the standardised scores.
+
+```{r}
+#| label: create and use standardised score function
+
+standardised_wetland <- function (x){
+  
+  if (x > 0){floor(100-abs(19-((abs(x)-0)*(19/99.9))))}
+  else if (x >= -0.1){floor(61+abs(19.9-((abs(x)-0)*(19.9/0.1))))}
+  else if (x >= -0.5){floor(41+abs(19.9-((abs(x)-0.11)*(19.9/0.39))))}
+  else if (x >= -3){floor(21+abs(19.9-((abs(x)-0.51)*(19.9/2.49))))}
+  else if (x < -3){floor(abs(20.9-((abs(x)-3.01)*(20.9/96.99))))}
+}
+
+
+wetland_tbl_data <- wetland_tbl_data |> 
+  rowwise() |> 
+  mutate(standardised_score = standardised_wetland(y_on_y_veg_percent_change)) |> 
+  ungroup()
+
+```
+
+Once that is done we can save the full table to the outputs folder, plus a clean, report-ready, table.
+
+```{r}
+#| label: show table output
+
+#create a new version just to update values to ha instead of km2
+save_version <- wetland_tbl_data |> 
+  mutate(area = round(area*100, 1),
+         y_on_y_veg_area_change = round(y_on_y_veg_area_change*100, 1),
+         y_on_y_veg_percent_change = round(y_on_y_veg_percent_change, 2))
+
+#save full table
+write.csv(save_version, glue("{save_path}/freshwater-wetlands_full_table.csv"), row.names = F)
+
+#edit cells of year column then pivot data for a clean presentation
+report_ready <- save_version |> 
+  mutate(year = str_extract(year, "\\d{4}")) |>
+  rename(area_change = y_on_y_veg_area_change,
+         percent_change = y_on_y_veg_percent_change) |>
+  mutate(standardised_score = case_when(year == data_year ~ standardised_score,
+                                        T ~ NA)) |> 
+  pivot_wider(names_from = year, values_from = c(area, area_change, percent_change)) 
+
+#compress the table 
+report_ready <- report_ready |> 
+  group_by(sub_basin) |> 
+  mutate(across(5:ncol(report_ready)-1, ~sum(.x, na.rm = T))) |> 
+  ungroup() |> 
+  unique()
+
+#create custom variables for column selection
+cols_to_select <- c(glue("area_{prev_data_year}"), glue("area_{data_year}"), glue("change_{data_year}"))
+
+#select oldest and two most recent years of data for area, and only most recent for change
+report_ready <- report_ready |> 
+  select(region, basin, sub_basin, area_2001, matches(cols_to_select), standardised_score)
+
+#load in our custom colouring function
+source(here("functions/conditional_formatting_wq.R"))
+
+#run function, noting to specify which colour system we want to use
+conditional_formatting_wq(report_ready, glue("{save_path}/freshwater-wetlands_report_table"), cols = ncol(report_ready), method = "Numeric")
+
+#clean up
+rm(save_version)
+
+```
+
+# Visualise Data
+
+Now on to the fun stuff - visualizations. Below we are looking to present the data in a few different ways, by:
+
+ - Creating maps of wetland vegetation in each sub basin.
+ - Creating maps of wetland vegetation in each basin (when distinct to the sub basin).
+ - Creating a plot over time of how the total amount of wetland vegetation has changed over time.
+
+## Streamline data
+
+Before we can visualise we need to streamline our tbl data to remove some of the excessive rows that were created to calculate final scores.
+
+```{r}
+#| label: streamline data table
+
+#drop rows that we don't need
+wetland_tbl_data <- wetland_tbl_data |> 
+  filter(!(region == "Dry Tropics" & basin == sub_basin))
+
+```
+
+## Map Wetlands
+
+First we need to a colour scheme to the data for the map to reference. We do this by simply addition a new column with the appropriate hex code.
+
+```{r}
+#| label: colour for wetlands
+
+#add an empty column to hold palette
+wetland_map_data$palette <- "#3C6ABE"
+
+```
+
+Then we will create the maps.
+
+```{r}
+#| label: create maps
+
+#drop environment out of the n3 region dataset (just creates unnecessary clutter)
+n3_region <- n3_region |> 
+  group_by(region, basin, sub_basin) |> summarise(geom = st_union(geom)) |> 
+  ungroup() |> st_cast() |> st_make_valid()
+
+#list out basins
+basins <- unique(n3_region$basin)
+
+#note we are using the target_year variable created earlier
+for (i in basins){#for each basin
+  
+  #select basin
+  target_basin <- wetland_map_data |> filter(basin == i, year == glue("QLD_WETLAND_AREAS_{data_year}_v6"))
+  
+  #check if data is empty
+  if (nrow(target_basin) != 0){
+  
+    #get the basin outline from the n3 region dataset
+    basin_outline <- n3_region |> filter(basin == i)
+
+    #get the region correct region
+    region_outline <- n3_region |> filter(region == unique(basin_outline$region))
+    
+    #create a bbox of the vegetation data
+    veg_bbox <- st_as_sfc(st_bbox(basin_outline))
+    
+    #create an inset map
+    inset_map <- tm_shape(qld) +
+      tm_polygons(col = "grey80", border.col = "black") +
+      tm_shape(region_outline, is.master = T) +
+      tm_polygons(col = "grey90", border.col = "black") +
+      tm_shape(veg_bbox) +
+      tm_borders(lwd = 2, col = "red")
+        
+    #create a map of the area
+    map <- tm_shape(qld) +
+      tm_polygons(col = "grey80", border.col = "black") +
+      tm_shape(basin_outline, is.master = T) +
+      tm_polygons(col = "grey90", border.col = "black") +
+      tm_shape(target_basin) +
+      tm_fill(col = "palette") +
+      tm_add_legend(type = "fill", col = unique(target_basin$palette), labels = unique(target_basin$vegetation)) +
+      tm_shape(basin_outline) +
+      tm_borders(col = "black") +
+      tm_layout(legend.frame = T, legend.bg.color = "White", asp = 1.1, 
+                legend.text.size = 0.7, legend.position = c("left", "bottom")) +
+      tm_scale_bar(width = 0.15, text.size = 0.7, position = c(0.17, 0))
+        
+    #figure out the aspect of the inset map and the view port
+    xy <- st_bbox(region_outline)
+    asp2 <- (xy$ymax - xy$ymin)/(xy$xmax - xy$xmin)
+    w <- 0.2
+    h <- asp2 * w
+    vp <- viewport(x = 0.985, y = 0.97, width = w, height = h, just = c("right", "top"))
+      
+    #edit names
+    i <- str_to_lower(i)
+        
+    #save the map as a png
+    tmap_save(map, filename = glue("{save_path}/maps/{i}_freshwater-wetlands_map.png"),
+              insets_tm = inset_map, insets_vp = vp)
+  }
+}
+
+```
+
+Here is an example of how one of the maps looks, noting that the actual outputted version looks much nicer.
+
+```{r}
+#| label: show example map
+
+map
+
+```
+
+## Vegetation Over Time
+
+Lastly we want to look at how the total amount of freshwater wetland vegetation has changed over time. We will be using the year on year area change column to explore this. Please note that in other n3_habitat scripts this plot is often presented using year on year **percent** change rather than area. Percent change is preferred as it means we can compare vegetation groups with a very large area and vegetation groups with very small areas, however in the freshwater wetlands script we are only looking at one vegetation group so the total percent each year is always 100% and therefore there is no year on year percent change and we must therefore look at area change.
+
+```{r}
+#| label: add a custom palette to table data
+
+#create custom palette
+my_palette <- "#3C6ABE"
+
+#assign names to my palette so ggplot can colour everything correctly
+names(my_palette) <- sort(unique(wetland_tbl_data$vegetation))
+
+```
+
+
+```{r}
+#| label: plot vegetation over time
+
+#list out basins
+basins <- unique(n3_region$basin)
+
+for (i in basins){
+  
+  #select the target sub_basin
+  target_data <- wetland_tbl_data |> filter(basin == i) |> 
+    mutate(year = str_extract(year, "\\d{4}"))
+  
+  #remove years beyond the data target year (so we can do appropriate "historical" plots)
+  target_data <- target_data |> filter(year <= data_year)
+  
+  #change year to a factor to get the order right an drop units for area
+  target_data <- target_data |> mutate(year = factor(year, levels = unique(target_data$year))) |> 
+    mutate(y_on_y_veg_area_change = as.vector(y_on_y_veg_area_change))
+  
+  #plot
+  plot <- ggplot(target_data, aes(y_on_y_veg_area_change, year, fill = vegetation)) +
+    geom_bar(stat = "identity", position = "dodge") +
+    scale_y_discrete(limits = rev) +
+    scale_fill_manual(values = my_palette) +
+    theme(axis.text.x = element_text(colour = "black"),
+          axis.line.x = element_line(colour = "black"),
+          axis.text.y = element_text(colour = "black"),
+          axis.line.y = element_line(colour = "black"),
+          axis.ticks.y = element_blank(),
+          panel.background = element_blank()) +
+    geom_vline(xintercept = 0) +
+    geom_hline(yintercept = seq(1.5, length(unique(target_data$year))-0.5, 1), 
+               lwd = 0.5, colour = "grey80") +
+    labs(x = "Year on Year Change (km2)", y = "Year", fill = glue("{i} basin freshwater wetlands"))
+  
+  #edit names
+  i <- str_to_lower(i)
+
+  #save
+  ggsave(glue("{save_path}/plots/{i}_freshwater-wetlands_change-over-time.png"), plot)
+}
+
+```
+
+Here is an example of how one of the change over time plots looks, noting that the actual outputted version looks much nicer.
+
+```{r}
+#| label: show example change over time plot
+
+plot
+
+```
+
+And that rounds out the script. Spicy.
+
+# Session Info {#sec-sessioninfo}
+
+Below is the session info at the time of rendering this script. Of greatest importance is to note the R version, and the "other attached packages" as these are the most significant drivers of success/failure. It is also good to check the "attached base packages" and "loaded via a namespace" packages as well. To check your session info use `sessionInfo()`.
+
+```{r}
+#| label: show session info
+
+sessionInfo()
+
+```
+

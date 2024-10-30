@@ -1,0 +1,27 @@
+Region,Basin,Sub_Basin,Watercourse,Sub_Basin_Area,Sub_Basin_Proportion_of_Basin,DIN,FRP,High_DO,Low_DO,TP,Turbidity,Nutrients,Min_DO,Phys_Chem,Overall_WQ,DIN_Weighted,FRP_Weighted,High_DO_Weighted,Low_DO_Weighted,TP_Weighted,Turbidity_Weighted,Nutrients_Weighted,Phys_Chem_Weighted,Overall_WQ_Weighted,High_DO_Grade,Low_DO_Grade,TP_Grade,Turbidity_Grade,Nutrients_Grade,Min_DO_Grade,Phys_Chem_Grade,Overall_WQ_Grade,DIN_Weighted_Grade,FRP_Weighted_Grade,High_DO_Weighted_Grade,Low_DO_Weighted_Grade,TP_Weighted_Grade,Turbidity_Weighted_Grade,Nutrients_Weighted_Grade,Phys_Chem_Weighted_Grade,Overall_WQ_Weighted_Grade
+DT,Ross,Upper Ross River,Ross Lake,458,0.32,57,NA,90,90,59,90,58,90,90,74,18.4,NA,28.8,28.8,18.9,28.8,18.7,28.8,23.7,A,A,C,A,C,A,A,B,E,NA,D,D,E,D,E,D,D
+DT,Ross,Lower Ross River,Aplins Weir,786,0.56,61,90,90,46,NA,90,61,46,68,65,34.5,50.4,50.4,26.2,NA,50.4,34.5,38.3,36.4,A,C,NA,A,B,C,B,B,D,C,C,D,NA,C,D,D,D
+DT,Ross,Lower Ross River,Gleesons Weir,786,0.56,59,NA,90,67,NA,90,59,67,78,69,33.4,NA,50.4,37.6,NA,50.4,33.4,44,38.7,A,B,NA,A,C,B,B,B,D,NA,C,D,NA,C,D,C,D
+DT,Ross,Lower Ross River,Blacks Weir,786,0.56,63,NA,90,44,90,90,76,44,67,72,35.4,NA,50.4,25.2,50.4,50.4,42.9,37.8,40.4,A,C,A,A,B,C,B,B,D,NA,C,D,C,C,C,D,D
+DT,Ross,Bohle River,Bohle Mid-Field,169,0.12,0,NA,90,50,0,62,0,50,56,28,0,NA,10.8,6,0,7.5,0,6.8,3.4,A,C,E,B,E,C,C,D,E,NA,E,E,E,E,E,E,E
+DT,Ross,Bohle River,Bohle Far-Field,169,0.12,0,NA,90,0,0,63,0,0,31,15,0,NA,10.8,0,0,7.6,0,3.8,1.9,A,E,E,B,E,E,D,E,E,NA,E,E,E,E,E,E,E
+DT,Black,Black River,Black River,250,0.37,61,90,64,90,39,72,50,64,68,59,22.9,33.3,24,33.3,14.6,26.7,18.8,25.4,22.1,B,A,D,B,C,B,B,C,D,D,D,D,E,D,E,D,D
+DT,Black,Bluewater Creek,Althaus Creek,162,0.24,90,90,51,90,18,0,54,51,25,39,21.6,21.6,12.4,21.6,4.4,0,13,6.2,9.6,C,A,E,E,C,C,D,D,D,D,E,D,E,E,E,E,E
+DT,Black,Bluewater Creek,Bluewater Creek,162,0.24,73,90,90,62,90,70,81,62,66,74,17.6,21.6,21.6,15.1,21.6,16.9,19.6,16,17.8,A,B,A,B,A,B,B,B,E,D,D,E,D,E,E,E,E
+DT,Black,Bluewater Creek,Sleeper Log Creek,162,0.24,90,90,90,72,77,13,83,72,43,63,21.6,21.6,21.6,17.4,18.6,3.3,20.1,10.3,15.2,A,B,B,E,A,B,C,B,D,D,D,E,E,E,E,E,E
+DT,Black,Rollingstone Creek,Leichhardt Creek,145,0.21,90,90,90,62,90,68,90,62,65,77,19.3,19.3,19.3,13.4,19.3,14.7,19.3,14,16.7,A,B,A,B,A,B,B,B,E,E,E,E,E,E,E,E,E
+DT,Black,Rollingstone Creek,Saltwater Creek,145,0.21,90,90,90,90,90,57,90,90,73,81,19.3,19.3,19.3,19.3,19.3,12.4,19.3,15.9,17.6,A,A,A,C,A,A,B,A,E,E,E,E,E,E,E,E,E
+DT,Black,Rollingstone Creek,Rollingstone Creek,145,0.21,61,90,90,51,90,90,75,51,70,73,13.1,19.3,19.3,11,19.3,19.3,16.2,15.2,15.7,A,C,A,A,B,C,B,B,E,E,E,E,E,E,E,E,E
+DT,Black,Crystal Creek,Ollera Creek,116,0.17,90,90,90,0,90,90,90,0,45,67,15.5,15.5,15.5,0,15.5,15.5,15.5,7.7,11.6,A,E,A,A,A,E,C,B,E,E,E,E,E,E,E,E,E
+DT,Black,Crystal Creek,Crystal Creek,116,0.17,90,90,90,90,90,90,90,90,90,90,15.5,15.5,15.5,15.5,15.5,15.5,15.5,15.5,15.5,A,A,A,A,A,A,A,A,E,E,E,E,E,E,E,E,E
+DT,Black,Paluma Dam,Paluma Lake,2,0,10,NA,90,52,40,90,25,52,71,48,0,NA,0.3,0.2,0.1,0.3,0.1,0.2,0.1,A,C,D,A,D,C,B,C,E,NA,E,E,E,E,E,E,E
+DT,Ross,Upper Ross River,NA,458,0.32,57,NA,90,90,59,90,58,NA,90,74,18.4,NA,28.8,28.8,18.9,28.8,18.7,28.8,23.7,A,A,C,A,C,NA,A,B,E,NA,D,D,E,D,E,D,D
+DT,Ross,Lower Ross River,NA,786,0.56,61,90,90,53,90,90,65,NA,71,68,34.5,50.4,50.4,29.7,50.4,50.4,37,40,38.5,A,C,A,A,B,NA,B,B,D,C,C,D,C,C,D,D,D
+DT,Ross,Bohle River,NA,169,0.12,0,NA,90,25,0,63,0,NA,44,22,0,NA,10.8,3,0,7.6,0,5.3,2.6,A,D,E,B,E,NA,C,D,E,NA,E,E,E,E,E,E,E
+DT,Black,Black River,NA,250,0.37,61,90,64,90,39,72,50,NA,68,59,22.9,33.3,24,33.3,14.6,26.7,18.8,25.4,22.1,B,A,D,B,C,NA,B,C,D,D,D,D,E,D,E,D,D
+DT,Black,Bluewater Creek,NA,162,0.24,84,90,77,75,61,28,73,NA,45,59,20.3,21.6,18.5,18,14.9,6.7,17.6,10.8,14.2,B,B,B,D,B,NA,C,C,E,D,E,E,E,E,E,E,E
+DT,Black,Rollingstone Creek,NA,145,0.21,80,90,90,67,90,72,85,NA,69,77,17.3,19.3,19.3,14.6,19.3,15.5,18.3,15,16.7,A,B,A,B,A,NA,B,B,E,E,E,E,E,E,E,E,E
+DT,Black,Crystal Creek,NA,116,0.17,90,90,90,45,90,90,90,NA,67,78,15.5,15.5,15.5,7.7,15.5,15.5,15.5,11.6,13.5,A,C,A,A,A,NA,B,B,E,E,E,E,E,E,E,E,E
+DT,Black,Paluma Dam,NA,2,0,10,NA,90,52,40,90,25,NA,71,48,0,NA,0.3,0.2,0.1,0.3,0.1,0.2,0.1,A,C,D,A,D,NA,B,C,E,NA,E,E,E,E,E,E,E
+DT,Ross,NA,NA,1413,NA,40,90,90,49,37,81,42,NA,65,54,52.9,50.4,90,61.5,69.3,86.8,55.6,74.1,64.9,A,C,D,A,C,NA,B,C,C,C,A,B,B,A,C,B,B
+DT,Black,NA,NA,675,NA,74,90,83,66,71,64,73,NA,62,67,76,89.7,77.6,73.8,64.4,64.6,70.2,63,66.6,A,B,B,B,B,NA,B,B,B,A,B,B,B,B,B,B,B

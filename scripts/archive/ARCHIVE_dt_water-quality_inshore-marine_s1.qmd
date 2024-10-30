@@ -1,0 +1,832 @@
+---
+title: "Dry Tropics Inshore Marine Water Quality Analysis"
+author: "Adam Shand"
+date: "`r format(Sys.time(), '%d, %B, %Y')`"
+---
+
+A script to process inshore marine water quality data and produce standardised scores and grades.
+
+:::{.callout-note}
+Some data cleaning occurs prior to this script (i.e. standardised column names) please refer to the Dry Tropics Methods Docs for data cleaning steps.
+:::
+
+# General Set Up
+
+* Load the standard packages required to run the analysis
+* Create save locations for tables and graphs
+* Create path to data source
+
+```{r}
+#| label: general set up
+
+#load packages
+library(tidyverse)
+library(readxl)
+library(glue)
+library(lubridate)
+library(ggplot2)
+library(geomtextpath)
+
+#turn off scientific notation to make things look a bit nicer
+options(scipen = 999)
+
+#get today's date
+date <- format(Sys.time(), "%Y-%m-%d")
+
+#create path to the data source
+data_source <- "data/inshore-marine_water-quality/"
+
+#create save a path
+save_path <- glue("output/{date}_n3_inshore-marine_water-quality/")
+
+#create the base save location
+dir.create(save_path)
+
+#create box plot save location
+dir.create(glue("{save_path}boxplots"))
+
+#create line plot save location
+dir.create(glue("{save_path}lineplots"))
+
+#create table save location for stylized tables
+dir.create(glue("{save_path}tables"))
+
+```
+
+# Build Contextual Dataset
+
+Before we can process the data we need to build a contextual dataset that provides all the contextual info required to effectively group and analyses the water quality data. This includes things like guideline values (Water quality objectives), sub zones and zones, and data providers. Actions are listed below.
+
+```{r}
+#| label: load in contextual data
+
+#get contextual data spreadsheet name
+contextual_data <- "DT_inshore_sites_gv_lor_raw.xlsx"
+
+#load in main dataframe
+site_info <- read_excel(glue("{data_source}{contextual_data}"),
+                  sheet = "sites") |> filter(region == "DT")
+
+#load in guideline values and pivot longer
+gv <- read_excel(glue("{data_source}{contextual_data}"),
+                  sheet = "gv") |> mutate(across(everything(), as.character)) |> 
+  pivot_longer(cols = 2:last_col(), names_to = "indicator", values_to = "gv")
+
+#load in limit of reporting valuesand pivot longer
+lor <- read_excel(glue("{data_source}{contextual_data}"),
+                  sheet = "lor") |> mutate(across(everything(), as.character)) |> 
+  pivot_longer(cols = 2:last_col(), names_to = "indicator", values_to = "lor")
+
+```
+
+## Combine All Information
+
+Currently each set of data is provided separately, this minimizes the amount of repeated information that needs to be entered manually into the csv, however it also means that we need to combined them here.
+
+```{r}
+#| label: combine all contextual information
+
+#pull a list of indicators from the GV table to determine what we are looking at
+indicator <- unique(gv$indicator)
+
+#merge variables into the table
+site_info <- merge(site_info, as.data.frame(indicator)) # duplicates each site to now have one of each indicator
+site_info <- merge(site_info, gv) #this merges by geographic area
+site_info <- merge(site_info, lor) #merges by data provider
+
+#add information for each indicator (context of failure, and statistic)
+site_info <- site_info |> 
+  mutate(unit = case_when(indicator == "Turbidity" ~ "NTU",
+                          indicator %in% c("Chla", "PN", "PP") ~ "ug.L",
+                          indicator == "Secchi" ~ "m",
+                          T ~ "mg.L"), 
+         failure = case_when(indicator == "Secchi" ~ "low", T ~ "high"),
+         stat = case_when(indicator %in% c("Turbidity", "TP") ~ "median", T ~ "mean")) |> 
+  mutate(across(c(gv, lor), as.numeric))
+
+#clean up
+rm(gv, lor, indicator)
+
+#save the data
+write.csv(site_info, glue("{data_source}DT_inshore-marine_sites_gv_lor_combined.csv"), row.names = F)
+
+#make a tibble, dont think it is necessary but doing it for consistencies sake
+site_info <- as_tibble(site_info)
+
+```
+# Load In Water Quality Data
+
+Now we can move onto loading and organizing the water quality data.
+
+## Less-Than (<) Converter
+
+Sometimes data is provided with less than symbols (<) which can change numeric columns to character columns and mess up data processing. The < symbol means that the recorded value was less than the limit of detection for the analysis. Any number with the < symbol should be reported as half of the limit of detection. For example value of <0.002 can be translated to 0.001. 
+
+Below we call a function that finds any < symbols and halves the value of the number following it, this function is safe to run on all columns and wont affect anything that doesn't contain a "<"
+
+:::{.callout-note}
+This less-than converter is separate to the limit of reporting check. I.e. the converter finds any "<" symbols and deals with them, however values that have already been edited (e.g. by the data provider) or values that are less than the limit of reporting but don't contain a < symbol are not detected. These are dealt with later.
+:::
+
+```{r}
+#| label: LOR conversion
+
+#call the formatting function
+source("functions/n3_less-than_converter.R")
+
+```
+
+## Read In Datasets
+
+Using the converter function, read in each dataset and convert all values with < symbols
+
+```{r}
+#| label: load grab data from Port of Townsville, Townsville City Council, and Ornatas
+
+#get water quality data spreadsheet name
+wq_data <- "DT_inshore_all_wq_data_2017-2023.xlsx"
+
+#get sheet names for water quality data
+sheet_names <- excel_sheets(glue("{data_source}{wq_data}"))
+
+for (i in 1:length(sheet_names)){ #for each sheet in the dataset
+  
+  df <- read_excel(glue("{data_source}{wq_data}"), sheet = sheet_names[i], guess_max = 200000) #load the sheet
+  
+  for (j in 1:ncol(df)){ #for each column in the sheet
+    
+    df <- less_than_converter(df, colnames(df)[j]) #run the LOR converter
+  }
+  
+  assign(sheet_names[i], df) #name the dataset after the sheet name
+}
+
+#clean up
+rm(wq_data, sheet_names, df)
+
+```
+
+## Clean Datasets
+
+Although some data cleaning and organisation has occurred prior to this script some steps still need to be completed here. Primarily:
+* Units need to be cross checked against what is in the column name and what is in the contextual dataset
+* Conversions and combinations for some data needs to occur
+* Water Quality Data needs to be combined with the contextual dataset
+
+### POTL Data
+
+first up is the Port data
+
+```{r}
+#| label: clean up port data
+
+#clean data
+potl_grab_clean <- potl.grab |> mutate(FY = ifelse(month(date) >= 7, (year(date)+1), year(date)),
+                                       date = date(date)) |>
+  mutate(site = case_when(site == "IH108" ~ "SB01",
+                          site == "PC14" ~ "P05",
+                          T ~ site)) |> # update some old code names
+  rename(Turbidity = Turbidity_NTU, TN = TN_mg.L, TP = TP_mg.L, 
+         NOx = Nox_mg.L, TSS = TSS_mg.L, Secchi = Secchi_m, FRP = FRP_mg.L) |> 
+  mutate(PN = NA, PP = NA, Chla = NA) |> #add empty columns for variables that pop up in other datasets
+  select(site, date, FY, NOx, PN, PP, TN, TP, FRP, Turbidity, TSS, Secchi, Chla)
+
+#clean data
+potl_logger_clean <- potl.logger |> mutate(FY = ifelse(month(date) >= 7, (year(date)+1), year(date)),
+                                           date = date(date)) |> #drops the hours::mins::seconds portion
+  group_by(site, date) |> mutate(Turbidity = mean(Turbidity_NTU, na.rm = T)) |> #get daily mean
+  mutate(NOx = NA, PN = NA, PP = NA, TN = NA, TP = NA, FRP = NA, TSS = NA, Secchi = NA, Chla = NA) |> 
+  ungroup() |> select(site, date, FY, NOx, PN, PP, TN, TP, FRP, Turbidity, TSS, Secchi, Chla)
+
+```
+
+## MMP Data
+
+Then the marine monitoring program data
+
+```{r}
+#| label: load mmp grab
+
+#clean data
+mmp_grab_clean <- mmp.grab |> mutate(FY = ifelse(month(date) >= 7, (year(date)+1), year(date)),
+                                     date = date(date)) |> 
+  mutate(NOx_uM = NO2_ug.L + NO3_ug.L,
+         NOx_mg.L = (NOx_uM*14.01)/1000, #MMP data is provided in molar units and needs to be converted
+         PN_ug.L = (PN_ug.L*14.01),
+         PP_ug.L = (PP_ug.L*30.97),
+         FRP = (DIP_ug.L*30.97)/1000) |> #FRP and DIP are equivalent and stated to be measuring the same thing
+  rename(NOx = NOx_mg.L, PN = PN_ug.L, PP = PP_ug.L, TSS = TSS_mg.L, Chla = Chlorophylla_ug.L, Secchi = Secchi_m) |>
+  mutate(Turbidity = NA, TN = NA, TP = NA, FRP = NA) |> 
+  select(site, date, FY, NOx, PN, PP, TN, TP, FRP, Turbidity, TSS, Secchi, Chla)
+
+#clean data
+mmp_logger_clean <- mmp.logger |> mutate(FY = ifelse(month(date) >= 7, (year(date)+1), year(date)),
+                                         date = date(date)) |>
+  group_by(site, date) |> 
+  mutate(Turbidity = mean(Turbidity_NTU, na.rm = T), Chla = mean(Chlorophylla_ug.L, na.rm = T)) |> #get daily mean
+  mutate(NOx = NA, PN = NA, PP = NA, TN = NA, TP = NA, FRP = NA, TSS = NA, Secchi = NA) |> 
+  ungroup() |> select(site, date, FY, NOx, PN, PP, TN, TP, FRP, Turbidity, TSS, Secchi, Chla)
+
+```
+
+## TCC
+
+Then Townsville City Council data
+
+```{r}
+#| label: load tcc grab
+
+#clean data
+tcc_grab_clean <- tcc.grab |> mutate(FY = ifelse(month(date) >= 7, (year(date)+1), year(date)),
+                                     date = date(date)) |>
+  rename(Turbidity = Turbidity_NTU, TN = TN_mg.L, TP = TP_mg.L, NOx = Nox_mg.L, TSS = TSS_mg.L, Chla = Chlorophylla_ug.L) |>
+  mutate(PN = NA, PP = NA, FRP = NA, Secchi = NA) |> 
+  select(site, date, FY, NOx, PN, PP, TN, TP, FRP, Turbidity, TSS, Secchi, Chla)
+
+```
+
+## Ornatas
+
+Finally the Ornatas data
+
+```{r}
+#| label: load ornatas data
+
+#clean data
+ornatas_grab_clean <- ornatas.grab |> mutate(FY = ifelse(month(date) >= 7, (year(date)+1), year(date)),
+                                             date = date(date)) |>
+  rename(Turbidity = Turbidity_NTU, TP = TP_mg.L, Chla = Chlorophylla_ug.L, NOx = Nox_mg.L, TSS = TSS_mg.L, FRP = FRP_mg.L) |> 
+  mutate(PN = NA, PP = NA, TN = NA, Secchi = NA) |> 
+  select(site, date, FY, NOx, PN, PP, TN, TP, FRP, Turbidity, TSS, Secchi, Chla)
+
+```
+
+## Pivot and Join Datasets
+
+The next step before the data is ready to analyse is to pivot the water quality data and join it with the contextual dataset. The
+
+```{r}
+#| label: pivot and join datasets
+
+#create a list of datasets we want to pivot and join
+data_sets <- c("potl_grab_clean","potl_logger_clean", "mmp_grab_clean", "mmp_logger_clean",
+               "tcc_grab_clean", "ornatas_grab_clean")
+
+for (i in 1:length(data_sets)){
+  
+  df <- get(data_sets[i]) |> 
+    pivot_longer(c(NOx, PP, PN, TP, TN, FRP, Turbidity, TSS, Secchi, Chla), names_to = "indicator", values_to = "value") |> 
+    mutate(indicator = as.factor(indicator), value = as.numeric(value), date = as.character(date)) |> 
+    left_join(site_info, by = c("site", "indicator")) |> 
+    select(region, environment, zone, sub_zone, geographic_area, site, current_site, date, FY, data_provider, sample_type, indicator, value, gv, lor, unit, failure, stat)
+  
+  assign(glue("{data_sets[i]}_wide"), df)
+  
+}
+
+#each dataset can then be bound together
+dt_inshore_wq_all <- bind_rows(potl_grab_clean_wide, potl_logger_clean_wide, mmp_grab_clean_wide, mmp_logger_clean_wide,
+                           tcc_grab_clean_wide, ornatas_grab_clean_wide)
+
+#clean up
+rm(potl_grab_clean_wide, potl_logger_clean_wide, mmp_grab_clean_wide, mmp_logger_clean_wide,
+   tcc_grab_clean_wide, ornatas_grab_clean_wide, potl_grab_clean, potl_logger_clean, mmp_grab_clean,
+   mmp_logger_clean, tcc_grab_clean, ornatas_grab_clean, potl.grab, potl.logger, mmp.grab, mmp.logger,
+   tcc.grab, ornatas.grab, site_info, df)
+
+```
+
+## Final Checks
+
+the final step before conducting the analysis is to run the final checks.
+* Remove NA values and duplicate values
+* Summarise days with multiple samples (note that duplicate days within grab samples are averaged for the day, and duplicate days within logger samples are averaged for the day. But duplicate days across a grab and a logger sample are not averaged for the day).
+* Remove any values that are less than the LOR
+* Remove any sites that have been noted as not current
+* Do a final cross check of the units
+
+```{r}
+#| label: perform final checks on data
+
+#clean up data by removing Na and duplicate values, and summarizing days with multiple samples
+dt_ins_wq_refined <- dt_inshore_wq_all |> 
+  group_by(across(c(-value))) |> #group by everything (including the sample type column means grab and logger stay separate)
+  summarise(value = mean(value, na.rm = T)) |> #get the avg value
+  ungroup() |> unique() |>  # get unique
+  mutate(value = case_when(value >= (lor/2) ~ value)) |> #turn values below LOR to NA
+  drop_na(value) |> #drop na values (most are a product of the empty indicator rows added earlier), some are from the line above
+  filter(FY <= 2022) |> 
+  filter(current_site == "Yes") |> 
+  select(-current_site)
+
+#NOTE: here we manually remove values below the LOR, noting that we are using half the LOR written in the dataset because earlier we halved any value that had the < symbol and we don't want to accidentally remove those values now
+
+```
+# Data Analysis
+
+now we can analyse, summarise and aggregate the water quality data
+
+## Summary stats tables
+
+some key points to hit:
+* In the inshore marine environment we take the mean or median (depending on the indicator) for all samples at a site each FY
+* Need to take note of how many samples are used at each site
+* Get some summary statistics while we are at it
+
+```{r}
+#| label: summary stats
+
+dt_inshore_summary <- dt_ins_wq_refined |> 
+  group_by(FY, site, indicator) |>
+  mutate(n_samples_per_year = n(), #get the number of samples per site and an annual site mean/median
+         mean = round(mean(value, na.rm = T),2), 
+         median = round(median(value, na.rm = T),2),
+         site_stat_val = ifelse(stat %in% "mean", round(mean(value, na.rm=T),10),
+                           ifelse(stat %in% "median", round(median(value, na.rm=T),10),NA)),) |>  
+  group_by(FY, geographic_area, indicator) |> #then calculate summary stats per geographic area
+  mutate(min = round(min(value, na.rm = T),2),
+         max = round(max(value, na.rm = T),2),
+         mean = round(mean(value, na.rm = T),2), #mean per site and indicator in each FY
+         median = round(median(value, na.rm = T),2), #median per site and indicator in each FY
+         ga_stat_val = ifelse(stat %in% "mean", round(mean(value, na.rm=T),10),
+                           ifelse(stat %in% "median", round(median(value, na.rm=T),10),NA)),
+         pass_fail = ifelse(failure == "low" & ga_stat_val < gv, "too low",
+                       ifelse(failure == "high" & ga_stat_val > gv, "too high", "pass"))) |> 
+  ungroup() |> 
+  select(-c(data_provider, sample_type, failure, stat))
+  
+#summary stats output csv files for each Region
+write.csv(dt_inshore_summary, glue("{save_path}dry_tropics_inshore-marine_summary_stats.csv"))
+
+```
+
+## Scores and Grades
+
+Now we have the annual means (or medians) for each geographic area we can begin calculating the final standardised scores. The general order of steps is as follows:
+* Cap the scores to be between -1 and 1
+* Aggregate (average) the scores for all indicators in an indicator category at each each geographic area (i.e. (NOx+TP)/2=Nutrients)
+* Aggregate the scores for each indicator category at each sub zone (i.e. group up the geographic areas in each sub zone)
+* Aggregate the scores for each indicator category at each  zone (i.e. group up the sub zones in each zone)
+* Standardise scores between 0 and 100
+* Aggregate (average) the scores for all indicator categories for each zone to get an index score for each zone
+
+### Capped scores
+
+Capped scores convert sample values to numeric score between -1 and 1.
+
+```{r}
+#| label: capped scores
+
+#we no longer need the extra summary info so lets simplify
+dt_summary_cut_down <- dt_inshore_summary |> 
+  select(-c(lor, unit, n_samples_per_year, mean, median, min, max, pass_fail, unit)) |> 
+  unique()
+
+#creating capped scores by converting numeric values to grades from -1 to 1
+#when indicator is secchi the pass/fail is reversed
+capped <- dt_summary_cut_down |> 
+  #select(FY, Region, Zone, Sub_Zone, Name, Indicator, Stat_val, GV) |> 
+  mutate(ga_capped_value = case_when(indicator == "Secchi" ~ ifelse((log2(ga_stat_val/gv)) <= -1, -1,
+                                                                   (ifelse((log2(ga_stat_val/gv)) >= 1, 1,
+                                                                           (log2(ga_stat_val/gv))))),
+                                     TRUE ~ ifelse((log2(gv/ga_stat_val)) <= -1, -1, 
+                                                  (ifelse((log2(gv/ga_stat_val)) >= 1, 1, 
+                                                          (log2(gv/ga_stat_val))))))) |> 
+  select(-c(gv, value))
+
+#pivot everything wider for next steop
+capped_wide <- capped |> 
+  select(region, environment, zone, sub_zone, geographic_area, FY, indicator, ga_capped_value) |> 
+  unique() |> 
+        pivot_wider(names_from = indicator, 
+                    values_from = ga_capped_value)
+
+#data.mmp = data.idx %>% select(-DirectionofFailure, -GL,-value) %>%
+ #spread(key=Measure, value=Index) %>%
+ #mutate(WaterClarity=rowMeans(cbind(TSS,SECCHI,NTU), na.rm=TRUE),
+ #Nutrients = rowMeans(cbind(PP,PN,NOx), na.rm=TRUE),
+ #Chlorophyll = rowMeans(cbind(CHL,CHL.1), na.rm=TRUE)) %>%
+ #select(-Site,-Water_Type) %>%
+ #group_by(Subregion) %>%
+ #summarize_all(mean, na.rm=TRUE)
+
+#tab = data.mmp %>% mutate(Subregion=factor(Subregion, levels=c(’North’,’Central’,’South’,’Palms’))) %>% arrange(Subregion) %>%
+ #mutate(WaterClarity=MMP_colors(WaterClarity), Chlorophyll=MMP_colors(Chlorophyll), Nutrients=MMP_colors(Nutrients))
+
+```
+
+###Indicator Category Calculations
+
+Now we can work out the Indicator Category score for the geographic area, then group up to calculate the sub zone scores, then the zones scores
+
+```{r}
+#|label: calculate indicator category
+
+#introduce minimum aggregation rules (there must be at least 50% of the required indicators to average to an indicator category)
+n3_aggregation <- function(selected_columns) {
+  
+  #get the mean of all rows (regardless of how many indicators have data)
+  selected_columns_row_means <- rowMeans(selected_columns, na.rm = TRUE)
+  
+  #find the rows where less than 50% of the columns have data (returns a T/F vector the same length as the means above)
+  do_not_aggregate <- apply(selected_columns, MARGIN = 1, 
+                            function(x) {sum(!is.na(x)) < ncol(selected_columns)/2})
+  
+  #wherever a T value from the T/F vector lands, replace it with NA
+  selected_columns_row_means[do_not_aggregate] <- NA
+  
+  #return the columns with their new row means calculated in a vector
+  return(selected_columns_row_means)
+}
+
+#run the function for each of the indicator categories at the geographic area level
+capped_wide$ga_nutrients <- n3_aggregation(select(capped_wide, c("TP", "PP", "PN", "NOx")))#, "TN", "FRP"))) 
+capped_wide$ga_clarity <- n3_aggregation(select(capped_wide, c("TSS", "Turbidity", "Secchi"))) 
+capped_wide$ga_chlorophyll <- n3_aggregation(select(capped_wide, c("Chla")))  
+
+#group at the sub zone level
+sub_zone_wide <- capped_wide |> group_by(sub_zone, FY) |> 
+  mutate(sz_nutrients = mean(ga_nutrients, na.rm = T),
+         sz_clarity = mean(ga_clarity, na.rm = T),
+         sz_chlorophyll = mean(ga_chlorophyll, na.rm = T)) |> 
+  ungroup()
+
+#group at the zone level
+zone_wide <- sub_zone_wide |> select(1:4, 6, contains("sz")) |>
+  unique() |> group_by(zone, FY) |> 
+  mutate(z_nutrients = mean(sz_nutrients, na.rm = T),
+         z_clarity = mean(sz_clarity, na.rm = T),
+         z_chlorophyll = mean(sz_chlorophyll, na.rm = T)) |> 
+  ungroup()
+
+#add together
+all_wide <- left_join(sub_zone_wide, zone_wide)
+
+```
+
+### Standardised Scores
+
+Next we need to standardise the indicator and indicator category scores to the 0-100 scale 
+
+```{r}
+#| label: standardise scores
+
+#create a standardising function
+rounding_func <- function(col){
+  col = round(case_when(
+    col >= .51 ~ 100 - (19 - ((col-0.51) * (19/0.49))),
+    col >= 0 & col < .51 ~ 80.9 - (19.9 - ((col -0.01) *(19.9/0.49))),
+    col >= -.33 & col < -.01 ~ 60.9- (19.9 - ((col -(-0.33)) *(19.9/0.32))),
+    col >= -.66 & col < -.34 ~ 40.9- (19.9 - ((col -(-0.66)) * (19.9/0.32))),
+    TRUE ~ 20.9- (20.9 - ((col -(-1)) *(20.9/0.34)))))
+}
+
+#get list of col names to apply to function to
+col_names <- colnames(all_wide[7:ncol(all_wide)])
+
+#loop over col names and apply the function to each col
+for (i in 1:length(col_names)){
+  if (i == 1){dt_zone_score <- all_wide}
+  dt_zone_score[col_names[i]] <- rounding_func(dt_zone_score[[col_names[i]]])
+}
+
+```
+
+### Index Scores
+
+Then we can average the indicator category scores for each zone to determine the index scores.
+
+```{r}
+#| label: calculate index scores
+
+#calculate index
+dt_final <- dt_zone_score |> 
+  mutate(wq_index = floor(rowMeans(cbind(z_nutrients, z_clarity, z_chlorophyll), na.rm=TRUE)))
+
+#clean up
+rm(all_wide, capped, capped_wide, col_names, contextual_data, data_sets,
+   data_source, dt_ins_wq_refined, dt_inshore_summary, dt_inshore_wq_all,
+   sub_zone_wide, zone_wide)
+
+```
+
+# Dry Tropics Final Table
+
+```{r}
+#| label: style table for main report
+
+#update factor order and then create water quality column
+dt_capped_wide_indicator_category_index <- dt_capped_wide_indicator_category_index |> 
+  arrange(ordered(dt_capped_wide_indicator_category_index$Name,
+                 levels = c("C.Enclosed Coastal.Inside.Port.Subzone", "C.Enclosed Coastal.Outside.Port.Subzone", "C.Enclosed Coastal",
+                            "C.Open Coastal.Inside.Port.Subzone","C.Open Coastal.Outside.Port.Subzone","C.Open Coastal", 
+                            "Magnetic Island", "Cleveland", 
+                            "H.Enclosed Coastal", "H.Open Coastal", "Midshelf", "Halifax")))
+
+#save the output
+write_csv(dt_capped_wide_indicator_category_index, glue("{save_path}dry_tropics_final_scores.csv"))
+
+```
+
+
+### Grab boxplots
+
+Visualisation: boxplots of grab data for indicators per zone;
+
+```{r grab-boxplots}
+
+#filter the grab samples
+dt_grab <- dt_grab_all |> 
+  filter(FY > 2013) |> 
+  drop_na(GV, Date, Value) |> #drops any rows that don't have a GV, date, or Value
+  group_by(FY, Code, Indicator) |> 
+  mutate(sample_size = n())  |> 
+  ungroup()
+
+#pull out the lats and longs only for grab samples
+latlongs <- tbl |> filter(Sample_Type == "grab") |> 
+  select(Code, Name, Lat, Long) |> 
+  unique()
+
+#DT Boxplots
+dt_grab |> left_join(latlongs, by = "Code") |> 
+write.csv(glue("{save_path}dry_tropics_boxplots_data.csv"))
+
+#clean up
+rm(dt_grab)
+
+```
+
+### Outliers
+
+Outliers per indicator using the full historic record at each site
+
+```{r outliers}
+
+#filter all samples
+marine_outliers <- dry_tropics_all_data |> 
+  drop_na(Value) |> #drop any rows that dont have a value
+  group_by(Indicator, Code) |> 
+  mutate(Q1 = quantile(Value, .25, na.rm = T), #25th percentile for each indicator
+         Q3 = quantile(Value, .75, na.rm = T), #75th percentile for each indicator
+         IQR = Q3 - Q1,
+         UWhisker = Q3 + 1.5*IQR,
+         LWhisker = Q1 - 1.5*IQR,
+         LowOutlier = ifelse(Value < Q1 - (1.5*(Q3 - Q1)), "Low", "Pass"),
+         HighOutlier = ifelse(Value > Q3 + (1.5*(Q3 - Q1)), "High", "Pass"),
+        Outlier = paste(LowOutlier, HighOutlier)) |>  #combine outlier columns
+  ungroup() |> 
+        mutate_at("Outlier", str_replace, "Pass", "") |> #remove redundant entries
+        mutate_at("Outlier", str_replace, "NA", "") |> #remove redundant entries
+        mutate_if(is.character, str_trim) |> #trim whitespace
+        select(-LowOutlier, -HighOutlier) |>  #remove unnecessary columns
+  filter(Outlier != "Pass")
+
+#write results
+write.csv(marine_outliers, glue("{save_path}dry_tropics_marine_outliers.csv"))
+
+#display
+marine_outliers %>%
+  select(FY, Region, Zone, Code, Name, Date, Indicator, Value, GV, Q1, Q3, IQR, UWhisker, LWhisker, Outlier) %>%
+reactable( filterable = T) %>% 
+  add_title("Marine outliers") %>%
+  add_subtitle("1.5*IQR per indicator")
+
+```
+
+
+
+
+# Box plots
+
+```{r}
+#| label: plot each indicator
+
+#create custom log function for tick breaks
+base_breaks <- function(n = 10){
+    function(x) {
+        axisTicks(log10(range(x, na.rm = TRUE)), log = TRUE, n = n)
+    }
+}
+
+#create some custom names
+dt_grab_custom <- dt_grab_all |> 
+  mutate(Sub_Zone = case_when(Sub_Zone == "C.Open Coastal" ~ "CB: OC",
+                              Sub_Zone == "C.Enclosed Coastal" ~ "CB: EC",
+                              Sub_Zone == "Magnetic Island" ~ "CB: Mag. Is.",
+                              Sub_Zone == "Midshelf" ~ "HB: MS",
+                              Sub_Zone == "H.Open Coastal" ~ "HB: OC",
+                              Sub_Zone == "H.Enclosed Coastal" ~ "HB: EC",
+                              T ~ Sub_Zone),
+         Name = case_when(Name == "C.Open Coastal.Outside.Port.Subzone" ~ "CB: OC.OPZ",
+                          Name == "C.Open Coastal.Inside.Port.Subzone" ~ "CB: OC.IPZ",
+                          Name == "C.Enclosed Coastal.Outside.Port.Subzone" ~ "CB: EC.OPZ",
+                          Name == "C.Enclosed Coastal.Inside.Port.Subzone" ~ "CB: EC.IPZ",
+                          Name == "Magnetic Island" ~ "CB: Mag. Is.",
+                          Name == "Midshelf" ~ "HB: MS",
+                          Name == "H.Open Coastal" ~ "HB: OC",
+                          Name == "H.Enclosed Coastal" ~ "HB: EC",
+                          T ~ Name))
+
+for (i in 1:length(unique(dt_grab_custom$Indicator))){
+  for (j in 1:length(unique(dt_grab_custom$FY))){
+    
+    data <- dt_grab_custom |> filter(Indicator == unique(dt_grab_custom$Indicator)[i],
+                                     FY == unique(dt_grab_custom$FY)[j])
+    
+    GV <- data |> select(Name, GV) |> rename(Value = GV)
+    
+    #LOR <- data |> select(Name, LOR) |> rename(Value = LOR)
+    
+    if (unique(dt_grab_custom$Indicator)[i] %in% c("chla", "PN", "PP")){
+      unit <- "ug/L"
+    } else if (unique(dt_grab_custom$Indicator)[i] == "NTU"){
+        unit <- "NTU"
+    } else if (unique(dt_grab_custom$Indicator)[i] == "Secchi"){
+          unit <- "m"
+    } else {unit <- "mg/L"}
+    
+    if (unique(dt_grab_custom$Indicator)[i] %in% c("NTU", "TP")){
+      
+      tested_val <- data |> select(Name, Value) |> group_by(Name) |> 
+        mutate(Value = median(Value, na.rm = T))
+
+    } else {
+      
+      tested_val <- data |> select(Name, Value) |> group_by(Name) |> 
+        mutate(Value = mean(Value, na.rm = T))
+
+    }
+    
+    plot <- ggplot(data, aes(x = Name, y = Value, fill = Name)) +
+      geom_boxplot(outlier.colour = "black", outlier.shape = 21, outlier.fill = "red", outlier.size = 2) +
+      geom_jitter(color="black", size = 0.5, alpha = 0.9, height = 0) +
+      geom_point(data = GV, colour = "black", shape = 23, size = 2, fill = "blue") +
+      geom_text(data = GV, aes(label = Value), show.legend = F, nudge_x = 0.21, colour = "white", size = 2) +
+      geom_text(data = GV, aes(label = Value), show.legend = F, nudge_x = 0.2, size = 2) +
+      geom_point(data = tested_val, colour = "black", shape = 4, size = 3) +
+      scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
+      theme_bw() +
+      theme(legend.position = "none", plot.title = element_text(size = 9),
+            axis.line = element_line(colour = "black"),
+            axis.text = element_text(colour = "black", size = 6),
+            panel.grid.major = element_blank(),
+            panel.grid.minor = element_blank(),
+            panel.border = element_blank(),
+            panel.background = element_blank()) +
+      xlab("") + ylab(glue("{unique(dt_grab_custom$Indicator)[i]} ({unit})"))
+    
+    if (unique(dt_grab_custom$Indicator)[i] %in% c("TSS", "TP", "NTU", "NOx", "FRP")){
+      
+      plot <- plot + scale_y_continuous(trans = scales::log_trans(), breaks = base_breaks(),
+                   labels = prettyNum)
+
+      log_scale <- "(Log10)"
+      
+    } else {log_scale <- ""}
+    
+    plot <- plot + ggtitle(glue("{unique(dt_grab_custom$FY)[j]}:
+                                {unique(dt_grab_custom$Indicator)[i]} Boxplot {log_scale}"))
+    
+    ggsave(glue("{save_path}/boxplots/{unique(dt_grab_custom$FY)[j]}_{unique(dt_grab_custom$Indicator)[i]}_Boxplot.png"), width = 12, height = 12, units = "cm")
+    
+  }
+  
+}
+
+
+
+
+```
+
+# Line plots
+
+Part 1
+
+```{r}
+#| label: plot each indicator
+
+dt_grab_custom$Date <- as.Date(dt_grab_custom$Date)
+
+dt_grab_line_plot <- dt_grab_custom |> group_by(across(c(-"Code", -"Value"))) |> 
+  summarise(Value = ifelse(Stat %in% "mean", round(mean(Value, na.rm=T),10),
+                          ifelse(Stat %in% "median", round(median(Value, na.rm=T),10),NA))) |> 
+  ungroup() |> unique()
+
+
+for (i in 1:length(unique(dt_grab_line_plot$Indicator))){
+  for (k in 1:length(unique(dt_grab_line_plot$Name))){
+    
+    data <- dt_grab_line_plot |> filter(!is.na(Value),
+                                     Indicator == unique(dt_grab_line_plot$Indicator)[i])
+    
+    GV <- data |> select(Name, Date, GV) |> rename(Value = GV)
+    
+    if (unique(dt_grab_line_plot$Indicator)[i] %in% c("chla", "PN", "PP")){
+      unit <- "ug/L"
+    } else if (unique(dt_grab_line_plot$Indicator)[i] == "NTU"){
+        unit <- "NTU"
+    } else if (unique(dt_grab_line_plot$Indicator)[i] == "Secchi"){
+          unit <- "m"
+    } else {unit <- "mg/L"}
+    
+    plot <- ggplot(data, aes(x = Date, y = Value, colour = Name)) +
+      geom_line(show.legend = F, size = 0.8) +
+      geom_textline(data = GV, aes(label = Value), colour = "black", linetype = 2, size = 3, linewidth = 0.8, hjust = 0.2) +
+      scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
+      theme_bw() +
+      theme(legend.position="none", plot.title = element_text(size = 9),
+            axis.line = element_line(colour = "black"),
+            axis.text = element_text(colour = "black", size = 8),
+            panel.grid.major = element_blank(),
+            panel.grid.minor = element_blank(),
+            panel.border = element_blank(),
+            panel.background = element_blank()) +
+      facet_wrap(~Name, ncol = 2) +
+      xlab("") + ylab(glue("{unique(dt_grab_line_plot$Indicator)[i]} ({unit})"))
+      
+
+    
+    if (unique(dt_grab_line_plot$Indicator)[i] %in% c("TSS", "TP", "NTU", "NOx", "FRP")){
+      
+      plot <- plot + scale_y_continuous(trans = scales::log_trans(), breaks = base_breaks(),
+                   labels = prettyNum)
+
+      log_scale <- "(Log10)"
+      
+    } else {log_scale <- ""}
+    
+    plot <- plot + ggtitle(glue("{unique(dt_grab_line_plot$Indicator)[i]} Line plot {log_scale}"))
+    
+    ggsave(glue("{save_path}/lineplots/{unique(dt_grab_line_plot$Indicator)[i]}_Line plot.png"), width = 15, height = 20, units = "cm")
+    
+    }
+}
+
+
+
+```
+Part 2
+
+```{r}
+#| label: plot each indicator
+
+#get only FY2022 data
+dt_grab_line_plot <- dt_grab_line_plot |> filter(FY == "2022")
+
+#get only HB data
+dt_grab_line_plot <- dt_grab_line_plot |> filter(Zone == "Halifax")
+
+
+for (i in 1:length(unique(dt_grab_line_plot$Indicator))){
+  for (k in 1:length(unique(dt_grab_line_plot$Name))){
+    
+    data <- dt_grab_line_plot |> filter(!is.na(Value),
+                                     Indicator == unique(dt_grab_line_plot$Indicator)[i])
+    
+    GV <- data |> select(Name, Date, GV) |> rename(Value = GV)
+    
+    if (unique(dt_grab_line_plot$Indicator)[i] %in% c("chla", "PN", "PP")){
+      unit <- "ug/L"
+    } else if (unique(dt_grab_line_plot$Indicator)[i] == "NTU"){
+        unit <- "NTU"
+    } else if (unique(dt_grab_line_plot$Indicator)[i] == "Secchi"){
+          unit <- "m"
+    } else {unit <- "mg/L"}
+    
+    plot <- ggplot(data, aes(x = Date, y = Value, colour = Name)) +
+      geom_line(size = 0.8) +
+      geom_point(size = 3, shape = 4) +
+      #geom_textline(data = GV, aes(label = Value), colour = "black", linetype = 2, size = 3, linewidth = 0.8, hjust = 0.2) +
+      scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
+      theme_bw() +
+      theme(plot.title = element_text(size = 9),
+            axis.line = element_line(colour = "black"),
+            axis.text = element_text(colour = "black", size = 8),
+            panel.grid.major = element_blank(),
+            panel.grid.minor = element_blank(),
+            panel.border = element_blank(),
+            panel.background = element_blank()) +
+      xlab("") + ylab(glue("{unique(dt_grab_line_plot$Indicator)[i]} ({unit})"))
+      
+
+    
+    if (unique(dt_grab_line_plot$Indicator)[i] %in% c("TSS", "TP", "NTU", "NOx", "FRP")){
+      
+      plot <- plot + scale_y_continuous(trans = scales::log_trans(), breaks = base_breaks(),
+                   labels = prettyNum)
+
+      log_scale <- "(Log10)"
+      
+    } else {log_scale <- ""}
+    
+    plot <- plot + ggtitle(glue("{unique(dt_grab_line_plot$Indicator)[i]} Line plot {log_scale}"))
+    
+    ggsave(glue("{save_path}/lineplots/{unique(dt_grab_line_plot$Indicator)[i]}_Line plot_2022_only.png"), width = 15, height = 20, units = "cm")
+    
+    }
+}
+
+
+
+```

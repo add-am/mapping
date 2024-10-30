@@ -1,0 +1,917 @@
+---
+title: "estuarine_water-quality_script-1-analysis"
+author: "Adam Shand"
+date: "`r format(Sys.time(), '%d, %B, %Y')`"
+---
+
+A script to process estuarine water quality data and produce standardised scores and grades.
+
+:::{.callout-note}
+If this is the first time running the script. Please read the README doc first.
+:::
+
+# Global Controls
+
+- Install/load packages
+- Define script variables
+- Define script read and write paths
+
+```{r}
+#| label: General Set Up
+
+#load packages
+library(tidyverse)
+library(readxl)
+library(glue)
+library(here)
+library(lubridate)
+library(ggplot2)
+library(geomtextpath)
+```
+
+```{r}
+#| label: define script variables
+#| echo: false
+
+#turn off scientific notation to make things look a bit nicer
+options(scipen = 999)
+
+#create save a path
+save_path <- here("outputs/estuarine_water-quality_dt_script-1-analysis-output")
+
+#create the base save location
+dir.create(save_path)
+
+#create box plot save location
+dir.create(glue("{save_path}/boxplots"))
+
+#create line plot save location
+dir.create(glue("{save_path}/lineplots"))
+
+#create table save location for stylized tables
+dir.create(glue("{save_path}/tables"))
+
+```
+
+# Build Contextual Dataset
+
+Before we can process the data we need to build a contextual dataset that provides all the info required to effectively group and analyses the water quality data. This includes things like guideline values (Water quality objectives), watercourse, basins, and data providers. Actions are listed below.
+
+```{r}
+#| label: Load in contextual data
+
+#get contextual data path
+contextual_data <- here("data/estuarine_water-quality_dt/DT_estuarine_sites_gv_lor_sf_area_raw.xlsx")
+
+#load in main dataframe
+site_info <- read_xlsx(contextual_data, sheet = "sites") |> filter(region == "DT")
+
+#load in guideline values
+gv <- read_excel(contextual_data, sheet = "gv") |> mutate(across(everything(), as.character))
+
+#load in limit of reporting values
+lor <- read_excel(contextual_data, sheet = "lor") |> mutate(across(everything(), as.character))
+
+#load in scaling factor values
+sf <- read_excel(contextual_data, sheet = "sf") |> mutate(across(everything(), as.character))
+
+#load in area weighting values
+area_weight <- read_excel(contextual_data, sheet = "area_weight") |> mutate(across(everything(), as.character))
+
+#clean up
+rm(contextual_data)
+
+```
+
+## Combine All Information
+
+Currently each set of data is provided separately, this minimizes the amount of repeated information that needs to be entered manually into the csv, however it also means that we need to combined them here.
+
+```{r}
+#| label: combine all contextual information
+
+#pull a list of indicators from the GV table to determine what we are looking at
+indicator <- unique(gv$indicator)
+
+#merge variables into the table
+site_info <- merge(site_info, as.data.frame(indicator)) # duplicates each site to now have one of each indicator
+site_info <- merge(site_info, gv) #this merges by basin
+site_info <- merge(site_info, lor) #merges by data provider
+site_info <- merge(site_info, sf) #merges by basin
+site_info <- merge(site_info, area_weight) #merges by watercourse
+
+#add information for each indicator (context of failure, and statistic)
+site_info <- site_info |> 
+  mutate(failure = case_when(indicator == "Low_DO" ~ "low", T ~ "high"),
+         stat = "median") |> 
+  mutate(across(c(gv, lor, sf, area, proportion), as.numeric))
+
+#clean up
+rm(gv, lor, sf, area_weight, indicator)
+
+#save the data
+write.csv(site_info, here("data/estuarine_water-quality_dt/DT_estuarine_sites_gv_lor_sf_area_combined.csv"), row.names = F)
+
+```
+
+# Load In Water Quality Data
+
+Now we can move onto loading and organizing the water quality data.
+
+## Less-Than (<) Converter
+
+Sometimes data is provided with less than symbols (<) which can change numeric columns to character columns and mess up data processing. The < symbol means that the recorded value was less than the limit of detection for the analysis. Any number with the < symbol should be reported as half of the limit of detection. For example value of <0.002 can be translated to 0.001. 
+
+Below we call a function that finds any < symbols and halves the value of the number following it, this function is safe to run on all columns and wont affect anything that doesn't contain a "<"
+
+:::{.callout-note}
+This less-than converter is separate to the limit of reporting check. I.e. the converter finds any "<" symbols and deals with them, however values that have already been edited (e.g. by the data provider) or values that are less than the limit of reporting but don't contain a < symbol are not detected. These are dealt with later.
+:::
+
+
+```{r}
+#| label: LOR conversion
+
+#call the formatting function
+source(here("functions/n3_less-than_converter.R"))
+
+```
+
+## Read In Datasets
+
+Using the converter function, read in each dataset and convert all values with < symbols
+
+```{r}
+#| label: Read in datasets
+
+#get water quality data path
+wq_data <- here("data/estuarine_water-quality_dt/DT_estuarine_all_wq_data_2013-2023.xlsx")
+
+#get sheet names for water quality data
+sheet_names <- excel_sheets(wq_data)
+
+for (i in 1:length(sheet_names)){ #for each sheet in the dataset
+  
+  df <- read_excel(wq_data, sheet = sheet_names[i]) #load the sheet
+  
+  for (j in 1:ncol(df)){ #for each column in the sheet
+    
+    df <- less_than_converter(df, colnames(df)[j]) #run the LOR converter
+  }
+  
+  assign(sheet_names[i], df) #name the dataset after the sheet name
+}
+
+#clean up
+rm(wq_data, sheet_names, df)
+
+```
+
+## Clean Datasets
+
+Although some data cleaning and organisation has occurred prior to this script some steps still need to be completed here. Primarily:
+* Units need to be cross checked against what is in the column name and what is in the contextual dataset
+* Conversions and combinations for some data needs to occur
+* Water Quality Data needs to be combined with the contextual dataset
+
+### POTL Data
+
+first up is the Port data
+
+```{r}
+#| label: clean up port data
+
+#clean data   
+potl_clean <- POTL |> mutate(FY = ifelse(month(date) >= 7, (year(date)+1), year(date)),
+                             DIN = Ammonia_mg.L + Nox_mg.L) |> 
+  rename(Turbidity = Turbidity_NTU, High_DO = "DO_%.Sat", TP = TP_mg.L, FRP = FRP_mg.L) |>
+  mutate(Low_DO = High_DO) |> 
+  select(site, date, FY, Turbidity, High_DO, Low_DO, DIN, TP, FRP)
+
+```
+
+### TCC Data
+
+Then Townsville City Council
+
+```{r}
+#| label: clean up tcc data
+
+#clean data      
+tcc_clean <- TCC |> mutate(FY = ifelse(month(date) >= 7, (year(date)+1), year(date)),
+                           Ammonia_mg.L_2 = Ammonia_ug.L/1000,
+                           Ammonia = case_when(!is.na(Ammonia_mg.L) ~ Ammonia_mg.L,
+                                               !is.na(Ammonia_mg.L_2) ~ Ammonia_mg.L_2),
+                           Nox_mg.L_2 = Nox_ug.L/1000,
+                           NOx = case_when(!is.na(Nox_mg.L) ~ Nox_mg.L,
+                                           !is.na(Nox_mg.L_2) ~ Nox_mg.L_2),
+                           DIN = Ammonia + NOx) |> 
+  rename(Turbidity = Turbidity_NTU, High_DO = "DO_%.Sat", TP = TP_mg.L, FRP = FRP_mg.L) |>
+  mutate(Low_DO = High_DO) |> 
+  select(site, date, FY, Turbidity, High_DO, Low_DO, DIN, TP, FRP)
+
+```   
+
+### DES Data
+
+Then Department of Environment and Science
+
+```{r}
+#| label: clean up DES data
+
+#clean data      
+des_clean <- DES |> separate(date_time, into = c("date", NA), sep = " ", remove = T) |> 
+  mutate(FY = ifelse(month(date) >= 7, (year(date)+1), year(date)),
+         DIN = Ammonia_mg.L + NOx_mg.L) |> 
+  rename(Turbidity = Turbidity_NTU, High_DO = "DO_%.Sat", TP = TP_mg.L, FRP = FRP_mg.L) |>
+  mutate(Low_DO = High_DO) |> 
+  select(site, date, FY, Turbidity, High_DO, Low_DO, DIN, TP, FRP)
+
+```
+
+### Ornatas Data
+
+Finally the Ornatas data
+
+```{r}
+#| label: clean up Ornatas data
+
+#clean data       
+orn_clean <- Ornatas |> mutate(FY = ifelse(month(date) >= 7, (year(date)+1), year(date)),
+                               DIN = (Ammonia_ug.L/1000) + (NOx_ug.L/1000),
+                               TP = TP_ug.L/1000,
+                               FRP = FRP_ug.L/1000) |> 
+  rename(Turbidity = Turbidity_NTU, High_DO = "DO_%.Sat") |>
+  mutate(Low_DO = High_DO) |> 
+  select(site, date, FY, Turbidity, High_DO, Low_DO, DIN, TP, FRP)
+
+```
+
+## Pivot and Join Datasets
+
+The next step before the data is ready to analyse is to pivot the water quality data and join it with the contextual dataset.
+
+```{r}
+#| label: pivot and join datasets
+
+#create a list of datasets we want to pivot and join
+data_sets <- c("potl_clean", "des_clean", "tcc_clean", "orn_clean")
+
+for (i in 1:length(data_sets)){
+  
+  df <- get(data_sets[i]) |> 
+    pivot_longer(c(Turbidity, High_DO, Low_DO, DIN, TP, FRP), names_to = "indicator", values_to = "value") |> 
+    mutate(indicator = as.factor(indicator), value = as.numeric(value), date = as.character(date)) |> 
+    left_join(site_info, by = c("site", "indicator")) |> 
+    select(region, environment, basin, sub_basin, watercourse, site, current_site, area, proportion, date, FY, data_provider, sample_type, indicator, value, gv, lor, sf, unit, failure, stat)
+  
+  assign(glue("{data_sets[i]}_wide"), df)
+  
+}
+
+#each dataset can then be bound together
+dt_est_wq_all <- bind_rows(potl_clean_wide, des_clean_wide, tcc_clean_wide, orn_clean_wide)
+
+#clean up
+rm(potl_clean_wide, des_clean_wide, tcc_clean_wide, orn_clean_wide,
+   potl_clean, des_clean, tcc_clean, orn_clean,
+   POTL, DES, TCC, Ornatas, data_sets, site_info, df)
+
+```
+
+## Final Checks
+
+the final step before conducting the analysis is to run the final checks.
+* Remove any values that are less than the LOR
+* Remove any sites that have been noted as not current
+* Do a final cross check of the units
+
+```{r}
+#| label: perform final checks on data
+
+# here we will manually remove values below the LOR. NOTE: we are using half the LOR written in the dataset because earlier we halved any value that had the < symbol and we don't want to accidentally remove them now
+dt_est_current <- dt_est_wq_all |> mutate(value = case_when(value >= (lor/2) ~ value)) |> 
+  filter(FY <= 2022) |> 
+  filter(current_site == "Yes") |> 
+  select(-current_site)
+
+```
+
+# Data Analysis
+
+now we can analyse, summarise and aggregate the water quality data
+
+## Summary stats tables
+
+some key points to hit:
+* In estuaries we group data by month then by year
+* take the monthly medians
+* take the annual median of the monthly medians
+* get some summary statistics while we are at it
+
+
+```{r summary-stats}
+#| label: summary stats monthly and annually
+
+dt_summary <- dt_est_current |> drop_na(gv, value) |>
+  mutate(month = format(as.Date(date), "%m")) |>
+  group_by(FY, site, month, indicator) |> 
+  mutate(monthly_median = median(value, na.rm = T)) |> #in estuaries we get the monthly median
+  group_by(FY, site, indicator) |> 
+  mutate(n_months = n()) |> #counts the number of months (including repeated months) that contribute to the median
+  select(-c(date, value)) |> distinct() |> 
+  group_by(FY, site, indicator) |>
+  mutate(n_unique_months = n()) |>  #counts number of unique months that contribute to the median
+  mutate(annual_median = median(monthly_median, na.rm = T), #in estuaries we then take the median of all monthly medians
+         min = min(monthly_median, na.rm = T),
+         twentieth = quantile(monthly_median, probs = .2, na.rm = T),
+         eightieth = quantile(monthly_median, probs = .8, na.rm = T),
+         max = max(monthly_median, na.rm = T),
+         pass_fail = ifelse(failure == "low" & annual_median < gv, "too low",
+                            ifelse(failure == "high" & annual_median > gv, "too high", "pass"))) |> 
+  ungroup() |> 
+  select(-c(data_provider, sample_type, failure, stat))
+
+#summary stats output csv files for each Region
+write.csv(dt_summary, glue("{save_path}/dry_tropics_summary.csv"))
+
+```
+
+## Scores and Grades
+
+Now we have calculated the annual medians we can standardise and aggregate these values to get scores and grades for indicators and indicator categories. The general ordering of each of these processes is as follows:
+* Standardise the annual median for each indicator at each site
+* Aggregate (average) the score for each indicator at each watercourse (e.g. group up the sites into their watercourse)
+* Aggregate (average) the scores for all indicators in an indicator category at each each watercourse (i.e. (DIN+TP)/2=Nutrients)
+* Weight indicator category scores by the proportion of the watercourse
+* Sum the weighted score for each indicator category scores at each basin (i.e. group up the watercourses)
+* Aggregate (average) the scores for all indicator categories to get an index score for each basin.
+
+### Standardised scores for each indicator at each site
+
+Standardized scores convert sample values to numeric score between 0 and 100 based on a set of rules
+
+```{r standardised-scores}
+#| label: standardize the scores
+
+#we no longer need the extra summary info so lets simplify
+dt_summary_cut_down <- dt_summary |> 
+  select(-c(month, monthly_median, n_months, n_unique_months, min, max, pass_fail, unit)) |> 
+  unique()
+
+#standardise scores, noting that low DO needs an inverted calculation
+dt_standardised <- dt_summary_cut_down |> 
+  mutate(ind_site = case_when(
+    annual_median > gv ~ 60.9-(60.9*(abs((annual_median - gv)/(sf - gv)))),
+    annual_median < gv & eightieth > gv ~ 80.99-(19.9*(abs(eightieth - gv)/(eightieth - annual_median))),
+    TRUE ~ 90)) |> 
+  mutate(ind_site = case_when(
+    indicator == "Low_DO" & annual_median < gv ~ 60.9-(60.9*(abs((annual_median - gv)/(sf - gv)))),
+    indicator == "Low_DO" & annual_median > gv & twentieth < gv ~ 80.99-(19.9*(abs(gv - twentieth)/(annual_median - twentieth))),
+    indicator == "Low_DO" & annual_median > gv & twentieth >= gv ~ 90,
+    TRUE ~ ind_site)) |> 
+  mutate(ind_site = case_when(
+    ind_site < 0 ~ 0, 
+    TRUE ~ ind_site))
+
+#clean up
+rm(dt_summary_cut_down)
+                                  
+```
+
+### Aggregate scores for each indicator at the watercourse level
+
+Now we are getting the average score for each indicator at the watercourse level. watercourses with only one site in them wont change but watercourses with multiple sites in them will.
+
+```{r}
+#| label: aggregate scores for indicators at the watercourse level
+
+#we can drop more columns now
+dt_standardised <- dt_standardised |> 
+  select(-c(gv, lor, sf, twentieth, annual_median, eightieth))
+
+#create a new column that is indicators grouped by watercourse
+dt_ind_watercourse <- dt_standardised |> 
+  group_by(FY, watercourse, indicator) |> 
+  mutate(ind_watercourse = mean(ind_site)) |> 
+  ungroup()
+
+```
+
+### Aggregate scores for each indicator at the sub basin level
+
+Now we are getting the average score for each indicator at the sub basin level. Sub basins with only one watercourse in them wont change but sub basins with multiple sites in them will.
+
+
+```{r}
+#| label: aggregate scores for indicators at the sub basin level
+
+#create a new column that is indicators grouped by sub basin
+dt_ind_sub_basin <- dt_ind_watercourse |> 
+  group_by(FY, sub_basin, indicator) |> 
+  mutate(ind_sub_basin = mean(ind_site)) |> 
+  ungroup()
+
+```
+
+### Aggregate across indicators to indicator category
+
+Now we are averaging the scores for all indicators in an indicator category to get a indicator category score for each watercourse. Nutrients is made of DIN and TP, Phys-chem is made of NTU, High DO and Low DO - noting that only the lower score of High and Low DO is used in the averaging.
+
+There are a few odd rules to enforce here. Please read each line carefully.
+
+```{r}
+#| label: aggregate indicator scores to create indicator category scores
+
+#introduce minimum aggregation rules (there must be at least 50% of the required indicators to average to an indicator category)
+n3_aggregation <- function(selected_columns) {
+  
+  #get the mean of all rows (regardless of how many indicators have data)
+  selected_columns_row_means <- rowMeans(selected_columns, na.rm = TRUE)
+  
+  #find the rows where less than 50% of the columns have data (returns a T/F vector the same length as the means above)
+  do_not_aggregate <- apply(selected_columns, MARGIN = 1, 
+                            function(x) {sum(!is.na(x)) < ncol(selected_columns)/2})
+  
+  #wherever a T value from the T/F vector lands, replace it with NA
+  selected_columns_row_means[do_not_aggregate] <- NA
+  
+  #return the columns with their new row means calculated in a vector
+  return(selected_columns_row_means)
+}
+
+#make the new columns that were created earlier all into one column
+dt_long <- dt_ind_sub_basin |> pivot_longer(cols = c(ind_site,
+                                                     ind_watercourse,
+                                                     ind_sub_basin),
+                                            names_to = "grouping",
+                                            values_to = "value")
+#combine indicator names and grouping names
+dt_long <- dt_long |> unite(indicator_group, indicator:grouping, sep = "_")
+
+
+#pivot everything wider for function and create the min DO score column
+dt_wide <- dt_long |> pivot_wider(names_from = indicator_group, 
+                                  values_from = c(value)) |> 
+  mutate(min_DO_ind_watercourse = case_when(
+    High_DO_ind_watercourse > Low_DO_ind_watercourse ~ Low_DO_ind_watercourse, T ~ High_DO_ind_watercourse),
+    min_DO_ind_sub_basin = case_when(
+      High_DO_ind_sub_basin > Low_DO_ind_sub_basin ~ Low_DO_ind_sub_basin, T ~ High_DO_ind_sub_basin))
+
+#run the function for each grouping
+dt_wide$nutrients_ind_cat_watercourse <- n3_aggregation(select(dt_wide, c("DIN_ind_watercourse", "TP_ind_watercourse")))
+dt_wide$nutrients_ind_cat_sub_basin <- n3_aggregation(select(dt_wide, c("DIN_ind_sub_basin", "TP_ind_sub_basin")))
+dt_wide$phys_chem_ind_cat_watercourse <- n3_aggregation(select(dt_wide, c("Turbidity_ind_watercourse", "min_DO_ind_watercourse")))
+dt_wide$phys_chem_ind_cat_sub_basin <- n3_aggregation(select(dt_wide, c("Turbidity_ind_sub_basin", "min_DO_ind_sub_basin")))
+
+#run an extra check to pick up if any data in the phys_chem grouping was missing
+dt_wide <- dt_wide |> bind_cols(dt_wide |> rowwise() |> 
+                                  summarise(remove = sum(is.na(c(Turbidity_ind_site, High_DO_ind_site, Low_DO_ind_site))))) |> 
+  mutate(phys_chem_ind_cat_watercourse = case_when(remove < 1.5 ~ phys_chem_ind_cat_watercourse),
+         phys_chem_ind_cat_sub_basin = case_when(remove < 1.5 ~ phys_chem_ind_cat_sub_basin)) |> 
+  select(-c(remove, min_DO_ind_watercourse, min_DO_ind_sub_basin))
+
+```
+
+### Weight scores by the proportion of the basin that the sub basin or watercourse covers
+
+This is a pretty straight forward step.
+
+```{r}
+#| label: weighting sub basins and watercourses
+
+#first we need to calculate the proportion of the sub basins (we only have the watercourses currently)
+dt_wide <- dt_wide |> group_by(sub_basin) |> 
+  mutate(area_sub_basin = sum(unique(area)),
+         proportion_sub_basin = sum(unique(proportion))) |> 
+  ungroup()
+
+#then get the weighted scores by multiply by the proportion of the basin
+dt_wide_weighted <- dt_wide |> 
+  mutate(weighted_nutrients_watercourse = nutrients_ind_cat_watercourse*proportion,
+         weighted_phys_chem_watercourse = phys_chem_ind_cat_watercourse*proportion,
+         weighted_nutrients_sub_basin = nutrients_ind_cat_sub_basin*proportion_sub_basin,
+         weighted_phys_chem_sub_basin = phys_chem_ind_cat_sub_basin*proportion_sub_basin)
+
+```
+
+### Aggregate within each indicator category to the basin level
+
+Using the weighted indicator category scores we can now sum them together to get an indicator category score for the entire basin
+
+```{r}
+#| label: summing weighted sub basins
+
+#calculate the basin score by adding up all unique weighted values for the sub basin and year
+dt_wide_weighted_basin <- dt_wide_weighted |> 
+  group_by(basin, FY) |> 
+  mutate(weighted_nutrients_basin = sum(unique(weighted_nutrients_watercourse), na.rm = T),
+         weighted_phys_chem_basin = sum(unique(weighted_phys_chem_watercourse), na.rm = T)) |> 
+  ungroup()
+
+```
+
+### Aggregate across indicator categories to index level
+
+finally, for each basin we will average the indicator categories to get an index score
+
+```{r}
+#| label: calculating index
+
+#calculate the basin index score by taking the mean of the weighted indicator categories
+dt_wide_weighted_basin_index <- dt_wide_weighted_basin |> 
+  group_by(basin, FY) |> 
+  mutate(water_quality = mean(c(weighted_nutrients_basin, weighted_phys_chem_basin))) |> 
+  ungroup()
+
+```
+
+# Dry Tropics Final Tables
+
+The outputs from this analysis will be presented in a range of tables. Below we arrange and style the data to suit each table.
+
+## Generic Final output
+
+First we will save the entire final dataset without any styling
+
+```{r}
+#| label: reorder table
+
+#update factor order and then create water quality column
+dt_wq_final <- dt_wide_weighted_basin_index |> 
+  arrange(ordered(dt_wide_weighted_basin_index$site,
+                  levels = c("BOH3.9", "LOU0.9", "LOU6.0", "TC4A", "RC04", "RC07", "RR05",
+                             "CB3", "CB9", "CB8", "AltC1.7", "BWC2.4", "SLC0.0", "SLC2.0",
+                             "CO1", "CO2", "CO3", "SWC0.6", "SC1", "SC2", "RolC0.8", "CryC1.0")))
+
+#save the output
+write_csv(dt_wq_final, glue("{save_path}dry_tropics_final_scores.csv"))
+
+#clean up
+rm(dt_long, dt_wide, dt_standardised, dt_ind_sub_basin, dt_ind_watercourse, dt_wide_weighted, 
+   dt_wide_weighted_basin, dt_wide_weighted_basin_index)
+
+```
+
+## Indicator and Indicator Category Main Report Tables
+
+now we will arrange the data to best suit our main report tables. Key points to note are that:
+* we present the nutrients and physical-chemical properties indicator categories (and their indicators) separately
+* we present unweighted and weighted scores on separate tables
+* that we only show the current reporting year of data in this format
+
+```{r}
+#| label: arrange data for main report
+
+#select the current report year
+dt_2022_index <- dt_wq_final |> filter(FY == 2022)
+
+#group rearrange, rename, restyle, floor round, and generic round
+dt_2022 <- dt_2022_index |> 
+  select(-c(region, environment, FY, water_quality)) |> 
+  mutate(across(contains(c("Turb", "DIN", "TP", "FRP", "High", "Low", "nutrients_ind", 
+                           "phys_chem_ind", "nutrients_basin", "phys_chem_basin")), floor),
+         across(contains(c("proportion", "nutrients_watercourse", "phys_chem_watercourse",
+                          "nutrients_sub_basin", "phys_chem_sub_basin")), round, 2),
+         across(contains("area"), round, 0))
+    
+#get only unweighted nutrient data
+nutri_unweighted <- dt_2022 |> select(1:4, contains(c("DIN", "TP", "nutrients_ind_cat"))) 
+
+#call the formatting function
+source(here("functions/n3_conditional_formatting.R"))
+
+#run and save
+n3_conditional_formatting(nutri_unweighted, glue("{save_path}/tables/dt_estuarine_nutrients_unweighted"), start_col = 5, method = "Letter")
+
+#get only unweighted phys chem data
+phys_chem_unweighted <- dt_2022 |> select(1:4, contains(c("Turb", "DO", "phys_chem_ind_cat")))
+
+#run and save
+n3_conditional_formatting(phys_chem_unweighted, glue("{save_path}/tables/dt_estuarine_phys_chem_unweighted"), start_col = 5, method = "Letter")
+
+#combine the area data into a single column
+dt_2022_area <- dt_2022 |> 
+  mutate(area = paste0("(", area, ")"), area_sub_basin = paste0("(", area_sub_basin, ")")) |> 
+  unite("proportion (area)", proportion:area, sep = " ") |> 
+  unite("proportion_sub_basin (area)", proportion_sub_basin:area_sub_basin, sep = " ")
+
+#get only nutri data
+nutri <- dt_2022_area |> select(1:3, contains(c("nutrients", "(area)"))) |>  
+  relocate(c("proportion (area)", "proportion_sub_basin (area)"), .after = nutrients_ind_cat_sub_basin) |> 
+  unique()
+  
+#run and save
+n3_conditional_formatting(nutri, glue("{save_path}/tables/dt_estuarine_nutrients_weighted"), start_col = 4, method = "Letter",
+                          ignore = c("proportion (area)", "proportion_sub_basin (area)",
+                                     "weighted_nutrients_watercourse", "weighted_nutrients_sub_basin"))
+
+#get only phys chem data
+phys_chem <- dt_2022_area |> select(1:3, contains(c("phys_chem", "(area)"))) |>  
+  relocate(c("proportion (area)", "proportion_sub_basin (area)"), .after = phys_chem_ind_cat_sub_basin) |> 
+  unique()
+
+#run and save
+n3_conditional_formatting(phys_chem, glue("{save_path}/tables/dt_estuarine_phys_chem_weighted"), start_col = 4, method = "Letter",
+                          ignore = c("proportion (area)", "proportion_sub_basin (area)",
+                                     "weighted_phys_chem_watercourse", "weighted_phys_chem_sub_basin"))
+
+#clean up
+rm(dt_2022_index, dt_2022, nutri_unweighted, phys_chem_unweighted, dt_2022_area, nutri, phys_chem)
+
+```
+
+## Water Quality Index Main Report Tables
+
+next we will arrange the data to best suit our water quality index summary tables. Key points to note are that:
+* we present the nutrients and physical-chemical properties indicator categories at the basin level for the current year
+* then we present the water quality index for the current and all past years
+
+```{r}
+#| label: arrange data for water quality index table
+
+#get the data we want
+dt_wq_summary <- dt_wq_final |> select("basin", "FY", "weighted_nutrients_basin", "weighted_phys_chem_basin", "water_quality") |>
+  filter(FY >=2019) |> unique() |> 
+  mutate(weighted_nutrients_basin = case_when(FY == 2022 ~ weighted_nutrients_basin),
+         weighted_phys_chem_basin = case_when(FY == 2022 ~ weighted_phys_chem_basin)) |>
+  pivot_wider(names_from = FY, values_from = c(weighted_nutrients_basin, weighted_phys_chem_basin, water_quality)) |>
+  select(where((~sum(!is.na(.x)) > 0))) |> 
+  mutate(across(is.numeric, floor))
+
+#run and save
+n3_conditional_formatting(dt_wq_summary, glue("{save_path}/tables/dt_estuarine_water_quality_index"), start_col = 2, method = "Numeric") 
+```
+
+## Historic Data Appendix Tables
+
+Next up are the appendix tables. Key points to note about these tables are:
+* We only show indicator scores, no indicator categories
+* we present the nutrients and physical-chemical properties indicators (not the categories themselves) in separate tables
+* all years back to the 2019 FY are shown
+
+```{r}
+#| label: arrange data for historic data appendix tables
+
+#select all years back to 2019
+dt_historic_appendix <- dt_wq_final |> filter(FY >= 2019) |> 
+  select("site", "FY", contains(c("ind_site"))) |> 
+  pivot_longer(contains(c("ind_site")), names_to = "ind_site", values_to = "values") |> 
+  unite(ind_site_year, FY:ind_site, sep = "_") |> 
+  pivot_wider(names_from = ind_site_year, values_from = "values")
+
+#select only nutrient columns
+hist_nutr <- dt_historic_appendix |> select(1, contains(c("DIN", "TP"))) |> 
+  mutate(across(is.numeric, floor))
+
+#run and save
+n3_conditional_formatting(hist_nutr, glue("{save_path}/tables/dt_estuarine_nutrients_historic_appendix"), start_col = 2, method = "Letter")
+
+#select only target columns
+hist_phys_chem <- dt_historic_appendix |> select(1, contains(c("Turb", "DO"))) |> 
+  mutate(across(is.numeric, floor))
+
+#run and save
+n3_conditional_formatting(hist_phys_chem, glue("{save_path}/tables/dt_estuarine_phys_chem_historic_appendix"), start_col = 2, method = "Letter")
+
+```
+## Supplimentary Data Appendix Tables
+
+Then we need to create the supplementary appendix tables. These contain information such as the number of samples, mean values, WQO Objectives, SFs, LORs, etc. 
+
+```{r}
+#| label: arrange data for supplimentary data appendix tables
+
+#select current year
+dt_supp_appendix <- dt_summary |> filter(FY == 2022) |> 
+  mutate(across("annual_median", round, 3)) |> 
+  select(watercourse, site, indicator, unit, n_months, n_unique_months, annual_median, gv, sf, lor) |> 
+  unique() |> 
+  pivot_wider(names_from = c(indicator, unit), values_from = c("n_months", "n_unique_months", "annual_median", "gv", "sf", "lor"))
+  
+#update factor order
+dt_supp_appendix <- dt_supp_appendix |> 
+  arrange(ordered(dt_supp_appendix$site,
+                  levels = c("BOH3.9", "LOU0.9", "LOU6.0", "TC4A", "RC04", "RC07", "RR05",
+                             "CB3", "CB9", "CB8", "AltC1.7", "BWC2.4", "SLC0.0", "SLC2.0",
+                             "CO1", "CO2", "CO3", "SWC0.6", "SC1", "SC2", "RolC0.8", "CryC1.0")))
+
+#get a vector of indicators
+indi <- unique(dt_summary$indicator)
+
+#select each indicator one at a time and save
+for (i in 1:length(indi)){
+  
+  df <- dt_supp_appendix |> select(1,2, contains(c(indi[i])))
+  
+  write.csv(df, glue("{save_path}/tables/dt_estuarine_{indi[i]}_supp_appendix.csv"), row.names = F)
+}
+
+```
+
+# Box plots
+
+Lets now create some box plot that help to summarise the data, key points to note are:
+* each year is plotted separately
+* each indicator is plotted separately
+* some indicators have a log scale applied
+
+```{r}
+#| label: create a boxplot each indicator
+
+#create custom log function for tick breaks
+base_breaks <- function(n = 10){
+    function(x) {
+        axisTicks(log10(range(x, na.rm = TRUE)), log = TRUE, n = n)
+    }
+}
+
+
+for (i in 1:length(unique(dt_est_current$indicator))){
+  for (j in 1:length(unique(dt_est_current$FY))){
+    
+    data <- dt_est_current |> filter(indicator == unique(dt_est_current$indicator)[i],
+                                     FY == unique(dt_est_current$FY)[j])
+    
+    GV <- data |> select(watercourse, gv) |> rename(value = gv)
+    
+    if (unique(dt_est_current$indicator)[i] %in% c("High_DO", "Low_DO")){
+      unit <- "% Saturation"
+    } else if (unique(dt_est_current$indicator)[i] == "Turbidity"){
+        unit <- "NTU"
+    } else {unit <- "mg/L"}
+    
+    tested_val <- data |> select(watercourse, value) |> group_by(watercourse) |> 
+        mutate(value = median(value, na.rm = T))
+
+    plot <- ggplot(data, aes(x = watercourse, y = value, fill = watercourse)) +
+      geom_boxplot(outlier.colour = "black", outlier.shape = 21, outlier.fill = "red", outlier.size = 2) +
+      geom_jitter(color="black", size = 0.5, alpha = 0.9, height = 0) +
+      geom_point(data = GV, colour = "black", shape = 23, size = 2, fill = "blue") +
+      geom_text(data = GV, aes(label = value), show.legend = F, nudge_x = 0.21, colour = "white", size = 2) +
+      geom_text(data = GV, aes(label = value), show.legend = F, nudge_x = 0.2, size = 2) +
+      geom_point(data = tested_val, colour = "black", shape = 4, size = 3) +
+      scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
+      theme_bw() +
+      theme(legend.position = "none", plot.title = element_text(size = 9),
+            axis.line = element_line(colour = "black"),
+            axis.text = element_text(colour = "black", size = 6),
+            axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+            panel.grid.major = element_blank(),
+            panel.grid.minor = element_blank(),
+            panel.border = element_blank(),
+            panel.background = element_blank()) +
+      xlab("") + ylab(glue("{unique(dt_est_current$indicator)[i]} ({unit})"))
+    
+    if (unique(dt_est_wq_all$indicator)[i] %in% c("DIN", "High_DO", "Low_DO", "TP", "Turbidity", "FRP")){
+      
+      plot <- plot + scale_y_continuous(trans = scales::log_trans(), breaks = base_breaks(),
+                   labels = prettyNum)
+
+      log_scale <- "(Log10)"
+      
+    } else {log_scale <- ""}
+    
+    plot <- plot + ggtitle(glue("{unique(dt_est_current$FY)[j]}:
+                                {unique(dt_est_current$indicator)[i]} Boxplot {log_scale}"))
+    
+    ggsave(glue("{save_path}/boxplots/{unique(dt_est_current$FY)[j]}_{unique(dt_est_current$indicator)[i]}_Boxplot.png"), width = 12, height = 12, units = "cm")
+    
+  }
+  
+}
+
+```
+
+# Line plots
+
+Now lets create some line plots, key points to note are:
+* all years of data are plotted
+* each indicator is plotted separately
+* some indicators have a log scale applied
+
+## Part 1
+
+In this part we will plot an indicator for all sites at once, faceted by site
+
+```{r}
+#| label: create a lineplot each indicator
+
+dt_est_current$date <- as.Date(dt_est_current$date)
+
+dt_grab_line_plot <- dt_est_current |> group_by(across(c(-"site", -"value"))) |> 
+  summarise(value = round(median(value, na.rm=T),10),NA) |> 
+  ungroup() |> unique()
+
+
+for (i in 1:length(unique(dt_grab_line_plot$indicator))){
+  for (k in 1:length(unique(dt_grab_line_plot$watercourse))){
+    
+    data <- dt_grab_line_plot |> filter(!is.na(value),
+                                     indicator == unique(dt_grab_line_plot$indicator)[i])
+    
+    GV <- data |> select(watercourse, date, gv) |> rename(value = gv)
+    
+    if (unique(dt_grab_line_plot$indicator)[i] %in% c("High_DO", "Low_DO")){
+      unit <- "% Saturation"
+    } else if (unique(dt_grab_line_plot$indicator)[i] == "Turbidity"){
+        unit <- "NTU"
+    } else {unit <- "mg/L"}
+    
+    plot <- ggplot(data, aes(x = date, y = value, colour = watercourse)) +
+      geom_line(show.legend = F, size = 0.8) +
+      geom_textline(data = GV, aes(label = value), colour = "black", linetype = 2, size = 3, linewidth = 0.8, hjust = 0.2) +
+      scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
+      theme_bw() +
+      theme(legend.position="none", plot.title = element_text(size = 9),
+            axis.line = element_line(colour = "black"),
+            axis.text = element_text(colour = "black", size = 8),
+            panel.grid.major = element_blank(),
+            panel.grid.minor = element_blank(),
+            panel.border = element_blank(),
+            panel.background = element_blank()) +
+      facet_wrap(~watercourse, ncol = 2) +
+      xlab("") + ylab(glue("{unique(dt_grab_line_plot$indicator)[i]} ({unit})"))
+      
+
+    
+    if (unique(dt_grab_line_plot$indicator)[i] %in% c("DIN", "High_DO", "Low_DO", "TP", "Turbidity", "FRP")){
+      
+      plot <- plot + scale_y_continuous(trans = scales::log_trans(), breaks = base_breaks(),
+                   labels = prettyNum)
+
+      log_scale <- "(Log10)"
+      
+    } else {log_scale <- ""}
+    
+    plot <- plot + ggtitle(glue("{unique(dt_grab_line_plot$indicator)[i]} Line plot {log_scale}"))
+    
+    ggsave(glue("{save_path}/lineplots/{unique(dt_grab_line_plot$indicator)[i]}_Line plot.png"), width = 15, height = 20, units = "cm")
+    
+    }
+}
+
+```
+## Part 2
+
+In this part we will plot an indicator for all sites within a basin, for the current year. With no facet - to allow direct comparison.
+
+```{r}
+#| label: create a second lineplot each indicator
+
+#get only FY2022 data
+dt_grab_line_plot <- dt_grab_line_plot |> filter(FY == "2022")
+
+for (x in 1:length(unique(dt_grab_line_plot$basin))){
+  for (i in 1:length(unique(dt_grab_line_plot$indicator))){
+    for (k in 1:length(unique(dt_grab_line_plot$watercourse))){
+      
+      #get only one basin
+      data <- dt_grab_line_plot |> filter(basin == unique(dt_grab_line_plot$basin)[x])
+      
+      data <- data |> filter(!is.na(value),
+                                       indicator == unique(dt_grab_line_plot$indicator)[i])
+      
+      GV <- data |> select(watercourse, date, gv) |> rename(value = gv)
+      
+      if (unique(dt_grab_line_plot$indicator)[i] %in% c("High_DO", "Low_DO")){
+        unit <- "% Saturation"
+      } else if (unique(dt_grab_line_plot$indicator)[i] == "Turbidity"){
+          unit <- "NTU"
+      } else {unit <- "mg/L"}
+      
+      plot <- ggplot(data, aes(x = date, y = value, colour = watercourse)) +
+        geom_line(size = 0.8) +
+        geom_point(size = 3, shape = 4) +
+        #geom_textline(data = GV, aes(label = Value), colour = "black", linetype = 2, size = 3, linewidth = 0.8, hjust = 0.2) +
+        scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
+        theme_bw() +
+        theme(plot.title = element_text(size = 9),
+              axis.line = element_line(colour = "black"),
+              axis.text = element_text(colour = "black", size = 8),
+              panel.grid.major = element_blank(),
+              panel.grid.minor = element_blank(),
+              panel.border = element_blank(),
+              panel.background = element_blank()) +
+        xlab("") + ylab(glue("{unique(dt_grab_line_plot$indicator)[i]} ({unit})"))
+        
+  
+      
+      if (unique(dt_grab_line_plot$indicator)[i] %in% c("DIN", "High_DO", "Low_DO", "TP", "Turbidity", "FRP")){
+        
+        plot <- plot + scale_y_continuous(trans = scales::log_trans(), breaks = base_breaks(),
+                     labels = prettyNum)
+  
+        log_scale <- "(Log10)"
+        
+      } else {log_scale <- ""}
+      
+      plot <- plot + ggtitle(glue("{unique(dt_grab_line_plot$basin)[x]}_{unique(dt_grab_line_plot$indicator)[i]} Line plot {log_scale}"))
+      
+      ggsave(glue("{save_path}/lineplots/{unique(dt_grab_line_plot$basin)[x]}_{unique(dt_grab_line_plot$indicator)[i]}_Line plot_2022_only.png"), width = 15, height = 20, units = "cm")
+      
+      }
+  }
+}
+
+```

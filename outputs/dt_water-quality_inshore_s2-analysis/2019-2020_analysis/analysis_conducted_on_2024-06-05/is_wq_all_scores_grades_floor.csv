@@ -1,0 +1,15 @@
+Region,Zone,Sub_Zone,Geographic_Area,Chla,TSS,FRP,NOX,PN,PP,Secchi,Turbidity,TN,TP,Nutrients,Phys_Chem,overall_wq,Chla_Grade,TSS_Grade,FRP_Grade,NOX_Grade,PN_Grade,PP_Grade,Secchi_Grade,Turbidity_Grade,TN_Grade,TP_Grade,Nutrients_Grade,Phys_Chem_Grade,overall_wq_Grade
+DT,Halifax Bay,Midshelf,Midshelf,69,100,33,19,0,65,1,100,NA,NA,28,67,54,B,A,D,E,E,B,E,A,NA,NA,D,B,C
+DT,Halifax Bay,HB.Open Coastal,H.Open Coastal,67,92,45,36,0,67,6,89,NA,NA,34,62,54,B,A,C,D,E,B,E,A,NA,NA,D,B,C
+DT,Cleveland Bay,Magnetic Island,Magnetic Island,80,100,100,4,13,29,77,78,NA,NA,16,85,60,B,A,A,E,E,D,B,B,NA,NA,E,A,C
+DT,Cleveland Bay,CB.Enclosed Coastal,EC.Outside Port Zone,100,14,100,94,NA,NA,78,0,68,16,55,31,62,A,E,A,A,NA,NA,B,E,B,E,C,D,B
+DT,Cleveland Bay,CB.Open Coastal,OC.Outside Port Zone,NA,81,100,NA,NA,NA,47,63,0,100,100,64,82,NA,A,A,NA,NA,NA,C,B,E,A,A,B,A
+DT,Cleveland Bay,CB.Open Coastal,OC.Inside Port Zone,NA,100,100,100,NA,NA,100,100,34,100,100,100,100,NA,A,A,A,NA,NA,A,A,D,A,A,A,A
+DT,Cleveland Bay,CB.Enclosed Coastal,EC.Inside Port Zone,NA,100,100,100,NA,NA,78,74,52,100,100,84,92,NA,A,A,A,NA,NA,B,B,C,A,A,A,A
+DT,Cleveland Bay,CB.Enclosed Coastal,NA,100,57,100,97,NA,NA,78,37,60,58,77,57,78,A,C,A,A,NA,NA,B,D,C,C,B,C,B
+DT,Cleveland Bay,CB.Open Coastal,NA,NA,90,100,100,NA,NA,73,81,17,100,100,82,91,NA,A,A,A,NA,NA,B,A,E,A,A,A,A
+DT,Cleveland Bay,Magnetic Island,NA,80,100,100,4,13,29,77,78,NA,NA,16,85,60,B,A,A,E,E,D,B,B,NA,NA,E,A,C
+DT,Halifax Bay,HB.Open Coastal,NA,67,92,45,36,0,67,6,89,NA,NA,34,62,54,B,A,C,D,E,B,E,A,NA,NA,D,B,C
+DT,Halifax Bay,Midshelf,NA,69,100,33,19,0,65,1,100,NA,NA,28,67,54,B,A,D,E,E,B,E,A,NA,NA,D,B,C
+DT,Cleveland Bay,NA,NA,90,79,100,74,13,29,76,63,38,79,74,73,79,A,B,A,B,E,D,B,B,D,B,B,B,B
+DT,Halifax Bay,NA,NA,68,96,39,28,0,66,3,94,NA,NA,31,64,54,B,A,D,D,E,B,E,A,NA,NA,D,B,C

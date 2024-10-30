@@ -1,0 +1,227 @@
+---
+title: "Derive a Rough Bohle Population and Area"
+subtitle: "A Healthy Waters Partnership Analysis"
+description: "This script calculates the population and area (km2) of the Bohle sub basin. The output of this script was used for a media release."
+author: "Adam Shand"
+format: html
+params:
+  project_crs: "EPSG:7844"
+---
+
+# Introduction
+
+This script is designed to (roughly) calculate the population and area of the Bohle sub basin as we define it, as a proportion of the Townsville LGA. Note that our area is spatially different from how the Bohle might be determined form a normal population perspective (e.g. via suburb, or SA2 boundary). We define the Bohle based on the water dynamics of the area.
+        
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, sf, tmap, janitor, readxl)
+
+```
+
+Then we also need to set up key variables for the script, as well as the output location.
+
+```{r}
+#| label: create save path and establish project crs
+
+#set project crs
+proj_crs <- params$project_crs
+
+#create a file path to help with saving outputs
+save_outputs <- here("outputs/dt_maps_bohle-population/")
+read_data <- here("data/dt_maps_bohle-population/")
+
+#bring the path to life
+dir.create(save_outputs)
+dir.create(read_data)
+
+#turn off s2 geometry
+sf_use_s2(FALSE)
+
+```
+
+# Load Data
+
+Now the script is set up we need to load in all of the required datasets. We will need:
+
+- The Northern Three region file (to define our Bohle boundary)
+- The SA1 polygons
+- The excel file that gives (rough) estimates of population per SA1 polygon
+- The Townsville LGA area
+
+```{r}
+#| label: load the n3 region
+
+
+#read in the custom function to clean column names into our specific style
+source("../functions/name_cleaning.R")
+
+#load in the n3 region
+n3_region <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg")) |> 
+  name_cleaning()
+
+#filter to just the Bohle
+bohle <- n3_region |> 
+  filter(SubBasinOrSubZone == "Bohle River") |> 
+  group_by(SubBasinOrSubZone) |> 
+  summarise(geom = st_union(geom))
+
+#filter for the marine boundary
+marine <- n3_region |> 
+  filter(Environment == "Marine") |> 
+  st_union()
+
+#load the SA1 data
+sa1 <- st_read(glue("{read_data}/SA1_2021_AUST_GDA2020.shp")) |> 
+  name_cleaning()
+
+#load SA1 excel data
+sa1_pop <- read_excel(glue("{read_data}/estimated_sa1_population.xlsx")) |> 
+  name_cleaning()
+
+#load the LGA data from the generic maps folder
+lga <- st_read(here("data/dt_maps/lga.gpkg")) |> 
+  name_cleaning()
+
+#load LGA excel data
+lga_pop <- read_csv(glue("{read_data}/estimated_lga_population.csv")) |> 
+  name_cleaning()
+
+#read in qld outlines data from the gisaimsr package, filter for land and islands, update crs
+qld <- get(data("gbr_feat", package = "gisaimsr")) |> 
+  name_cleaning() |> 
+  filter(FeatName %in% c("Mainland", "Island")) |> 
+  st_transform(proj_crs)
+
+```
+
+# Edit Data
+
+Then we assign each of the populations to the polygons
+
+```{r}
+#| label: edit data
+
+#----------
+# SA1
+#----------
+
+#make sure columns are the same type
+sa1 <- sa1 |> mutate(Sa1Code21 = as.character(Sa1Code21))
+sa1_pop <- sa1_pop |> mutate(Sa1 = as.character(Sa1))
+
+#combine data
+sa1_combined <- left_join(sa1, sa1_pop, join_by("Sa1Code21" == "Sa1"))
+
+#filter spatially
+bohle_pop <- st_filter(sa1_combined, bohle, .predicates = st_intersects)
+
+#select rows of interest
+bohle_pop <- bohle_pop |> 
+  select(Sa1Code21, X2023P)
+
+#----------
+# LGA
+#----------
+
+#make sure columns have cells that will match
+lga <- lga |> 
+  mutate(AbbrevName = str_to_title(AbbrevName))
+
+lga_pop <- lga_pop |> rename("AbbrevName" = X1) |> 
+   mutate(AbbrevName = str_replace(AbbrevName, "\\s*\\(\\w\\)$", ""))
+
+#combine data
+lga_combined <- left_join(lga, lga_pop)
+
+#select row of interest
+tsv_pop <- lga_combined |> 
+  filter(Lga == "Townsville City")
+
+```
+
+# Calculate Results
+
+Then we can easily calculate the total population within the Bohle (total TSV is already done), then work out the proportions of population and area.
+
+```{r}
+#| label: calculate results
+
+#----------
+# Population
+#----------
+
+#calculate the population in the area
+bohle_total_pop <- sum(bohle_pop$X2023P)
+
+#select the pop of townsville
+tsv_total_pop <- tsv_pop$X2023P
+
+#calculate pop proportion
+bohle_pop_proportion <- scales::percent(round(bohle_total_pop/tsv_total_pop, 2))
+
+#----------
+# Area
+#----------
+
+#get area of each location
+bohle_area <- st_area(bohle)
+units(bohle_area) <- units::make_units(km^2)
+bohle_area <- round(units::drop_units(bohle_area), 2)
+
+#however, tsv lga needs its marine section cut off first as thats not really a good comparison otherwise
+tsv_area_shp <- st_difference(tsv_pop, marine)
+tsv_area <- st_area(tsv_area_shp)
+units(tsv_area) <- units::make_units(km^2)
+tsv_area <- round(units::drop_units(tsv_area), 2)
+
+#calculate area proportion
+bohle_area_proportion <- scales::percent(round(bohle_area/tsv_area, 2))
+
+#save the results
+results <- tibble(Location = c("Townsville", "Bohle", "Proportion"), 
+                  Area = c(tsv_area, bohle_area, bohle_area_proportion),
+                  Population = c(tsv_total_pop, bohle_total_pop, bohle_pop_proportion))
+
+write_csv(results, glue("{save_outputs}/bohle_statistics.csv"))
+
+```
+
+# Map Example
+
+Lastly we will create a map that demonstrates the size difference of the two.
+
+```{r}
+#| label: create map
+#| output: true
+
+#load in custom mapping function
+source(here("functions/report_base_map.R"))
+
+#create the initial base map using the custom function. hand the largest outline to the supplied_sf variable 
+report_base_map(supplied_sf = tsv_area_shp, regi = "Dry Tropics", strm_ord = 2, colour = F)
+  
+#add extra features to the base map
+final_map <- base_map +
+  tm_shape(tsv_area_shp, is.master = T) + 
+  tm_borders(col = "red", lwd = 2) +
+  tm_shape(bohle) +
+  tm_borders(col = "orange", lwd = 2) +
+  tm_add_legend(type = "symbol", col = c("red", "orange", "black"),
+                labels = c("Townsville LGA", "Bohle Sub Basin", "Dry Tropics Basin"),
+                title = "Legend")
+
+#save
+tmap_save(final_map, glue("{save_outputs}/bohle_map.png"))
+
+#and visualise
+final_map
+
+```
+
+

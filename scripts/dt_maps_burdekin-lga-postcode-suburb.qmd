@@ -1,0 +1,219 @@
+---
+title: "Burdekin LGAs, Postcodes, and Suburbs"
+subtitle: "A Healthy Waters Partnership Analysis"
+description: "This script maps the LGAs, postcodes and Suburbs found within the Burdekin region. The output of this was used in the Burdekin expansion project."
+author: "Adam Shand"
+format: html
+params:
+  project_crs: "EPSG:7844"
+---
+
+# Introduction
+
+This is a simple script to produce a list of LGAs, postcodes, and suburbs, that fall at least partially within the Burdekin Region.
+
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, sf, janitor, tmap)
+
+```
+
+Then set the coordinate reference system and save/load locations.
+
+```{r}
+#| label: global vars and initial setup
+
+#set crs
+proj_crs <- params$project_crs
+
+#create a file path to help with saving things
+save_path <- here("outputs/dt_maps_burdekin-lga-postcode-suburb/")
+
+#create a data path as well
+data_path <- here("data/dt_maps_burdekin-lga-postcode-suburb/")
+
+#bring that path to life
+dir.create(save_path)
+
+#turn off s2 geometry
+sf_use_s2(F)
+
+```
+
+# Load Data
+
+Next we load in the data (refer to the README in the GitHub repo if data is missing). Specifically we will be pulling in 
+
+ - The Burdekin basin (+sub basins),
+ - An outline of Queensland
+ - A list of LGAs in Queensland
+ - A list of postcodes in Queensland
+ - A list of suburbs in Queensland
+
+```{r}
+#| label: load in data
+
+#read in the custom function to clean column names into our specific style
+source("../functions/name_cleaning.R")
+
+#please note if the data is not in the basin builder folder, try running the basin builder script
+n3_region <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg")) |> 
+  name_cleaning() |> 
+  st_transform(proj_crs)
+
+#read in qld outlines data from the gisaimsr package, filter for land and islands, update crs
+#qld <- get(data("gbr_feat", package = "gisaimsr")) |>
+#  name_cleaning() |> 
+#  filter(FeatName %in% c("Mainland", "Island")) |> 
+#  st_transform(proj_crs)
+
+qld <- st_read(here("data/n3_prep_region-builder/qld_boundary.gpkg")) |> 
+  name_cleaning()
+
+#read in lga from the generic data folder
+lga <- st_read(here("data/dt_maps/lga.gpkg")) |> 
+  name_cleaning() |> 
+  st_transform(proj_crs)
+
+#get palm seperaterly as an extra
+palm_lga <- lga |> 
+  filter(Lga == "Palm Island Aboriginal Shire")
+  
+#and post codes and suburbs
+postcode <- st_read(glue("{data_path}/postcode/postcode.shp")) |> 
+  name_cleaning() |> 
+  st_transform(proj_crs)
+
+suburb <- st_read(glue("{data_path}/suburb.gpkg")) |> 
+  name_cleaning() |> 
+  st_transform(proj_crs)
+
+```
+
+# Edit Data
+
+We then need to intersect the burdekin basin with each of the spatial layers and define a list of locations that are at least partially within.
+
+```{r}
+#| label: edit data
+
+#filter dataset to get only burdekin basin
+burd_basin <- n3_region |> 
+  filter(Environment != "Marine", BasinOrZone %in% c("Burdekin", "Haughton")) |> 
+  rename(SubBasin = SubBasinOrSubZone) |>  
+  group_by(SubBasin) |> summarise(geom = st_union(geom)) |> st_cast("POLYGON")
+
+#intersect layers
+lga <- st_filter(lga, burd_basin, .predicates = st_intersects) |> rbind(palm_lga)
+postcode <- st_filter(postcode, burd_basin, .predicates = st_intersects)
+suburb <- st_filter(suburb, burd_basin, .predicates = st_intersects) |> rename(Suburb = Locality)
+post_suburb <- st_intersection(suburb, postcode)
+lga_post_suburb <- st_intersection(post_suburb, lga)
+
+```
+
+# Save
+
+The data can then be saved as a series of spreadsheets.
+
+```{r}
+#| label: save the data to csv
+
+#drop geometry and select relevant columns
+lga_csv <- st_drop_geometry(lga) |> select(Lga) |> rename("LGA_Within_Burdekin" = Lga)
+
+#save
+write_csv(lga_csv, glue("{save_path}/lga_within_burdekin.csv"))
+
+#drop geometry and select relevant columns
+suburb_csv <- st_drop_geometry(suburb) |> select(Lga, Suburb) |> 
+  rename("LGA_Within_Burdekin" = Lga,
+         "Suburb_Within_Burdekin" = Suburb)
+
+#save
+write_csv(suburb_csv, glue("{save_path}/suburb_within_burdekin.csv"))
+
+#drop geometry and select relevant columns
+postcode_csv <- st_drop_geometry(postcode) |> select(PoaCode21) |> 
+  rename("Postcode_Within_Burdekin" = PoaCode21)
+
+#save
+write_csv(postcode_csv, glue("{save_path}/postcode_within_burdekin.csv"))
+
+#drop geometry and select relevant columns
+post_suburb_csv <- st_drop_geometry(post_suburb) |> select(PoaCode21, Suburb) |> 
+  rename("Postcode_Within_Burdekin" = PoaCode21)
+
+#save
+write_csv(post_suburb_csv, glue("{save_path}/post_x_suburb_within_burdekin.csv"))
+
+#drop geometry and select relevant columns
+lga_post_suburb_csv <- st_drop_geometry(lga_post_suburb) |> select(Lga, PoaCode21, Suburb) |> 
+  rename("Postcode_Within_Burdekin" = PoaCode21) |> 
+  unique()
+
+#save
+write_csv(lga_post_suburb_csv, glue("{save_path}/lga_x_post_x_suburb_within_burdekin.csv"))
+
+```
+
+# Map
+
+And finally, to assist with understanding the spreadsheets, some simple maps will also be created.
+
+```{r}
+#| label: map
+
+#create the map
+lga_map <- tm_shape(qld) +
+  tm_polygons(col = "grey80", border.col = "Black") +
+  tm_grid(alpha = 0, labels.show = T, labels.cardinal = T, col = "Black") +
+  tm_xlab("Longitude", size = 1.1) +
+  tm_ylab("Latitude", size = 1.1) +
+  tm_shape(lga, is.master = T) +
+  tm_polygons(border.col = "black", col = "Lga") +
+  tm_shape(burd_basin, is.master = T) +
+  tm_borders(col = "blue") +
+  tm_layout(legend.outside = T, legend.title.size = 3, legend.text.size = 1.5)
+  
+#save
+tmap_save(lga_map, filename = glue("{save_path}/lga_map.png"), width = 24, height = 16)
+
+#create the map
+postcode_map <- tm_shape(qld) +
+  tm_polygons(col = "grey80", border.col = "Black") +
+  tm_grid(alpha = 0, labels.show = T, labels.cardinal = T, col = "Black") +
+  tm_xlab("Longitude", size = 1.1) +
+  tm_ylab("Latitude", size = 1.1) +
+  tm_shape(postcode, is.master = T) +
+  tm_polygons(border.col = "black", col = "PoaCode21") +
+  tm_shape(burd_basin, is.master = T) +
+  tm_borders(col = "blue") +
+  tm_layout(legend.outside = T, legend.title.size = 3, legend.text.size = 1.5)
+  
+#save
+tmap_save(postcode_map, filename = glue("{save_path}/postcode_map.png"), width = 24, height = 16)
+
+#create the map
+suburb_map <- tm_shape(qld) +
+  tm_polygons(col = "grey80", border.col = "Black") +
+  tm_grid(alpha = 0, labels.show = T, labels.cardinal = T, col = "Black") +
+  tm_xlab("Longitude", size = 1.1) +
+  tm_ylab("Latitude", size = 1.1) +
+  tm_shape(suburb, is.master = T) +
+  tm_polygons(border.col = "black", col = "Suburb") +
+  tm_shape(burd_basin, is.master = T) +
+  tm_borders(col = "blue") +
+  tm_layout(legend.outside = T, legend.title.size = 3, legend.text.size = 1.5)
+  
+#save
+tmap_save(suburb_map, filename = glue("{save_path}/suburb_map.png"), width = 24, height = 16)
+
+
+```

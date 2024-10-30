@@ -1,0 +1,1032 @@
+---
+title: "Climate: Air Temperature"
+subtitle: "A Healthy Waters Partnership Analysis"
+description: "This script analyses and presents air temperature data in the Northern Three reporting regions. The output of this is used in the Northern Three technical reports."
+author: "Adam Shand" 
+format: html
+params: 
+  target_fyear: 2023
+  disagg_factor: 5
+  project_crs: "EPSG:7844"
+---
+
+# Introduction
+
+This script contains the methods used to wrangle, analyse and present air temperature data in the Northern Three regions. For a guide on downloading air temperature data refer to the README document for the Spatial Analysis GitHub repo. Note that air temperature data is a paid dataset available from BOM, contact Adam Shand for the current dataset.
+
+Air temperature data is predominantly used within the climate section of the technical report to "set the scene" for each basin in each region. The main objectives of this script are to:
+
+ - Create a key table and summary statistics table
+ - Create a simplified monthly percentiles table for the technical report
+ - Plot long-term annual data
+ - Plot the current year data
+ - Create maps of the current year data for all regions and basins
+ - Create maps of the anomaly of the current year data from the long-term mean for all regions and basins
+ - Combine each of these maps into side-by-side versions.
+
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, janitor, sf, tmap, exactextractr, terra, RColorBrewer, ggplot2)
+
+```
+
+
+Then we also need to set up key variables for the script, as well as the output location.
+
+```{r}
+#| label: global vars and initial setup
+
+#set project variables: crs factor and current_fyear
+proj_crs <- params$project_crs
+fac <- params$disagg_factor
+current_fyear <- params$target_fyear
+
+#create a file path to help with saving things
+save_path <- here(glue("outputs/n3_climate_air-temperature/{current_fyear}/"))
+
+#bring that path to life
+dir.create(save_path)
+
+#create a few extras off of this for plots and maps
+dir.create(glue("{save_path}/plots/"))
+dir.create(glue("{save_path}/maps/"))
+
+#turn off s2 geometry
+sf_use_s2(FALSE)
+
+```
+
+# Load Data
+
+Now the script is set up we need to load in all of the required datasets. This will be broken into two segments:
+
+ - Spatial data specific to the N3 region - such as the region, basin, and sub basin boundaries.
+ - Air temperature data
+
+## Spatial Data
+
+Spatial data for the northern three regions should be readily available in the repo, the dataset is created by the n3_region-builder.qmd script in the repo that should be the first script run for new users. If the dataset is not available refer back to the README document in the GitHub repo. The other parts of spatial data here should go off without a hitch if the region-builder script has been run.
+
+``` {r}
+#| label: Load data
+
+#read in the custom function to clean column names into our specific style
+source("../functions/name_cleaning.R")
+
+#read in qld outlines data from the gisaimsr package, filter for land and islands, update crs
+qld <- get(data("gbr_feat", package = "gisaimsr")) |>
+  name_cleaning() |> 
+  filter(FeatName %in% c("Mainland", "Island")) |> 
+  st_transform(proj_crs)
+
+#get the whole n3 data set
+n3_region <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg")) |> 
+  name_cleaning()
+
+#trim down
+n3_trimmed <- n3_region |> 
+  filter(Environment != "Marine") |> 
+  rename(Basin = BasinOrZone, SubBasin = SubBasinOrSubZone)
+
+#get Basins and sub Basins separately
+n3_basins <- n3_trimmed |> group_by(Region, Basin) |> 
+  summarise(geom = st_union(geom)) |> 
+  ungroup() |> st_cast()
+
+n3_sub_basins <- n3_trimmed |> group_by(Region, Basin, SubBasin) |> 
+  summarise(geom = st_union(geom)) |> 
+  ungroup() |> st_cast()
+
+#create a point for Townsville
+tsv <- st_as_sf(data.frame(Place = "Townsville", x = "-19.2590", y = "146.8169"), coords = c("y", "x"), crs = proj_crs)
+
+#clean
+rm(n3_trimmed)
+
+```
+
+## Air Temperature Data
+
+The raw maximum and minimum (2) air temperature data is as individual netCDF files by BOM for the entirety of Australia, each month (12), from 1910 to present inclusive (113). That is a total of 2x12x113 = 2,712 layers of data... a bit too much. The code chunk below reads in all air temperature data and cuts each of the layers down to only the N3 region, then calculates the mean temperature and saves the data. The next time the code is run it will check if these cut-down and calculation step has already been completed, and load in the processed dataset if so - saving considerable time.
+
+Note there is a buffer region used on the raster cells, this is to ensure that cell values right on the border of the polygon weren't accidentally deleted. Calculations completed in later steps use exact extraction (take only from within the polygon and take proportions of cells half-within polygons). Additionally maps can be masked later on using a finer resolution if needed.
+
+```{r}
+#| label: load temp data and check if needed to be cut
+
+#path to files
+path1 <- here("data/n3_climate_air-temperature/n3_tmean_temperature.nc")
+
+if (file.exists(path1)) {#if the full cut down version exists open that
+  
+  n3_tmean <- rast(path1)
+  
+  rm(path1)
+
+} else {#otherwise create the cut down version
+  
+  #get list temperature files
+  file_list_max <- list.files(here("data/n3_climate_air-temperature/tmax2"), full.names = TRUE, recursive = TRUE)
+  file_list_min <- list.files(here("data/n3_climate_air-temperature/tmin2"), full.names = TRUE, recursive = TRUE)
+
+  #combine all temp files
+  max_tmp <- rast(file_list_max)
+  min_tmp <- rast(file_list_min)
+  
+  #update crs info
+  crs(max_tmp) <- proj_crs
+  crs(min_tmp) <- proj_crs
+
+  #create the rasters
+  qld_tmax <- crop(max_tmp, ext(qld))
+  qld_tmin <- crop(min_tmp, ext(qld))
+  
+  #join the rasters
+  temp_sds <- sds(qld_tmax, qld_tmin)
+  
+  #take the mean of the min and max SpatRasters to create a mean temp raster
+  qld_tmean <- app(temp_sds, mean)
+  
+  #create a buffer around the n3 region
+  buff <- st_buffer(n3_basins, units::set_units(0.05, degree))
+
+  #use trim to remove NAs, and mask to designate area
+  n3_tmean <- trim(mask(qld_tmean, vect(buff)))
+  
+  #save the cut down version
+  writeCDF(n3_tmean, path1, overwrite = T)
+  
+  #read in the cut down version
+  n3_tmean <- rast(path1)
+  
+  #clean up from above 
+  rm(path1, file_list_max, file_list_min, max_tmp, min_tmp, qld_tmax, qld_tmin, buff)
+}
+
+```
+
+
+# Analyse Data
+
+Now all the data loading has been completed we can begin the analysis. Key steps that occur in this section of the script are: 
+
+ - Creation of a "Key Table" (a table that contains all layer names, dates, and associated info (e.g. financial year)).
+ - Creation of a summary table that will store all important data.
+ - Creation of a report table that contains only the essentials needed for presentation in the technical report.
+
+## Key Table
+
+Here we create the key table, note that this table is used through out as a referencing document. E.g., want all layers with the years 1980 to 1990? Use the key table to pull out the names of all layers within that range then you can use those names to select layers.
+
+```{r}
+#| label: creating key table
+
+#create a tibble of layer names and dates
+name_date_tbl <- tibble("LayerName" = names(n3_tmean), "LayerDate" = time(n3_tmean))
+
+#add extra info (fyear, year, month, etc.)
+name_date_tbl <- name_date_tbl |> mutate(Year = year(LayerDate),
+                                         Month = month(LayerDate, label = T),
+                                         Fyear = case_when(month(LayerDate) > 6 ~ Year + 1, T ~ Year))
+
+```
+
+## Summary Table
+
+In the next few code chunks we create a summary table that provides an overview of all important aspects. This table will include information per basin on:
+
+ - Monthly Mean
+ - Annual mean
+ - Long-term temperature
+ - Monthly percentile rank
+ - Annual percentile rank
+ - Anomaly (+/- the ltm)
+ - Percentage of mean
+ 
+Each of these components require a bit of work.
+
+### Means
+
+First up is mean the exact means we are going to calculate are as follows:
+
+ - Monthly Mean: This is the SPATIAL mean of all the air temperature cells across the basin. We will calculate this using the exact_extract(). For example, if there were 3 air temperature cells in the Ross Basin for the date of 01/01/2020, that had the values 25C, 26C, and 27C. Then the monthly mean value for the Ross Basin for the date of 01/01/2020 would be 26C.
+ - Annual Mean: This is calculated as the MEAN of the monthly mean values for each basin. Note, because it is the mean of the SPATIAL mean monthly values, its both the mean of the month AND the spatial mean of all temperatures experienced across the entire basin.
+ - Long-Term Mean (LTM): To understand if the current year had higher, or low, temperatures, we need to compare it against something. The LTM is what we compare it against. The LTM is calculated by taking the mean of the annual mean values for each basin from a 30-year block of data known as a climate normal (more on this in the LTM section below).
+ 
+#### Monthly Mean
+
+This happens first at the monthly time frame. It is important to note that the monthly MEAN is the mean of all the air temperature cells across the basin. I.e. This is a spatial mean.
+
+To get data from we need to specify the layers we are interested in. We use the "key table" from earlier to help here. For example, below I specify I want layers from the `r current_fyear` financial year. (This can be updated by changing the globally set current_fyear variable).
+
+```{r}
+#| label: calculate monthly mean
+
+#get mean from all layers
+temp_mean_basin <- tibble(exact_extract(n3_tmean, n3_basins, fun = "mean", append_cols = T))
+
+#fix column names
+names(temp_mean_basin) <- sub('mean.', '', names(temp_mean_basin))
+
+#pivot the data and round values, then use left_join() to add time values, year, mon, and fyear from the key table
+monthly_basin_temperature <- pivot_longer(temp_mean_basin, cols = 3:ncol(temp_mean_basin),
+                                          names_to = "LayerName", values_to = "MonthlyMeanTemperature") |>
+  mutate(MonthlyMeanTemperature = round(MonthlyMeanTemperature, 1)) |>
+  left_join(name_date_tbl, by = "LayerName")
+
+#remove financial years without a full set of data (sually just 1911, and sometimes the most recent fyear).
+removal_rows <- monthly_basin_temperature |> 
+  group_by(Basin, Fyear) |> 
+  summarise(MonthCount = length(unique(Month))) |> 
+  ungroup() |> 
+  filter(MonthCount < 12)
+
+#subtract from the main table, any rows that appear in the removal table
+monthly_basin_temperature <- anti_join(monthly_basin_temperature, removal_rows, by = "Fyear")
+
+#clean up
+rm(temp_mean_basin, removal_rows)
+
+```
+
+#### Annual Mean
+
+We can then easily calculate the annual air temperature by taking the mean of the monthly mean values.
+
+It is important to note that the monthly MEAN values (which as covered above, are the spatial mean of all air temperature cells within the basin). Thus, the mean annual air temperature for the basin, is also a spatial mean of all air temperature cells in the basin.
+
+```{r}
+#| label: calculate annual mean
+
+#calculate financial year annual rainfall statistics
+annual_basin_temperature <- monthly_basin_temperature |> 
+  group_by(Region, Basin, Fyear) |> 
+  summarise(AnnualMeanTemperature = round(mean(MonthlyMeanTemperature), 1)) |> 
+  ungroup()
+
+#combine the monthly and annual tables
+annual_basin_temperature <- left_join(monthly_basin_temperature, annual_basin_temperature)
+
+#clean up
+rm(monthly_basin_temperature)
+
+```
+
+We now need to take a moment to store all of this historic data to the side, as for one plot later on we will need every year.
+
+```{r}
+#| label: store all years of data
+
+all_years_temperature <- annual_basin_temperature
+
+```
+
+However, for the most part. we only need to keep the current year of data, and the 30 years of data that will be used for the LTM (below).
+
+```{r}
+#| label: keep only relevant data
+
+#remove everything we don't need
+annual_basin_temperature <- annual_basin_temperature |> 
+  filter(Fyear %in% c((1911:1940), current_fyear))
+
+```
+
+#### Long Term Mean 
+
+To understand if the current year had high, or low, temperatures, we need to compare it against something. The LTM is what we compare it against. The LTM is calculated by taking the mean of the annual mean values for each basin from a 30-year block of data known as a climate normal.
+
+For air temperature data we want to show how temperatures have changed since "pre-industrial" times. So the 30-year climate normal that we are using is 1911 to 1940 (this is the oldest data that we have for this dataset).
+
+Something important to note is that, because we are working on the financial year for our results, the LTM will also be based on the financial year. So the 30-year period 1911 to 1940 is more specifically from 1st July 1910 to 30th June 1940.
+
+```{r}
+#| label: calculate LTM
+
+#select our 30 year reference period and calculate the ltm values (note we have to create this as a separate dataset to not accidentally grab the current year of data if it sits outside the LTM period).
+climate_normal <- annual_basin_temperature |> 
+  filter(Fyear %in% (1911:1940)) |>
+  group_by(Region, Basin) |> 
+  mutate(AnnualLtm = round(mean(AnnualMeanTemperature), 1)) |> 
+  group_by(Region, Basin, Month, AnnualLtm) |> 
+  summarise(MonthlyLtm = round(mean(MonthlyMeanTemperature), 1)) |> 
+  ungroup()
+
+#bind 30 ltm climate normal values to the main dataset
+annual_basin_temperature <- left_join(annual_basin_temperature, climate_normal)
+
+#clean up
+rm(climate_normal)
+
+```
+
+### Percentiles (Monthly and Annual)
+
+Now that the three types of means have been calculated we can work on determining the percentiles for the data.
+
+It is important to note here that the percentiles are calculated only from the same 30 years of data that are used by the LTM. This is a change from how we previously calculated percentiles (using the entire dataset).
+
+```{r}
+#| label: calculate percentiles
+
+#calculate the percentile ranks for the mean rainfall in each basin each month. Percentiles are calculated from all years of data
+annual_basin_temperature <- annual_basin_temperature |> 
+  group_by(Basin, Month) |> 
+  mutate(MonthlyMeanTemperaturePercentileRank = round(percent_rank(MonthlyMeanTemperature)*100, 1)) |> 
+  ungroup() |> 
+  group_by(Region, Basin) |> 
+  mutate(AnnualMeanTemperaturePercentileRank = round(percent_rank(AnnualMeanTemperature)*100, 1)) |>  
+  ungroup()
+
+```
+
+### Anomalies
+
+Once we have calculated the LTM we can then compare the current year of data against the LTM and add the last lot of statistics to the summary table which are the current years anomaly from the ltm and percentage of the ltm.
+
+```{r}
+#| label: calculate anomaly and percentage of ltm
+
+#compare LTM and current year data
+summary_tbl <- annual_basin_temperature |> 
+  mutate("AnnualAnomaly" = round((AnnualMeanTemperature - AnnualLtm), 1),
+         "MonthlyAnomaly" = round((MonthlyMeanTemperature - MonthlyLtm), 1),
+         "AnnualPercentageOfLtm" = round(((AnnualMeanTemperature/AnnualLtm)*100), 1),
+         "MonthlyPercentageOfLtm" = round(((MonthlyMeanTemperature/MonthlyLtm)*100), 1)) |> 
+  ungroup()
+
+#clean up
+rm(annual_basin_temperature)
+
+```
+
+### Save Summary Table
+
+With the summary table (containing all relevant statistics) now completed we can save that table to our output location.
+
+Remember, this summary table should only include the 30 years of data for the LTM period, and the single year that is the current fyear for the script.
+
+```{r}
+#| label: save summary table
+
+#save to the main output folder
+write_csv(summary_tbl, glue("{save_path}/air-temperature_summary.csv"))
+
+```
+
+## Monthly Percentiles Table
+
+The final table we need to create is the simplified percentiles table that will be directly put into the technical report. This table contains the monthly basin percentiles for the current year, and the annual percentile. However before saving, the data needs to be adjusted to fit into the following groupings:
+
+-   "Lowest 1%": percentile rank $\le$ 1
+-   "Very much below average": percentile rank $\gt$ 1 to $\lt$ 10
+-   "Below average": percentile rank = 10 to $\lt$ 30
+-   "Average": percentile rank = 30 to $\lt$ 70
+-   "Above average": percentile rank = 70 to $\lt$ 90
+-   "Very much above average": percentile rank = 90 to $\lt$ 99
+-   "Highest 1%": percentile rank $\ge$ 99
+
+It is also important to note that the percentiles are calculated from the LTM period, so some of the percentile bands might be a bit "loose".
+
+```{r}
+#| label: create monthly percentiles table
+
+#filter for current year and drop unnecessary columns
+monthly_percentiles_tbl <- summary_tbl |> 
+  filter(Fyear == current_fyear) |> 
+  select(c(Region, Basin, Month, MonthlyMeanTemperaturePercentileRank, AnnualMeanTemperaturePercentileRank))
+
+#standardise values for each group
+monthly_percentiles_tbl <-  monthly_percentiles_tbl |> 
+  mutate(across(where(is.numeric), ~ case_when(. <= 1 ~ 1,
+                                               . > 1 & . < 10 ~ 2,
+                                               . >= 10 & . < 30 ~ 3,
+                                               . >= 30 & . < 70 ~ 4,
+                                               . >= 70 & . < 90 ~ 5,
+                                               . >= 90 & . < 99 ~ 6,
+                                               . >= 99 ~ 7)))
+
+#pivot data wider for presenting
+monthly_per_wide <- pivot_wider(monthly_percentiles_tbl, names_from = Month, values_from = MonthlyMeanTemperaturePercentileRank) |> 
+  relocate(AnnualMeanTemperaturePercentileRank, .after = last_col())
+
+```
+
+Before we save this table, we will use a custom function to create an excel workbook that embeds coloring rules into the output. This function relies on a R package (openxlsx2) that is currently in the development stage, and may or may not run smoothly. An overview of the custom function (called cond_form_climate()) is as follows:
+
+`cond_form_climate(df, file_name, indicator)`
+
+Where: 
+
+ - df: any tbl or data.frame - although this function will obviously only work with the monthly climate tables
+ - file name: whatever you want the output file to be named 
+ - indicator: can chose from three options: rainfall, air_temperature, or sea_surface_temperature (changes the colour scheme)
+ 
+```{r}
+#| label: load and use conditional formatting function
+
+#read in climate condition formatting function
+source(here("functions/cond_form_climate.R"))
+
+#run function, noting to specify which colour system we want to use
+cond_form_climate(monthly_per_wide, glue("{save_path}/air-temperature_monthly-percentiles"), indicator = "air_temperature")
+
+```
+
+# Visualise Data
+
+The final component of this script is to visualise air temperature data, using both plots and maps. Below we will create:
+
+ - Line plots of long term annual air temperature for each basin
+ - Line plots of the current year of air temperature for each basin
+ - Maps of the current year of air temperature for each basin
+ - Maps of the current years' anomaly from long term trends for each basin
+
+## All Historical Data Plot
+
+The standard plot that we create for all climate indicators is a line plot of data over time - to see long-term trends. This plot is currently included as appendix material for the technical reports.
+
+```{r}
+#| label: plotting annual mean against percentage difference from mean
+
+#set up variables for the background data
+groups <- factor(c("+2.5 to +2C", "+2 to +1.5C", "+1.5 to +1C", "+1 to +0.5C", "+0.5 to 0C", "0 to -0.5C", 
+                   "-0.5 to -1C", "-1 to -1.5C", "-1.5 to -2C", "-2 to -2.5C"),
+                 levels = c("+2.5 to +2C", "+2 to +1.5C", "+1.5 to +1C", "+1 to +0.5C", "+0.5 to 0C", "0 to -0.5C", 
+                            "-0.5 to -1C", "-1 to -1.5C", "-1.5 to -2C", "-2 to -2.5C"))
+  
+#set up variables for the background data
+transformer <- c(2.5, 2, 1.5, 1, 0.5, -0.5, -1, -1.5, -2, -2.5)
+    
+#set up variables for the background data
+x = rep(c(1911, current_fyear + 1), each = length(groups))
+
+#build the background data df
+df <- data.frame(X = x, Groups = groups, Transformer = transformer)
+
+#create colour palette to be used throughout
+col_palette <- rep(brewer.pal(length(groups), "RdBu"), 2) 
+
+#start loop at the region level
+for (i in unique(n3_basins$Region)){
+
+  #pick out the data for the entire region 
+  region_temp <- all_years_temperature |> filter(Region == i) 
+  
+  #and take the mean values
+  region_mean <- region_temp |> 
+    select(!c(MonthlyMeanTemperature, Basin)) |> 
+    group_by(Region, LayerDate, Fyear) |> 
+    summarise(AnnualMeanTemperature = mean(AnnualMeanTemperature))
+  
+  #get the ltm (30-year) for the region
+  region_ltm <- region_mean |> filter(Fyear %in% (1911:1940)) |>
+    pull(unique(AnnualMeanTemperature))
+  
+  region_ltm <- round(mean(region_ltm), 1)
+  
+  #expand on the background dataframe, customising to the region and creating hi and low lims
+  region_df <- df |> mutate(Y = region_ltm + Transformer) |>
+    mutate(Ylo = case_when(Transformer > 0 ~ Y - 0.5, TRUE ~ Y)) |> 
+    mutate(Yhi = case_when(Transformer > 0 ~ Y, TRUE ~ Y + 0.5))
+    
+  #get min, max and break values for breaks
+  min_per <- min(region_df$Ylo)
+  max_per <- max(region_df$Yhi)
+  breaks <- unique(region_df$Yhi)
+  
+  #get max two values
+  max_2 <- head(unique(sort(region_df$Yhi, decreasing = T)), 2)
+    
+  #use these breaks to calculate the perfect spot for an annotation label
+  label_location <- max_2[1] - (max_2[1]-max_2[2])/2
+  
+  #plot the background layer
+  background <- ggplot(region_df) +
+    geom_ribbon(aes(x = X, ymin = Ylo, ymax = Yhi, fill = Groups), alpha = 1) +
+    geom_line(aes(x = X, y = Y, color = Groups)) +
+    scale_color_manual(values = col_palette, name = "Degree's +/- \nLong-Term Mean") + 
+    scale_fill_manual(values = col_palette, name = "Degree's +/- \nLong-Term Mean")
+    
+  #create the main plot over the top
+  percent_df_plot <- background +
+    geom_point(data = region_mean, mapping = aes(x = Fyear, y = AnnualMeanTemperature), colour = "black") +
+    geom_line(data = region_mean, mapping = aes(x = Fyear, y = AnnualMeanTemperature), colour = "black") + 
+    geom_hline(aes(yintercept = region_ltm, linetype = glue("{region_ltm}C")), colour = "red") +
+    scale_linetype_manual(name = "Long-Term Mean", values = 1) +
+    geom_vline(xintercept = 1911.5, linetype = "dashed", colour = "blue") +
+    geom_vline(xintercept = 1940, linetype = "dashed", colour = "blue") +
+    annotate(geom = "label", x = 1924, y = label_location, label = "30-Year Climate Normal", 
+             size = 3, hjust = 0.4, fill = "blue", colour = "white", fontface = "bold") +
+    scale_y_continuous(name = "Temperature (C)", limits = c(min_per, max_per), breaks = breaks, expand = c(0, 0)) +
+    scale_x_continuous(name = "Financial Year (ending)", expand = c(0, 0)) + 
+    ggtitle(glue("Mean annual temperature in the {i} region since 1911")) +
+    theme_bw() + theme(panel.grid.major = element_blank(), 
+                       panel.grid.minor = element_blank()) +
+    theme(plot.title = element_text(hjust = 0.5))
+    
+  #edit target basin variable slightly for better save path
+  i <- tolower(gsub(" ", "-", gsub("'", "", i)))
+    
+  #save the static plot
+  ggsave(percent_df_plot, filename = glue("{save_path}/plots/{i}-region_yearly_air-temperature.png"), 
+         height = 7, width = 12)
+  
+  #initialize plotting loop at a basin level from inside the already existing region dataset
+  for (j in unique(region_temp$Basin)) {
+  
+    #pick out data based on the basin name
+    basin_temp <- all_years_temperature |> filter(Basin == j)
+    
+    #get the ltm (30-year) for the basin
+    basin_ltm <- summary_tbl |> filter(Basin == j, Fyear %in% (1911:1940)) |> 
+      select(AnnualLtm) |> max()
+    
+    #expand on the background dataframe, customising to the basin and creating hi and low lims
+    basin_df <- df |> mutate(Y = basin_ltm + Transformer) |>
+      mutate(Ylo = case_when(Transformer > 0 ~ Y - 0.5, TRUE ~ Y)) |> 
+      mutate(Yhi = case_when(Transformer > 0 ~ Y, TRUE ~ Y + 0.5))
+            
+    #get min, max and break values for breaks
+    min_per <- min(basin_df$Ylo)
+    max_per <- max(basin_df$Yhi)
+    breaks <- unique(basin_df$Yhi)
+
+    #get max two values
+    max_2 <- head(unique(sort(basin_df$Yhi, decreasing = T)), 2)
+    
+    #use these breaks to calculate the perfect spot for an annotation label
+    label_location <- max_2[1] - (max_2[1]-max_2[2])/2
+  
+    #plot the background layer
+    background <- ggplot(basin_df) +
+      geom_ribbon(aes(x = X, ymin = Ylo, ymax = Yhi, fill = Groups), alpha = 1) +
+      geom_line(aes(x = X, y = Y, color = Groups)) +
+      scale_color_manual(values = col_palette, name = "Degree's +/- \nLong-Term Mean") + 
+      scale_fill_manual(values = col_palette, name = "Degree's +/- \nLong-Term Mean")
+    
+    #create the main plot over the top
+    percent_df_plot <- background +
+      geom_point(data = basin_temp, mapping = aes(x = Fyear, y = AnnualMeanTemperature), colour = "black") +
+      geom_line(data = basin_temp, mapping = aes(x = Fyear, y = AnnualMeanTemperature), colour = "black") + 
+      geom_hline(aes(yintercept = basin_ltm, linetype = glue("{basin_ltm}C")), colour = "red") +
+      scale_linetype_manual(name = "Long-Term Mean", values = 1) +
+      geom_vline(xintercept = 1911.5, linetype = "dashed", colour = "blue") +
+      geom_vline(xintercept = 1940, linetype = "dashed", colour = "blue") +
+      annotate(geom = "label", x = 1924, y = label_location, label = "30-Year Climate Normal", 
+               size = 3, hjust = 0.4, fill = "blue", colour = "white", fontface = "bold") +
+      scale_y_continuous(name = "Temperature (C)", limits = c(min_per, max_per), breaks = breaks, expand = c(0, 0)) +
+      scale_x_continuous(name = "Financial Year (ending)", expand = c(0, 0)) + 
+      ggtitle(glue("Mean annual temperature in the {j} basin since 1911")) +
+      theme_bw() + theme(panel.grid.major = element_blank(), 
+                         panel.grid.minor = element_blank()) +
+      theme(plot.title = element_text(hjust = 0.5))
+    
+    #edit target basin variable slightly for better save path
+    j <- tolower(gsub(" ", "-", gsub("'", "", j)))
+    
+    #save the static plot
+    ggsave(percent_df_plot, filename = glue("{save_path}/plots/{j}-basin_yearly_air-temperature.png"), 
+           height = 7, width = 12)
+  }
+  
+}
+
+#clean up
+rm(min_per, max_per, breaks, background, df, x, groups, transformer, target_region, 
+   target_data, col_palette)
+
+```
+
+long term annual plots are now saved, see below for an example.
+
+```{r}
+#| label: show long term annual plot
+#| output: true
+
+percent_df_plot
+
+```
+
+## Current Year Plot
+
+A newer plot that we are looking at creating is a plot of the current year (monthly) compared to the long term expected value for each month. This plot is not currently included in the technical report but may be so in the future.
+
+```{r}
+#| label: plot current year
+
+#create ltm and confidence band data
+summary_tbl <- summary_tbl |>
+  mutate(MonthNumb = case_when(Month == "Jan" ~ 7, Month == "Feb" ~ 8, Month == "Mar" ~ 9,
+                                Month == "Apr" ~ 10, Month == "May" ~ 11, Month == "Jun" ~ 12,
+                                Month == "Jul" ~ 1, Month == "Aug" ~ 2, Month == "Sep" ~ 3,
+                                Month == "Oct" ~ 4, Month == "Nov" ~ 5, Month == "Dec" ~ 6))
+
+#initialise plot at the region level
+for (i in unique(n3_basins$Region)){
+  
+  #get a 30-year normal table
+  ltm_region <- summary_tbl |> filter(Region == i, Fyear %in% (1911:1940))
+  
+  #get the 99th and 1st values for each month
+  max_per <- ltm_region |> 
+    group_by(MonthNumb) |> 
+    summarise(MaxTemp = quantile(MonthlyMeanTemperature, 0.99),
+              MinTemp = quantile(MonthlyMeanTemperature, 0.01))
+    
+  #get the 90th and 10th values for each month
+  outer_per <- ltm_region |> 
+    group_by(MonthNumb) |> 
+    summarise(MaxTemp = quantile(MonthlyMeanTemperature, 0.9),
+           MinTemp = quantile(MonthlyMeanTemperature, 0.1))
+    
+  #get the 30th and 70th values for each month
+  inner_per <- ltm_region |> 
+    group_by(MonthNumb) |> 
+    summarise(MaxTemp = quantile(MonthlyMeanTemperature, 0.7),
+           MinTemp = quantile(MonthlyMeanTemperature, 0.3))
+  
+  #get a current year table
+  cy_region <- summary_tbl |> filter(Region == i, Fyear == current_fyear) |> 
+    select(!c(Basin)) |> 
+    group_by(Region, MonthNumb, Month) |> 
+    summarise(MonthlyMeanTemperature = mean(MonthlyMeanTemperature))
+  
+  #plot the graph
+  plot <- ggplot() +
+    geom_ribbon(data = max_per, aes(x = MonthNumb, ymin = MinTemp, ymax = MaxTemp, fill = "#fae4d2")) +    # Add shaded ribbon
+    geom_ribbon(data = outer_per, aes(x = MonthNumb, ymin = MinTemp, ymax = MaxTemp, fill = "#fabf8c")) +  # Add shaded ribbon
+    geom_ribbon(data = inner_per, aes(x = MonthNumb, ymin = MinTemp, ymax = MaxTemp, fill = "#ed872d")) +  # Add shaded ribbon
+    geom_smooth(data = ltm_region, aes(x = MonthNumb, y = MonthlyMeanTemperature, color = "black"), se = F, linewidth = 1.5) +
+    geom_line(data = cy_region, aes(x = MonthNumb, y = MonthlyMeanTemperature, colour = "red"), linewidth = 1.5, show.legend = T) +
+    scale_fill_identity(name = "Percentile", labels = c("30th-70th", "10th-90th", "1st-99th"), guide = "legend") +
+    scale_color_identity(name = "Temperature", labels = c("LTM", "CY"), guide = "legend") +
+    scale_x_continuous(name = "", breaks = 1:12, labels = cy_region$Month, expand = c(0, 0)) +
+    scale_y_continuous(name = "Temperature (C)", expand = c(0, 0)) +
+    ggtitle(glue("Monthly air temperature in the {i} region for the {current_fyear} financial year")) +
+    theme(panel.background = element_blank(), panel.border = element_blank(), panel.grid.major = element_blank(),
+          axis.title.x = element_blank(), axis.line = element_line(colour = "black"),
+          plot.title = element_text(hjust = 0.5))
+    
+  #edit target basin variable slightly for better save path
+  i <- tolower(gsub(" ", "-", gsub("'", "", i)))
+    
+  ggsave(glue("{save_path}/plots/{i}-region_monthly_air-temperature.png"), plot, width = 10, height = 4)
+  
+  #initialize plotting loop
+  for (j in n3_basins$Basin) {
+    
+    #get a 30-year normal table
+    ltm_basin <- summary_tbl |> filter(Basin == j, Fyear %in% (1911:1940))
+    
+    #get the 99th and 1st values for each month
+    max_per <- ltm_basin |> 
+      group_by(MonthNumb) |> 
+      summarise(MaxTemp = quantile(MonthlyMeanTemperature, 0.99),
+                MinTemp = quantile(MonthlyMeanTemperature, 0.01))
+    
+    #get the 90th and 10th values for each month
+    outer_per <- ltm_basin |> 
+      group_by(MonthNumb) |> 
+      summarise(MaxTemp = quantile(MonthlyMeanTemperature, 0.9),
+             MinTemp = quantile(MonthlyMeanTemperature, 0.1))
+    
+    #get the 30th and 70th values for each month
+    inner_per <- ltm_basin |> 
+      group_by(MonthNumb) |> 
+      summarise(MaxTemp = quantile(MonthlyMeanTemperature, 0.7),
+             MinTemp = quantile(MonthlyMeanTemperature, 0.3))
+    
+    #get a current year table
+    cy_basin <- summary_tbl |> filter(Basin == j, Fyear == current_fyear)
+  
+    #plot the graph
+    plot <- ggplot() +
+      geom_ribbon(data = max_per, aes(x = MonthNumb, ymin = MinTemp, ymax = MaxTemp, fill = "#fae4d2")) +    # Add shaded ribbon
+      geom_ribbon(data = outer_per, aes(x = MonthNumb, ymin = MinTemp, ymax = MaxTemp, fill = "#fabf8c")) +  # Add shaded ribbon
+      geom_ribbon(data = inner_per, aes(x = MonthNumb, ymin = MinTemp, ymax = MaxTemp, fill = "#ed872d")) +  # Add shaded ribbon
+      geom_smooth(data = ltm_basin, aes(x = MonthNumb, y = MonthlyMeanTemperature, color = "black"), se = F, linewidth = 1.5) +
+      geom_line(data = cy_basin, aes(x = MonthNumb, y = MonthlyMeanTemperature, colour = "red"), linewidth = 1.5, show.legend = T) +
+      scale_fill_identity(name = "Percentile", labels = c("30th-70th", "10th-90th", "1st-99th"), guide = "legend") +
+      scale_color_identity(name = "Temperature", labels = c("LTM", "CY"), guide = "legend") +
+      scale_x_continuous(name = "", breaks = 1:12, labels = cy_basin$Month, expand = c(0, 0)) +
+      scale_y_continuous(name = "Temperature (C)", expand = c(0, 0)) +
+      ggtitle(glue("Monthly air temperature in the {j} basin for the {current_fyear} financial year")) +
+      theme(panel.background = element_blank(), panel.border = element_blank(), panel.grid.major = element_blank(),
+            axis.title.x = element_blank(), axis.line = element_line(colour = "black"),
+            plot.title = element_text(hjust = 0.5))
+    
+    #edit target basin variable slightly for better save path
+    j <- tolower(gsub(" ", "-", gsub("'", "", j)))
+    
+    ggsave(glue("{save_path}/plots/{j}-basin_monthly_air-temperature.png"), plot, width = 10, height = 4)
+  }
+  
+}
+
+
+```
+
+These plots are much simpler and might be useful for more educational/quick-read pieces.
+
+```{r}
+#| label: show cy plot
+#| output: true
+
+plot
+
+```
+
+## Current Year and Anomaly Maps
+
+Another staple of the technical report is a map of the mean annual rainfall for each basin for the current year. To compliment this map we will also create a map of the current years' anomaly from the long term mean annual rainfall for each basin, and them plot them side-by-side.
+
+### Create Raster Layers
+
+In the first code chunk we create each of the raster layers required.
+
+```{r}
+#| label: get map for current year
+
+#select only the current financial year
+target_period <- name_date_tbl |> filter(Fyear == current_fyear)
+
+#create a mean of current fyear map
+cy_temp_map <- mean(subset(n3_tmean, target_period$LayerName))
+
+#create an empty SpatRaster to store the 30-year long term mean data
+ltm_30_stack <- rast()
+
+for (i in 1911:1940) {
+  
+  #create a name based on iteration
+  layer_name <- glue("fyear_{i-1}_{i}")
+  
+  #create a subset of the name_date_tbl for the date range
+  target_period <- name_date_tbl |> filter(Fyear == i)
+  
+  #Use subset to select layers and take the mean into a single layer
+  raster_layer <- mean(subset(n3_tmean, target_period$LayerName))
+  
+  #update layer name
+  names(raster_layer) <- layer_name
+    
+  #put layers into a single stack
+  ltm_30_stack <- c(ltm_30_stack, raster_layer)
+
+}
+
+#create a ltm map
+ltm_30_temp_map <- mean(ltm_30_stack)
+
+#put the two SpatRasters into one for next operation
+anom_rast <- c(cy_temp_map, ltm_30_temp_map)
+
+#subtract ltm from cy mean to get an anomaly map
+anom_temp_map <- lapp(anom_rast, fun = function(r1, r2){return(r1 - r2)})  
+
+#rename layer
+names(anom_temp_map) <- "Air_Temperature_Anomaly_(C)"
+
+#interpolate data to increase resolution and therefore accuracy
+if (fac > 1) {
+  cy_temp_map <- disagg(cy_temp_map, fac, "bilinear")
+  anom_temp_map <- disagg(anom_temp_map, fac, "bilinear")
+}
+
+#then mask again to get a precise border
+cy_temp_n3_crop <- mask(cy_temp_map, vect(n3_basins))
+anom_temp_n3_crop <- mask(anom_temp_map, vect(n3_basins))
+
+```
+
+### Calculate Legend Values
+
+Then we need to determine the min and max values to use for the legend for the anomaly map.
+
+It is important to note here that it was decided that the anomaly maps require a consistent legend between years (so they also share a colour scheme - i.e. shades of red in all maps is associated with the same C temperature values). It was also decided that this was not necessary for the current year air temperature maps.
+
+Work was done to experiment with a range of options to determine the best min and max values to use and it was decided to use the min and max anomalies values that have been recorded in the 30-year climate normal period.
+
+This is actually really easy to do as well (in this specific example, other options were a right pain).
+
+```{r}
+#| label: finding the largest anomalies
+
+#create an empty raster to store the output
+all_anomalies <- rast()
+
+#for each fyear in the 30 year period, calculate the annual value, then compare it to the ltm value and save the anomalies for that year
+#note, we will also add in the most recent 5 years as we want to make sure the anomaly scale for air temperature is consistent between each report, and the msot recent 5 years have some huge anomalies
+for (i in c((1911:1940), (2019:pmax(2023, current_fyear)))){
+  
+  #create a name based on iteration
+  layer_name <- glue("fyear_{i-1}_{i}")
+  
+  #create a subset of the name_date_tbl for the date range
+  target_period <- name_date_tbl |> filter(Fyear == i)
+  
+  #Use subset to select layers and sum into a single layer
+  raster_layer <- mean(subset(n3_tmean, target_period$LayerName))
+  
+  #update layer name
+  names(raster_layer) <- layer_name
+
+  #put the two SpatRasters into one for next operation
+  comparison_rast <- c(raster_layer, ltm_30_temp_map)
+  
+  #subtract ltm from target year mean to get an anomaly map
+  comparison_rast_map <- lapp(comparison_rast, fun = function(r1, r2){return(r1 - r2)})
+  
+  #rename layer
+  names(comparison_rast_map) <- glue("fyear_{i-1}_{i}")
+  
+  #stack all the comparisons together to be looked through later
+  all_anomalies <- c(all_anomalies, comparison_rast_map)
+  
+}
+
+#interpolate data to increase resolution and therefore accuracy
+if (fac > 1) {
+  all_anomalies <- disagg(all_anomalies, fac, "bilinear")
+}
+
+#then mask again to get a precise border
+all_anomalies_n3_crop <- mask(all_anomalies, vect(n3_basins))
+
+```
+
+We also need to check if the anomaly for the current year exceeds the maximum anomaly recorded from within the 30-year climate normal. The easiest way to do this, is just to add the cy anomaly map to the full stack of anomaly maps, and if it just so happens to be the greatest (+ or -) then it will be selected.
+
+```{r}
+#| label: add cy anomaly to the stack
+
+#stack together
+#all_anomalies_n3_crop <- c(all_anomalies_n3_crop, anom_temp_n3_crop)
+
+```
+
+We then plot the current year, and current year anomaly, temperature data at a region level.
+
+A important change that was made here was that the, as with at the region level, the anomaly legend maps' min and max values are now determined by the min and max values from all anomalies from the entire 30-year climate normal period. However, ADDITIONALLY, the basin total rainfall legend and anomaly legend min and max values are determined by the min and max values for the entire region. This means that when looking at the basin maps compared to the region maps they will share the exact same scale and colours, and just look like a zoomed in version of the same map.
+
+```{r}
+#| label: plot cy temperature map
+
+#change name of layer for plot
+names(cy_temp_n3_crop) <- "Mean Temperature (C)"
+names(anom_temp_n3_crop) <- "Anom. Temperature (C)"
+#create some vectors of objects in the global environment to iterate over
+reg_map_type <- c("anom", "cy")
+bas_map_type <- c("anom_basin", "cy_basin")
+pal_type <- c("-RdBu", "Reds")
+mid_type <- list(0, NULL)
+break_type <- c("anom_break", "cy_break")
+
+for (i in unique(n3_basins$Region)) {
+  
+  #filter by region
+  target_region <- n3_basins |> filter(Region == i) 
+  
+  #mask to the specific region
+  cy <- trim(mask(cy_temp_n3_crop, vect(target_region)))
+  anom <- trim(mask(anom_temp_n3_crop, vect(target_region)))
+  all_anoms_stack <- trim(mask(all_anomalies_n3_crop, vect(target_region)))
+  
+  #calculate the breaks for the cy legend based on the min and max for the actually cy data or the region
+  cy_break <- plyr::round_any(seq(from = minmax(cy)[1], to = minmax(cy)[2], length.out = 11), 0.1)
+
+  #calculate the breaks for the anom legend based on the min and max for all 30 years of ltm data for the region
+  anom_break <- plyr::round_any(seq(from = min(as.data.frame(minmax(all_anoms_stack))), 
+                                    to = max(as.data.frame(minmax(all_anoms_stack))), 
+                                    length.out = 11), 0.1)
+
+  for (j in 1:2){
+    
+    #create a map of the area
+    map <- tm_shape(qld) +
+      tm_polygons(col = "grey80", border.col = "black") +
+      tm_shape(get(reg_map_type[j]), is.master = T) +
+      tm_raster(legend.reverse = T, palette = pal_type[j], midpoint = mid_type[[j]], style = "fixed", breaks = get(break_type[j])) +
+      tm_shape(target_region) +
+      tm_borders(col = "black") +
+      tm_text("Basin", size = 0.6, shadow = T) +
+      tm_shape(tsv) +
+      tm_symbols(size = 0.3, col = "white", border.col = "black", border.lwd = 2, shape = 23) +
+      tm_text("Place", shadow = T, xmod = 1.8, ymod = 0.1, size = 0.7) +
+      tm_layout(legend.frame = T, legend.bg.color = "White", asp = 1.1, legend.text.size = 0.7, 
+                legend.position = c("left", "bottom")) + 
+      tm_scale_bar(width = 0.15,text.size = 0.7, position = c(0.27, 0)) +
+      tm_compass(position = c("right", "top"))
+    
+    #edit variable name for better save path
+    i_edit <- tolower(gsub(" ", "-", gsub("'", "", i)))
+    
+    #save map for later
+    assign(glue("{reg_map_type[j]}_mean_map_{i_edit}_region"), map)
+      
+    #save the map as a png
+    tmap_save(map, filename = glue("{save_path}/maps/{i_edit}-region_{reg_map_type[j]}_air-temperature.png"))
+    
+    for (k in unique(target_region$Basin)) {
+      
+      #filter by basin
+      target_basin <- target_region |> filter(Basin == k)
+      target_sub_basins <- target_region |> filter(Basin == k)
+      
+      #mask to the specific basin
+      cy_basin <- trim(mask(cy_temp_n3_crop, vect(target_basin)))
+      anom_basin <- trim(mask(anom_temp_n3_crop, vect(target_basin)))
+      
+      #create a map of the area
+      map <- tm_shape(qld) +
+        tm_polygons(col = "grey80", border.col = "black") +
+        tm_shape(get(bas_map_type[j]), is.master = T) +
+        tm_raster(legend.reverse = T, palette = pal_type[j], midpoint = mid_type[[j]], style = "fixed", breaks = get(break_type[j])) +
+        tm_shape(target_region) +
+        tm_borders(col = "black") +
+        tm_text("Basin", size = 0.6, shadow = T) +
+        tm_shape(tsv) +
+        tm_symbols(size = 0.3, col = "white", border.col = "black", border.lwd = 2, shape = 23) +
+        tm_text("Place", shadow = T, xmod = 1.8, ymod = 0.1, size = 0.7) +
+        tm_layout(legend.frame = T, legend.bg.color = "White", asp = 1.1, legend.text.size = 0.7, 
+                  legend.position = c("left", "bottom")) + 
+        tm_scale_bar(width = 0.15, text.size = 0.7, position = c(0.27, 0)) +
+        tm_compass(position = c("right", "top"))
+        
+      #edit variable name for better save path
+      k_edit <- tolower(gsub(" ", "-", gsub("'", "", k)))
+        
+      #save map for later
+      assign(glue("{reg_map_type[j]}_mean_map_{k_edit}_basin"), map)
+          
+      #save the map as a png
+      tmap_save(map, filename = glue("{save_path}/maps/{k_edit}-basin_{reg_map_type[j]}_air-temperature.png"))
+        
+    }
+  }
+}
+
+
+```
+
+With an example output that looks like this (note that the actually outputs look much better, without overlap etc.)
+
+```{r}
+#| label: show example map 1
+#| output: true
+
+map
+
+```
+
+Finally, we can combined all of these plots into side-by-side versions.
+
+``` {r} 
+#| label: side by side maps
+
+for (i in unique(n3_basins$Region)) {
+  
+  #edit variable name for better save path
+  i <- tolower(gsub(" ", "-", gsub("'", "", i)))
+  
+  #grab two of the maps
+  x <- get(glue("cy_mean_map_{i}_region"))
+  y <- get(glue("anom_mean_map_{i}_region"))
+  
+  #combine them
+  map <- tmap_arrange(x,y)
+  
+  #save the map as a png
+  tmap_save(map, filename = glue("{save_path}/maps/{i}-region_air-temperature_facet-map.png"))
+}
+
+for (i in unique(n3_basins$Basin)) {
+  
+  i <- tolower(gsub(" ", "-", gsub("'", "", i)))
+
+  x <- get(glue("cy_mean_map_{i}_basin"))
+  y <- get(glue("anom_mean_map_{i}_basin"))
+
+  map <- tmap_arrange(x,y)
+
+  tmap_save(map, filename = glue("{save_path}/maps/{i}-basin_air-temperature_facet-map.png"))
+}
+
+```
+
+here is an example of how the maps look.
+
+```{r}
+#| label: show example map 3
+#| output: true
+
+map
+
+```

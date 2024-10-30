@@ -1,0 +1,789 @@
+---
+title: "Northern Three Spatial Analyses (Freshwater Analysis)"
+author: "Adam Shand"
+date: "`r format(Sys.time(), '%d, %B, %Y')`" 
+format: html
+params:
+  project_crs: "EPSG:7844"
+---
+
+::: {.callout-tip}
+## R Version
+For R session info at the time of rendering this script see @sec-sessioninfo.
+:::
+
+# Introduction
+
+The purpose of this script is to analyse water quality data for the dry tropics technical report. Key steps include:
+
+ - Loading all metadata
+ - Loading all sampling data
+ - Assigning metadata to every sample
+ - Performing QA/QC such as checking LOR values, conducting EDA, calculating summary statistics
+ - Calculating Scores and Grades (main component of script)
+ - Creating box plots
+ - Creating line plots
+
+# Script Set Up
+
+This script requires multiple core spatial packages, all packages are loaded below.
+
+```{r}
+#| label: script set up
+#| echo: false
+
+#load packages
+library(tidyverse)
+library(readxl)
+library(glue)
+library(here)
+#library(lubridate)
+#library(ggplot2)
+#library(geomtextpath)
+
+#turn off scientific notation
+options(scipen = 999)
+
+#set a path to the data reading location
+data_path <- here("data/dt_water-quality_freshwater/")
+
+#get a date variable (this is important for naming as it is anticipated multiple runs of the script will be required).
+date <- format(Sys.time(), "%Y-%m-%d")
+
+#create a file path to help with saving things
+save_path <- glue("{here()}/outputs/dt_water-quality_freshwater-analysis/wq_{date}/")
+
+#create folder
+dir.create(save_path, recursive = T)
+
+#create a folder for boxplots and line plots
+dir.create(glue("{save_path}/boxplots"))
+dir.create(glue("{save_path}/lineplots"))
+
+```
+
+# Load Data
+
+Data for this script is provided in two spreadsheets: a metadata spreadsheet, and a master spreadsheet. 
+
+The metadata spreadsheet contains (for all current sites):
+
+ - Grouping information for each site (region, environment, basin, sub_basin, watercourse, code),
+ - Location information for each site i.e., where the site is (lat, long), and how big is the area it is in,
+ - Supplier information (who provides the data),
+ - Alternative names the site might be known by,
+ - Water quality objective (WQO) information for each site,
+ - Limit of reporting (LOR) information for each site,
+ - Scaling factor (SF) information for each site,
+ - The original source for WQO, LOR, and SF values,
+ - plus the above information for all historical sites.
+ 
+The master spreadsheet contains:
+
+ - Codes for all data, to be cross checked against metadata,
+ - All sample data for all current sites for as far back as possible (~2019),
+ - All currently monitored variables (DIN, TP, Turbidity, DO, and soon to be FRP),
+ - Units for each variable, to cross check against metadata,
+ - Peripheral variables as need to calculated main variables (e.g., DIN = Ammonia + NOx, or Temp to calculate %DO saturation).
+
+## Metadata Spreadsheet
+
+```{r}
+#| label: load metadata
+#| echo: false
+
+#load in site information and WQOs, LORs, and SFs
+sites <- read_excel(glue("{data_path}/dt_wq_freshwater_metadata.xlsx"), sheet = "Current_Sites")
+wqo_lor_sf <- read_excel(glue("{data_path}/dt_wq_freshwater_metadata.xlsx"),sheet = "WQO_LOR_SF")
+
+#pivot data (put this as a separate step so the reader can compare before and after)
+pivoted <- pivot_longer(wqo_lor_sf, cols = 3:ncol(wqo_lor_sf), #select data, then target columns
+                        names_to = c(".value", "Indicator"), names_pattern = "([A-Za-z]+)_(.+)")
+                        #.value indicates this part of the col name defines the name of the output column (it overrides the "values_to" arg)
+                        #names_pattern = how to split into two group: 1. any letter left of underscore, 2. everything else.
+
+#join all metadata together
+site_metadata <- left_join(sites, pivoted)
+
+#add units of measure, direction of failure, and statistic used. These should be able to be crossed check against the human readable pages in the excel metadata spreadsheet if anything seems off
+site_metadata <- site_metadata |> 
+  mutate(Units = case_when(Indicator == "Turbidity" ~ "NTU", 
+                           Indicator %in% c("High_DO", "Low_DO") ~ "%.Sat",
+                           Indicator %in% c("DIN", "TP", "FRP") ~ "mg.L"), 
+         Failure = case_when(Indicator == "Low_DO" ~ "low", T ~ "high"), Stat = "median")
+
+#clean up
+rm(sites, wqo_lor_sf, pivoted)
+
+```
+
+## Master Data Spreadsheet
+
+The master data sheet is read in over a couple of stages:
+
+### LOR Converter
+
+First we need to create a short function that automatically detects and converts any values containing the "<" symbol.
+
+```{r}
+#| label: Create LOR converter
+#| echo: false
+
+#first we will make an LOR converter to edit values as they come in
+LOR_converter <- function(df, column){
+  df <- df |> 
+    mutate(convert = str_detect(df[[column]], "<"), #create a T/F "convert" column for any column in which a "<" is detected
+           new = str_replace(df[[column]], "<", ""), #create a "new" column that removes the "<" symbol
+           across(new, as.numeric), #make the "new" column numeric (if it has < symbols it wont be read in as numeric)
+           new = case_when(convert == T ~ new/2, #When T in the "convert" column (i.e. a "<" was detected) divided the "new" column by 2
+                              T ~ new), .after = {{column}}) |> #otherwise do not change the new column, place the "new" column after the target column
+    select(-{{column}}, -convert) |> #select everything but the targeted column and the T/F "convert" column
+    rename({{column}} := new) #rename the "new" column with the name of the targeted column
+}
+
+```
+
+### Import Datasets
+
+Then we can import each datasheet and run the converter.
+
+```{r}
+#| label: Import datasheets
+
+#get a variable listing all available sheets
+sheets <- excel_sheets(glue("{data_path}/dt_wq_freshwater_data_master.xlsx"))
+
+#get the total number of sheets excluding the first one (which is the README sheet)
+for (i in 2:length(sheets)){
+  
+  #get the sheet name that we want to target, starting from the second sheet
+  sheet_name <- sheets[i]
+  
+  #read in the target sheet
+  assign(sheet_name, read_excel(glue("{data_path}/dt_wq_freshwater_data_master.xlsx"), sheet = sheet_name))
+  
+  #run the LOR converter
+  for (i in 4:ncol(get(sheet_name))){
+    
+    assign(sheet_name, suppressWarnings(LOR_converter(df = get(sheet_name), column = colnames(get(sheet_name))[i])))
+    
+  }
+}
+
+#clean up
+rm(i, sheet_name, sheets)
+
+```
+
+## Bind Datasheets
+
+Once all data is read in, each sheet can be given its specific tailoring process, combined and then all assigned their metadata.
+
+```{r}
+#| label: bind datasheets
+
+#The DES datasheet "special" process is converting the date time column to only date
+des_clean <- DES |> separate_wider_delim(Date_Time, " ", names = c("Date", NA), too_few = "align_start") |> 
+  mutate(Date = ymd(Date))
+
+#The TCC Wastewater datasheet does not have any special processing required
+tcc_ww_clean <- TCC_Wasterwater
+
+#The TCC Other datasheet "special" process is converting DO mg/L to DO % saturation (This is TBA)
+#tcc_other_clean <- ...
+
+#Each of the spreadsheets (now aligned) can be given the same process
+freshwater_wq <- bind_rows(des_clean, tcc_ww_clean) 
+
+freshwater_wq_full <- freshwater_wq |> 
+  mutate(DIN_mg.L = Ammonia_mg.L + Nox_mg.L, "Low_DO_%.Sat" = `DO_%.Sat`, #calculate DIN, make low DO
+         "High_DO_%.Sat" = `DO_%.Sat`, .keep = "unused") |> #make high DO, remove ammonia and NOx cols
+  pivot_longer(cols = 4:ncol(freshwater_wq), names_to = "Indicator", values_to = "Values") |> #pivot data longer
+  separate_wider_regex("Indicator", c("Indicator" = ".*", "_", "Units" = ".*")) |> 
+  left_join(site_metadata) #add metadata
+
+#clean up
+rm(DES, TCC_Wastewater)
+
+```
+# Final QA/QC Checks
+
+TBC.
+
+# Remove Values Below LOR
+
+```{r}
+#| label: remove values below the limit of reporting
+
+#Note that the LOR is halved here because the values that had "<" in them were halved early when the data was brought it,
+#and we dont want to accidentally remove them
+test <- dt_fw_wq_all |> 
+  mutate(Value = case_when(Value > (LOR/2) ~ Value))
+
+```
+
+# Summary stats tables
+
+In freshwater we group data by month then by year
+
+```{r summary-stats}
+
+dt_summary_monthly <- dt_fw_wq_all |> drop_na(GV, Value) |> 
+  mutate(Month = format(as.Date(Date), "%m")) |> 
+  group_by(FY, Code, Month, Indicator) |> 
+  mutate(monthlyMed = median(Value, na.rm=T)) |> 
+  ungroup() |>
+  group_by(FY, Code, Indicator) |> 
+  mutate(Indicator = as.factor(Indicator),
+         Sample_Size = n(), #this refers to total months represented (counting repeated months)
+         Minimum = min(monthlyMed, na.rm=T),
+         Twentieth = quantile(monthlyMed, probs = .2, na.rm=T),
+         Median = median(monthlyMed, na.rm=T),
+         Eightieth = quantile(monthlyMed, probs = .8, na.rm=T),
+         Maximum = max(monthlyMed, na.rm=T),
+         Pass.Fail = ifelse(Failure == "low" & monthlyMed < GV, "too low",
+                       ifelse(Failure == "high" & monthlyMed > GV, "too high", "pass")),
+         nPass = sum(Pass.Fail == "pass"),
+         pctPass = round(nPass/Sample_Size * 100)) |> 
+  select(Region, Zone, Sub_Zone, Area, Proportion, Code, FY, Month, Indicator, GV, SF, Sample_Size, monthlyMed, Minimum, Twentieth, 
+         Median, Eightieth, Maximum, Failure, Pass.Fail, nPass, pctPass) |> 
+  distinct() |> ungroup()
+
+write.csv(dt_summary_monthly, glue("{save_path}dry_tropics_summary_monthly.csv"))
+
+#indicator avg data value
+dt_summary_annual <- dt_summary_monthly |> 
+  group_by(FY, Code, Indicator) |> 
+        mutate(MonthsRep = n(), #this refers to how many months of the year are represented (not counting repeats)
+               annualMed = median(monthlyMed, na.rm = T),
+               Eightieth = quantile(monthlyMed, probs = .8, na.rm=T),
+               Pass.Fail = ifelse(Failure == "low" & monthlyMed < GV, "too low",
+                       ifelse(Failure == "high" & monthlyMed > GV, "too high", "pass")),
+               nPass = sum(Pass.Fail == "pass"),
+               pctPass = round(nPass/MonthsRep * 100)) |> 
+  ungroup() |> 
+        select(Region, Zone, Sub_Zone, Area, Proportion, Code, FY, Indicator, GV, SF, Month, monthlyMed, 
+               MonthsRep, annualMed, Minimum, Eightieth, Twentieth, Maximum, Pass.Fail, nPass, pctPass)|> 
+        distinct()
+
+#summary stats output csv files for each Region
+write.csv(dt_summary_annual, glue("{save_path}dry_tropics_summary_annual.csv"))
+
+```
+
+# Scores and Grades
+
+### Standardised scores
+
+Standardized scores convert sample values to numeric score between 0 and 100.
+
+```{r standardised-scores}
+
+#we no longer need info per month, so lets drop columns and simplify
+dt_summary_cut_down <- dt_summary_annual |> 
+  select(-c(Month, monthlyMed, Pass.Fail)) |> 
+  unique()
+
+dt_standardised <- dt_summary_cut_down |> 
+  mutate(standardised = case_when(
+    annualMed > GV ~ 60.9-(60.9*(abs((annualMed-GV)/(SF-GV)))),
+    annualMed < GV & Eightieth > GV ~ 80.99-(19.9*(abs(Eightieth-GV)/(Eightieth-annualMed))),
+    TRUE ~ 90)) |> 
+  mutate(standardised = case_when(
+    Indicator == "Low_DO" & annualMed < GV ~ 60.9-(60.9*(abs((annualMed-GV)/(SF-GV)))),
+    Indicator == "Low_DO" & annualMed > GV & pctPass < 80 ~ 80.99-(19.9*(abs(GV-Twentieth)/(annualMed-Twentieth))),
+    Indicator == "Low_DO" & annualMed > GV & pctPass >= 80 ~ 90,
+    TRUE ~ standardised)) |> 
+  mutate(standardised = case_when(standardised < 0 ~ 0,
+                                  T ~ standardised))
+
+#summary stats standardised output csv files for each Region
+write.csv(dt_standardised, glue("{save_path}dry_tropics_summary_standardised.csv"))
+                                  
+```
+
+## Aggregate within indicators to sub zone level
+
+```{r}
+
+#we can drop a while bunch of columns now
+dt_standardised <- dt_standardised |> 
+  select(Region, Zone, Sub_Zone, Area, Proportion,  Code, FY, Indicator, standardised)
+
+#group up and summarise at a sub zone level
+dt_stand_sub_zone <- dt_standardised |> 
+  filter(Sub_Zone %in% c("Bohle River", "Lower Ross River")) |> 
+  group_by(Region, Zone, Sub_Zone, Area, Proportion, FY, Indicator) |> 
+  summarise(standardised = mean(standardised)) |> 
+  mutate(Code = Sub_Zone, .after = Sub_Zone) |> 
+  ungroup()
+
+#add it the main dataset
+dt_stand_all <- rbind(dt_standardised, dt_stand_sub_zone)
+
+```
+
+
+## Aggregate across indicators to indicator category
+
+```{r}
+
+#introduce minimum aggregation rules (there must be at least 50% of the required indicators to average to an indicator category)
+n3_aggregation <- function(selected_columns) {
+  
+  #get the mean of all rows (regardless of how many indicators have data)
+  selected_columns_row_means <- rowMeans(selected_columns, na.rm = TRUE)
+  
+  #find the rows where less than 50% of the columns have data (returns a T/F vector the same length as the means above)
+  do_not_aggregate <- apply(selected_columns, MARGIN = 1, 
+                            function(x) {sum(!is.na(x)) < ncol(selected_columns)/2})
+  
+  #wherever a T value from the T/F vector lands, replace it with NA
+  selected_columns_row_means[do_not_aggregate] <- NA
+  
+  #return the columns with their new row means calculated in a vector
+  return(selected_columns_row_means)
+}
+
+#pivot everything wider to help viewing
+dt_stand_wide <- dt_stand_all |> 
+  select(FY, Region, Zone, Sub_Zone, Area, Proportion, Code, Indicator, standardised) |> 
+  unique() |> 
+        pivot_wider(names_from = Indicator, 
+                    values_from = standardised) %>%
+  select(Region, Zone, Sub_Zone, Area, Proportion, Code, FY, DIN, TP, NTU, High_DO, Low_DO)
+
+#run the function for each of the indicator categories
+dt_stand_wide$Nutrients <- n3_aggregation(select(dt_stand_wide, c("DIN", "TP")))
+dt_stand_wide$Clarity <- n3_aggregation(select(dt_stand_wide, c("NTU", "High_DO", "Low_DO")))
+
+#remove capped values for ungrouped sites
+dt_stand_wide <- dt_stand_wide |> 
+  mutate(Code = case_when(Sub_Zone %nin% c("Bohle River", "Lower Ross River") ~ Sub_Zone,
+                          T ~ Code),
+         Nutrients = case_when(Code == Sub_Zone ~ Nutrients),
+         Clarity = case_when(Code == Sub_Zone ~ Clarity))
+
+
+```
+
+## Weight scores by proportion of catchment
+
+```{r}
+
+dt_weighted <- dt_stand_wide |> 
+  mutate(w_nutrients = Nutrients*Proportion,
+         w_clarity = Clarity*Proportion)
+
+#clean up workspace
+rm(dt_stand_sub_zone, dt_stand_wide, dt_standardised, dt_summary_annual, dt_summary_cut_down, dt_summary_monthly)
+
+```
+
+## Aggregate within indicator categories to zone level
+
+```{r}
+
+#group up and summarise at a sub zone level
+dt_weighted_zone <- dt_weighted |> 
+  select(Region, Zone, FY, w_nutrients, w_clarity) |> 
+  group_by(Region, Zone, FY) |> 
+  summarise(w_nutrients = sum(w_nutrients, na.rm = T),
+            w_clarity = sum(w_clarity, na.rm = T)) #|>
+
+
+
+  mutate(Code = Sub_Zone, .after = Sub_Zone) |> 
+  ungroup()
+
+
+
+
+
+```
+
+
+```{r}
+
+
+#creating capped scores by converting numeric values to grades from -1 to 1
+#when indicator is secchi the pass/fail is reversed
+capped <- dt_summary_stats |> 
+  select(FY, Region, Zone, Sub_Zone, Name, Indicator, Stat_val, GV) |> 
+  mutate(capped_value = case_when(Indicator == "Secchi" ~ ifelse((log2(Stat_val/GV)) <= -1, -1,
+                                                                   (ifelse((log2(Stat_val/GV)) >= 1, 1,
+                                                                           (log2(Stat_val/GV))))),
+                                    TRUE ~ ifelse((log2(GV/Stat_val)) <= -1, -1, 
+                                                  (ifelse((log2(GV/Stat_val)) >= 1, 1, (log2(GV/Stat_val))))))) |> 
+  select(-GV) |> ungroup()
+
+#pivot everything wider to help viewing
+capped_wide <- capped |> 
+  select(FY, Region, Zone, Sub_Zone, Name, Indicator, capped_value) |> 
+  unique() |> 
+        pivot_wider(names_from = Indicator, 
+                    values_from = capped_value) %>%
+  select(FY, Region, Zone, Sub_Zone, Name, NOx, PN, PP, TP, TN, FRP, Chla, NTU, TSS, Secchi)
+
+
+```
+
+## Indicator and Index Scores
+
+```{r}
+#|label: calculate indicator and index scores 
+
+#introduce minimum aggregation rules (there must be at least 50% of the required indicators to average to an indicator category)
+n3_aggregation <- function(selected_columns) {
+  
+  #get the mean of all rows (regardless of how many indicators have data)
+  selected_columns_row_means <- rowMeans(selected_columns, na.rm = TRUE)
+  
+  #find the rows where less than 50% of the columns have data (returns a T/F vector the same length as the means above)
+  do_not_aggregate <- apply(selected_columns, MARGIN = 1, 
+                            function(x) {sum(!is.na(x)) < ncol(selected_columns)/2})
+  
+  #wherever a T value from the T/F vector lands, replace it with NA
+  selected_columns_row_means[do_not_aggregate] <- NA
+  
+  #return the columns with their new row means calculated in a vector
+  return(selected_columns_row_means)
+}
+
+#run the function for each of the indicator categories
+capped_wide$Nutrients <- n3_aggregation(select(capped_wide, c("TP", "PP", "PN", "NOx", "TN", "FRP"))) #here is where TN and FRP can be added
+capped_wide$Clarity <- n3_aggregation(select(capped_wide, c("TSS", "NTU", "Secchi"))) 
+capped_wide$Chlorophyll <- n3_aggregation(select(capped_wide, c("Chla")))  
+
+#create 'not-in' function
+'%nin%' <- function(x,y)!('%in%'(x,y))
+
+ind_cat_capped_wide <- capped_wide |> group_by(FY, Region, Zone, Sub_Zone) |> 
+  summarise(Nutrients = mean(Nutrients, na.rm = T),
+            Clarity = mean(Clarity, na.rm = T),
+            Chlorophyll = mean(Chlorophyll, na.rm = T)) |> 
+  ungroup() |> 
+  filter(Sub_Zone %nin% c("Magnetic Island", "Midshelf", "H.Enclosed Coastal", "H.Open Coastal")) |> 
+  mutate(Name = Sub_Zone, NOx = NA, PN = NA, PP = NA, TP = NA, TN = NA, 
+         FRP = NA, Chla = NA, NTU = NA, TSS = NA, Secchi = NA)
+
+#create an empty zone summary for later
+empty_zones <- capped_wide |> group_by(FY, Region, Zone) |> 
+  mutate(Sub_Zone = Zone, Name = Zone, NOx = NA, PN = NA, PP = NA, TP = NA, TN = NA, FRP = NA, Chla = NA, 
+         NTU = NA, TSS = NA, Secchi = NA, Nutrients = NA, Clarity = NA, Chlorophyll = NA) |> 
+    unique()
+
+
+#combined datasets
+dt_ind_cat <- rbind(capped_wide, ind_cat_capped_wide)
+
+
+test <- dt_ind_cat |> filter(Sub_Zone == Name) |> 
+  group_by(FY, Region, Zone) |> 
+  summarise(Nutrients = mean(Nutrients, na.rm = T),
+            Clarity = mean(Clarity, na.rm = T),
+            Chlorophyll = mean(Chlorophyll, na.rm = T)) |> 
+  ungroup() |> 
+  mutate(Name = Zone, Sub_Zone = Zone, NOx = NA, PN = NA, PP = NA, TP = NA, TN = NA, 
+         FRP = NA, Chla = NA, NTU = NA, TSS = NA, Secchi = NA)
+
+#combined again
+dt_ind_cat_final <- rbind(dt_ind_cat, test)
+
+
+#need to standardize scores here before calculating the water quality index
+
+#create a rounding function
+rounding_func <- function(col){
+  col = round(case_when(
+    col >= .51 ~ 100 - (19 - ((col-0.51) * (19/0.49))),
+    col >= 0 & col < .51 ~ 80.9 - (19.9 - ((col -0.01) *(19.9/0.49))),
+    col >= -.33 & col < -.01 ~ 60.9- (19.9 - ((col -(-0.33)) *(19.9/0.32))),
+    col >= -.66 & col < -.34 ~ 40.9- (19.9 - ((col -(-0.66)) * (19.9/0.32))),
+    TRUE ~ 20.9- (20.9 - ((col -(-1)) *(20.9/0.34)))))
+}
+
+#get list of col names to apply to function to
+col_names <- colnames(dt_ind_cat_final[6:18])
+
+#loop over col names and apply the function to each col
+for (i in 1:length(col_names)){
+  if (i == 1){dt_zone_score <- dt_ind_cat_final}
+  dt_zone_score[col_names[i]] <- rounding_func(dt_zone_score[[col_names[i]]])
+}
+
+
+#calculate water quality index. No need to do minimum aggregation rules as there is always data
+full_zones <- dt_zone_score |> 
+  filter(Zone == Sub_Zone) |> 
+  group_by(FY, Zone) |>
+  mutate(Water_Quality = case_when(Zone == Sub_Zone ~ as.character(mean(c(Nutrients, Chlorophyll, Clarity), na.rm = T)))) |>
+  filter(Name %in% c("Halifax", "Cleveland")) |> 
+  ungroup() |> 
+  mutate(across(6:18, as.numeric))
+  
+dt_zone_score <- dt_zone_score |> filter(Name %nin% c("Halifax", "Cleveland")) |> 
+  mutate(Water_Quality = NA)
+
+#add back to main
+dt_capped_wide_indicator_category_index <- rbind(dt_zone_score, full_zones)
+
+    
+#clean up
+rm(dt_capped_wide_indicator, dt_zone_score)
+
+
+```
+
+# Dry Tropics Final Table
+
+```{r dt-zone-grades}
+
+#(rounding func used to go here)
+
+#update factor order and then create water quality column
+dt_capped_wide_indicator_category_index <- dt_capped_wide_indicator_category_index |> 
+  arrange(ordered(dt_capped_wide_indicator_category_index$Name,
+                 levels = c("C.Enclosed Coastal.Inside.Port.Subzone", "C.Enclosed Coastal.Outside.Port.Subzone", "C.Enclosed Coastal",
+                            "C.Open Coastal.Inside.Port.Subzone","C.Open Coastal.Outside.Port.Subzone","C.Open Coastal", 
+                            "Magnetic Island", "Cleveland", 
+                            "H.Enclosed Coastal", "H.Open Coastal", "Midshelf", "Halifax")))
+
+#save the output
+write_csv(dt_capped_wide_indicator_category_index, glue("{save_path}dry_tropics_final_scores.csv"))
+
+```
+
+# Box plots
+
+```{r}
+#| label: plot each indicator
+
+#create custom log function for tick breaks
+base_breaks <- function(n = 10){
+    function(x) {
+        axisTicks(log10(range(x, na.rm = TRUE)), log = TRUE, n = n)
+    }
+}
+
+#create some custom names
+dt_grab_custom <- dt_grab_all |> 
+  mutate(Sub_Zone = case_when(Sub_Zone == "C.Open Coastal" ~ "CB: OC",
+                              Sub_Zone == "C.Enclosed Coastal" ~ "CB: EC",
+                              Sub_Zone == "Magnetic Island" ~ "CB: Mag. Is.",
+                              Sub_Zone == "Midshelf" ~ "HB: MS",
+                              Sub_Zone == "H.Open Coastal" ~ "HB: OC",
+                              Sub_Zone == "H.Enclosed Coastal" ~ "HB: EC",
+                              T ~ Sub_Zone),
+         Name = case_when(Name == "C.Open Coastal.Outside.Port.Subzone" ~ "CB: OC.OPZ",
+                          Name == "C.Open Coastal.Inside.Port.Subzone" ~ "CB: OC.IPZ",
+                          Name == "C.Enclosed Coastal.Outside.Port.Subzone" ~ "CB: EC.OPZ",
+                          Name == "C.Enclosed Coastal.Inside.Port.Subzone" ~ "CB: EC.IPZ",
+                          Name == "Magnetic Island" ~ "CB: Mag. Is.",
+                          Name == "Midshelf" ~ "HB: MS",
+                          Name == "H.Open Coastal" ~ "HB: OC",
+                          Name == "H.Enclosed Coastal" ~ "HB: EC",
+                          T ~ Name))
+
+for (i in 1:length(unique(dt_grab_custom$Indicator))){
+  for (j in 1:length(unique(dt_grab_custom$FY))){
+    
+    data <- dt_grab_custom |> filter(Indicator == unique(dt_grab_custom$Indicator)[i],
+                                     FY == unique(dt_grab_custom$FY)[j])
+    
+    GV <- data |> select(Name, GV) |> rename(Value = GV)
+    
+    #LOR <- data |> select(Name, LOR) |> rename(Value = LOR)
+    
+    if (unique(dt_grab_custom$Indicator)[i] %in% c("chla", "PN", "PP")){
+      unit <- "ug/L"
+    } else if (unique(dt_grab_custom$Indicator)[i] == "NTU"){
+        unit <- "NTU"
+    } else if (unique(dt_grab_custom$Indicator)[i] == "Secchi"){
+          unit <- "m"
+    } else {unit <- "mg/L"}
+    
+    if (unique(dt_grab_custom$Indicator)[i] %in% c("NTU", "TP")){
+      
+      tested_val <- data |> select(Name, Value) |> group_by(Name) |> 
+        mutate(Value = median(Value, na.rm = T))
+
+    } else {
+      
+      tested_val <- data |> select(Name, Value) |> group_by(Name) |> 
+        mutate(Value = mean(Value, na.rm = T))
+
+    }
+    
+    plot <- ggplot(data, aes(x = Name, y = Value, fill = Name)) +
+      geom_boxplot(outlier.colour = "black", outlier.shape = 21, outlier.fill = "red", outlier.size = 2) +
+      geom_jitter(color="black", size = 0.5, alpha = 0.9, height = 0) +
+      geom_point(data = GV, colour = "black", shape = 23, size = 2, fill = "blue") +
+      geom_text(data = GV, aes(label = Value), show.legend = F, nudge_x = 0.21, colour = "white", size = 2) +
+      geom_text(data = GV, aes(label = Value), show.legend = F, nudge_x = 0.2, size = 2) +
+      geom_point(data = tested_val, colour = "black", shape = 4, size = 3) +
+      scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
+      theme_bw() +
+      theme(legend.position = "none", plot.title = element_text(size = 9),
+            axis.line = element_line(colour = "black"),
+            axis.text = element_text(colour = "black", size = 6),
+            panel.grid.major = element_blank(),
+            panel.grid.minor = element_blank(),
+            panel.border = element_blank(),
+            panel.background = element_blank()) +
+      xlab("") + ylab(glue("{unique(dt_grab_custom$Indicator)[i]} ({unit})"))
+    
+    if (unique(dt_grab_custom$Indicator)[i] %in% c("TSS", "TP", "NTU", "NOx", "FRP")){
+      
+      plot <- plot + scale_y_continuous(trans = scales::log_trans(), breaks = base_breaks(),
+                   labels = prettyNum)
+
+      log_scale <- "(Log10)"
+      
+    } else {log_scale <- ""}
+    
+    plot <- plot + ggtitle(glue("{unique(dt_grab_custom$FY)[j]}:
+                                {unique(dt_grab_custom$Indicator)[i]} Boxplot {log_scale}"))
+    
+    ggsave(glue("{save_path}/boxplots/{unique(dt_grab_custom$FY)[j]}_{unique(dt_grab_custom$Indicator)[i]}_Boxplot.png"), width = 12, height = 12, units = "cm")
+    
+  }
+  
+}
+
+
+
+
+```
+
+# Line plots
+
+Part 1
+
+```{r}
+#| label: plot each indicator
+
+dt_grab_custom$Date <- as.Date(dt_grab_custom$Date)
+
+dt_grab_line_plot <- dt_grab_custom |> group_by(across(c(-"Code", -"Value"))) |> 
+  summarise(Value = ifelse(Stat %in% "mean", round(mean(Value, na.rm=T),10),
+                          ifelse(Stat %in% "median", round(median(Value, na.rm=T),10),NA))) |> 
+  ungroup() |> unique()
+
+
+for (i in 1:length(unique(dt_grab_line_plot$Indicator))){
+  for (k in 1:length(unique(dt_grab_line_plot$Name))){
+    
+    data <- dt_grab_line_plot |> filter(!is.na(Value),
+                                     Indicator == unique(dt_grab_line_plot$Indicator)[i])
+    
+    GV <- data |> select(Name, Date, GV) |> rename(Value = GV)
+    
+    if (unique(dt_grab_line_plot$Indicator)[i] %in% c("chla", "PN", "PP")){
+      unit <- "ug/L"
+    } else if (unique(dt_grab_line_plot$Indicator)[i] == "NTU"){
+        unit <- "NTU"
+    } else if (unique(dt_grab_line_plot$Indicator)[i] == "Secchi"){
+          unit <- "m"
+    } else {unit <- "mg/L"}
+    
+    plot <- ggplot(data, aes(x = Date, y = Value, colour = Name)) +
+      geom_line(show.legend = F, size = 0.8) +
+      geom_textline(data = GV, aes(label = Value), colour = "black", linetype = 2, size = 3, linewidth = 0.8, hjust = 0.2) +
+      scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
+      theme_bw() +
+      theme(legend.position="none", plot.title = element_text(size = 9),
+            axis.line = element_line(colour = "black"),
+            axis.text = element_text(colour = "black", size = 8),
+            panel.grid.major = element_blank(),
+            panel.grid.minor = element_blank(),
+            panel.border = element_blank(),
+            panel.background = element_blank()) +
+      facet_wrap(~Name, ncol = 2) +
+      xlab("") + ylab(glue("{unique(dt_grab_line_plot$Indicator)[i]} ({unit})"))
+      
+
+    
+    if (unique(dt_grab_line_plot$Indicator)[i] %in% c("TSS", "TP", "NTU", "NOx", "FRP")){
+      
+      plot <- plot + scale_y_continuous(trans = scales::log_trans(), breaks = base_breaks(),
+                   labels = prettyNum)
+
+      log_scale <- "(Log10)"
+      
+    } else {log_scale <- ""}
+    
+    plot <- plot + ggtitle(glue("{unique(dt_grab_line_plot$Indicator)[i]} Line plot {log_scale}"))
+    
+    ggsave(glue("{save_path}/lineplots/{unique(dt_grab_line_plot$Indicator)[i]}_Line plot.png"), width = 15, height = 20, units = "cm")
+    
+    }
+}
+
+
+
+```
+Part 2
+
+```{r}
+#| label: plot each indicator
+
+#get only FY2022 data
+dt_grab_line_plot <- dt_grab_line_plot |> filter(FY == "2022")
+
+#get only HB data
+dt_grab_line_plot <- dt_grab_line_plot |> filter(Zone == "Halifax")
+
+
+for (i in 1:length(unique(dt_grab_line_plot$Indicator))){
+  for (k in 1:length(unique(dt_grab_line_plot$Name))){
+    
+    data <- dt_grab_line_plot |> filter(!is.na(Value),
+                                     Indicator == unique(dt_grab_line_plot$Indicator)[i])
+    
+    GV <- data |> select(Name, Date, GV) |> rename(Value = GV)
+    
+    if (unique(dt_grab_line_plot$Indicator)[i] %in% c("chla", "PN", "PP")){
+      unit <- "ug/L"
+    } else if (unique(dt_grab_line_plot$Indicator)[i] == "NTU"){
+        unit <- "NTU"
+    } else if (unique(dt_grab_line_plot$Indicator)[i] == "Secchi"){
+          unit <- "m"
+    } else {unit <- "mg/L"}
+    
+    plot <- ggplot(data, aes(x = Date, y = Value, colour = Name)) +
+      geom_line(size = 0.8) +
+      geom_point(size = 3, shape = 4) +
+      #geom_textline(data = GV, aes(label = Value), colour = "black", linetype = 2, size = 3, linewidth = 0.8, hjust = 0.2) +
+      scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
+      theme_bw() +
+      theme(plot.title = element_text(size = 9),
+            axis.line = element_line(colour = "black"),
+            axis.text = element_text(colour = "black", size = 8),
+            panel.grid.major = element_blank(),
+            panel.grid.minor = element_blank(),
+            panel.border = element_blank(),
+            panel.background = element_blank()) +
+      xlab("") + ylab(glue("{unique(dt_grab_line_plot$Indicator)[i]} ({unit})"))
+      
+
+    
+    if (unique(dt_grab_line_plot$Indicator)[i] %in% c("TSS", "TP", "NTU", "NOx", "FRP")){
+      
+      plot <- plot + scale_y_continuous(trans = scales::log_trans(), breaks = base_breaks(),
+                   labels = prettyNum)
+
+      log_scale <- "(Log10)"
+      
+    } else {log_scale <- ""}
+    
+    plot <- plot + ggtitle(glue("{unique(dt_grab_line_plot$Indicator)[i]} Line plot {log_scale}"))
+    
+    ggsave(glue("{save_path}/lineplots/{unique(dt_grab_line_plot$Indicator)[i]}_Line plot_2022_only.png"), width = 15, height = 20, units = "cm")
+    
+    }
+}
+
+
+
+```

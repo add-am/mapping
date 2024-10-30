@@ -1,0 +1,976 @@
+---
+title: "Northern Three Spatial Analyses (Habitat: Riparian Vegetation)"
+author: "Adam Shand"
+date: "`r format(Sys.time(), '%d, %B, %Y')`"
+format: html
+params:
+  project_crs: "EPSG:7844"
+  target_fyear: 2019
+---
+
+::: {.callout-tip}
+## R Version
+For R session info at the time of rendering this script see @sec-sessioninfo.
+:::
+
+# Introduction
+
+This script contains the methods used to wrangle, analyse and present both freshwater and estuarine riparian vegetation data in the Northern Three regions. The data used in this script is subset of the Regional Ecosystems (RE) dataset. For a guide on downloading RE data refer to the README document for the Spatial Analysis GitHub repo.
+
+
+:::{.callout-note}
+The results for the riparian vegetation script are currently used within the freshwater habitat and hydrology section, and the estuarine habitat section of the technical report. The amount of riparian vegetation lost/gained is the metric assessed. 
+:::
+
+The main objectives of this script are to:
+
+ - Define vegetation that is classified as in the "riparian" area.
+ - Select only this data.
+ - Calculate the total amount of freshwater riparian coverage.
+ - Calculate the total amount of estuarine riparian coverage.
+ - Create a tabular summary of the coverage.
+ - Create maps of the coverage.
+ - Create plots of the coverage and coverage change.
+
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, janitor, sf, tmap, grid, ggallin)
+
+```
+
+We also need to set up key variables for the script such as where we are going to save the outputs, and what coordinate reference system (crs) we are going to be using. Note that the crs is first established under 'params' at the start of the script.
+
+A side note here, because data is not updated every year, even when we create a new folder under a new financial year does not necessarily mean that there will be new results. E.g. the years of regional ecosystem data we have are currently pre_clear, 1997, 1999, 2000, 2001, 2003, 2005, 2006, 2006b, 2007, 2009, 2011, 2013, 2015, 2017, 2019, and 2021. So if we were to put financial year 2001 or financial year 2002 we would still get the same results. 
+
+To make matters worse, the year of data (e.g. 2021) is not released on that same year, but at a later date. Specifically, the 2021 data was released in late 2023.
+
+Thus instead of trying to name folders with just the financial years we will name folders with financial years and data layer years using a translation as follows:
+
+fyear = 2023, data layer = 2021
+fyear = 2022/21 data layer = 2019
+fyear = 2020/19, data layer = 2017
+fyear = 2018/17, data layer = 2015
+fyear = 2016/15, data layer = 2013
+
+```{r}
+#| label: connection between fyear and data year
+
+#get the targeted financial year that was set in the yaml
+current_fyear <- params$target_fyear
+
+#get the data year that we should look at using this relationship
+data_year <- ifelse(current_fyear %in% c(2023), 2021,
+                    ifelse(current_fyear %in% c(2022, 2021), 2019,
+                           ifelse(current_fyear %in% c(2020, 2019), 2017,
+                                  ifelse(current_fyear %in% c(2018, 2017), 2015,
+                                         ifelse(current_fyear %in% c(2016, 2015), 2013)))))
+
+#we also need to figure out what the most recent previous dataset is - this is useful later on (we dont need to bother going super far back)
+prev_data_year <- ifelse(data_year == 2021, 2019,
+                         ifelse(data_year == 2019, 2017,
+                                ifelse(data_year == 2017, 2015,
+                                       ifelse(data_year == 2015, 2013))))
+
+```
+
+
+
+```{r}
+#| label: global vars and initial setup
+#| output: false
+
+#set project variables: crs factor and current_fyear
+proj_crs <- params$project_crs
+
+#format the date for the path below and to be used as a variable in naming later
+date <- format(Sys.time(), "%Y-%m-%d")
+
+#create a file path to help with saving things
+save_path <- here(glue("outputs/n3_habitat_riparian-vegetation/fyear-{current_fyear}_data-{data_year}/"))
+
+#bring that path to life
+dir.create(save_path)
+
+#create an extra off of this for maps and plots
+dir.create(glue("{save_path}/maps/"))
+dir.create(glue("{save_path}/plots/"))
+
+#turn off spherical geometry
+sf_use_s2(F)
+
+#turn off scientific notation
+options(scipen = 999)
+
+```
+
+# Load Data
+
+Now the script is set up we need to load in all of the required datasets. This will be broken into two segments:
+- Spatial data specific to the N3 region - such as the region, basin, and sub basin boundaries.
+- Riparian boundaries and the Regional Ecosystem (riparian) data.
+
+## Spatial Data
+
+Spatial data for the northern three regions should be readily available in the repo, the dataset is created by the n3_region-builder.qmd script in the repo that should be the first script run for new users. If the dataset is not available refer back to the README document in the GitHub repo. The other parts of spatial data here should go off without a hitch if the region-builder script has been run.
+
+```{r}
+#| label: load the n3 region
+#| output: false
+
+#read in the northern three spatial files and reduce down to only the components we need
+n3_region <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg")) |> 
+  filter(environment != "Marine") |> 
+  group_by(region, environment, basin_or_zone, sub_basin_or_sub_zone) |> summarise(geom = st_union(geom)) |> 
+  rename(basin = basin_or_zone, sub_basin = sub_basin_or_sub_zone) |> ungroup() |> 
+  st_cast() |> st_make_valid()
+
+#load a Queensland outline from the aims package
+qld <- get(data("gbr_feat", package = "gisaimsr")) |> filter(FEAT_NAME %in% c("Mainland", "Island")) |> 
+  st_transform(proj_crs)
+
+```
+
+## Riparian Boundaries and Riparian Data (RE data)
+
+The dataset previously used (pre 2021) to define the riparian boundaries is a bit vague and has never really been properly identified. Here we will be using the watercourse lines and statewide corridors datasets. Please refer to [Issue 49](https://github.com/Northern-3/spatial-analyses/issues/49) on the GitHub repo for more info.
+
+:::{.callout-note}
+The above text refers to the old method of establishing the riparian boundaries. A new method has been developed (however the output is still the same atm).
+:::
+
+The vegetation dataset used in this analysis is the Regional Ecosystems dataset that is used by multiple scripts in the n3_habitat space.
+
+:::{.callout-note}
+This section of the code takes a significant chunk of time to run. Processes have been put in place to reduce the need to rerun this step, however the inclusion of any new regional ecosystem layers as they are published will need to be run through this step.
+:::
+
+:::{.callout-note}
+Only the newest and oldest RE layers are provided by QSpatial. If middle layers are missing, refer to README regarding download all layers. Note that the middle layers are not necessarily required for the script to run, but certain outputs benefit from the inclusion of additional layers.
+:::
+
+Regional Ecosystem (RE) data (i.e. vegetation) is published to QSpatial by DES and covers the entirety of Queensland (for more info go [here](https://www.qld.gov.au/environment/plants-animals/plants/ecosystems/descriptions)). Vegetation type is given via an RE code such as "11.1.3" where:
+
+ - 11 = bioregion (e.g. The Brigalow Belt).
+ - 1 = landzone (e.g. Tidal flats and beaches).
+ - 3 = vegetation community (e.g. Sedgelands on marine clay plains).
+ 
+Regional Ecosystem data is used by multiple  multiple scripts under the "habitat" banner in this repo, and is therefore stored in the generic "n3_habitat" data folder. Unfortunately, the custom function `n3_habitat_data()` is not completely applicable in this script due to the complexity of the area selected (see [issue 53](https://github.com/Northern-3/spatial-analyses/issues/53) for more info). Instead pieces of the custom function have been pulled out and new parts added. Given that this new version is only going to be used by one script it doesn't warrant the creation of an entirely new function and instead is all written in the code chunks below. This code chunk will still work in tandem, before, or after the original `n3_habitat_data()` function[^1]. Please note that it will also work for any number of RE layers, however, this means that for n number of layers in the folder, n number of datasets will always be loaded. This can reduce speed, particularly if you are only interested in the first and layer years. An overview of what we are going to do below is as follows:
+
+ - Check if the riparian boundary data has been created, if it does load it, if it doesn't create it. **Takes a long time.**
+ - Check if riparian cropped RE datasets exists, if they do move on, 
+ - If they don't, check if N3 cropped RE datasets exists, if they do, load them and create the riparian cropped RE datasets, **Takes a long time.**
+ - If they don't load the original RE data, and create both the N3 and riparian cropped RE datasets. **Takes a long time.**
+ 
+After each riparian cropped RE datasets has been made, we also perform some additional calculations before saving the final output, these include:
+
+- Grouping vegetation types into remnant, non-remnant and other, **Takes a long time.**
+- Calculating the total area in km2 of each vegetation group, **Takes a long time.**
+- Merging all polygons in the same vegetation group to improve visual clarity, **Takes a long time.**
+- Extracting all non-spatial information into one centralized table. **Takes a long time.**
+ 
+First we will check/create the riparian area dataset.
+
+[^1]: As of [issue 65](https://github.com/Northern-3/spatial-analyses/issues/65) the n3_habitat_data.R function is/has been retired and is now built into each habitat script independently.
+
+```{r}
+#| label: crop the RE layers to improve processing time
+#| output: false
+
+#create path to where we will save the 50m buffered output
+rip_path <- here("data/n3_habitat_riparian-vegetation/n3_riparian_boundaries.gpkg")
+
+if (file.exists(rip_path)){ #if the riparian area dataset exists, read it in
+    
+  rip_boundaries <- st_read(rip_path)
+  
+} else { #otherwise create and save the dataset
+
+  #load in the watercourse boundaries dataset
+  n3_watercourse <- st_read(here("data/n3_prep_watercourse-builder/n3_watercourse.gpkg"))
+  
+  #filter by dataset source to get only the two datasets that were used for the original re riparian outlines
+  rip_watercourse <- n3_watercourse |> 
+    filter(source %in% c("watercourse_lines", "riparian_corridors"))
+  
+  #filter the stream order to get only streams of order 1 or greater (note the riparian corridors set has stream order = 9999)
+  rip_watercourse <- rip_watercourse |> 
+    filter(stream_order >= 1)
+  
+  #project data to a meters dataset, add the 50m buffer, project back to GDA2020
+  rip_boundaries <- st_transform(rip_watercourse, "EPSG:7855") |> st_buffer(50) |> st_transform(proj_crs)
+      
+  #save to file
+  st_write(rip_boundaries, rip_path, append = F)
+
+  #clean up and force gc
+  rm(n3_watercourse, rip_watercourse)
+  gc()
+    
+}
+
+#clean up path
+rm(rip_path)
+
+```
+
+Then we will check/create the re_riparian_datasets.
+
+```{r}
+#| label: check and create riparian datasets
+
+#create paths to different versions of the re data
+raw_path <- here("data/n3_habitat/re_raw/")
+cropped_path <- here("data/n3_habitat_riparian-vegetation/re_riparian_cropped/")
+
+#get a vector of all the original files in the raw folder that contain ".gpkg"
+file_vec <- tools::file_path_sans_ext(list.files(raw_path, pattern = ".gpkg"))
+
+#create a table to hold non spatial version
+re_rip_tbl_raw_data <- data.frame()
+
+if (file.exists(glue("{cropped_path}/re_rip_table.csv"))){#if the csv exists, open and check if years match the number of years available
+  
+  re_rip_tbl_raw_data <- read_csv(glue("{cropped_path}/re_rip_table.csv"))
+  
+  if (length(unique(re_rip_tbl_raw_data$year)) < length(file_vec)){#if years in csv are not equal or greater, create update flag for below
+    
+    update_csv <- TRUE
+    
+    re_rip_tbl_raw_data <- data.frame()
+    
+    } else {update_csv <- FALSE}
+  
+} else {update_csv <- TRUE} #if the csv does exist at all, of course it will also need to be "updated"
+
+for (i in file_vec){#for each file in the vector or original files
+    
+  if (file.exists(glue("{cropped_path}/{i}_riparian_cropped.gpkg"))){#if the fully riparian cropped version of the file exists
+    
+    if (update_csv){#if the csv requires updating
+      
+      temp <- st_read(glue("{cropped_path}/{i}_riparian_cropped.gpkg"))
+      temp <- temp |> st_drop_geometry()
+      re_rip_tbl_raw_data <- rbind(re_rip_tbl_raw_data, temp)
+      
+      #save the dataset
+      write_csv(re_rip_tbl_raw_data, glue("{cropped_path}/re_rip_table.csv"), append = F)
+      
+    } #otherwise do nothing
+
+  } else { #if no cropped version of the original data exists
+    
+    #create a lookup to catch any cols named Shape
+    lookup <- c(geom = "Shape")
+      
+    #read in the original regional ecosystem layer and rename any shape columns
+    re_layer <- st_read(glue("{raw_path}/{i}.gpkg")) |> rename(any_of(lookup))
+      
+    #and separate the data into "standard" geometries - polygons, and non-standard geometries - e.g. multisurfaces
+    standard_geoms <- re_layer |> filter(grepl("POLYGON", st_geometry_type(geom))) |> st_make_valid()
+    non_standard_geoms <- re_layer |> filter(grepl("MULTISURFACE", st_geometry_type(geom)))
+      
+    #save non-standard geoms to be edited
+    st_write(non_standard_geoms, glue("{cropped_path}/temporary_storage.gpkg"), delete_dsn = T)
+      
+    #use the gdalUtilies to open edit and save the file (it auto saves as a folder containing a shapefile)
+    gdalUtilities::ogr2ogr(glue("{cropped_path}/temporary_storage.gpkg"), glue("{cropped_path}/temporary_storage"), 
+                           explodecollections = T, nlt = 'CONVERT_TO_LINEAR', overwrite = T)
+      
+    #create a second lookup to catch any cols named Shape
+    lookup_2 <- c(Shape_Length = "Shape_Leng")
+    
+    #read back in the edited file
+    fixed_geoms <- st_read(glue("{cropped_path}/temporary_storage/temporary_storage.shp")) |> 
+      rename(geom = geometry) |> st_make_valid() |> rename(any_of(lookup_2))
+      
+    #join the fixed data onto the standard data
+    re_layer <- rbind(standard_geoms, fixed_geoms)
+    
+    #transform the crs, then intersect over the bvg area
+    re_layer <- re_layer |> st_transform(proj_crs) |> st_intersection(n3_region)
+      
+    #get a vector of all the basins present in the data
+    basin_vector <- unique(n3_region$basin)
+        
+    #create a vector to track all the files that are created
+    rip_basin_files <- c()
+        
+    for (j in basin_vector){#for each basin
+        
+      #filter for only that basin of RE data and take only polygons
+      re_basin_layer <- re_layer |> filter(basin == j) |> st_collection_extract("POLYGON")
+                
+      #filter for only that basin of riparian boundaries then drop all columns except environment
+      rip_basin_boundaries <- rip_boundaries |> filter(basin == j) |> select(environment)
+      
+      #intersect over the pair, calculate the area
+      re_rip_basin_layer <- re_basin_layer |> st_intersection(rip_basin_boundaries) |> mutate(area = st_area(geom))
+      
+      #get a vector of "vegetation" types that aren't vegetation
+      non_veg_types <- str_subset(unique(re_rip_basin_layer$RE1), "^[A-Za-z]")
+      
+      #assign vegetation types and group
+      re_rip_basin_layer <- re_rip_basin_layer |> 
+        mutate(vegetation = case_when(!RE1 %in% non_veg_types ~ "Remnant Vegetation", T ~ RE1)) |> 
+        select(region, environment, basin, sub_basin, vegetation, area)
+      
+      #change the "vegetation" types, water, shallow, estuary, and ocean, to simply water
+      re_rip_basin_layer <- re_rip_basin_layer |> 
+        mutate(vegetation = case_when(str_detect(vegetation, "estuary|water|shallow|ocean") ~ "Water",
+                                      str_detect(vegetation, "non") ~ "Non-Remnant Vegetation",
+                                      str_detect(vegetation, "plantation") ~ "Plantation",
+                                      T ~ vegetation))
+
+      #keep track of the data that has been created
+      rip_basin_files <- append(rip_basin_files, j)
+          
+      #assign each dataset to the global environment
+      assign(j, re_rip_basin_layer)
+                
+    }
+        
+    #create a list containing all of the basin datasets that were loaded in
+    basin_rip_list <- lapply(rip_basin_files, function(x) get(x))
+        
+    #bind all datasets together
+    re_rip_data <- do.call(rbind, basin_rip_list)
+    
+    #clean up
+    rm(list = rip_basin_files)
+    
+    #pull the year from the name
+    i_year <- str_remove_all(i, "^re_|_v12_2")
+        
+    #add year column to data
+    re_rip_data <- re_rip_data |> mutate(year = i_year)
+    
+    #update units to be km2
+    re_rip_data$area <- units::set_units(re_rip_data$area, km^2)
+    
+    #save the final rip cropped file with spatial data still attached
+    st_write(re_rip_data, glue("{cropped_path}/{i}_riparian_cropped.gpkg"), append = F)
+    
+    #drop spatial data
+    re_rip_data <- re_rip_data |> st_drop_geometry()
+    
+    #bind to main dataset
+    re_rip_tbl_raw_data <- rbind(re_rip_tbl_raw_data, re_rip_data)
+    
+    #clean up
+    rm(rip_basin_files,  re_layer, re_basin_layer, rip_basin_boundaries, re_rip_basin_layer, 
+       non_veg_types, basin_rip_list, re_rip_data, i_year, basin_vector, lookup)
+    unlink(glue("{cropped_path}/temporary_storage.gpkg"))
+    unlink(glue("{cropped_path}/temporary_storage"), recursive = T)
+    
+    #save the dataset
+    write_csv(re_rip_tbl_raw_data, glue("{cropped_path}/re_rip_table.csv"), append = F)
+
+  }
+  
+}
+
+#clean up
+rm(cropped_path, file_vec, raw_path, update_csv)
+
+```
+
+Once this heavy work has been completed you should now be able to see all of the regional ecosystem - riparian cropped datasets in the relevant folder, as well as a csv summarizing all non spatial aspects. Note that while the csv will be loaded into the global environment, each of the spatial datasets will remain unloaded in the data folder. This is because the cropped datasets are still too large to all be loaded into memory at the same time. Moving forward, wherever possible we will be using the csv version to calculate answers. 
+
+# Analyse Data
+
+Currently we are looking to calculate:
+
+ - The total area coverage by each vegetation in each basin for each year (which was already completed above).
+ - The proportion of the total area that each vegetation covers (relative to the total riparian area).
+ - The change year on year of each vegetation.
+
+## Calculate Total Vegetation Coverage and Proportional Coverage
+
+Here we group up, calculate total coverage, and then use row wise to divide by each vegetation type.
+
+```{r}
+#| label: calculate vegetation cover
+
+#calculate the total area of each sub basin for each year and the proportion each vegetation covers
+re_rip_tbl_data <- re_rip_tbl_raw_data |> 
+  group_by(region, environment, basin, sub_basin, year) |> mutate(total_surveyed_area = sum(area)) |> 
+  ungroup() |> 
+  rowwise() |> mutate(veg_percent_of_total_area = as.numeric((area/total_surveyed_area)*100)) |> 
+  ungroup() |> 
+  group_by(region, environment, basin, sub_basin, year, total_surveyed_area, vegetation) |> 
+  summarise(area = sum(area), veg_percent_of_total_area = sum(veg_percent_of_total_area)) |> 
+  ungroup()
+
+#are all basins represented in sub basins?
+if(!all(unique(unique(re_rip_tbl_data$basin) %in% unique(re_rip_tbl_data$sub_basin)))){#if not:
+
+  #create basin version
+  basin_temp_tbl <- re_rip_tbl_data |> filter(basin != sub_basin) |> 
+    group_by(region, environment, basin, year, vegetation) |> 
+    summarise(total_surveyed_area = sum(total_surveyed_area),
+              area = sum(area),
+              veg_percent_of_total_area = as.numeric((area/total_surveyed_area)*100)) |> 
+    ungroup() |> 
+    mutate(sub_basin = basin)
+
+  #bind together
+  re_rip_tbl_data <- rbind(re_rip_tbl_data, basin_temp_tbl)
+
+}
+
+#clean up
+rm(basin_temp_tbl)
+  
+```
+
+## Calculate Year on Year Change
+
+After calculating the area each vegetation types covers (and had previously covered) we can then do a year on year comparison to track the loss/gain over time. A good trick here is to order by vegetation type, so we can then use the lag() function to query the above row.
+
+```{r}
+#| label: calculate year on year change
+
+#create a set of rows for non remnant vegetation in the pre clear year (this is obviously 0 but helps with calculations below)
+non_rem_tbl <- re_rip_tbl_data |> filter(year == "pre_clear", vegetation == "Remnant Vegetation") |> 
+  mutate(area = 0, veg_percent_of_total_area = 0, vegetation = "Non-Remnant Vegetation")
+
+#bind these new rows to the main data
+re_rip_tbl_data <- bind_rows(re_rip_tbl_data, non_rem_tbl)
+
+#update units (units are missing on repeat runs of the same script)
+re_rip_tbl_data$area <- units::set_units(re_rip_tbl_data$area, km^2)
+
+#create a 0 value with units
+replace_value <- units::set_units(0, km^2)
+
+#order by RE type, group by basin and RE, then compare the row to the one above using lag(), replace na values with 0
+re_rip_tbl_data <- re_rip_tbl_data |> arrange(environment, sub_basin, vegetation, year) |> 
+  group_by(environment, basin, sub_basin, vegetation) |> 
+  mutate(y_on_y_veg_area_change = area - lag(area),
+         y_on_y_veg_percent_change = (y_on_y_veg_area_change/lag(area))*100) |>
+  mutate(across(matches("percent"), \(x) as.vector(x)),
+         across(matches("percent"), \(x) replace_na(x, 0)),
+         across(matches("area"), \(x) replace_na(x, replace_value)),
+         across(where(is.numeric), \(x) round(x, 5))) |> 
+  ungroup()
+
+#fix up erraneous percent change values (anything over 100% change gets a score of 100)
+re_rip_tbl_data <- re_rip_tbl_data |> 
+  mutate(y_on_y_veg_percent_change = case_when(abs(y_on_y_veg_percent_change) > 100 ~ 100,
+                                               T ~ y_on_y_veg_percent_change))
+
+```
+
+## Calculate Standardised Scores
+
+We can then use the percent change year on year to calculate the standardised scores for each vegetation type
+
+```{r}
+#| label: create and use standardised score function
+
+standardised_riparian <- function (x){
+  
+  if (x > 0){floor(100-abs(19-((abs(x)-0)*(19/99.9))))}
+  else if (x >= -0.1){floor(61+abs(19.9-((abs(x)-0)*(19.9/0.1))))}
+  else if (x >= -0.5){floor(41+abs(19.9-((abs(x)-0.11)*(19.9/0.39))))}
+  else if (x >= -1){floor(21+abs(19.9-((abs(x)-0.51)*(19.9/0.49))))}
+  else if (x < -1){floor(abs(20.9-((abs(x)-1.01)*(20.9/98.99))))}
+}
+
+
+re_rip_tbl_data <- re_rip_tbl_data |> 
+  rowwise() |> 
+  mutate(standardised_score = standardised_riparian(y_on_y_veg_percent_change)) |> 
+  ungroup()
+
+```
+
+Once that is done we can save the full table to the outputs folder.
+
+```{r}
+#| label: show table output
+
+#create a new version just to update values to ha instead of km2
+save_version <- re_rip_tbl_data |> 
+  mutate(area = round(area*100, 1),
+         y_on_y_veg_area_change = round(y_on_y_veg_area_change*100, 1),
+         y_on_y_veg_percent_change = round(y_on_y_veg_percent_change, 2))
+
+#save full table
+write_csv(save_version, glue("{save_path}/riparian-vegetation_full_table.csv"))
+
+#edit cells of year column then pivot data for a clean presentation for the freshwater and estuarine environments (separately)
+report_ready <- save_version |> 
+  mutate(year = str_remove(year, "remnant_"),
+         year = case_when(is.na(year) ~ "pre_clear",
+                          T ~ year)) |>
+  select(!c(total_surveyed_area, veg_percent_of_total_area)) |> 
+  filter(vegetation == "Remnant Vegetation") |> 
+  rename(area_change = y_on_y_veg_area_change,
+         percent_change = y_on_y_veg_percent_change) |>
+  mutate(standardised_score = case_when(year == data_year ~ standardised_score,
+                                        T ~ NA)) |> 
+  pivot_wider(names_from = year, values_from = c(area, area_change, percent_change)) 
+
+#compress the table 
+report_ready <- report_ready |> 
+  group_by(environment, sub_basin) |> 
+  mutate(across(6:ncol(report_ready)-2, ~sum(.x, na.rm = T))) |> 
+  ungroup() |> 
+  unique()
+
+#create custom variables for column selection
+cols_to_select <- c(glue("area_{prev_data_year}"), glue("area_{data_year}"), glue("change_{data_year}"))
+
+#select oldest and two most recent years of data for area, and only most recent for change
+report_ready <- report_ready |> 
+  select(region, basin, sub_basin, environment, area_pre_clear, matches(cols_to_select), standardised_score)
+
+#create fw and est versions
+fw_report_ready <- report_ready |> 
+  filter(environment == "Freshwater")
+est_report_ready <- report_ready |> 
+  filter(environment == "Estuarine")
+
+#load in our custom colouring function
+source(here("functions/cond_form_rc_grades.R"))
+
+#run function, noting to specify which colour system we want to use
+cond_form_rc_grades(fw_report_ready, glue("{save_path}/fw_riparian_vegetation_report_table"), 
+                          cols = ncol(fw_report_ready), method = "Numeric")
+
+#run function, noting to specify which colour system we want to use
+cond_form_rc_grades(est_report_ready, glue("{save_path}/est_riparian_vegetation_report_table"), 
+                          cols = ncol(report_ready), method = "Numeric")
+
+#clean up
+rm(save_version)
+
+```
+
+# Visualise Data
+
+Now on to the fun stuff - visualizations. Below we are looking to present the data in a few different ways, by:
+
+ - Creating maps of riparian vegetation in each basin each year.
+ - Creating a plot of how riparian vegetation has changed over time.
+ - A horizontal stacked bar chart of the proportional coverage of each vegetation group in each basin.
+
+## Streamline data
+
+Before we can visualise we need to streamline our tbl data to remove some of the excessive rows that were created to calculate final scores.
+
+```{r}
+#| label: streamline data table
+
+#drop rows that we don't need
+re_rip_tbl_data <- re_rip_tbl_data |> 
+  filter(!(region == "Dry Tropics" & basin == sub_basin))
+
+```
+
+## Horizontal Stacked Bar Chart
+
+The horizontal stacked bar chart will make use of the table version of the data as there is no spatial information required. First we will create a custom palette that ggplot will use as a reference for how to color groups.
+
+```{r}
+#| label: add a custom palette to table data
+
+#create custom palette
+my_tbl_palette <- c("#B83D00", "#8C3FC5", "#B8E08C", "#75DBFF")
+
+#assign names to my palette so ggplot can colour everything correctly
+names(my_tbl_palette) <- sort(unique(re_rip_tbl_data$vegetation))
+
+```
+
+Then we will create the plots, looping for each basin and each year. Note that the way the palette works is by matching the names of the palette variable we created to the cell values in the vegetation column.
+
+```{r}
+#| label: create bar plots
+
+#list out basins
+#sub_basins <- unique(n3_region$sub_basin)
+
+#list out basins
+basins <- unique(n3_region$basin)
+
+#list out enviros
+enviros_to_loop <- unique(n3_region$environment)
+
+#get the newest year
+#target_year <- tail(sort(unique(re_rip_tbl_data$year)),1)
+
+for (i in basins){#for each basin
+  for (j in enviros_to_loop){#for each environment
+  
+    #select a specific basin and arrange the data appropriately
+    basin_plot <- re_rip_tbl_data |> filter(basin == i, year == glue("remnant_{data_year}"), environment == j) |> 
+      arrange(desc(veg_percent_of_total_area)) |> 
+      mutate(vegetation = factor(vegetation, levels = unique(vegetation)))
+    
+    if (nrow(basin_plot) != 0){
+      
+      #create a plot
+      plot <- ggplot(basin_plot, aes(fill = vegetation, x = basin, y = veg_percent_of_total_area)) +
+        geom_bar(position = position_fill(reverse = T), stat = "identity") +
+        scale_fill_manual(values = my_tbl_palette) +
+        scale_x_discrete(expand = c(0.025, 0)) +
+        scale_y_continuous(expand = c(0, 0), labels = scales::percent_format(accuracy = 1)) + #, breaks = 
+        labs(x = "", y = "", fill = glue("{i} {j}\nRiparian Vegetation")) +
+        theme(axis.text.x = element_text(colour = "black"),
+              axis.text.y = element_blank(),
+              axis.line.x = element_line(colour = "black"),
+              axis.ticks.length = unit(-0.15, "cm"),
+              panel.background = element_blank()) +
+        coord_flip()
+          
+      #edit names
+      edit_i <- str_remove_all(str_to_lower(paste(i, data_year, sep = "_")), "_tbl")
+      edit_j <- str_to_lower(j)
+      
+      #save
+      ggsave(glue("{save_path}/plots/{edit_i}_{edit_j}_riparian_vegetation_plot.png"), plot, width = 12, height = 4)
+    }
+  }
+}
+
+```
+
+Here is an example of how one of the plots looks, noting that the actual outputted version looks much nicer.
+
+```{r}
+#| label: show example plot
+
+plot
+
+```
+
+## Map Riparian Vegetation
+
+As noted previously, no spatial datasets are currently in the global environment, so will have to load the target one now.
+
+```{r}
+#| label: load newest spatial dataset
+
+#read in target data layer
+re_rip_map_data <- st_read(here(glue("data/n3_habitat_riparian-vegetation/re_riparian_cropped/re_remnant_{data_year}_v12_2_riparian_cropped.gpkg")))
+
+```
+
+Then we need to a colour scheme to the data for the map to reference. We do this by creating a name variable for all colours.
+
+```{r}
+#| label: colour for freshwater riparian veg
+
+#add an empty column to hold palette: non-remnant, plantation, remnant, water
+my_map_palette <- c("#B83D00", "#8C3FC5", "#B8E08C", "#75DBFF")
+
+#assign names to my palette so ggplot can colour everything correctly
+names(my_map_palette) <- sort(unique(re_rip_map_data$vegetation))
+
+```
+
+Then match the colours to the appropriate columns.
+
+```{r}
+#| label: map mangroves and saltmarshes
+
+#add an empty column to hold palette
+re_rip_map_data$palette <- NA
+  
+for (i in 1:length(my_map_palette)){#for the length of the palette, match each element
+  
+  #using the custom palette we created earlier
+  re_rip_map_data <- re_rip_map_data |> 
+    mutate(palette = case_when(vegetation == names(my_map_palette)[i] ~ my_map_palette[[i]],
+                               T ~ palette))
+}
+
+```
+
+Then we will create the maps, looping over each basin and swapping between each environment.
+
+```{r}
+#| label: create maps
+
+#remove environments out of the n3 region dataset (just creates unnecessary clutter)
+n3_region <- n3_region |> 
+  group_by(region, basin, sub_basin) |> summarise(geom = st_union(geom)) |> 
+  ungroup() |> st_cast() |> st_make_valid()
+
+#list out basins
+#basins <- unique(n3_region$sub_basin)
+
+#list out environments
+enviros_to_loop <- unique(re_rip_map_data$environment)
+
+#note we are using the target_year variable created earlier
+for (i in unique(re_rip_map_data$environment)){ #for each environment
+  for (j in unique(n3_region$region)){ #for each region
+    
+    #select region
+    target_region <- re_rip_map_data |> filter(region == j, environment == i)
+      
+    #get the region outline
+    region_outline <- n3_region |> filter(region == j)
+      
+    #create a bbox of the vegetation data
+    reg_veg_bbox <- st_as_sfc(st_bbox(target_region))
+      
+    #create an inset map
+    inset_map <- tm_shape(qld) +
+      tm_polygons(col = "grey80", border.col = "black") +
+      tm_shape(region_outline, is.master = T) +
+      tm_polygons(col = "grey90", border.col = "black") +
+      tm_shape(reg_veg_bbox) +
+      tm_borders(lwd = 2, col = "red")
+      
+    #create a map of the area
+    map <- tm_shape(qld) +
+      tm_polygons(col = "grey80", border.col = "black") +
+      tm_shape(region_outline) +
+      tm_polygons(col = "grey90", border.col = "black") +
+      tm_shape(target_region, is.master = T) +
+      tm_fill(col = "palette") +
+      tm_add_legend(type = "fill", col = unique(target_region$palette), labels = unique(target_region$vegetation)) +
+      tm_shape(region_outline) +
+      tm_borders(col = "black") +
+      tm_layout(legend.frame = T, legend.bg.color = "White", asp = 1.1, 
+                legend.text.size = 0.7, legend.position = c("left", "bottom")) +
+      tm_scale_bar(width = 0.15, text.size = 0.7, position = c(0.28, 0))
+            
+    #figure out the aspect of the inset map and the view port
+    xy <- st_bbox(region_outline)
+    asp2 <- (xy$ymax - xy$ymin)/(xy$xmax - xy$xmin)
+    w <- 0.2
+    h <- asp2 * w
+    vp <- viewport(x = 0.985, y = 0.97, width = w, height = h, just = c("right", "top"))
+          
+    #edit names
+    ij <- paste(str_to_lower(i), str_to_lower(j), sep = "_")
+            
+    #save the map as a png
+    tmap_save(map, filename = glue("{save_path}/maps/{ij}_region_riparian-vegetation_map.png"),
+            insets_tm = inset_map, insets_vp = vp)
+    
+    for (k in unique(target_region$basin)){#for each basin within the region
+      
+      #select basin from vegetation data
+      target_basin <- re_rip_map_data |> filter(basin == k, environment == i)
+      
+      #check if data is empty
+      if (nrow(target_basin) != 0){
+          
+        #get the basin outline from the n3 region dataset
+        basin_outline <- n3_region |> filter(basin == k)
+            
+        #create a bbox of the vegetation data
+        veg_bbox <- st_as_sfc(st_bbox(target_basin))
+            
+        #create an inset map
+        inset_map <- tm_shape(qld) +
+          tm_polygons(col = "grey80", border.col = "black") +
+          tm_shape(region_outline, is.master = T) +
+          tm_polygons(col = "grey90", border.col = "black") +
+          tm_shape(veg_bbox) +
+          tm_borders(lwd = 2, col = "red")
+            
+        #create a map of the area
+        map <- tm_shape(qld) +
+          tm_polygons(col = "grey80", border.col = "black") +
+          tm_shape(basin_outline) +
+          tm_polygons(col = "grey90", border.col = "black") +
+          tm_shape(target_basin, is.master = T) +
+          tm_fill(col = "palette") +
+          tm_add_legend(type = "fill", col = unique(target_basin$palette), labels = unique(target_basin$vegetation)) +
+          tm_shape(basin_outline) +
+          tm_borders(col = "black") +
+          tm_layout(legend.frame = T, legend.bg.color = "White", asp = 1.1, 
+                    legend.text.size = 0.7, legend.position = c("left", "bottom")) +
+          tm_scale_bar(width = 0.15, text.size = 0.7, position = c(0.28, 0))
+            
+        #figure out the aspect of the inset map and the view port
+        xy <- st_bbox(region_outline)
+        asp2 <- (xy$ymax - xy$ymin)/(xy$xmax - xy$xmin)
+        w <- 0.2
+        h <- asp2 * w
+        vp <- viewport(x = 0.985, y = 0.97, width = w, height = h, just = c("right", "top"))
+          
+        #edit names
+        ik <- paste(str_to_lower(i), str_to_lower(k), sep = "_")
+            
+        #save the map as a png
+        tmap_save(map, filename = glue("{save_path}/maps/{ik}_basin_riparian-vegetation_map.png"),
+                  insets_tm = inset_map, insets_vp = vp)
+      }
+    }
+  }
+}
+
+```
+
+Here is an example of how one of the maps looks, noting that the actual outputted version looks much nicer.
+
+```{r}
+#| label: show example map
+
+map
+
+```
+
+## Vegetation Over Time
+
+Lastly we want to look at how the total amount of vegetation has changed over time. We will be using the percent change column in the table version to explore this.
+
+Note, to make these plots more relevant we will not include the pre_clear or 1997 years because the change between these two is so huge it overshadows all other changes.
+
+```{r}
+#| label: plot vegetation over time
+
+#drop pre clear and 1997
+re_rip_tbl_data_filtered <- re_rip_tbl_data |> 
+  filter(!year %in% c("pre_clear", "remnant_1997"))
+
+#generate a list of potential years greater than the target data year
+removal_years <- glue("remnant_{data_year+1:15}")
+
+#remove data years that occured after the target data year
+re_rip_tbl_data_filtered <- re_rip_tbl_data_filtered |> 
+  filter(!year %in% removal_years)
+
+for (i in unique(re_rip_tbl_data_filtered$environment)){
+  for (j in unique(n3_region$region)){
+    
+    #select the target area
+    target_region_general <- re_rip_tbl_data_filtered |> 
+      filter(environment == i, region == j)
+    
+    #create region specific numbers
+    target_region <- target_region_general |> 
+      select(region, year, vegetation, area) |> 
+      group_by(region, year, vegetation) |> 
+      summarise(area = sum(area)) |>
+      ungroup() |> 
+      group_by(region, vegetation) |> 
+      arrange(vegetation, region, year) |> 
+      mutate(y_on_y_veg_area_change = area - lag(area),
+             y_on_y_veg_percent_change = (y_on_y_veg_area_change/lag(area))*100, 
+             across(matches("percent"), \(x) as.vector(x)),
+             across(matches("percent"), \(x) replace_na(x, 0)),
+             across(matches("area"), \(x) replace_na(x, replace_value)),
+             across(where(is.numeric), \(x) round(x, 5))) |> 
+      ungroup()
+    
+    #fix up erraneous percent change values (anything over 100% change gets a score of 100)
+    target_region <- target_region |> 
+      mutate(y_on_y_veg_percent_change = case_when(abs(y_on_y_veg_percent_change) > 100 ~ 100,
+                                                   T ~ y_on_y_veg_percent_change))
+    
+    #divide percent by 100 to correct for unit addition under 'scale_x_continuous() and order years
+    target_region_ordered <- target_region |>  
+      mutate(y_on_y_veg_percent_change = y_on_y_veg_percent_change/100,
+             year = str_remove_all(year, "remnant_"))
+    
+    #reorder years
+    target_region_ordered <- target_region_ordered |> 
+      mutate(year = factor(year, levels = unique(target_region_ordered$year)))
+    
+    #plot
+    plot <- ggplot(target_region_ordered, aes(y_on_y_veg_percent_change, year, fill = vegetation)) +
+      geom_bar(stat = "identity", position = "dodge") +
+      scale_y_discrete(limits = rev) +
+      scale_fill_manual(values = my_tbl_palette) +
+      scale_x_continuous(labels = scales::percent_format(accuracy = 0.1)) +
+      theme(axis.text.x = element_text(colour = "black"),
+            axis.line.x = element_line(colour = "black"),
+            axis.text.y = element_text(colour = "black"),
+            axis.line.y = element_line(colour = "black"),
+            axis.ticks.y = element_blank(),
+            panel.background = element_blank()) +
+      geom_vline(xintercept = 0) +
+      geom_hline(yintercept = seq(1.5, length(unique(target_region_ordered$year))-0.5, 1), 
+                 lwd = 0.5, colour = "grey80") +
+      labs(x = "Year on Year Change (%)", y = "Year", fill = glue("{j} {i}\nRiparian Vegetation"))
+      
+    #edit names
+    ij <- str_replace_all(paste(str_to_lower(i), str_to_lower(j), sep = "_"), " ", "_")
+
+    #save
+    ggsave(glue("{save_path}/plots/{ij}_region_riparian-vegetation_change-over-time.png"), plot)
+    
+    for (k in unique(target_region_general$basin)){
+      
+    #select the target area
+    target_basin <- target_region_general |> 
+      filter(environment == i, basin == k)
+    
+    #divide percent by 100 to correct for unit addition under 'scale_x_continuous(), change year to factor for ordering
+    target_basin_ordered <- target_basin |>  
+      group_by(basin, year, vegetation) |> 
+      summarise(y_on_y_veg_percent_change = sum(y_on_y_veg_percent_change)) |> 
+      mutate(y_on_y_veg_percent_change = y_on_y_veg_percent_change/100) |> 
+      mutate(year = str_remove_all(year, "remnant_"))
+    
+    #reorder years
+    target_basin_ordered <- target_basin_ordered |> 
+      mutate(year = factor(year, levels = unique(target_basin_ordered$year)))
+    
+    #plot
+    plot <- ggplot(target_basin_ordered, aes(y_on_y_veg_percent_change, year, fill = vegetation)) +
+      geom_bar(stat = "identity", position = "dodge") +
+      scale_y_discrete(limits = rev) +
+      scale_fill_manual(values = my_tbl_palette) +
+      scale_x_continuous(labels = scales::percent_format(accuracy = 0.1)) +
+      theme(axis.text.x = element_text(colour = "black"),
+            axis.line.x = element_line(colour = "black"),
+            axis.text.y = element_text(colour = "black"),
+            axis.line.y = element_line(colour = "black"),
+            axis.ticks.y = element_blank(),
+            panel.background = element_blank()) +
+      geom_vline(xintercept = 0) +
+      geom_hline(yintercept = seq(1.5, length(unique(target_basin_ordered$year))-0.5, 1), 
+                 lwd = 0.5, colour = "grey80") +
+      labs(x = "Year on Year Change (%)", y = "Year", fill = glue("{k} {i}\nRiparian Vegetation"))
+      
+    #edit names
+    ik <- str_replace_all(paste(str_to_lower(i), str_to_lower(k), sep = "_"), " ", "_")
+
+    #save
+    ggsave(glue("{save_path}/plots/{ik}_basin_riparian-vegetation_change-over-time.png"), plot)
+    
+    }
+  }
+}
+
+
+```
+
+Here is an example of how one of the change over time plots looks, noting that the actual outputted version looks much nicer.
+
+```{r}
+#| label: show example change over time plot
+
+plot
+
+```
+
+And that rounds out the script. Spicy.
+
+# Session Info {#sec-sessioninfo}
+
+Below is the session info at the time of rendering this script. Of greatest importance is to note the R version, and the "other attached packages" as these are the most significant drivers of success/failure. It is also good to check the "attached base packages" and "loaded via a namespace" packages as well. To check your session info use `sessionInfo()`.
+
+```{r}
+#| label: show session info
+
+sessionInfo()
+
+```
+

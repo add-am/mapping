@@ -1,0 +1,202 @@
+---
+title: "Northern Three Spatial Analyses (Estuarine: Water Quality)"
+author: "Adam Shand"
+date: "`r format(Sys.time(), '%d, %B, %Y')`"
+format: html
+params:
+  project_crs: "EPSG:7844"
+---
+
+A simple script to create a map for the sampling locations/extent for estuarine water quality. 
+
+# Global Controls
+
+As always we begin by setting the global variables for the script, this includes loading packages, the output save location, the script crs, and a date-time tracker.
+
+```{r}
+#| label: Load packages
+#| output: false
+#| echo: false
+
+#mapping packages
+library(RColorBrewer) #colour palettes, and create custom palettes
+library(sf) #read and manipulate simple features
+library(terra)
+library(tmap) #map data
+library(readxl)
+
+#general setup and data manipulation
+library(glue) #easier to create strings, particularly those contains variables
+library(lubridate) #time manipulation
+library(tidyverse) #contains multiple useful packages (https://www.tidyverse.org/packages/)
+library(dataaimsr) #load the aims datasets
+```
+
+```{r}
+#| label: global vars and initial setup
+#| output: false
+
+#set project variables: crs factor and current_fyear
+proj_crs <- params$project_crs
+
+#format the date for the path below and to be used as a variable in naming later
+date <- format(Sys.time(), "%Y-%m-%d")
+
+#create a file path to help with saving things
+save_path <- glue("output/{date}_n3-estuarine_water-quality-maps/")
+
+#bring that path to life
+dir.create(save_path)
+
+#turn off s2 geometry
+sf_use_s2(F)
+
+```
+
+# Load data
+
+Next we load in the data. This data can be found in the **data/estuarine_water-quality** folder in the github repo. If this is the first time running the analysis please refer to the .README for this repo for a guide on accessing the data.
+
+```{r}
+#| label: load in wetland data
+#| output: false
+
+#please note if the data is not in the basin builder folder, try running the basin builder script
+dry_tropics <- st_read("data/dry-tropics_basin-builder/Dry-Tropics-Basins-Detailed.shp") |> st_transform(proj_crs)
+
+#read in qld outlines data from the gisaimsr package, filter for land and islands, update crs
+qld <- get(data("gbr_feat", package = "gisaimsr")) |> filter(FEAT_NAME %in% c("Mainland", "Island")) |> 
+  st_transform(proj_crs)
+
+#read data and transform into shapefile
+wq <- st_as_sf(read_excel("data/estuarine_water-quality/DT_estuarine_sites_gv_lor_sf_area_raw.xlsx",
+                           sheet = "sites"), coords = c("long", "lat")) |> st_set_crs(proj_crs)
+
+```
+
+# Maipulate Data
+
+Before we can create the map we just need to manipulate the data bit to remove unnecessary visual clutter.
+
+```{r}
+#| label: clean up data
+
+#group the data for our region and drop everything but the estuarine sections
+dry_tropics_est <- dry_tropics |> filter(env == "Estuarine") |> 
+  rename(Basin = zone) |> 
+  mutate(Basin = case_when(Basin == "black" ~ "Black",
+                          Basin == "ross" ~ "Ross"))
+
+#get only land areas for map background
+dr_tropics_background <- dry_tropics |> filter(env != "marine") |> 
+  group_by(zone) |> summarise(geometry = st_union(geometry))
+
+
+#filter for only current
+wq <- wq |> filter(current_site == "Yes")
+
+#filter for only Ross data
+wq_r <- wq |> filter(basin == "Ross")
+
+#filter for only Black data
+wq_b <- wq |> filter(basin == "Black")
+
+
+```
+
+# Create Map
+
+The core objective of this map is to visually present the water sampling locations in our technical report style.
+
+```{r}
+#| label: create map
+#| output: false
+
+#create a townsville point coord
+test1 <- data.frame(place = "Townsville", x = "-19.2610", y = "146.8129")
+test2 <- st_as_sf(test1, coords = c("y", "x"), crs = proj_crs)
+
+#extract ross only
+dt_ross <- dry_tropics_est |> filter(Basin == "Ross")
+
+#extract blac only
+dt_black <- dry_tropics_est |> filter(Basin == "Black")
+
+
+#create a map of the area
+map <- tm_shape(qld) +
+  tm_polygons(col = "grey80", border.col = "black") +
+  tm_shape(dr_tropics_background) +
+  tm_polygons(border.col = "black") +
+  tm_shape(dt_ross) +
+  tm_borders() +
+  tm_shape(test2) +
+  tm_symbols(size = 0.5, col = "white", border.col = "black", border.lwd = 2, shape = 23) +
+  tm_text("place", shadow = T, xmod = -2.5, ymod = 0.1) +
+  tm_shape(wq_r) +
+  tm_symbols(size = 0.8, col = "watercourse", border.col = "black", border.lwd = 2, shape = 21) +
+  tm_text("site", shadow = T, auto.placement = 0.08, size = 1) +
+  tm_shape(st_buffer(wq_r, 0.05), is.master = T) +
+  tm_symbols(size = 0) +
+  tm_add_legend(type = "line", col = "grey60", labels = "Boundaries")  +
+  tm_layout(legend.frame = T, legend.bg.color = "White", asp = 1.1, 
+            legend.text.size = 0.7, legend.position = c("left", "bottom")) +
+  tm_scale_bar(width = 0.15, text.size = 0.7, position = c(0.18, 0)) +
+  tm_compass(position = c("right", "top"))
+
+#save the map as a png
+tmap_save(map, filename = glue("{save_path}estuarine_water-quality-ross.png"))
+
+#create a map of the area
+map <- tm_shape(qld) +
+  tm_polygons(col = "grey80", border.col = "black") +
+  tm_shape(dr_tropics_background) +
+  tm_polygons(border.col = "black") +
+  tm_shape(dt_black) +
+  tm_borders() +
+  tm_shape(test2) +
+  tm_symbols(size = 0.5, col = "white", border.col = "black", border.lwd = 2, shape = 23) +
+  tm_text("place", shadow = T, xmod = -2.5, ymod = 0.1) +
+  tm_shape(wq_b) +
+  tm_symbols(size = 0.8, col = "watercourse", border.col = "black", border.lwd = 2, shape = 21) +
+  tm_text("site", shadow = T, auto.placement = 0.05, size = 1) +
+  tm_shape(st_buffer(wq_b, 0.05), is.master = T) +
+  tm_symbols(size = 0) +
+  tm_add_legend(type = "line", col = "grey60", labels = "Boundaries")  +
+  tm_layout(legend.frame = T, legend.bg.color = "White", asp = 1.1, 
+            legend.text.size = 0.7, legend.position = c("left", "bottom")) +
+  tm_scale_bar(width = 0.15, text.size = 0.7, position = c(0.21, 0)) +
+  tm_compass(position = c("right", "top"))
+
+#save the map as a png
+tmap_save(map, filename = glue("{save_path}estuarine_water-quality-black.png"))
+
+
+
+```
+
+
+# Create Estuarine overview map
+
+```{r}
+#| label: inshore marine overview map
+
+#create a map of the area
+map <- tm_shape(qld) +
+  tm_polygons(col = "grey80", border.col = "black") +
+  tm_shape(dr_tropics_background) +
+  tm_polygons(border.col = "black") +
+  tm_shape(dry_tropics_est, is.master = T) +
+  tm_polygons(col = "Basin", border.col = "black") +
+  tm_shape(test2) +
+  tm_symbols(size = 0.5, col = "white", border.col = "black", border.lwd = 2, shape = 23) +
+  tm_text("place", shadow = T, xmod = 2.5, ymod = 0.1) +
+  tm_layout(legend.frame = T, legend.bg.color = "White", asp = 1.1, 
+            legend.text.size = 0.7, legend.position = c("left", "bottom")) +
+  tm_scale_bar(width = 0.15, text.size = 0.7, position = c(0.12, 0)) +
+  tm_compass(position = c("right", "top"))
+
+#save the map as a png
+tmap_save(map, filename = glue("{save_path}estuarine_zones.png"))
+
+```

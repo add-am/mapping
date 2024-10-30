@@ -1,0 +1,86 @@
+---
+title: "NCEI Ocean Acidification Data Testing"
+subtitle: "A Healthy Waters Partnership Analysis"
+description: "This script explores ocean acidification data supplied by the NCEI. The outputs of this script are currently used for demonstration purposes."
+author: "Adam Shand"
+format: html
+params:
+  project_crs: "EPSG:7844"
+---
+
+# Introduction
+
+This script is designed to explore the possibility of creating a ocean pH layer.
+
+ - 
+        
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, sf, tmap, janitor, stars, ncmeta, ereefs, ggplot2, viridis, ggthemes)
+
+```
+
+
+Then we also need to set up key variables for the script, as well as the output location.
+
+```{r}
+#| label: create save path and establish project crs
+
+#set project crs
+proj_crs <- params$project_crs
+
+#create a file path to help with saving outputs
+save_outputs <- here("outputs/dt_experiments_water-quality_ph/")
+read_data <- here("data/dt_experiments_water-quality_ph/")
+
+#bring the path to life
+dir.create(save_outputs)
+dir.create(read_data)
+
+#turn off s2 geometry
+sf_use_s2(FALSE)
+
+```
+
+# Load Data
+
+Now the script is set up we need to load in all of the required datasets. This will be broken into two segments:
+
+ - Spatial data specific to the N3 region - such as the region, basin, and sub basin boundaries.
+ - Satellite data from MODIS
+
+## Spatial Data
+
+Spatial data for the northern three regions should be readily available in the repo, the dataset is created by the n3_region-builder.qmd script in the repo that should be the first script run for new users. If the dataset is not available refer back to the README document in the GitHub repo. The other parts of spatial data here should go off without a hitch if the region-builder script has been run.
+
+```{r}
+#| label: load the n3 region
+
+#read in the custom function to clean column names into our specific style
+source("../functions/name_cleaning.R")
+
+#read in qld outlines data from the gisaimsr package, filter for land and islands, update crs
+qld <- get(data("gbr_feat", package = "gisaimsr")) |> 
+  name_cleaning() |> 
+  filter(FeatName %in% c("Mainland", "Island")) |> 
+  st_transform(proj_crs)
+
+#read in the northern three spatial files and reduce down to only the components we need
+n3_marine_region <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg")) |> 
+  name_cleaning() |> 
+  filter(Environment == "Marine")
+
+#read in ph data
+historic <- read_stars(glue("{read_data}/Surface_pH_1770_2000.nc"), sub = "pH") |> 
+  name_cleaning()
+
+gdal_subdatasets(glue("{read_data}/Surface_pH_1770_2000.nc"))
+
+```
+

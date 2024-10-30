@@ -1,0 +1,439 @@
+---
+title: "Inshore Marine Water Quality Exploratory Data Analysis"
+subtitle: "A Healthy Waters Partnership Analysis"
+description: "Script 2 in a series of script designed to analyse, score, and present inshore marine water quality in the Dry Tropics region. The output of this is used in the Dry Tropics Technical Report."
+author: "Adam Shand"
+format: html
+params:
+  project_crs: "EPSG:7844"
+  target_fyear: 2020
+  sites_removed: FALSE
+---
+
+:::{.callout-note}
+The Water Quality suite of scripts currently do not adhere to the CamelCase naming rules. This is due to filtering and code that relies on snake_case naming to work. This will take a significant amount of time to overhaul.
+:::
+
+::: {.callout-note}
+## Note
+Params with the yaml of this script allow a choice between datasets that have "offending" sites removed, and datasets that contain all data. Choose appropriately depending on your needs!
+:::
+
+# Introduction
+
+The purpose of this script is to perform the main data analysis, as well as calculate final results for the inshore water quality data in the Dry Tropics technical report. Key steps include:
+
+ - Loading in data prepared by script 1 of the series.
+ - Re-calculating summary stats to be saved to the main output folder (note these were originally calculated in script 1 to help with EDA checks).
+ - Calculating the annual median or mean values (directly from the raw values) for all indicators
+ - Calculating the standardised scores for all indicators for all:
+    + Geographic areas
+ - Summing indicators to calculate indicator categories
+ - Summing indicator categories to calculate the water quality index
+ - Calculating the standardised scores for all indicator, indicator categories, and indices, by taking the mean value for each:
+    + Sub Zone
+    + Zone
+ - Converting all scores to grades.
+ - Rounding final values (floor rounding where appropriate).
+ - Saving various data tables that will be used in the technical report.
+
+
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, janitor, openxlsx2, reactable)
+
+```
+
+```{r}
+
+#turn off scientific notation
+options(scipen = 999)
+
+#establish what financial year we are looking at
+current_fyear <- params$target_fyear
+
+#determine if we want the dataset to be the one with removed sites, or the original
+removed <- params$sites_removed
+
+#set a path directly to the data as, thanks to script one, this is the only data we will need. Note the years in the name
+data_path <- glue("{here()}/data/dt_water-quality_inshore/processed/{current_fyear-1}-{current_fyear}_inshore_wq_all")
+
+#get a date variable (this is important for naming as it is anticipated multiple runs of the script will be required).
+date <- format(Sys.time(), "%Y-%m-%d")
+
+#create a file path for the year of data that is being looked at
+year_folder <- glue("{here()}/outputs/dt_water-quality_inshore_s2-analysis/{current_fyear-1}-{current_fyear}_analysis/")
+
+#create that folder
+dir.create(year_folder, recursive = T)
+
+#create a file path to help with saving things, make sure to include date
+save_path <- glue("{year_folder}/analysis_conducted_on_{date}/")
+
+#create folder
+dir.create(save_path, recursive = T)
+
+```
+
+# Load Data
+
+Data for this script is provided in a single spreadsheet that was prepared by script 1 in this series of scripts. Please note that script 1 may have removed some offending values, if this is the case a warning will notify as such.
+
+```{r}
+#| label: load data
+#| warning: true
+
+if (file.exists(glue("{data_path}_sites_removed.csv")) & removed == T){ #if post removed exists, and that is what you want
+  
+  #read in data
+  inshore_wq_all <- read_csv(glue("{data_path}_sites_removed.csv"))
+  
+  #provide a notifying warning
+  warning("The data that has been loaded in has had some values removed as per the QA/QC checks 
+          performed in script 1 of this series. Please confirm this is the dataset you would like
+          to use.")
+  
+} else if (file.exists(glue("{data_path}.csv"))){ #if a dataset that never needed removal exists
+  
+  #read in data
+  inshore_wq_all <- read_csv(glue("{data_path}.csv"))
+  
+} else { #otherwise, take the pre removal dataset
+  
+  #read in data
+  inshore_wq_all <- read_csv(glue("{data_path}_pre_removal.csv"))
+    
+}
+
+#convert columns to factors and give them the custom order we use in the technical report
+inshore_wq_all <- inshore_wq_all |> 
+  mutate(across(c(Zone, Sub_Zone, Geographic_Area), factor),
+         Zone = fct_relevel(Zone, "Cleveland Bay", "Halifax Bay"), 
+         Sub_Zone = fct_relevel(Sub_Zone, "CB.Enclosed Coastal", "CB.Open Coastal", "Magnetic Island",
+                                "HB.Enclosed Coastal", "HB.Open Coastal", "Midshelf"), 
+         Geographic_Area = fct_relevel(Geographic_Area, "EC.Inside Port Zone", "EC.Outside Port Zone",
+                                       "OC.Inside Port Zone", "OC.Outside Port Zone", "Magnetic Island",
+                                       "H.Enclosed Coastal", "H.Open Coastal", "Midshelf")) 
+
+
+```
+
+# Calculate Results
+
+Once all the data has been loaded in we can begin to calculate results. However the first step is to calculate some side statistics such as number of samples, and number of months sampled.
+
+```{r}
+#| label: calculate side statistics
+
+#select current fy and add the month column
+inshore_wq_cy <- inshore_wq_all |> filter(FY == current_fyear) |> 
+  mutate(Month = month(Date, label = T))
+
+#calculate the number of months sampled, and the total number of samples
+inshore_wq_cy <- inshore_wq_cy |> 
+  group_by(Region, Environment, Zone, Sub_Zone, Geographic_Area, FY, Indicator) |> 
+  mutate(N_Months = length(unique(Month)),
+         N_Samples = n()) |> 
+  ungroup()
+
+```
+
+## Annual Means/Medians
+
+First we will calculate the annual mean/median values directly from the sample data.
+
+```{r}
+#| label: Calculate annual medians
+
+#group up using the same reverse grouping trick and calculate values
+is_wq_annual <- inshore_wq_cy |> 
+  #group_by(across(c(-Monthly_Mean_Values, -Monthly_Median_Values, -Month))) |> 
+  group_by(Region, Environment, Zone, Sub_Zone, Geographic_Area, FY, N_Months, N_Samples, Indicator,
+           Units, WQO, Stat) |>
+  mutate(Annual_Mean_Values = mean(Values, na.rm = T),
+         Annual_Median_Values = median(Values, na.rm = T)) |> 
+  ungroup()
+
+```
+
+## Select Correct Stat
+
+As you may have noticed we are calculating both means and medians currently. This is because some indicators use means, while others use medians. Below we select the correct stat for each indicator and merge them into one column.
+
+```{r}
+#| label: select correct statistic
+
+#select correct stat and merge
+is_wq_annual <- is_wq_annual |> 
+  mutate(Annual_Stat_Values = case_when(Stat == "mean" ~ Annual_Mean_Values,
+                                        T ~ Annual_Median_Values))
+
+```
+
+### Side Tangent: Summary Stats
+
+Part of the technical report includes summary statistics. Below we stylize and present these stats. The table is showed below.
+
+```{r}
+#| label: Summary statistics
+
+#stylize table
+inshore_summary_stats <- is_wq_annual |> 
+  select(Geographic_Area, Indicator, N_Samples, N_Months, Annual_Stat_Values, WQO) |> 
+  unique() |> 
+  mutate(across(c(Indicator), factor),
+         Indicator = fct_relevel(Indicator, "NOX", "PN", "PP", "TP", "TN", "FRP", "Turbidity", "TSS", "Secchi", "Chla"), 
+         Annual_Stat_Values = round(Annual_Stat_Values, 4)) |> 
+  arrange(Indicator, Geographic_Area)
+  
+#load in custom function
+source(here("functions/cond_form_wq_summary_stats.R"))
+
+#save data
+cond_form_wq_summary_stats(inshore_summary_stats, glue("{save_path}/summary_statistics"), cols = c(5:6))
+
+#Important note: Variables for which "success" is to be greater than the water quality objective need to have their colours reversed.
+
+#create object to present in the rendered quarto document
+summary_table_present <- reactable(inshore_summary_stats)
+
+```
+
+## Cap Scores
+
+To standardise scores we will use a capping method, to limit scores to be between -1 and +1.
+
+```{r}
+#| label: cap scores
+
+#create a capped score function
+capped_score <- function(Indicator, Value, WQO){
+
+  if (Indicator != "Secchi"){ #if the indicator is not Secchi use the normal scoring system (high = fail)
+    
+    score <- ifelse(log2(WQO/Value) <= -1, -1, #if WQO/Value is less than -1, cap at -1
+                    ifelse(log2(WQO/Value) >= 1, 1, log2(WQO/Value))) #if WQO/Value is greater than 1, cap at 1, else keep calculated value.
+
+  } else { #else for the Secchi indicator reverse the scoring system
+    
+    score <- ifelse(log2(Value/WQO) <= -1, -1, #if WQO/Value is less than -1, cap at -1
+                    ifelse(log2(Value/WQO) >= 1, 1, log2(Value/WQO))) #if WQO/Value is greater than 1, cap at 1, else keep calculated value.
+    
+  }
+}
+
+#run function using a rowwise grouping (each "group" is a single row) then select required columns and rows
+is_wq_annual <- is_wq_annual |> 
+  rowwise() |> 
+  mutate(Score = capped_score(Indicator, Annual_Stat_Values, WQO)) |> 
+  ungroup() |> 
+  select(Region, Zone, Sub_Zone, Geographic_Area, Indicator, Score) |> 
+  distinct() |> filter(!is.na(Score))
+
+```
+
+## Indicator Category Scores:
+
+### Geographic Area
+
+To calculate indicator category and index scores we first need to prepared the data somewhat.
+
+```{r}
+#| label: prepare data
+
+#pivot data wider and convert columns to factors to set up for the impending calculation
+is_wq_annual_wide <- is_wq_annual |> 
+  pivot_wider(names_from = Indicator, values_from = Score)
+
+```
+
+## Standarisation
+
+All of the capped scores (between -1 and +1) that have been calculated can now be standardised into the traditional report card scoring range of 0-100. Below we create a function that completes this.
+
+```{r}
+#| label: standardise scores
+
+#create a standardizing function
+standardise_scores <- function(col){
+  col = case_when(col >= 0.51 ~ 100 - (19 - ((col - 0.51) * (19/0.49))),
+                  col >= 0 & col < .51 ~ 80.9 - (19.9 - (col * (19.9/0.50))),
+                  col >= -0.33 & col < -0.01 ~ 60.9 - (19.9 - ((col + 0.33) * (19.9/0.32))),
+                  col >= -0.66 & col < -0.34 ~ 40.9 - (19.9 - ((col + 0.66) * (19.9/0.32))),
+                  TRUE ~ 20.9 - (20.9 - ((col + 1) * (20.9/0.34))))
+}
+
+#apply the standardise_scores function across selected columns
+is_wq_stand_scores <- is_wq_annual_wide |> 
+  mutate(across(5:14, ~standardise_scores(.)))
+
+```
+
+Before we can then perform the require rowwise operations.
+
+```{r}
+#| label: calculate indicator category and index scores
+
+#calculate indicator categories and indices scores
+is_wq_all <- is_wq_stand_scores |> 
+  rowwise() |> 
+  mutate(Nutrients = mean(c(NOX, PN, PP, TP), na.rm = T),
+         Phys_Chem = mean(c(Turbidity, TSS, Secchi), na.rm = T),
+         across(where(is.numeric), ~ifelse(is.infinite(.), NA, .))) |>
+  ungroup()
+
+```
+
+### Sub Zones and Zones
+
+Once all scores have been calculated at the geographic area level, they can be averaged up to each of the subsequent levels (sub zone and zone).
+
+```{r}
+#| label: calculate scores for sub basins and basins
+
+#group at each level and get the mean of each indicator, indicator category, and index, at that level
+sub_zone_scores <- is_wq_all |> 
+  group_by(Region, Zone, Sub_Zone) |> 
+  summarise(across(2:(length(is_wq_all)-3), mean, na.rm = T)) |> 
+  ungroup()
+
+#as above
+zone_scores <- is_wq_all |> select(-Geographic_Area) |>  
+  group_by(Region, Zone) |> 
+  summarise(across(2:(length(is_wq_all)-3), mean, na.rm = T)) |> 
+  ungroup()
+
+#combine each of the datasets
+is_wq_all_scores <- bind_rows(is_wq_all, sub_zone_scores, zone_scores) 
+
+```
+
+### Side Tangent: Save Sub Zone Scores
+
+A second side tangent we will take here is to save the sub zones scores for nutrients, phys-chem, and the water quality index. These scores need to be added to the appendix.
+
+```{r}
+#| label: save sub basin scores
+
+#select specific rows
+sub_zone_scores_save <- sub_zone_scores |> ungroup() |> 
+  select(Sub_Zone, Nutrients, Phys_Chem, Chla) |> 
+  rowwise() |> 
+  mutate(overall_wq = mean(c(Nutrients, Phys_Chem, Chla), na.rm = T)) |> 
+  ungroup() |> 
+  mutate(across(where(is.numeric), floor))
+
+#load in custom function
+source(here("functions/cond_form_rc_grades.R"))
+
+#save data
+cond_form_rc_grades(sub_zone_scores_save, glue("{save_path}/is_appendix_sub_zone_scores"), cols = c(2:5), method = "numeric")
+
+```
+
+## Index Scores
+
+Next we can calculate the index scores by taking the mean of the indicator category scores. 
+
+Note that I'm not sure why the order of the calculations goes this way, it just does.
+
+```{r}
+#| label: index scores
+
+is_wq_stand_scores <- is_wq_all_scores |> 
+  rowwise() |> 
+  mutate(overall_wq = mean(c(Nutrients, Phys_Chem, Chla), na.rm = T))
+
+```
+
+## Scores to Grades
+
+Finally, scores can be converted to a grade.
+
+```{r}
+#| label: convert score to grade
+
+#create score to grade function
+score_to_grade <- function(Score) {
+  
+  Grade <- ifelse(Score >= 81, "A",
+                  ifelse(Score >= 61, "B",
+                         ifelse(Score >= 41, "C",
+                                ifelse(Score >= 21, "D", "E"))))
+}
+
+#apply score to grade function to each column
+is_wq_all_scores_grades_raw <- is_wq_stand_scores |> 
+  mutate(across(5:length(is_wq_stand_scores), .names = "{.col}_Grade", ~ score_to_grade(.)))
+
+```
+
+## Floor Rounding
+
+A quirk of the water quality calculations is that all final scores are presented as whole numbers, and any values with decimals are rounded down (floor rounding). 
+
+```{r}
+#| label: floor round results
+
+#floor all numeric columns except those that contain the word "Prop" or as these are proportions (need decimals)
+is_wq_all_scores_grades_floor <- is_wq_all_scores_grades_raw |> 
+  mutate(across(where(is.numeric), floor))
+
+```
+
+# Saving Results
+
+A series of tables need to be created to save the results in a digestible format. These tables include:
+
+ - The entire raw data set
+ - The entire dataset with rounding applied (floor rounding where appropriate).
+ - Nutrients table (main report; NOX, PN, PP, TP, TN[^1], FRP[^1], Nutrients)
+ - Phys Chem table (main report; Turbidity, TSS, Secchi, Phys Chem)
+ - Chlorophyll A table (main report; Chla, Chlorophyll a)
+ - A summary table (which has already been saved further up).
+ 
+[^1]: These are only added for additional context, they are not currently used to calculate scores.
+
+```{r}
+#| label: save data as tables
+
+#save entire raw dataset
+write_csv(is_wq_all_scores_grades_raw, glue("{save_path}/is_wq_all_scores_grades_raw.csv"))
+
+#save entire rounded dataset
+write_csv(is_wq_all_scores_grades_floor, glue("{save_path}/is_wq_all_scores_grades_floor.csv"))
+
+#select columns for the nutrients table
+nutrients_table <- is_wq_all_scores_grades_floor |> 
+  select(Zone, Sub_Zone, Geographic_Area, NOX, PN, PP, TP, TN, FRP, Nutrients) |> 
+  arrange(Zone, Sub_Zone, Geographic_Area)
+
+#load in custom function
+source(here("functions/cond_form_rc_grades.R"))
+
+#save data
+cond_form_rc_grades(nutrients_table, glue("{save_path}/is_nutrients"), cols = c(4:10), method = "Numeric")
+
+#select columns for the phys_chem table
+phys_chem_table <- is_wq_all_scores_grades_floor |> 
+  select(Zone, Sub_Zone, Geographic_Area, Turbidity, TSS, Secchi, Phys_Chem) |> 
+  arrange(Zone, Sub_Zone, Geographic_Area)
+
+#save data
+cond_form_rc_grades(phys_chem_table, glue("{save_path}/is_phys_chem"), cols = c(4:7), method = "Numeric")
+
+#select columns for the chlorophyll table
+chla_table <- is_wq_all_scores_grades_floor |> 
+  select(Zone, Sub_Zone, Geographic_Area, Chla) |> 
+  arrange(Zone, Sub_Zone, Geographic_Area)
+
+#save data
+cond_form_rc_grades(chla_table, glue("{save_path}/is_chlorophyll"), cols = c(4), method = "Numeric")
+
+```

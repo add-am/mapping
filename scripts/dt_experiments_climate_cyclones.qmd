@@ -1,0 +1,161 @@
+---
+title: "BOM Cyclone Track Data Testing"
+subtitle: "A Healthy Waters Partnership Analysis"
+description: "This script maps the location and travel paths of all cyclones that have crossed into the Great Barrier Reef region. The output of this script is used in the Corals of Cleveland Bay StoryMap."
+author: "Adam Shand"
+format: html
+params:
+  project_crs: "EPSG:7844"
+---
+
+# Introduction
+
+This script is designed to explore the possibility of creating a cyclone layer to be used in the Coral StoryMap, and possibly other products? Below we take data from the BOM log of all storms to pass over Australia and isolate the category 3 or greater cyclones to have occurred in the Northern Three region since the year 2000.
+
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, sf, tmap, janitor)
+
+```
+
+Then we also need to set up key variables for the script, as well as the output location.
+
+```{r}
+#| label: create save path and establish project crs
+
+#set project crs
+proj_crs <- params$project_crs
+
+#create a file path to help with saving outputs
+save_outputs <- here("outputs/dt_experiments_climate_cyclones/")
+save_data <- here("data/dt_experiments_climate_cyclones/")
+
+#bring the path to life
+dir.create(save_outputs)
+dir.create(save_data)
+
+#turn off s2 geometry
+sf_use_s2(FALSE)
+
+```
+
+# Load Data
+
+Now the script is set up we need to load in all of the required datasets. We will need the cyclone dataset and the GBR Boundaries dataset, but we will also load in a file for the whole of Queensland to create a map for inspecting data.
+
+```{r}
+#| label: load the n3 region
+
+#read in the custom function to clean column names into our specific style
+source("../functions/name_cleaning.R")
+
+#read in qld outlines data from the gisaimsr package, filter for land and islands, update crs
+qld <- get(data("gbr_feat", package = "gisaimsr")) |> 
+  name_cleaning() |> 
+  filter(FeatName %in% c("Mainland", "Island")) |> 
+  st_transform(proj_crs)
+
+#get the gbr boundaries
+gbr_bounds <- get(data("gbr_bounds", package = "gisaimsr")) |> 
+  name_cleaning()
+
+#read in cyclone data
+cyclones_all <- read_csv(glue("{save_data}/qld_cyclones.csv"), skip = 4) |> 
+  name_cleaning()
+
+```
+
+# Edit Data
+
+BOM keeps track of pretty much every storm that is even slightly likely to become a cyclone in this database. So we have to do alot of filtering to find what we need.
+
+Please note, that the database also takes a while to get updated as they need to validate all the measurements. For example, this text was written on the 13/03/2024, Cyclone Kirrily happened on the 25/01/2024, we are still awaiting the official track for cyclone Kirrily - the database currently only contains the draft track.
+
+```{r}
+#| label: filter cyclone data
+
+#filter the data to remove entries we don't want
+cyclones <- cyclones_all |> 
+  mutate(DateTime = ymd_hms(Tm)) |> #convert to an actual time format
+  filter(!is.na(Lon), #remove bad coord entries
+         !is.na(Lat), 
+         year(DateTime) > 2000, #get only entries since 2000
+         Type == "T", #get only tropical cyclones
+         !Name %in% c("unnamed", "noname")) |> #remove unnamed, or noname cyclones
+  select(Name, Lon, Lat, MaxWindSpd, DateTime) |> 
+  group_by(Name) |> 
+  filter(any(MaxWindSpd > 45)) |> #remove cyclones who's max speed does not exceed 45m/s (162km/h) at any point (min to be a cat 3 cyclone)
+  ungroup()
+
+#convert to a spatial dataset of point entries
+cyclones_sf <- st_as_sf(cyclones, coords = c("Lon", "Lat"), crs = proj_crs)
+
+#convert point entries to a linestring dataset (i.e. tracks)
+cyclone_tracks <- cyclones_sf |> 
+  group_by(Name) |>
+  summarise(do_union = F) |> #use do_union = F to make sure tracks join up correctly (by date not proximity)
+  st_cast("LINESTRING")
+
+#intersect cyclones tracks over the northern three zone, remove any cyclones that never enter the northern three zone.
+cyclone_tracks_gbr <- st_filter(cyclone_tracks, gbr_bounds, .predicates = st_intersects)
+
+#drop cyclone Harold as that "enters" the n3 region by crossing over the border of 180 (back to -178)
+cyclone_tracks_gbr <- cyclone_tracks_gbr |> filter(Name != "Harold")
+
+#extract the year for all cyclones by cross referencing the names we extracted against the original
+cyclone_dates <- merge(cyclone_tracks_gbr, cyclones) |> 
+  st_drop_geometry() |> 
+  separate(DateTime, c("Year"), sep = "-") |> #remove everything after the year
+  select(Name, Year) |> #keep target columns
+  unique() |> 
+  mutate(Year = as.numeric(Year)) |> 
+  group_by(Name) |> 
+  filter(Year == max(Year)) |> 
+   mutate(Year = as.character(Year))
+
+#bind years onto the main dataset
+cyclone_tracks_gbr <- cyclone_tracks_gbr |> 
+  left_join(cyclone_dates)
+
+```
+
+# Visualise Data
+
+Before we save we will create a quick map to confirm everything looks how it is supposed to.
+
+```{r}
+#| label: map data
+#| output: true
+
+tmap_mode("view")
+
+#create a map to confirm this is what we are looking for
+tm_shape(gbr_bounds) +
+  tm_polygons() +
+  tm_shape(qld, is.master = T) +
+  tm_polygons() +
+  tm_shape(cyclone_tracks_gbr) +
+  tm_lines(col = "Name") +
+  
+  tm_layout(legend.outside = T)
+
+```
+
+# Save Data
+
+Then finally we can save data ready to be used in the Coral StoryMap
+
+```{r}
+#| label: save data
+
+#save data
+write_sf(cyclone_tracks_gbr, glue("{save_outputs}/cyclones.gpkg"))
+
+```
+

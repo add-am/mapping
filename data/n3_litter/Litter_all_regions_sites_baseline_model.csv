@@ -1,0 +1,1412 @@
+Region,Region_2,Region_3,Zone,Site_ID,Site,Secondary Name,Grade,Event,Lat,Long,fyear
+DT,,,Cleveland Bay,7,Rowes Bay,,,2320,-19.23644287,146.7870855,2012
+DT,,,Cleveland Bay,7,Rowes Bay,,,2414,-19.2334039,146.7850256,2012
+DT,,,Cleveland Bay,7,Rowes Bay,,,2431,-19.23707092,146.7876005,2012
+DT,,,Cleveland Bay,7,Rowes Bay,,,4902,-19.23433586,146.7855835,2015
+DT,,,Cleveland Bay,7,Rowes Bay,,,11463,-19.24227754,146.7932439,2018
+DT,,,Cleveland Bay,7,Rowes Bay,,,11464,-19.21661479,146.7780083,2018
+DT,,,Cleveland Bay,7,Rowes Bay,,,15023,-19.24312841,146.7950678,2019
+DT,,,Cleveland Bay,7,Rowes Bay,,,14870,-19.21568367,146.7773918,2019
+DT,,,Cleveland Bay,7,Rowes Bay,,,14900,-19.21816261,146.7781377,2019
+DT,,DT,Halifax Bay,985,Balgal Beach,,,3765,-19.02779881,146.419065,2013
+DT,,DT,Halifax Bay,985,Balgal Beach,,,6293,-19.02714968,146.418786,2016
+DT,,DT,Halifax Bay,985,Balgal Beach,,,14932,-19.02523271,146.4172733,2019
+DT,,DT,Halifax Bay,985,Balgal Beach,,,8331,-19.02666283,146.4184427,2017
+DT,,DT,Halifax Bay,3014,Balgal Beach North Section,,,10504,-19.01441002,146.4083576,2018
+DT,,DT,Halifax Bay,3014,Balgal Beach North Section,,,14931,-19.00916578,146.4056486,2019
+DT,WT,DT,Halifax Bay,3152,"Big Rock Bay, Orpheus Island",,,11200,-18.60818055,146.4996815,2018
+DT,WT,DT,Halifax Bay,3152,"Big Rock Bay, Orpheus Island",,,13467,-18.60720442,146.500411,2018
+DT,,,Cleveland Bay,1275,"Radical Bay, Magnetic Island",,,4994,-19.1129,146.875,2015
+DT,,,Cleveland Bay,1553,"Nelly Bay Beach, Magnetic Island",,,5951,-19.16707883,146.8480313,2015
+DT,,,Cleveland Bay,1553,"Nelly Bay Beach, Magnetic Island",,,7652,-19.1669174,146.8480897,2016
+DT,,,Cleveland Bay,1553,"Nelly Bay Beach, Magnetic Island",,,10562,-19.16787,146.8478107,2018
+DT,,,Cleveland Bay,1553,"Nelly Bay Beach, Magnetic Island",,,13440,-19.163551,146.8490982,2018
+DT,,,Cleveland Bay,1553,"Nelly Bay Beach, Magnetic Island",,,14933,-19.16093817,146.8502998,2019
+DT,,,Cleveland Bay,1553,"Nelly Bay Beach, Magnetic Island",,,18417,-19.16661337,146.8481863,2019
+DT,,,Cleveland Bay,1553,"Nelly Bay Beach, Magnetic Island",,,20999,-19.17059603,146.8471026,2019
+DT,WT,DT,Halifax Bay,3152,"Big Rock Bay, Orpheus Island",,,18695,-18.60793652,146.5000784,2019
+DT,,DT,Halifax Bay,3359,"Boulder Beach, Orpheus Island",,,18696,-18.65421994,146.5035063,2019
+DT,,DT,Halifax Bay,3346,"Cattle Bay, Orpheus Island",,,18683,-18.57016338,146.4831805,2019
+DT,,DT,Halifax Bay,1359,"Crystal Beach, Mutarnee",,,8729,-18.92840822,146.3220224,2017
+DT,,,Cleveland Bay,2742,"Horseshoe Bay, Magnetic Island",,,7650,-19.1177,146.859,2016
+DT,,,Cleveland Bay,2742,"Horseshoe Bay, Magnetic Island",,,13425,-19.11867205,146.8528748,2018
+DT,,,Cleveland Bay,2742,"Horseshoe Bay, Magnetic Island",,,14665,-19.11654326,146.8628311,2019
+DT,,,Cleveland Bay,2742,"Horseshoe Bay, Magnetic Island",,,14834,-19.11437389,146.8646336,2019
+DT,,,Cleveland Bay,2742,"Horseshoe Bay, Magnetic Island",,,17921,-19.11690313,146.861946,2019
+DT,,,Cleveland Bay,2743,"Alma Bay, Magnetic Island",,,7651,-19.1483,146.869,2016
+DT,,,Cleveland Bay,2743,"Alma Bay, Magnetic Island",,,13439,-19.14834562,146.8688875,2018
+DT,,,Cleveland Bay,2743,"Alma Bay, Magnetic Island",,,14827,-19.14824934,146.8689197,2019
+DT,,,Cleveland Bay,2743,"Alma Bay, Magnetic Island",,,18419,-19.14839123,146.8688822,2019
+DT,,,Cleveland Bay,2743,"Alma Bay, Magnetic Island",,,20995,-19.14800102,146.8690485,2019
+DT,,DT,Halifax Bay,1359,"Crystal Beach, Mutarnee",,,15683,-18.9065707,146.3040304,2019
+DT,WT,DT,Halifax Bay,1253,"Fig Tree Beach, Orpheus Island",,,11198,-18.61106823,146.4996815,2018
+DT,WT,DT,Halifax Bay,1253,"Fig Tree Beach, Orpheus Island",,,13466,-18.61287808,146.5001214,2018
+DT,WT,DT,Halifax Bay,1253,"Fig Tree Beach, Orpheus Island",,,17852,-18.61215618,146.4998102,2019
+DT,WT,DT,Halifax Bay,1253,"Fig Tree Beach, Orpheus Island",,,4895,-18.61151052,146.4996332,2015
+DT,WT,DT,Halifax Bay,1253,"Fig Tree Beach, Orpheus Island",,,6187,-18.61169863,146.4995956,2016
+DT,WT,DT,Halifax Bay,1253,"Fig Tree Beach, Orpheus Island",,,7273,-18.61190198,146.4996171,2016
+DT,WT,DT,Halifax Bay,1253,"Fig Tree Beach, Orpheus Island",,,4895,-18.61151052,146.4996332,2015
+DT,WT,DT,Halifax Bay,1253,"Fig Tree Beach, Orpheus Island",,,6187,-18.61169863,146.4995956,2016
+DT,WT,DT,Halifax Bay,1253,"Fig Tree Beach, Orpheus Island",,,7273,-18.61190198,146.4996171,2016
+DT,WT,,Halifax Bay,1638,Forrest Beach,,,6296,-18.7155,146.298,2016
+DT,WT,DT,Halifax Bay,3358,"Hazard Bay, Orpheus Island",,,18686,-18.6337358,146.504547,2019
+DT,,,Ross,2643,Aplins Weir Rotary Park,,,12619,-19.30362016,146.780895,2018
+DT,,,Ross,2643,Aplins Weir Rotary Park,,,13442,-19.30402519,146.7809165,2018
+DT,,,Ross,2643,Aplins Weir Rotary Park,,,15017,-19.30373661,146.7807662,2019
+DT,,,Ross,2643,Aplins Weir Rotary Park,,,18703.5,-19.30368851,146.7814086,2019
+DT,,,Ross,2643,Aplins Weir Rotary Park,,,19054.4,-19.30329206,146.7813036,2019
+DT,,,Cleveland Bay,2641,"Southern Port Road North West Site, South Townsville",,,12620,-19.27209594,146.8397856,2018
+DT,,,Cleveland Bay,2641,"Southern Port Road North West Site, South Townsville",,,13470,-19.27170373,146.8396022,2018
+DT,,,Cleveland Bay,2641,"Southern Port Road North West Site, South Townsville",,,15296,-19.27157943,146.8391955,2019
+DT,,,Cleveland Bay,2652,"Shelly Cove, Cape Pallarenda Conservation Park",,,12729,-19.18719447,146.7699087,2018
+DT,,,Cleveland Bay,2652,"Shelly Cove, Cape Pallarenda Conservation Park",,,14921,-19.18503616,146.7678916,2019
+DT,,,Cleveland Bay,2652,"Shelly Cove, Cape Pallarenda Conservation Park",,,18711.5,-19.18563021,146.7681545,2019
+DT,,,Cleveland Bay,2652,"Shelly Cove, Cape Pallarenda Conservation Park",,,17792,-19.18854214,146.7732131,2019
+DT,,,Cleveland Bay,2652,"Shelly Cove, Cape Pallarenda Conservation Park",,,19072,-19.18580931,146.7682511,2019
+DT,,,Cleveland Bay,538,Pallarenda Beach,,,13912,-19.19601995,146.7744255,2018
+DT,,,Cleveland Bay,538,Pallarenda Beach,,,13351,-19.19717503,146.7745543,2018
+DT,,,Cleveland Bay,538,Pallarenda Beach,,,13727,-19.20086312,146.7749029,2019
+DT,,,Cleveland Bay,538,Pallarenda Beach,,,14641,-19.19760058,146.7746133,2019
+DT,,,Cleveland Bay,1540,"Geoffrey Bay, Magnetic Island",,,13426,-19.15122907,146.8646979,2018
+DT,,,Cleveland Bay,1540,"Geoffrey Bay, Magnetic Island",,,14833,-19.15050441,146.8664521,2019
+DT,,,Cleveland Bay,2744,"Hawkings Point, Magnetic Island",,,13441,-19.17537915,146.8451393,2018
+DT,,,Bowling Green Bay,2482,"Cape Cleveland, Cungulla",,,14172,-19.39150244,147.1138859,2019
+DT,,,Ross,2935,"Apex Park, Condon",,,14694,-19.36273827,146.7325348,2019
+DT,,,Ross,2973,"Ross River, Annadale",,,14715,-19.30810577,146.7649412,2015
+DT,,,Ross,2973,"Ross River, Annadale",,,15117,-19.307721,146.7644691,2015
+DT,,,Ross,2973,"Ross River, Annadale",,,14959,-19.30795389,146.7608213,2015
+DT,,,Ross,2973,"Ross River, Annadale",,,15120,-19.30796401,146.7609394,2016
+DT,,,Ross,2973,"Ross River, Annadale",,,15121,-19.30830828,146.7593193,2016
+DT,,,Cleveland Bay,1247,"Arthur Bay, Magnetic Island",,,14835,-19.12894057,146.8760812,2019
+DT,,,Ross,2980,"Black Weir, Ross River",,,14929,-19.31590213,146.7367297,2015
+DT,,,Ross,2980,"Black Weir, Ross River",,,14930,-19.31430239,146.7397928,2015
+DT,,,Ross,2980,"Black Weir, Ross River",,,14960,-19.31436314,146.7405009,2016
+DT,,,Ross,2980,"Black Weir, Ross River",,,15118,-19.31580088,146.736896,2016
+DT,,,Cleveland Bay,2967,"Florence Bay, Magnetic Island",,,14942,-19.12191081,146.8778408,2019
+DT,,,Black,3061,"Rollingstone Creek Bushy Park, Rollingstone",,,15021,-19.04574013,146.3942599,2019
+DT,WT,DT,Halifax Bay,1626,"Horseshoe Bay, Orpheus Island",,,6519,-18.62869826,146.5040588,2016
+DT,WT,DT,Halifax Bay,1626,"Horseshoe Bay, Orpheus Island",,,16616,-18.62807809,146.5049064,2018
+DT,WT,DT,Halifax Bay,1626,"Horseshoe Bay, Orpheus Island",,,6256,-18.62839326,146.5042305,2016
+DT,WT,DT,Halifax Bay,1626,"Horseshoe Bay, Orpheus Island",,,7272,-18.62861693,146.5040588,2016
+DT,WT,DT,Halifax Bay,1626,"Horseshoe Bay, Orpheus Island",,,16616,-18.62807809,146.5049064,2018
+DT,,,Ross,3275,"Ross River, Thuringowa Central",,,17971,-19.32006847,146.7327064,2019
+DT,,,Cleveland Bay,3312,"Nelly Bay, Magnetic Island UW",,,18418,-19.16677552,146.8503428,2019
+DT,,,Cleveland Bay,3312,"Nelly Bay, Magnetic Island UW",,,21000,-19.17055043,146.8473655,2019
+DT,,,Cleveland Bay,3314,"Alma Bay, Magnetic Island UW",,,18420,-19.14847231,146.8697727,2019
+DT,,,Cleveland Bay,3314,"Alma Bay, Magnetic Island UW",,,20998,-19.14854833,146.87047,2019
+DT,WT,DT,Halifax Bay,1626,"Horseshoe Bay, Orpheus Island",,,6256,-18.62839326,146.5042305,2016
+DT,WT,DT,Halifax Bay,1626,"Horseshoe Bay, Orpheus Island",,,7272,-18.62861693,146.5040588,2016
+DT,WT,DT,Halifax Bay,632,Jetty Beach Palm Island,,,2642,-18.7375,146.576,2013
+DT,WT,DT,Halifax Bay,632,Jetty Beach Palm Island,,,4851,-18.7375,146.576,2015
+DT,,,Cleveland Bay,3378,"Shelly Beach, Pallarenda",,,18799,-19.18178851,146.7281091,2019
+DT,,,Cleveland Bay,7,Rowes Bay,,,549,-19.23733429,146.7879009,2009
+DT,,,Cleveland Bay,7,Rowes Bay,,,6435,-19.23376858,146.7850685,2016
+DT,,,Cleveland Bay,7,Rowes Bay,,,6622,-19.23773948,146.7881584,2016
+DT,,,Cleveland Bay,7,Rowes Bay,,,9461,-19.23174257,146.7839527,2017
+DT,,,Cleveland Bay,7,Rowes Bay,,,14887,-19.21702287,146.7779768,2019
+DT,,,Cleveland Bay,538,Pallarenda Beach,,,2370,-19.1999715,146.7747527,2012
+DT,,,Cleveland Bay,538,Pallarenda Beach,,,3068,-19.19996137,146.7747742,2013
+DT,,,Cleveland Bay,538,Pallarenda Beach,,,3243,-19.19993604,146.7747581,2013
+DT,,,Cleveland Bay,538,Pallarenda Beach,,,3773,-19.19999683,146.7747205,2014
+DT,,,Cleveland Bay,538,Pallarenda Beach,,,4346,-19.19993604,146.7747635,2014
+DT,,,Cleveland Bay,538,Pallarenda Beach,,,5648,-19.1999411,146.7747796,2015
+DT,,,Ross,559,Keyatta Lake,,,2393,-19.2718,146.788,2012
+DT,WT,DT,Halifax Bay,632,Jetty Beach Palm Island,,,6200,-18.7375,146.576,2016
+DT,WT,DT,Halifax Bay,632,Jetty Beach Palm Island,,,2642,-18.7375,146.576,2013
+DT,WT,DT,Halifax Bay,632,Jetty Beach Palm Island,,,4851,-18.7375,146.576,2015
+DT,WT,DT,Halifax Bay,632,Jetty Beach Palm Island,,,6200,-18.7375,146.576,2016
+DT,,,Cleveland Bay,1247,"Arthur Bay, Magnetic Island",,,4858,-19.1287,146.876,2015
+DT,,,Cleveland Bay,1247,"Arthur Bay, Magnetic Island",,,7967,-19.1287,146.876,2017
+DT,WT,,Halifax Bay,630,Lucinda Beach,,,2639,-18.52562107,146.3362666,2013
+DT,WT,,Halifax Bay,630,Lucinda Beach,,,3653,-18.52555697,146.3360901,2013
+DT,,DT,Halifax Bay,1195,Ollera Beach,,,4633,-18.96500822,146.3592682,2014
+DT,,DT,Halifax Bay,1195,Ollera Beach,,,4635,-18.9651647,146.35938,2014
+DT,,DT,Halifax Bay,1195,Ollera Beach,,,7402,-18.96507528,146.3594471,2016
+DT,WT,DT,Halifax Bay,2414,Orpheus Island Research Station,,,11199,-18.61331529,146.4900255,2018
+DT,WT,DT,Halifax Bay,2414,Orpheus Island Research Station,,,13468,-18.61388976,146.489237,2018
+DT,WT,DT,Halifax Bay,2414,Orpheus Island Research Station,,,13469,-18.6138796,146.4894193,2018
+DT,,,Ross,2169,"Weir Park, Ross River, Townsville",,,8577,-19.30518963,146.7809486,2017
+DT,,,Ross,2169,"Weir Park, Ross River, Townsville",,,9353,-19.30520988,146.7809969,2017
+DT,,,Ross,2180,"Pioneer Park, Ross River, Townsville",,,8226,-19.32024565,146.7309415,2017
+DT,,,Bowling Green Bay,2482,"Cape Cleveland, Cungulla",,,11722,-19.38904827,147.1128988,2018
+DT,,,Ross,2578,Oonoonba Wetlands,,,9015,-19.28651703,146.8161392,2017
+DT,,,Cleveland Bay,2641,"Southern Port Road North West Site, South Townsville",,,18320,-19.27177186,146.8401289,2019
+DT,,,Cleveland Bay,2652,"Shelly Cove, Cape Pallarenda Conservation Park",,,4347,-19.187,146.77,2014
+DT,,,Cleveland Bay,2652,"Shelly Cove, Cape Pallarenda Conservation Park",,,5949,-19.18712354,146.7698765,2015
+DT,,,Cleveland Bay,2652,"Shelly Cove, Cape Pallarenda Conservation Park",,,7096,-19.18711341,146.7698336,2016
+DT,,,Cleveland Bay,2652,"Shelly Cove, Cape Pallarenda Conservation Park",,,8091,-19.18709821,146.7698014,2017
+DT,,,Cleveland Bay,2652,"Shelly Cove, Cape Pallarenda Conservation Park",,,9002,-19.18710834,146.7697585,2017
+DT,,,Cleveland Bay,2742,"Horseshoe Bay, Magnetic Island",,,9387,-19.1177,146.859,2017
+DT,,,Ross,2828,"Queens Gardens, Townsville",,,9527,-19.25239149,146.8095088,2017
+DT,,,Black,2993,"Crystal Creek, Mutarnee",,,15025,-18.95534446,146.2832272,2019
+DT,WT,DT,Halifax Bay,2414,Orpheus Island Research Station,,,17225,-18.61339663,146.4899719,2019
+DT,WT,DT,Halifax Bay,3019,"Picnic Bay, Orpheus Island",,,18694,-18.63951024,146.504311,2019
+DT,,,Ross,3583,"Loam Island, Ross River, Rasmussen",,,7105,-19.35258053,146.7326528,2016
+GHHP,,,Boyne Estuary,1450,Bray Park to Boyne River mouth,,,5580,-23.9398,151.354,2015
+GHHP,,,Boyne Estuary,1450,Bray Park to Boyne River mouth,,,7203,-23.9398,151.354,2016
+GHHP,,,Boyne Estuary,1450,Bray Park to Boyne River mouth,,,7366,-23.9398,151.354,2016
+GHHP,,,Boyne Estuary,1450,Bray Park to Boyne River mouth,,,15240,-23.93652561,151.3542545,2019
+GHHP,,,Calliope,2263,Lake Callemondah,,,7188,-23.86033669,151.2340572,2016
+GHHP,,,Calliope,2263,Lake Callemondah,,,7671,-23.86121237,151.2341666,2016
+GHHP,,,Calliope,2263,Lake Callemondah,,,10422,-23.85899488,151.2330884,2017
+GHHP,,,Calliope,2263,Lake Callemondah,,,12601,-23.85962775,151.2333244,2018
+GHHP,,,Calliope,2263,Lake Callemondah,,,12810,-23.85931377,151.2331152,2018
+GHHP,,,Calliope,2263,Lake Callemondah,,,13083,-23.8595836,151.2332439,2018
+GHHP,,,Calliope,2263,Lake Callemondah,,,14286,-23.85920584,151.2334692,2019
+GHHP,,,Western Basin,1629,"Fisherman's Landing, Gladstone",,,7189,-23.78012353,151.1503235,2016
+GHHP,,,Western Basin,1629,"Fisherman's Landing, Gladstone",,,7553,-23.78025766,151.1499882,2016
+GHHP,,,Western Basin,1629,"Fisherman's Landing, Gladstone",,,11349,-23.78207061,151.149323,2018
+GHHP,,,Western Basin,1629,"Fisherman's Landing, Gladstone",,,11738,-23.78166317,151.1492908,2018
+GHHP,,,Western Basin,1629,"Fisherman's Landing, Gladstone",,,11974,-23.78161899,151.1493659,2018
+GHHP,,,Western Basin,1629,"Fisherman's Landing, Gladstone",,,12339,-23.7778047,151.1482823,2018
+GHHP,,,Western Basin,1629,"Fisherman's Landing, Gladstone",,,12721,-23.77105456,151.1445755,2018
+GHHP,,,Western Basin,1629,"Fisherman's Landing, Gladstone",,,13234,-23.77874813,151.1488694,2018
+GHHP,,,Western Basin,1629,"Fisherman's Landing, Gladstone",,,13344,-23.78122627,151.1489636,2018
+GHHP,,,Western Basin,1629,"Fisherman's Landing, Gladstone",,,13820,-23.7789436,151.1489958,2019
+GHHP,,,Western Basin,1629,"Fisherman's Landing, Gladstone",,,14346,-23.7809661,151.1488509,2019
+GHHP,,,Western Basin,1629,"Fisherman's Landing, Gladstone",,,14347,-23.77843306,151.1488295,2019
+GHHP,,,Western Basin,1629,"Fisherman's Landing, Gladstone",,,14767,-23.77896324,151.1490387,2019
+GHHP,,,Western Basin,1629,"Fisherman's Landing, Gladstone",,,18176.8,-23.78070153,151.1488713,2019
+GHHP,,,Western Basin,1629,"Fisherman's Landing, Gladstone",,,19459,-23.78044952,151.1492054,2019
+GHHP,,,Boyne Estuary,1451,Lilleys Beach,,,7191,-23.93509391,151.3547587,2016
+GHHP,,,Boyne Estuary,1451,Lilleys Beach,,,10302,-23.93556461,151.3547266,2017
+GHHP,,,Boyne Estuary,1451,Lilleys Beach,,,10297,-23.93546164,151.3547856,2017
+GHHP,,,Boyne Estuary,1451,Lilleys Beach,,,10305,-23.93553519,151.3546515,2017
+GHHP,,,Boyne Estuary,1451,Lilleys Beach,,,10301,-23.93552048,151.3547534,2017
+GHHP,,,Boyne Estuary,1451,Lilleys Beach,,,10254,-23.93058624,151.3525647,2017
+GHHP,,,Boyne Estuary,1451,Lilleys Beach,,,9992,-23.93560383,151.3548231,2018
+GHHP,,,Boyne Estuary,1451,Lilleys Beach,,,11307,-23.93039665,151.3524735,2018
+GHHP,,,Boyne Estuary,1451,Lilleys Beach,,,12210,-23.92530693,151.3502795,2018
+GHHP,,,Boyne Estuary,1451,Lilleys Beach,,,12183,-23.90553949,151.3340735,2018
+GHHP,,,Boyne Estuary,1451,Lilleys Beach,,,12623,-23.9268172,151.3511592,2018
+GHHP,,,Boyne Estuary,1451,Lilleys Beach,,,12624,-23.92267864,151.3482571,2018
+GHHP,,,Boyne Estuary,1451,Lilleys Beach,,,12625,-23.92425758,151.349287,2018
+GHHP,,,Boyne Estuary,1451,Lilleys Beach,,,12599,-23.93568228,151.3546783,2018
+GHHP,,,Boyne Estuary,1451,Lilleys Beach,,,13017,-23.911753,151.3378018,2018
+GHHP,,,Boyne Estuary,1451,Lilleys Beach,,,13346,-23.93642755,151.3545281,2018
+GHHP,,,Boyne Estuary,1451,Lilleys Beach,,,13537,-23.9290041,151.3519049,2018
+GHHP,,,Boyne Estuary,1451,Lilleys Beach,,,13542,-23.91814765,151.3441318,2018
+GHHP,,,Boyne Estuary,1451,Lilleys Beach,,,13571,-23.91445508,151.3403392,2018
+GHHP,,,Boyne Estuary,1451,Lilleys Beach,,,13819,-23.93154891,151.353026,2019
+GHHP,,,Boyne Estuary,1451,Lilleys Beach,,,13805,-23.92935714,151.3520765,2019
+GHHP,,,Boyne Estuary,1451,Lilleys Beach,,,14298,-23.92983277,151.3521731,2019
+GHHP,,,Boyne Estuary,1451,Lilleys Beach,,,14903,-23.93090168,151.3526827,2019
+GHHP,,,Boyne Estuary,1451,Lilleys Beach,,,15159,-23.91761805,151.34359,2019
+GHHP,,,Boyne Estuary,1451,Lilleys Beach,,,16178,-23.9321324,151.3533372,2019
+GHHP,,,Boyne Estuary,1451,Lilleys Beach,,,16180,-23.93111743,151.3525915,2019
+GHHP,,,Boyne Estuary,1451,Lilleys Beach,,,19141,-23.936354,151.3545442,2019
+GHHP,,,Boyne Estuary,1451,Lilleys Beach,,,16803,-23.90183184,151.332829,2019
+GHHP,,,Boyne Estuary,1451,Lilleys Beach,,,17813,-23.93295614,151.3540345,2019
+GHHP,,,Boyne Estuary,1451,Lilleys Beach,,,17128,-23.91424421,151.3400173,2019
+GHHP,,,Boyne Estuary,1451,Lilleys Beach,,,19061,-23.93639126,151.3543403,2019
+GHHP,,,Boyne Estuary,1451,Lilleys Beach,,,18736,-23.91744642,151.3432413,2019
+GHHP,,,Outer Harbour,2112,"Wild Cattle Creek Mouth, Tannum Sands",,,7205,-23.9511653,151.3768494,2015
+GHHP,,,Outer Harbour,2112,"Wild Cattle Creek Mouth, Tannum Sands",,,9505,-23.95112117,151.3769567,2016
+GHHP,,,Outer Harbour,2112,"Wild Cattle Creek Mouth, Tannum Sands",,,10299,-23.95221443,151.3773966,2017
+GHHP,,,Outer Harbour,2112,"Wild Cattle Creek Mouth, Tannum Sands",,,10296,-23.95237621,151.3773698,2018
+GHHP,,,Outer Harbour,2112,"Wild Cattle Creek Mouth, Tannum Sands",,,9968,-23.95297921,151.3776326,2018
+GHHP,,,Outer Harbour,2112,"Wild Cattle Creek Mouth, Tannum Sands",,,10788,-23.95199872,151.3773537,2018
+GHHP,,,Outer Harbour,2112,"Wild Cattle Creek Mouth, Tannum Sands",,,11741,-23.95130257,151.3765383,2018
+GHHP,,,Outer Harbour,2112,"Wild Cattle Creek Mouth, Tannum Sands",,,11296,-23.95152808,151.3767153,2018
+GHHP,,,Outer Harbour,2112,"Wild Cattle Creek Mouth, Tannum Sands",,,11963,-23.95304784,151.3777131,2018
+GHHP,,,Outer Harbour,2112,"Wild Cattle Creek Mouth, Tannum Sands",,,11964,-23.95087605,151.3769674,2018
+GHHP,,,Outer Harbour,2112,"Wild Cattle Creek Mouth, Tannum Sands",,,13066,-23.95153789,151.3767207,2018
+GHHP,,,Outer Harbour,2112,"Wild Cattle Creek Mouth, Tannum Sands",,,13188,-23.9519595,151.3770372,2018
+GHHP,,,Outer Harbour,2112,"Wild Cattle Creek Mouth, Tannum Sands",,,13325,-23.95287234,151.3777378,2018
+GHHP,,,Outer Harbour,2112,"Wild Cattle Creek Mouth, Tannum Sands",,,14335,-23.94912584,151.377756,2019
+GHHP,,,Outer Harbour,2112,"Wild Cattle Creek Mouth, Tannum Sands",,,14364,-23.95139571,151.3766724,2019
+GHHP,,,Outer Harbour,2112,"Wild Cattle Creek Mouth, Tannum Sands",,,15733,-23.95065544,151.3763773,2019
+GHHP,,,Outer Harbour,2112,"Wild Cattle Creek Mouth, Tannum Sands",,,15732,-23.95155259,151.3767421,2019
+GHHP,,,Outer Harbour,2112,"Wild Cattle Creek Mouth, Tannum Sands",,,19135,-23.95121432,151.3764846,2019
+GHHP,,,Outer Harbour,2112,"Wild Cattle Creek Mouth, Tannum Sands",,,19138,-23.95182223,151.3769674,2019
+GHHP,,,Calliope,2671,"Briffney Creek, Gladstone",,,8864,-23.8747,151.229,2017
+GHHP,,,Calliope,2671,"Briffney Creek, Gladstone",,,12809,-23.88169293,151.2250042,2018
+GHHP,,,Calliope,2671,"Briffney Creek, Gladstone",,,17804,-23.88258566,151.2247306,2019
+GHHP,,,Calliope Estuary,2172,"Barney Point, Gladstone",,,9245,-23.84742603,151.2732089,2017
+GHHP,,,Calliope Estuary,2172,"Barney Point, Gladstone",,,10335,-23.84737696,151.2731981,2018
+GHHP,,,Calliope Estuary,2172,"Barney Point, Gladstone",,,10336,-23.84715127,151.2731016,2018
+GHHP,,,Calliope Estuary,2172,"Barney Point, Gladstone",,,11798,-23.84741622,151.2732142,2018
+GHHP,,,Calliope Estuary,2172,"Barney Point, Gladstone",,,12805,-23.84750453,151.2732518,2018
+GHHP,,,Calliope Estuary,2172,"Barney Point, Gladstone",,,18066,-23.84745547,151.2730694,2019
+GHHP,,,Calliope Estuary,2172,"Barney Point, Gladstone",,,18608,-23.84688632,151.2729406,2019
+GHHP,,,Calliope Estuary,2172,"Barney Point, Gladstone",,,18792,-23.84811783,151.2736005,2019
+GHHP,,,Calliope,2444,"Tigalee Creek, Sun Valley Park, Gladstone",,,9509,-23.87913242,151.2569761,2017
+GHHP,,,Calliope,2444,"Tigalee Creek, Sun Valley Park, Gladstone",,,12990,-23.87848984,151.2586498,2018
+GHHP,,,Calliope,2444,"Tigalee Creek, Sun Valley Park, Gladstone",,,12993,-23.87821024,151.2586445,2018
+GHHP,,,Calliope,2444,"Tigalee Creek, Sun Valley Park, Gladstone",,,13084,-23.87857813,151.2584567,2018
+GHHP,,,Calliope,2444,"Tigalee Creek, Sun Valley Park, Gladstone",,,13343,-23.8791128,151.2571317,2018
+GHHP,,,Calliope,2444,"Tigalee Creek, Sun Valley Park, Gladstone",,,15241,-23.87818571,151.2587893,2019
+GHHP,,,Calliope,2444,"Tigalee Creek, Sun Valley Park, Gladstone",,,16182,-23.87953465,151.2569761,2019
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,11973,-23.9368394,151.3573766,2017
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,9570,-23.93785433,151.3643825,2017
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,10423,-23.93772195,151.3621402,2017
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,9571,-23.93784452,151.3644415,2017
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,9569,-23.93784943,151.3643932,2017
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,9572,-23.93677912,151.3661469,2018
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,11303,-23.93807006,151.3629556,2018
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,11297,-23.93777098,151.3623118,2018
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,11304,-23.93818283,151.3633794,2018
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,11743,-23.93782491,151.3635457,2018
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,12806,-23.93793768,151.3631058,2018
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,14288,-23.93713359,151.3661635,2019
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,14324,-23.93638342,151.358487,2019
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,15242,-23.93787884,151.3626069,2019
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,16177,-23.93777588,151.3645327,2019
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,18074,-23.93778078,151.3624191,2019
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,18239,-23.9369963,151.3620758,2019
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,18242,-23.93778078,151.3629341,2019
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,17812,-23.937315,151.3621026,2019
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,18069,-23.93778078,151.3632774,2019
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,18070,-23.93793768,151.3624191,2019
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,18249,-23.93793768,151.3629341,2019
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,18071,-23.93809458,151.3629341,2019
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,17829,-23.93767978,151.3635188,2019
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,18072,-23.93809458,151.3625908,2019
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,17826,-23.93809458,151.3632989,2019
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,17869,-23.93778078,151.3620758,2019
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,17867,-23.93731009,151.3634491,2019
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,18255,-23.93793768,151.3627625,2019
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,19060,-23.9379769,151.3625532,2019
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,18079,-23.93731009,151.3613892,2019
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,19449,-23.93770136,151.3637431,2019
+GHHP,,,Boyne,2117,"Eastern Foreshore, Boyne River, Benaraby",,,9991,-24.00888908,151.3396418,2018
+GHHP,,,Boyne,2117,"Eastern Foreshore, Boyne River, Benaraby",,,11961,-24.00930561,151.3393521,2018
+GHHP,,,Boyne,2117,"Eastern Foreshore, Boyne River, Benaraby",,,13817,-24.00773751,151.3401139,2019
+GHHP,,,Boyne,2117,"Eastern Foreshore, Boyne River, Benaraby",,,19035.6,-24.00855213,151.3397805,2019
+GHHP,,,Mid Harbour,1679,Tannum Sands Main Beach,,,10249,-23.94684612,151.3761199,2017
+GHHP,,,Mid Harbour,1679,Tannum Sands Main Beach,,,11797,-23.9446252,151.3734055,2018
+GHHP,,,Mid Harbour,1679,Tannum Sands Main Beach,,,12629,-23.94372799,151.3725901,2018
+GHHP,,,Mid Harbour,1679,Tannum Sands Main Beach,,,12994,-23.94442419,151.3733947,2018
+GHHP,,,Mid Harbour,1679,Tannum Sands Main Beach,,,12864,-23.9428651,151.3717639,2018
+GHHP,,,Mid Harbour,1679,Tannum Sands Main Beach,,,12983,-23.94205123,151.3712597,2018
+GHHP,,,Mid Harbour,1679,Tannum Sands Main Beach,,,13222,-23.94655196,151.3756531,2018
+GHHP,,,Mid Harbour,1679,Tannum Sands Main Beach,,,17925,-23.94727756,151.3763398,2019
+GHHP,,,Mid Harbour,1679,Tannum Sands Main Beach,,,18241,-23.94452714,151.3734055,2019
+GHHP,,,Mid Harbour,1679,Tannum Sands Main Beach,,,18237,-23.94484092,151.3735771,2019
+GHHP,,,Mid Harbour,1679,Tannum Sands Main Beach,,,18243,-23.94629212,151.3752937,2019
+GHHP,,,Mid Harbour,1679,Tannum Sands Main Beach,,,17928,-23.94682651,151.3760769,2019
+GHHP,,,Mid Harbour,1679,Tannum Sands Main Beach,,,17929,-23.94546847,151.3746071,2019
+GHHP,,,Mid Harbour,1679,Tannum Sands Main Beach,,,17927,-23.94842967,151.377359,2019
+GHHP,,,Mid Harbour,1679,Tannum Sands Main Beach,,,18250,-23.94468403,151.3734055,2019
+GHHP,,,Mid Harbour,1679,Tannum Sands Main Beach,,,17764,-23.94667453,151.375621,2019
+GHHP,,,Mid Harbour,1679,Tannum Sands Main Beach,,,17762,-23.94476248,151.3733196,2019
+GHHP,,,Calliope,2254,"Tigalee Creek, Toonee Park, Gladstone",,,10420,-23.8797652,151.24511,2018
+GHHP,,,Calliope,2254,"Tigalee Creek, Toonee Park, Gladstone",,,11299,-23.87972595,151.2450671,2018
+GHHP,,,Calliope,2254,"Tigalee Creek, Toonee Park, Gladstone",,,12206,-23.87965728,151.2450135,2018
+GHHP,,,Calliope,2254,"Tigalee Creek, Toonee Park, Gladstone",,,12235,-23.87867623,151.2438226,2018
+GHHP,,,South Trees Inlet,2443,"Lillys Beach North End, Tannum Sands",,,11217,-23.87983387,151.3249969,2018
+GHHP,,,South Trees Inlet,2443,"Lillys Beach North End, Tannum Sands",,,12234,-23.88769177,151.3265204,2018
+GHHP,,,South Trees Inlet,2443,"Lillys Beach North End, Tannum Sands",,,13001,-23.87455576,151.3234949,2018
+GHHP,,,South Trees Inlet,2443,"Lillys Beach North End, Tannum Sands",,,13028,-23.89330286,151.3291168,2018
+GHHP,,,South Trees Inlet,2443,"Lillys Beach North End, Tannum Sands",,,13040,-23.8908603,151.3274324,2018
+GHHP,,,South Trees Inlet,2443,"Lillys Beach North End, Tannum Sands",,,13242,-23.87453614,151.3233715,2018
+GHHP,,,South Trees Inlet,2443,"Lillys Beach North End, Tannum Sands",,,13589,-23.89676553,151.3310963,2018
+GHHP,,,South Trees Inlet,2443,"Lillys Beach North End, Tannum Sands",,,14205,-23.87563494,151.3237953,2019
+GHHP,,,South Trees Inlet,2443,"Lillys Beach North End, Tannum Sands",,,16142,-23.89399932,151.3295406,2019
+GHHP,,,South Trees Inlet,2443,"Lillys Beach North End, Tannum Sands",,,16280,-23.87753821,151.3244551,2019
+GHHP,,,South Trees Inlet,2443,"Lillys Beach North End, Tannum Sands",,,16541,-23.88685793,151.3264507,2019
+GHHP,,,South Trees Inlet,2443,"Lillys Beach North End, Tannum Sands",,,17014,-23.8779944,151.3247234,2019
+GHHP,,,South Trees Inlet,2443,"Lillys Beach North End, Tannum Sands",,,18533,-23.87448218,151.3237792,2019
+GHHP,,,Calliope,2185,"Auckland Creek, Gladstone",,,12198,-23.87237774,151.2380934,2018
+GHHP,,,Calliope,2185,"Auckland Creek, Gladstone",,,15546,-23.8721619,151.2380934,2019
+GHHP,,,Calliope,2185,"Auckland Creek, Gladstone",,,15158,-23.87248566,151.2383294,2019
+GHHP,,,Calliope,2185,"Auckland Creek, Gladstone",,,17950,-23.87137702,151.2379646,2019
+GHHP,,,Calliope,2185,"Auckland Creek, Gladstone",,,17954,-23.87222077,151.2382382,2019
+GHHP,,,Calliope,2185,"Auckland Creek, Gladstone",,,18245,-23.87190681,151.2381363,2019
+GHHP,,,Calliope,2185,"Auckland Creek, Gladstone",,,18247,-23.87143588,151.2379217,2019
+GHHP,,,Calliope,2185,"Auckland Creek, Gladstone",,,18248,-23.87206379,151.2382221,2019
+GHHP,,,Calliope,2185,"Auckland Creek, Gladstone",,,17943,-23.87173022,151.2381417,2019
+GHHP,,,The Narrows,2562,"Phillipies Landing Rd, Targinnie",,,12205,-23.74461519,151.1281872,2018
+GHHP,,,The Narrows,2562,"Phillipies Landing Rd, Targinnie",,,12638,-23.74495401,151.1280423,2018
+GHHP,,,The Narrows,2562,"Phillipies Landing Rd, Targinnie",,,12639,-23.74497856,151.1279672,2018
+GHHP,,,The Narrows,2562,"Phillipies Landing Rd, Targinnie",,,13806,-23.74496383,151.1280745,2018
+GHHP,,,Mid Harbour,2563,"North West Shore, Facing Island",,,12207,-23.75686095,151.3306886,2018
+GHHP,,,Rodds Bay,2564,"The Esplanade Beach, Turkey Beach",,,12720,-24.07411513,151.6509283,2018
+GHHP,,,Rodds Bay,2564,"The Esplanade Beach, Turkey Beach",,,12236,-24.07426697,151.6513574,2018
+GHHP,,,Rodds Bay,2564,"The Esplanade Beach, Turkey Beach",,,13808,-24.07460981,151.652205,2019
+GHHP,,,Calliope,2593,Calliope River Campgrounds Old Bruce Hwy,,,12340,-23.96125914,151.1540705,2018
+GHHP,,,Calliope,2593,Calliope River Campgrounds Old Bruce Hwy,,,14326,-23.96137189,151.1544299,2019
+GHHP,,,Calliope,2593,Calliope River Campgrounds Old Bruce Hwy,,,17806,-23.96299938,151.1531854,2019
+GHHP,,,Mid Harbour,2594,Facing Island North Point,,,12342,-23.75517195,151.3316113,2018
+GHHP,,,Mid Harbour,2594,Facing Island North Point,,,12631,-23.75493627,151.3344276,2018
+GHHP,,,Calliope,2552,Boat Creek Gladstone,,,12630,-23.81922079,151.149559,2018
+GHHP,,,Boyne,2653,"Wapentake Wetlands, South Trees",,,12722,-23.89874696,151.2916946,2018
+GHHP,,,Outer Harbour,2687,"Wild Cattle Creek Boat Ramp, Tannum Sands",,,12992,-23.95852374,151.3825142,2018
+GHHP,,,Outer Harbour,2687,"Wild Cattle Creek Boat Ramp, Tannum Sands",,,13256,-23.95882455,151.3830195,2018
+GHHP,,,Outer Harbour,2687,"Wild Cattle Creek Boat Ramp, Tannum Sands",,,14638,-23.95823875,151.3822201,2019
+GHHP,,,Outer Harbour,2687,"Wild Cattle Creek Boat Ramp, Tannum Sands",,,14635,-23.95881892,151.3821417,2019
+GHHP,,,Outer Harbour,2687,"Wild Cattle Creek Boat Ramp, Tannum Sands",,,14637,-23.9593303,151.3827803,2019
+GHHP,,,Baffle,2729,"The Sands, Tannum Sands",,,13082,-23.99015565,151.3929514,2018
+GHHP,,,Boyne,2751,"Boyne Island Conservation Site, Centenary Dr",,,13511,-23.94407119,151.3451564,2018
+GHHP,,,Boyne,2751,"Boyne Island Conservation Site, Centenary Dr",,,13570,-23.94398784,151.3430268,2018
+GHHP,,,Boyne,2782,"Truck Bay, Corner Bruce Highway and Tannum Sands Road",,,13591,-24.02641626,151.3622904,2018
+GHHP,,,Calliope,2798,"Auckland Creek, Golf Course Rd",,,13743,-23.8734177,151.2396169,2018
+GHHP,,,Calliope,2798,"Auckland Creek, Golf Course Rd",,,17940,-23.8744969,151.24165,2019
+GHHP,,,Calliope,2796,"Tigalee Creek, Witney St",,,13746,-23.88324785,151.2466818,2018
+GHHP,,,Mid Harbour,1657,"Esplanade Beach, Curtis Island",,,14006,-23.75453366,151.3090539,2019
+GHHP,,,Mid Harbour,1657,"Esplanade Beach, Curtis Island",,,18271,-23.75398865,151.3086033,2019
+GHHP,,,Mid Harbour,1657,"Esplanade Beach, Curtis Island",,,17800,-23.75557456,151.3114786,2019
+GHHP,,,Calliope,2799,"Auckland Creek, Lions Park",,,14333,-23.86962083,151.2367415,2019
+GHHP,,,Boyne,2895,"Wyndham Park, Boyne Island",,,14334,-23.93656974,151.3540024,2019
+GHHP,,,Boyne,2895,"Wyndham Park, Boyne Island",,,14759,-23.93621672,151.3538039,2019
+GHHP,,,Boyne,2895,"Wyndham Park, Boyne Island",,,14902,-23.93668251,151.3540184,2019
+GHHP,,,Calliope,2880,Yarwun,,,14336,-23.84309358,151.1240566,2019
+GHHP,,,Calliope,2797,"Tigalee Creek, Sun Valley Rd",,,14904,-23.88120241,151.2533444,2019
+GHHP,,,Boyne,3057,"Reg Tanna Park, Gladstone",,,15734,-23.85447638,151.2596369,2019
+GHHP,,,Boyne,3169,"Lions Park, Boyne Island",,,16860,-23.95167516,151.3584977,2019
+GHHP,,,Boyne,3169,"Lions Park, Boyne Island",,,17129,-23.95120942,151.3583368,2019
+GHHP,,,Baffle,3323,"Wild Cattle Creek Trail, Tannum Sands",,,18252,-23.9556461,151.3788342,2019
+GHHP,,,Calliope,3402,"Auckland Creek, Hanson Road, Gladstone",,,19537,-23.84659095,151.2349777,2019
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,10306,-23.93783962,151.3626552,2016
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,15545,-23.93793768,151.3620758,2019
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,15538,-23.9379769,151.362505,2019
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,15539,-23.93778078,151.3624191,2019
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,16825,-23.93785923,151.3631058,2019
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,18077,-23.93793768,151.3627625,2019
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,18076,-23.93762389,151.3631058,2019
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,17871,-23.93731009,151.3620758,2019
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,17763,-23.93766311,151.361931,2019
+GHHP,,,Mid Harbour,796,"Canoe Point, Tannum Sands",,,17864,-23.93817302,151.3632774,2019
+GHHP,,,Boyne Estuary,1450,Bray Park to Boyne River mouth,,,10337,-23.94009498,151.3537502,2018
+GHHP,,,Boyne Estuary,1450,Bray Park to Boyne River mouth,,,10602,-23.94117362,151.3538146,2018
+GHHP,,,Boyne Estuary,1451,Lilleys Beach,,,11729,-23.92830783,151.3517225,2018
+GHHP,,,Boyne Estuary,1451,Lilleys Beach,,,12802,-23.93581957,151.3547802,2018
+GHHP,,,Boyne Estuary,1451,Lilleys Beach,,,12804,-23.93421135,151.354394,2018
+GHHP,,,Boyne Estuary,1451,Lilleys Beach,,,12803,-23.93479972,151.3546944,2018
+GHHP,,,Boyne Estuary,1451,Lilleys Beach,,,12702,-23.93581957,151.3546944,2018
+GHHP,,,Boyne Estuary,1451,Lilleys Beach,,,12800,-23.92980825,151.3522214,2018
+GHHP,,,Western Basin,1629,"Fisherman's Landing, Gladstone",,,9504,-23.78025766,151.15048,2016
+GHHP,,,Mid Harbour,1679,Tannum Sands Main Beach,,,14840,-23.94283078,151.3717747,2019
+GHHP,,,Mid Harbour,1679,Tannum Sands Main Beach,,,16852,-23.94668434,151.3758516,2019
+GHHP,,,Mid Harbour,1679,Tannum Sands Main Beach,,,16853,-23.94433103,151.373105,2019
+GHHP,,,Mid Harbour,1679,Tannum Sands Main Beach,,,17138,-23.94676278,151.3758731,2019
+GHHP,,,Mid Harbour,1679,Tannum Sands Main Beach,,,18235,-23.94484092,151.3737488,2019
+GHHP,,,Mid Harbour,1679,Tannum Sands Main Beach,,,17926,-23.94831691,151.3773161,2019
+GHHP,,,Mid Harbour,1679,Tannum Sands Main Beach,,,17868,-23.9458803,151.374929,2019
+GHHP,,,Mid Harbour,1679,Tannum Sands Main Beach,,,17865,-23.94472325,151.3735771,2019
+GHHP,,,Outer Harbour,2112,"Wild Cattle Creek Mouth, Tannum Sands",,,7204,-23.95110156,151.3769728,2015
+GHHP,,,Outer Harbour,2112,"Wild Cattle Creek Mouth, Tannum Sands",,,12801,-23.95302823,151.3777238,2018
+GHHP,,,Outer Harbour,2112,"Wild Cattle Creek Mouth, Tannum Sands",,,13474,-23.95197911,151.3772571,2018
+GHHP,,,Outer Harbour,2112,"Wild Cattle Creek Mouth, Tannum Sands",,,15542,-23.95150847,151.3770103,2019
+GHHP,,,Calliope,2166,"Wild Place, Burua",,,8890,-23.9339858,151.2090504,2017
+GHHP,,,Calliope Estuary,2172,"Barney Point, Gladstone",,,11182,-23.84598353,151.2727153,2018
+GHHP,,,Calliope Estuary,2172,"Barney Point, Gladstone",,,11183,-23.84746037,151.273241,2018
+GHHP,,,Calliope Estuary,2172,"Barney Point, Gladstone",,,15543,-23.84792648,151.2734985,2019
+GHHP,,,Calliope Estuary,2172,"Barney Point, Gladstone",,,15544,-23.84773023,151.2734127,2019
+GHHP,,,Calliope Estuary,2172,"Barney Point, Gladstone",,,15536,-23.84733771,151.2731767,2019
+GHHP,,,Calliope Estuary,2172,"Barney Point, Gladstone",,,15537,-23.84735734,151.273241,2019
+GHHP,,,Calliope Estuary,2172,"Barney Point, Gladstone",,,16781,-23.84767135,151.2733054,2019
+GHHP,,,Calliope Estuary,2172,"Barney Point, Gladstone",,,16782,-23.84761247,151.273241,2019
+GHHP,,,Calliope Estuary,2172,"Barney Point, Gladstone",,,18236,-23.84753397,151.2731552,2019
+GHHP,,,Calliope Estuary,2172,"Barney Point, Gladstone",,,18238,-23.84686669,151.2729836,2019
+GHHP,,,Calliope Estuary,2172,"Barney Point, Gladstone",,,18244,-23.84714146,151.2729836,2019
+GHHP,,,Calliope Estuary,2172,"Barney Point, Gladstone",,,18064,-23.84737696,151.2731552,2019
+GHHP,,,Calliope Estuary,2172,"Barney Point, Gladstone",,,18065,-23.84800499,151.2734985,2019
+GHHP,,,Calliope Estuary,2172,"Barney Point, Gladstone",,,18062,-23.84721996,151.2731981,2019
+GHHP,,,Calliope Estuary,2172,"Barney Point, Gladstone",,,18063,-23.84745547,151.2732196,2019
+GHHP,,,Calliope Estuary,2172,"Barney Point, Gladstone",,,17866,-23.84745547,151.273241,2019
+GHHP,,,Calliope Estuary,2172,"Barney Point, Gladstone",,,18607,-23.84663609,151.2728816,2019
+GHHP,,,Calliope,2185,"Auckland Creek, Gladstone",,,15540,-23.87228944,151.2381577,2019
+GHHP,,,Calliope,2185,"Auckland Creek, Gladstone",,,15541,-23.87229925,151.2380934,2019
+GHHP,,,Calliope,2185,"Auckland Creek, Gladstone",,,16826,-23.87184795,151.238088,2019
+GHHP,,,Calliope,2185,"Auckland Creek, Gladstone",,,18246,-23.87227963,151.2382436,2019
+GHHP,,,Calliope,2185,"Auckland Creek, Gladstone",,,18253,-23.87194606,151.2381577,2019
+GHHP,,,Calliope,2185,"Auckland Creek, Gladstone",,,18610,-23.87231888,151.2380558,2019
+GHHP,,,Calliope,2424,"Tondoon Botanic Gardens, Gladstone",,,11219,-23.89680476,151.2597871,2018
+GHHP,,,Calliope,2552,Boat Creek Gladstone,,,11972,-23.81919625,151.1502725,2018
+GHHP,,,Baffle,2753,"Canoe Point Reserve, Tanyalla",,,13345,-23.94059508,151.3675851,2018
+GHHP,,,Boyne,2753,"Canoe Point Reserve, Tanyalla",,,13345,-23.94059508,151.3675851,2018
+GHHP,,,Baffle,2753,"Canoe Point Reserve, Tanyalla",,,14297,-23.93924677,151.3669521,2019
+GHHP,,,Boyne,2753,"Canoe Point Reserve, Tanyalla",,,14297,-23.93924677,151.3669521,2019
+GHHP,,,Baffle,2753,"Canoe Point Reserve, Tanyalla",,,14299,-23.94106085,151.367982,2019
+GHHP,,,Boyne,2753,"Canoe Point Reserve, Tanyalla",,,14299,-23.94106085,151.367982,2019
+GHHP,,,Baffle,2753,"Canoe Point Reserve, Tanyalla",,,14839,-23.93882022,151.365509,2019
+GHHP,,,Boyne,2753,"Canoe Point Reserve, Tanyalla",,,14839,-23.93882022,151.365509,2019
+GHHP,,,Boyne,2895,"Wyndham Park, Boyne Island",,,14756,-23.93671192,151.3539112,2019
+GHHP,,,Boyne,2895,"Wyndham Park, Boyne Island",,,17863,-23.93632949,151.3540506,2019
+GHHP,,,Calliope,3171,"Hazelbrook Park, Calliope",,,16726,-23.99434907,151.2133151,2019
+GHHP,,,Calliope,3266,"Calliope River, Gladstone Power Station",,,18067,-23.8474015,151.2133044,2019
+GHHP,,,Calliope,3266,"Calliope River, Gladstone Power Station",,,18068,-23.84721996,151.213181,2019
+GHHP,,,Calliope,3266,"Calliope River, Gladstone Power Station",,,17870,-23.84711692,151.2131113,2019
+GHHP,,,Boyne,3554,"Canoe Point Conservation Area, Tannum Sands",,,10142,-23.93908825,151.3631916,2018
+MWI,,,Whitsunday,3336,"Pine Bay East, South Molle Island",,,1421,-20.2813476,148.8357711,2011
+MWI,,,Whitsunday,3336,"Pine Bay East, South Molle Island",,,5829,-20.28037825,148.8377821,2015
+MWI,,,Whitsunday,3336,"Pine Bay East, South Molle Island",,,18270,-20.28083119,148.8365668,2019
+MWI,,,Whitsunday,358,"Double Bay Hut, Dryander NP",,,1438,-20.16989663,148.5860943,2011
+MWI,,,Whitsunday,358,"Double Bay Hut, Dryander NP",,,7698,-20.16983764,148.586007,2016
+MWI,,,Whitsunday,177,"Grimstone Point Northern Beach Western Side, Airlie Beach",,,1440,-20.1822,148.674,2011
+MWI,,,Whitsunday,177,"Grimstone Point Northern Beach Western Side, Airlie Beach",,,11668,-20.18235685,148.6744702,2018
+MWI,,,Whitsunday,177,"Grimstone Point Northern Beach Western Side, Airlie Beach",,,15989,-20.19134917,148.6737514,2019
+MWI,,,Whitsunday,177,"Grimstone Point Northern Beach Western Side, Airlie Beach",,,15990,-20.18517141,148.6764121,2019
+MWI,,,Whitsunday,356,Cane Cockies Beach,,,1579,-20.28087076,148.7957696,2011
+MWI,,,Whitsunday,356,Cane Cockies Beach,,,1591,-20.28106725,148.7956299,2011
+MWI,,,Whitsunday,359,Shute Harbour,,,1593,-20.28902613,148.7875472,2011
+MWI,,,Whitsunday,359,Shute Harbour,,,9833,-20.28800141,148.7882549,2018
+MWI,,,Whitsunday,4745,Whitsunday Drive barge banks,,,1602,-20.29150337,148.7843871,2011
+MWI,,,Central,454,Conway Beach,,,2014,-20.479,148.74,2012
+MWI,,,Central,454,Conway Beach,,,21027.6,-20.47406018,148.7485678,2019
+MWI,,,North,391,"Gloucester Island, Eastern Side",,,2608,-20.0221,148.473,2013
+MWI,,,North,391,"Gloucester Island, Eastern Side",,,10185,-20.00399969,148.4757614,2018
+MWI,,,North,641,Grays Bay,,,2678,-19.98589302,148.2537898,2013
+MWI,,,North,4149,"Horseshoe Bay Beach, Bowen",,,2695,-19.9795,148.2612459,2013
+MWI,,,Whitsunday,658,Maher Island,,,2722,-20.4308,149.083,2013
+MWI,,,Central,657,Cape Hillsborough Beach,,,2726,-20.92104402,149.0467879,2013
+MWI,,,Whitsunday,836,Airlie Beach,,,3274,-20.26839699,148.7202501,2013
+MWI,,,Whitsunday,836,Airlie Beach,,,11577,-20.26838189,148.7205935,2018
+MWI,,,Central,843,Midge Point,,,3301,-20.63984674,148.7271472,2013
+MWI,,,South,996,"Douglas Island, The Percy Group",,,3837,-21.6773,149.781,1998
+MWI,,,South,996,"Douglas Island, The Percy Group",,,3836,-21.6773,149.781,1998
+MWI,,,Central,1123,"Dinghy Bay, Brampton Island",,,4362,-20.81542022,149.2785329,2014
+MWI,,,Whitsunday,1274,"Coral Beach, Airlie Beach",,,4993,-20.27718411,148.7904469,2015
+MWI,,,Whitsunday,1453,"Haselwood Island, Southern End",,,5614,-20.30051957,149.0879273,2014
+MWI,,,Whitsunday,1453,"Haselwood Island, Southern End",,,18208,-20.3006051,149.0782177,2019
+MWI,,,Whitsunday,550,"Driftwood Bay, Hamilton Island",,,5623,-20.35665123,148.9631287,2013
+MWI,,,Whitsunday,550,"Driftwood Bay, Hamilton Island",,,5626,-20.3567167,148.9629052,2014
+MWI,,,Whitsunday,1539,Pine Island,,,5889,-20.37035044,148.8828037,2015
+MWI,,,Whitsunday,1621,"Bottletop Beach, Hook Island",,,6242,-20.15375234,148.9462103,2016
+MWI,,,Whitsunday,1622,Deloraine Island,,,6243,-20.15595981,149.0714626,2016
+MWI,,,Whitsunday,1623,Gumbrell Island,,,6244,-20.0986,148.608,2016
+MWI,,,Whitsunday,1623,Gumbrell Island,,,7700,-20.0986,148.608,2016
+MWI,,,Whitsunday,1623,Gumbrell Island,,,12564,-20.09859161,148.6060792,2018
+MWI,,,Whitsunday,216,"Pine Bay, South Molle Island",,,6257,-20.2817,148.833,2016
+MWI,,,Whitsunday,216,"Pine Bay, South Molle Island",,,14819,-20.28161112,148.8324523,2019
+MWI,,,Whitsunday,392,"South East Bay, Long Island",,,6258,-20.38921309,148.8725112,2016
+MWI,,,Whitsunday,392,"South East Bay, Long Island",,,17335,-20.38816861,148.8724923,2019
+MWI,,,Central,1708,McEwens Beach,,,6619,-21.2503,149.207,2016
+MWI,,,Central,1708,McEwens Beach,,,6682,-21.2503,149.207,2016
+MWI,,,Central,1708,McEwens Beach,,,6968,-21.2503,149.207,2016
+MWI,,,Central,1708,McEwens Beach,,,7141,-21.2503,149.207,2016
+MWI,,,Central,1708,McEwens Beach,,,7306,-21.2503,149.207,2016
+MWI,,,Central,1708,McEwens Beach,,,10749,-21.24764228,149.2079616,2018
+MWI,,,Whitsunday,1613,"Whitsunday Island, South of Hook Pass",,,6713,-20.18868975,148.9592804,2016
+MWI,,,Central,1682,"Harbour Beach, Mackay",,,6883,-21.11867217,149.2230248,2016
+MWI,,,Central,1682,"Harbour Beach, Mackay",,,7154,-21.12011335,149.2225099,2016
+MWI,,,Central,1682,"Harbour Beach, Mackay",,,8390,-21.11937275,149.2228746,2017
+MWI,,,Central,1682,"Harbour Beach, Mackay",,,10751,-21.11765133,149.223175,2018
+MWI,,,Central,1682,"Harbour Beach, Mackay",,,10888,-21.12246525,149.2217213,2018
+MWI,,,Central,1682,"Harbour Beach, Mackay",,,13225,-21.11861485,149.222582,2018
+MWI,,,Central,1682,"Harbour Beach, Mackay",,,13771,-21.11849202,149.2224562,2019
+MWI,,,Central,1682,"Harbour Beach, Mackay",,,16395,-21.11891237,149.2233628,2019
+MWI,,,Central,1682,"Harbour Beach, Mackay",,,18427,-21.12723553,149.2209968,2019
+MWI,,,Central,1682,"Harbour Beach, Mackay",,,19272,-21.12680818,149.2209007,2019
+MWI,,,Whitsunday,650,Double Cone Island,,,7699,-20.1028,148.718,2016
+MWI,,,Whitsunday,2208,"Pigs Head Bay, Thomas Island",,,8008,-20.54403908,149.1103506,2017
+MWI,,,Whitsunday,2188,"Naked Lady Beach, Thomas Island",,,8009,-20.54674659,149.1069174,2017
+MWI,,,Whitsunday,2191,"East Beach, Thomas Island",,,8010,-20.54099495,149.1120243,2017
+MWI,,,South,2206,"North Beach, Digby Island",,,8041,-21.49537112,149.9126959,2017
+MWI,,,Whitsunday,2190,"Gap Beach, Lindeman Island",,,8086,-20.43894666,149.0419757,2017
+MWI,,,Whitsunday,2187,Grimstone Point Central Beach Western Side,,,8112,-20.20017987,148.6649537,2017
+MWI,,,Whitsunday,2187,Grimstone Point Central Beach Western Side,,,11779,-20.19972173,148.6662412,2018
+MWI,,,Whitsunday,2186,"Homestead Bay, Cid Island, Whitsundays",,,8117,-20.26711879,148.9090991,2017
+MWI,,,Whitsunday,2201,"NW Beach, Macona Inlet, Hook Island",,,8333,-20.1403489,148.9236957,2017
+MWI,,,Whitsunday,1491,"South Bay, Thomas Island",,,8579,-20.54985536,149.1108895,2017
+MWI,,,Central,2130,"Silversmith Island, Whitsundays",,,8590,-20.58761463,149.1098571,2017
+MWI,,,Whitsunday,697,Border Island Whitsundays,,,9995,-20.16437569,149.0375876,2018
+MWI,,,Whitsunday,697,Border Island Whitsundays,,,12560,-20.17810218,149.0409136,2018
+MWI,,,Whitsunday,697,Border Island Whitsundays,,,13646,-20.15923424,149.0402645,2018
+MWI,,,Whitsunday,1493,Dumbell Island,,,9996,-20.17478397,149.0082014,2018
+MWI,,,Whitsunday,1469,"South End of Runway, Hamilton Island",,,10087,-20.36493082,148.9553779,2018
+MWI,,,Whitsunday,1469,"South End of Runway, Hamilton Island",,,12305,-20.36481515,148.9553297,2018
+MWI,,,Whitsunday,1726,Long Island Sound,,,10183,-20.35106492,148.8396835,2018
+MWI,,,Proserpine,2336,"Urban Surrounds, Airlie Beach",,,10269,-20.2686486,148.7214625,2018
+MWI,,,Proserpine,2336,"Urban Surrounds, Airlie Beach",,,10702,-20.2768912,148.7259418,2018
+MWI,,,Proserpine,2336,"Urban Surrounds, Airlie Beach",,,11123,-20.26729076,148.7150351,2018
+MWI,,,Proserpine,2336,"Urban Surrounds, Airlie Beach",,,11266,-20.26982111,148.7095642,2018
+MWI,,,Proserpine,2336,"Urban Surrounds, Airlie Beach",,,12105,-20.2698362,148.70803,2018
+MWI,,,Proserpine,2336,"Urban Surrounds, Airlie Beach",,,12550,-20.26653504,148.7155133,2018
+MWI,,,Proserpine,2336,"Urban Surrounds, Airlie Beach",,,13660,-20.27743465,148.7277818,2019
+MWI,,,Central,2357,Illawong Beach,,,10747,-21.17112611,149.1958809,2018
+MWI,,,Central,2357,Illawong Beach,,,13483,-21.17462272,149.1949153,2018
+MWI,,,Central,395,"Town Beach, Mackay",,,10748,-21.1508602,149.2064595,2018
+MWI,,,Central,395,"Town Beach, Mackay",,,14700,-21.15154061,149.2053008,2019
+MWI,,,Central,1944,"Half Tide Beach, Hay Point",,,10755,-21.29745146,149.2935562,2018
+MWI,,,Central,1944,"Half Tide Beach, Hay Point",,,13478,-21.2963019,149.2931646,2018
+MWI,,,Central,1944,"Half Tide Beach, Hay Point",,,14745,-21.29948066,149.2938781,2019
+MWI,,,Central,1944,"Half Tide Beach, Hay Point",,,14848,-21.29761139,149.2933846,2019
+MWI,,,Central,1944,"Half Tide Beach, Hay Point",,,17080,-21.29754642,149.2929608,2019
+MWI,,,Central,1944,"Half Tide Beach, Hay Point",,,18349.4,-21.29699875,149.2928891,2019
+MWI,,,Central,1944,"Half Tide Beach, Hay Point",,,19251.6,-21.29783895,149.2928915,2019
+MWI,,,Central,1924,Hay Point,,,10756,-21.30984614,149.2937279,2018
+MWI,,,Central,1924,Hay Point,,,13662,-21.32311929,149.2948437,2018
+MWI,,,Whitsunday,1485,Genesta Bay,,,10757,-20.48226066,148.8873196,2018
+MWI,,,Whitsunday,176,"Turtle Bay, Whitsunday Island",,,10758,-20.3020088,148.9892864,2018
+MWI,,,Whitsunday,176,"Turtle Bay, Whitsunday Island",,,13482,-20.30197358,148.9892864,2018
+MWI,,,Whitsunday,176,"Turtle Bay, Whitsunday Island",,,17657,-20.30151071,148.9889807,2019
+MWI,,,Central,2345,"Pebbly Bay, Brampton Island",,,12004,-20.80842935,149.2586446,2018
+MWI,,,Central,2345,"Pebbly Bay, Brampton Island",,,10762,-20.80836422,149.2588247,2018
+MWI,,,Whitsunday,1494,Armit Island,,,10849,-20.10533602,148.6500949,2018
+MWI,,,South,1198,"Avoid Island, The Percy Group",,,10853,-21.97601632,149.6629608,2018
+MWI,,,South,1198,"Avoid Island, The Percy Group",,,13347,-21.97551885,149.6639264,2018
+MWI,,,Central,1178,Bucasia Beach,,,10887,-21.02218137,149.1591454,2018
+MWI,,,Central,1178,Bucasia Beach,,,11595,-21.03259133,149.1645312,2018
+MWI,,,Central,1178,Bucasia Beach,,,16819,-21.03144972,149.163571,2019
+MWI,,,Central,2380,Blacks Beach,,,10949,-21.05540157,149.1943145,2018
+MWI,,,Central,2380,Blacks Beach,,,11597,-21.06022752,149.1962832,2018
+MWI,,,Central,2380,Blacks Beach,,,12484,-21.05859553,149.1955537,2018
+MWI,,,Central,2380,Blacks Beach,,,14843,-21.06528359,149.1999149,2019
+MWI,,,Proserpine,2410,"Urban Surrounds, Jubilee Pocket",,,10971,-20.28274893,148.7311429,2018
+MWI,,,Whitsunday,1617,"Grassy Island, South Bay",,,11010,-20.14903764,148.6041567,2018
+MWI,,,Central,2474,Eimio Beach,,,11596,-21.0338581,149.1781354,2018
+MWI,,,Central,2474,Eimio Beach,,,13480,-21.03418856,149.178527,2018
+MWI,,,Central,2474,Eimio Beach,,,13993,-21.03424864,149.1786075,2019
+MWI,,,Central,2473,"Penrith Island, South Cumberland Islands National Park",,,11626,-21.0161724,149.9017954,2018
+MWI,,,Central,2131,"Goldsmith Island, Whitsundays",,,11651,-20.68193541,149.1500473,2018
+MWI,,,Central,2131,"Goldsmith Island, Whitsundays",,,17654,-20.68324027,149.155401,2019
+MWI,,,Central,1114,"Far Beach, Mackay",,,11778,-21.16606365,149.197399,2018
+MWI,,,Whitsunday,2538,Woodwark Bay Eastern Beach,,,11825,-20.19599617,148.645792,2018
+MWI,,,Central,2549,Hay Point Harbour Beach,,,11917,-21.27604817,149.2962438,2018
+MWI,,,Central,2549,Hay Point Harbour Beach,,,11966,-21.28519568,149.2941731,2018
+MWI,,,Central,2549,Hay Point Harbour Beach,,,13224,-21.29084886,149.2939103,2018
+MWI,,,Whitsunday,615,"Neck Bay East, Shaw Island",,,12759,-20.45796182,149.08499,2018
+MWI,,,Central,2728,"Lamberts Beach, Mackay",,,13227,-21.07349171,149.2285278,2018
+MWI,,,Central,2728,"Lamberts Beach, Mackay",,,13661,-21.07293745,149.2285502,2018
+MWI,,,Central,2728,"Lamberts Beach, Mackay",,,14675,-21.07423892,149.2283303,2019
+MWI,,,Whitsunday,1452,Maher Island East,,,13479,-20.42571079,149.0887374,2018
+MWI,,,Whitsunday,2749,Grimston Point East,,,13555,-20.19913773,148.669095,2018
+MWI,,,Whitsunday,2777,"Eagle Bay, Shaw Island",,,13556,-20.4902607,149.0806103,2018
+MWI,,,Whitsunday,1489,"Billbob Bay, Shaw Island",,,13558,-20.51569747,149.0635296,2018
+MWI,,,Whitsunday,1489,"Billbob Bay, Shaw Island",,,17679,-20.51566669,149.0633604,2019
+MWI,,,Whitsunday,2774,"Double Bay East (central), Dryander NP",,,13648,-20.21850927,148.6124897,2018
+MWI,,,Whitsunday,1482,"Solace Bay, Whitsunday Island",,,14330,-20.29768761,149.0540175,2019
+MWI,,,Whitsunday,1486,Georges Point,,,14351,-20.08283781,148.5627615,2019
+MWI,,,Whitsunday,1486,Georges Point,,,19249,-20.08487325,148.5601759,2019
+MWI,,,Whitsunday,614,Cannonvale Beach,,,14774,-20.27305678,148.6970007,2019
+MWI,,,Whitsunday,660,Pandanus Bay Long Island,,,14817,-20.33552781,148.8535613,2019
+MWI,,,Whitsunday,2956,"Hook Island, East",,,15015,-20.14253468,148.9441663,2019
+MWI,,,Whitsunday,1459,Mackerel Bay Hook Island,,,15016,-20.07218957,148.9574771,2019
+MWI,,,Whitsunday,1459,Mackerel Bay Hook Island,,,18508,-20.07070524,148.9574003,2019
+MWI,,,Whitsunday,2954,"Solway Circuit, Whitsunday Islands National Park",,,15018,-20.30224023,149.0495771,2019
+MWI,,,Whitsunday,2954,"Solway Circuit, Whitsunday Islands National Park",,,18197,-20.30199874,149.0497702,2019
+MWI,,,Whitsunday,2953,"Shute Harbour, Slipway",,,15028,-20.29129205,148.786152,2019
+MWI,,,Central,2968,Grass Tree Beach,,,15110,-21.35833529,149.309864,2019
+MWI,,,Central,2986,"Keswick Island, Runway.",,,15227,-20.91931959,149.4223988,2019
+MWI,,,Central,2988,"Keswick Island, Basil Bay",,,15228,-20.91979061,149.4162512,2019
+MWI,,,Whitsunday,390,"Coral Seas Boardwalk, Airlie Beach",,,15984,-20.26386789,148.7146175,2019
+MWI,,,Whitsunday,3120,"Shingley Beach, Airlie Beach",,,15987,-20.26948395,148.7100255,2019
+MWI,,,Whitsunday,3122,"Thomas Island, North East Beach",,,15988,-20.54316001,149.119277,2019
+MWI,,,Whitsunday,3122,"Thomas Island, North East Beach",,,16556,-20.54324038,149.1191268,2019
+MWI,,,Whitsunday,3122,"Thomas Island, North East Beach",,,17680,-20.54328056,149.1190678,2019
+MWI,,,Whitsunday,3121,"Grimstone Point, North Coast Eastern Side",,,16149,-20.18559938,148.6772704,2019
+MWI,,,Whitsunday,2200,"Whitehaven Beach, Whitsunday Island",,,16315,-20.25780876,149.026258,2019
+MWI,,,Whitsunday,2200,"Whitehaven Beach, Whitsunday Island",,,16379,-20.26058673,149.0275025,2019
+MWI,,,Whitsunday,3248,"Blue Pearl Bay, Hayman Island, Whitsundays",,,16425,-20.0477576,148.8819085,2019
+MWI,,,Whitsunday,3248,"Blue Pearl Bay, Hayman Island, Whitsundays",,,17824,-20.04168001,148.8826632,2019
+MWI,,,Whitsunday,3210,"Crayfish Bay North, Hook Island",,,17336,-20.08369431,148.948608,2019
+MWI,,,Central,3209,"Solder Reef, Tinsmith Island",,,17346,-20.6958617,149.20551,2019
+MWI,,,Central,2129,"Blacksmith Island, Whitsundays",,,17769,-20.6441348,149.0734059,2019
+MWI,,,Whitsunday,3249,"Blue Pearl Bay, Hayman Island UW",,,17823,-20.04222429,148.8815689,2019
+MWI,,,North,1652,Gordon Beach,,,18319,-20.04577209,148.2299638,2019
+MWI,,,South,3302,Clairview Beach North,,,18321,-22.10516382,149.5274878,2019
+MWI,,,Whitsunday,3553,"Turtle Bay, South Molle Island",,,18580,-20.26612671,148.845093,2019
+MWI,,,Whitsunday,3399,"Dryander National Park, Pioneer Bay",,,19306,-20.24962051,148.6798346,2019
+MWI,,,Proserpine,3238,"Wilson Beach, Conway",,,18488.8,-20.47286912,148.7244247,2019
+MWI,,,Proserpine,3238,"Wilson Beach, Conway",,,19234.6,-20.47286711,148.7243925,2019
+MWI,,,Central,3241,"Louisa Creek Beach, Hay Point",,,18446.2,-21.276798,149.2712146,2019
+MWI,,,Central,3241,"Louisa Creek Beach, Hay Point",,,19241.5,-21.27640808,149.2707454,2019
+MWI,,,North,3242,"Queens Beach, Bowen",,,18336.5,-19.97774009,148.232249,2019
+MWI,,,North,3242,"Queens Beach, Bowen",,,19048,-19.97789437,148.2323864,2019
+MWI,,,Don,3324,"Don River Mouth, Bowen",,,18383,-19.9662763,148.2255019,2019
+MWI,,,Don,3324,"Don River Mouth, Bowen",,,19266.5,-19.96614361,148.2256155,2019
+MWI,,,Pioneer,3396,"Pioneer River, Glenella Connection Road North Mackay",,,19260,-21.14319435,149.1500398,2019
+MWI,,,Whitsunday,176,"Turtle Bay, Whitsunday Island",,,1074,-20.30391709,148.985171,2010
+MWI,,,Whitsunday,176,"Turtle Bay, Whitsunday Island",,,2866,-20.30514387,148.9846715,2013
+MWI,,,Whitsunday,176,"Turtle Bay, Whitsunday Island",,,4331,-20.30313641,148.9877395,2013
+MWI,,,Whitsunday,176,"Turtle Bay, Whitsunday Island",,,4338,-20.30315872,148.9874066,2013
+MWI,,,Whitsunday,176,"Turtle Bay, Whitsunday Island",,,5689,-20.30347099,148.9867644,2013
+MWI,,,Whitsunday,176,"Turtle Bay, Whitsunday Island",,,5669,-20.30456394,148.9847191,2013
+MWI,,,Whitsunday,176,"Turtle Bay, Whitsunday Island",,,5639,-20.30431858,148.984838,2014
+MWI,,,Whitsunday,176,"Turtle Bay, Whitsunday Island",,,5688,-20.30335946,148.9870974,2014
+MWI,,,Whitsunday,176,"Turtle Bay, Whitsunday Island",,,6346,-20.30407323,148.9850045,2016
+MWI,,,Whitsunday,176,"Turtle Bay, Whitsunday Island",,,6712,-20.30478699,148.9845526,2016
+MWI,,,Whitsunday,177,"Grimstone Point Northern Beach Western Side, Airlie Beach",,,1175,-20.1822,148.674,2010
+MWI,,,Whitsunday,177,"Grimstone Point Northern Beach Western Side, Airlie Beach",,,4336,-20.1822,148.674,2013
+MWI,,,Whitsunday,177,"Grimstone Point Northern Beach Western Side, Airlie Beach",,,4339,-20.1822,148.674,2013
+MWI,,,Whitsunday,177,"Grimstone Point Northern Beach Western Side, Airlie Beach",,,5624,-20.1822,148.674,2013
+MWI,,,Whitsunday,177,"Grimstone Point Northern Beach Western Side, Airlie Beach",,,5547,-20.1822,148.674,2014
+MWI,,,Whitsunday,177,"Grimstone Point Northern Beach Western Side, Airlie Beach",,,5548,-20.1822,148.674,2014
+MWI,,,Whitsunday,177,"Grimstone Point Northern Beach Western Side, Airlie Beach",,,5625,-20.1822,148.674,2014
+MWI,,,Whitsunday,177,"Grimstone Point Northern Beach Western Side, Airlie Beach",,,5549,-20.1822,148.674,2014
+MWI,,,Whitsunday,177,"Grimstone Point Northern Beach Western Side, Airlie Beach",,,5546,-20.18131459,148.6738694,2015
+MWI,,,Whitsunday,177,"Grimstone Point Northern Beach Western Side, Airlie Beach",,,6210,-20.1822,148.674,2016
+MWI,,,Whitsunday,177,"Grimstone Point Northern Beach Western Side, Airlie Beach",,,6684,-20.1822,148.674,2016
+MWI,,,Whitsunday,177,"Grimstone Point Northern Beach Western Side, Airlie Beach",,,7109,-20.1822,148.674,2016
+MWI,,,Whitsunday,216,"Pine Bay, South Molle Island",,,6268,-20.2817,148.833,2016
+MWI,,,Whitsunday,216,"Pine Bay, South Molle Island",,,7057,-20.2817,148.833,2016
+MWI,,,Whitsunday,216,"Pine Bay, South Molle Island",,,7748,-20.2817,148.833,2016
+MWI,,,Whitsunday,358,"Double Bay Hut, Dryander NP",,,7706,-20.16978193,148.5859337,2016
+MWI,,,Whitsunday,359,Shute Harbour,,,6679,-20.2897793,148.7874075,2016
+MWI,,,Whitsunday,359,Shute Harbour,,,7058,-20.28960902,148.7874354,2016
+MWI,,,Whitsunday,359,Shute Harbour,,,7749,-20.28929466,148.7874773,2017
+MWI,,,Whitsunday,390,"Coral Seas Boardwalk, Airlie Beach",,,1658,-20.26389808,148.7147301,2011
+MWI,,,North,391,"Gloucester Island, Eastern Side",,,1668,-20.0221,148.473,2011
+MWI,,,North,391,"Gloucester Island, Eastern Side",,,6975,-20.0221,148.473,2016
+MWI,,,Whitsunday,392,"South East Bay, Long Island",,,1723,-20.387171,148.8728185,2011
+MWI,,,Whitsunday,392,"South East Bay, Long Island",,,5634,-20.39015558,148.8731397,2013
+MWI,,,Whitsunday,392,"South East Bay, Long Island",,,5610,-20.38740663,148.8726369,2014
+MWI,,,Whitsunday,392,"South East Bay, Long Island",,,5617,-20.38768153,148.8725112,2014
+MWI,,,Whitsunday,392,"South East Bay, Long Island",,,5619,-20.38790406,148.8724414,2014
+MWI,,,Whitsunday,392,"South East Bay, Long Island",,,5911,-20.38875493,148.8724693,2015
+MWI,,,Central,395,"Town Beach, Mackay",,,1740,-21.15599823,149.2019749,2011
+MWI,,,Central,395,"Town Beach, Mackay",,,6501,-21.15887985,149.2010307,2016
+MWI,,,Whitsunday,453,Bluff Point,,,2004,-20.2356,148.758,2012
+MWI,,,Whitsunday,453,Bluff Point,,,6678,-20.2356,148.758,2016
+MWI,,,Whitsunday,550,"Driftwood Bay, Hamilton Island",,,2379,-20.35718804,148.9617321,2012
+MWI,,,Whitsunday,550,"Driftwood Bay, Hamilton Island",,,4326,-20.3567167,148.9626818,2013
+MWI,,,Whitsunday,550,"Driftwood Bay, Hamilton Island",,,4318,-20.3569,148.9619835,2013
+MWI,,,Whitsunday,550,"Driftwood Bay, Hamilton Island",,,5632,-20.35679526,148.9625701,2014
+MWI,,,Whitsunday,550,"Driftwood Bay, Hamilton Island",,,5633,-20.35682144,148.962207,2014
+MWI,,,Whitsunday,550,"Driftwood Bay, Hamilton Island",,,6032,-20.35823547,148.9615646,2015
+MWI,,,Whitsunday,614,Cannonvale Beach,,,2614,-20.27274479,148.6962605,2013
+MWI,,,Whitsunday,614,Cannonvale Beach,,,16316,-20.27262402,148.6961424,2019
+MWI,,,Whitsunday,615,"Neck Bay East, Shaw Island",,,5569,-20.45943544,149.0848135,2012
+MWI,,,Whitsunday,615,"Neck Bay East, Shaw Island",,,2616,-20.45859415,149.0848519,2013
+MWI,,,Whitsunday,615,"Neck Bay East, Shaw Island",,,5583,-20.45883077,149.0848465,2013
+MWI,,,Whitsunday,615,"Neck Bay East, Shaw Island",,,5586,-20.45826271,149.0849156,2014
+MWI,,,Whitsunday,615,"Neck Bay East, Shaw Island",,,5585,-20.45923344,149.0848542,2014
+MWI,,,Whitsunday,615,"Neck Bay East, Shaw Island",,,5584,-20.45903929,149.0848388,2014
+MWI,,,Whitsunday,650,Double Cone Island,,,1917,-20.1028,148.718,2011
+MWI,,,Whitsunday,650,Double Cone Island,,,5691,-20.1028,148.718,2012
+MWI,,,Whitsunday,658,Maher Island,,,6344,-20.4308,149.083,2016
+MWI,,,Whitsunday,658,Maher Island,,,7696,-20.4308,149.083,2016
+MWI,,,Whitsunday,660,Pandanus Bay Long Island,,,2709,-20.33925479,148.8511621,2013
+MWI,,,Whitsunday,660,Pandanus Bay Long Island,,,5890,-20.33990951,148.8507431,2015
+MWI,,,Whitsunday,697,Border Island Whitsundays,,,2878,-20.16289278,149.0282793,2013
+MWI,,,Whitsunday,697,Border Island Whitsundays,,,4328,-20.16247327,149.0244808,2013
+MWI,,,Whitsunday,697,Border Island Whitsundays,,,4319,-20.16346961,149.0288938,2013
+MWI,,,Whitsunday,697,Border Island Whitsundays,,,5603,-20.16289278,149.0262125,2013
+MWI,,,Whitsunday,697,Border Island Whitsundays,,,5602,-20.16252572,149.0254304,2014
+MWI,,,Whitsunday,697,Border Island Whitsundays,,,6199,-20.16336472,149.0280559,2016
+MWI,,,Whitsunday,836,Airlie Beach,,,3299,-20.26839699,148.7202501,2013
+MWI,,,Whitsunday,836,Airlie Beach,,,5529,-20.26831647,148.7201643,2015
+MWI,,,Whitsunday,836,Airlie Beach,,,5680,-20.26839699,148.7204647,2015
+MWI,,,Whitsunday,836,Airlie Beach,,,6677,-20.2682,148.72,2016
+MWI,,,Central,1000,"Oyster Bay, Brampton Island",,,3865,-20.81637647,149.2737765,2014
+MWI,,,Central,1114,"Far Beach, Mackay",,,4298,-21.16816469,149.1968036,2014
+MWI,,,Central,1123,"Dinghy Bay, Brampton Island",,,4897,-20.81507301,149.2788219,2015
+MWI,,,Central,1123,"Dinghy Bay, Brampton Island",,,8374,-20.8148801,149.2791521,2017
+MWI,,,Central,1178,Bucasia Beach,,,4595,-21.0341,149.166,2014
+MWI,,,South,1198,"Avoid Island, The Percy Group",,,4643,-21.9786,149.666,2014
+MWI,,,South,1198,"Avoid Island, The Percy Group",,,8603,-21.9786,149.666,2017
+MWI,,,Whitsunday,1452,Maher Island East,,,5587,-20.4258,149.089,2013
+MWI,,,Whitsunday,1453,"Haselwood Island, Southern End",,,5611,-20.30518846,149.0843225,2014
+MWI,,,Whitsunday,1453,"Haselwood Island, Southern End",,,5618,-20.30057994,149.0878844,2014
+MWI,,,Whitsunday,1453,"Haselwood Island, Southern End",,,5631,-20.30101263,149.0879059,2015
+MWI,,,Whitsunday,1453,"Haselwood Island, Southern End",,,6676,-20.30045919,149.0880239,2016
+MWI,,,Central,1454,Cape Conway,,,5622,-20.52332219,148.8834938,2014
+MWI,,,Central,1454,Cape Conway,,,5910,-20.52332219,148.8832829,2015
+MWI,,,Central,1454,Cape Conway,,,7771,-20.52334438,148.8837545,2016
+MWI,,,Whitsunday,1459,Mackerel Bay Hook Island,,,5640,-20.06913167,148.9603579,2014
+MWI,,,Whitsunday,1459,Mackerel Bay Hook Island,,,6685,-20.06916332,148.9611058,2016
+MWI,,,Whitsunday,1469,"South End of Runway, Hamilton Island",,,5668,-20.36461197,148.9565027,2013
+MWI,,,Whitsunday,1469,"South End of Runway, Hamilton Island",,,6259,-20.36463816,148.9559162,2016
+MWI,,,Whitsunday,1469,"South End of Runway, Hamilton Island",,,6980,-20.36482145,148.9552179,2016
+MWI,,,Whitsunday,1485,Genesta Bay,,,5830,-20.48153702,148.8873196,2015
+MWI,,,Whitsunday,1485,Genesta Bay,,,6668,-20.4799,148.888,2016
+MWI,,,Whitsunday,1486,Georges Point,,,6204,-20.09482837,148.5528803,2016
+MWI,,,Whitsunday,1486,Georges Point,,,6211,-20.09456641,148.5532236,2016
+MWI,,,Whitsunday,1486,Georges Point,,,6675,-20.09460671,148.5529447,2016
+MWI,,,Whitsunday,1486,Georges Point,,,7399,-20.09464701,148.5527945,2016
+MWI,,,Whitsunday,1489,"Billbob Bay, Shaw Island",,,6670,-20.51677617,149.0657639,2016
+MWI,,,Whitsunday,1489,"Billbob Bay, Shaw Island",,,6613,-20.51617686,149.0639975,2016
+MWI,,,Whitsunday,1489,"Billbob Bay, Shaw Island",,,6641,-20.51636611,149.06507,2016
+MWI,,,Whitsunday,1489,"Billbob Bay, Shaw Island",,,7705,-20.51571423,149.0641027,2016
+MWI,,,Whitsunday,1494,Armit Island,,,6674,-20.10626213,148.6500339,2016
+MWI,,,Whitsunday,1494,Armit Island,,,7707,-20.10673421,148.6517097,2016
+MWI,,,Whitsunday,1613,"Whitsunday Island, South of Hook Pass",,,6224,-20.18724579,148.9600935,2016
+MWI,,,Whitsunday,1613,"Whitsunday Island, South of Hook Pass",,,6260,-20.18901218,148.9588318,2016
+MWI,,,Whitsunday,1613,"Whitsunday Island, South of Hook Pass",,,6714,-20.18822712,148.9596589,2016
+MWI,,,Whitsunday,1613,"Whitsunday Island, South of Hook Pass",,,6979,-20.18763832,148.9600094,2016
+MWI,,,Whitsunday,1613,"Whitsunday Island, South of Hook Pass",,,7400,-20.18664298,148.9600514,2016
+MWI,,,Whitsunday,1613,"Whitsunday Island, South of Hook Pass",,,9269,-20.18943275,148.9586075,2017
+MWI,,,Whitsunday,1617,"Grassy Island, South Bay",,,6229,-20.1495,148.6034693,2016
+MWI,,,Whitsunday,1623,Gumbrell Island,,,6973,-20.0986,148.608,2016
+MWI,,,North,1652,Gordon Beach,,,6349,-20.0461,148.23,2016
+MWI,,,Central,1682,"Harbour Beach, Mackay",,,6884,-21.12053369,149.2223811,2016
+MWI,,,Central,1682,"Harbour Beach, Mackay",,,6522,-21.12033353,149.2225313,2016
+MWI,,,Central,1682,"Harbour Beach, Mackay",,,6886,-21.11911253,149.2229176,2016
+MWI,,,Central,1682,"Harbour Beach, Mackay",,,6885,-21.11923263,149.2229176,2016
+MWI,,,Central,1682,"Harbour Beach, Mackay",,,7585,-21.12053369,149.2225528,2016
+MWI,,,Central,1708,McEwens Beach,,,6969,-21.2503,149.207,2016
+MWI,,,Whitsunday,1714,Pentecost Island,,,6618,-20.4036,149.033,2016
+MWI,,,Whitsunday,1726,Long Island Sound,,,6671,-20.36338398,148.837609,2016
+MWI,,,Central,1924,Hay Point,,,7753,-21.3044,149.294,2017
+MWI,,,Central,1944,"Half Tide Beach, Hay Point",,,7873,-21.29767137,149.2939693,2017
+MWI,,,Central,2128,"Ingot Island, Whitsundays",,,8580,-20.71308837,149.1388893,2017
+MWI,,,Central,2129,"Blacksmith Island, Whitsundays",,,8589,-20.64326635,149.0729928,2017
+MWI,,,Central,2131,"Goldsmith Island, Whitsundays",,,8591,-20.67714749,149.1499186,2017
+MWI,,,Whitsunday,2200,"Whitehaven Beach, Whitsunday Island",,,8334,-20.28039341,149.0374804,2017
+MWI,,,Central,2207,"Western Bay, Brampton Island",,,8372,-20.81179907,149.2669809,2017
+MWI,,,Proserpine,2336,"Urban Surrounds, Airlie Beach",,,7467,-20.26859828,148.7170315,2016
+MWI,,,Proserpine,2336,"Urban Surrounds, Airlie Beach",,,8025,-20.26908137,148.7182331,2017
+MWI,,,Central,2472,"Brampton Island, Multiple Sites",,,11625,-20.80795297,149.2712402,2018
+MWI,,,Central,2968,Grass Tree Beach,,,7876,-21.36537787,149.3078319,2017
+MWI,,,Whitsunday,3119,"Hill Inlet, Eastern Shore, Whitsunday Island",,,16317,-20.25754707,149.0249974,2019
+MWI,,,Whitsunday,3119,"Hill Inlet, Eastern Shore, Whitsunday Island",,,16318,-20.25825163,149.0250885,2019
+MWI,,,Whitsunday,3125,Black Island,,,16408,-20.08172939,148.8917828,2019
+MWI,,,Central,3241,"Louisa Creek Beach, Hay Point",,,7874,-21.2764,149.271,2017
+MWI,,,Whitsunday,3336,"Pine Bay East, South Molle Island",,,1248,-20.28153099,148.8355756,2010
+MWI,,,Whitsunday,3336,"Pine Bay East, South Molle Island",,,5690,-20.28074503,148.8366928,2013
+MWI,,,Whitsunday,3336,"Pine Bay East, South Molle Island",,,5608,-20.28108562,148.8359945,2014
+MWI,,,Whitsunday,3336,"Pine Bay East, South Molle Island",,,5616,-20.28092843,148.8362738,2014
+MWI,,,Whitsunday,3336,"Pine Bay East, South Molle Island",,,5620,-20.28084983,148.8364693,2014
+MWI,,,Whitsunday,3336,"Pine Bay East, South Molle Island",,,5909,-20.28032586,148.8380893,2015
+MWI,,,Whitsunday,3553,"Turtle Bay, South Molle Island",,,1733,-20.26589524,148.8451949,2011
+MWI,,,Whitsunday,3971,Small Island North of Grassy Island,,,7397,-20.13171294,148.606595,2016
+MWI,,,Whitsunday,3974,"Goat Island Beach, South Molle Island",,,1260,-20.27745332,148.8421062,2010
+MWI,,,Whitsunday,3974,"Goat Island Beach, South Molle Island",,,5609,-20.27749262,148.8424554,2014
+MWI,,,North,4149,"Horseshoe Bay Beach, Bowen",,,8131,-19.97936588,148.2611565,2016
+MWI,,,Whitsunday,4366,Lindeman Island Resort,,,7704,-20.45919839,149.0391027,2016
+MWI,,,Whitsunday,4366,Lindeman Island Resort,,,7708,-20.45910376,149.0393051,2016
+WT,,,North Zone,725,Cairns Esplanade Beach,,,2999,-16.9188,145.778,2013
+WT,,,North Zone,725,Cairns Esplanade Beach,,,10215,-16.91066905,145.7686615,2018
+WT,,,North Zone,725,Cairns Esplanade Beach,,,11589,-16.91858827,145.7766545,2018
+WT,,,North Zone,725,Cairns Esplanade Beach,,,11590,-16.91877303,145.779326,2018
+WT,,,North Zone,116,Low Isles,,,3001,-16.3841,145.56,2013
+WT,,,North Zone,116,Low Isles,,,3828,-16.3841,145.56,2013
+WT,,,North Zone,116,Low Isles,,,3829,-16.3841,145.56,2013
+WT,,,North Zone,116,Low Isles,,,3830,-16.3841,145.56,2013
+WT,,,North Zone,116,Low Isles,,,3831,-16.3841,145.56,2013
+WT,,,North Zone,116,Low Isles,,,3833,-16.3841,145.56,2013
+WT,,,North Zone,116,Low Isles,,,3832,-16.3841,145.56,2014
+WT,,,North Zone,116,Low Isles,,,4233,-16.3841,145.56,2014
+WT,,,North Zone,116,Low Isles,,,4232,-16.3841,145.56,2014
+WT,,,North Zone,116,Low Isles,,,4231,-16.38415657,145.5599793,2014
+WT,,,North Zone,116,Low Isles,,,4229,-16.3841,145.56,2014
+WT,,,North Zone,116,Low Isles,,,7636,-16.3841,145.56,2014
+WT,,,North Zone,116,Low Isles,,,7637,-16.3841,145.56,2014
+WT,,,North Zone,116,Low Isles,,,7638,-16.3841,145.56,2014
+WT,,,North Zone,116,Low Isles,,,7639,-16.3841,145.56,2014
+WT,,,North Zone,116,Low Isles,,,7640,-16.3841,145.56,2014
+WT,,,North Zone,116,Low Isles,,,7641,-16.3841,145.56,2014
+WT,,,North Zone,116,Low Isles,,,7642,-16.3841,145.56,2015
+WT,,,North Zone,116,Low Isles,,,7643,-16.3841,145.56,2015
+WT,,,North Zone,116,Low Isles,,,7644,-16.3841,145.56,2015
+WT,,,North Zone,116,Low Isles,,,7645,-16.3841,145.56,2015
+WT,,,North Zone,116,Low Isles,,,7646,-16.3841,145.56,2015
+WT,,,North Zone,116,Low Isles,,,7647,-16.3841,145.56,2015
+WT,,,North Zone,116,Low Isles,,,7654,-16.3841,145.56,2015
+WT,,,North Zone,116,Low Isles,,,7656,-16.3841,145.56,2015
+WT,,,North Zone,116,Low Isles,,,7658,-16.3841,145.56,2015
+WT,,,North Zone,116,Low Isles,,,7661,-16.3841,145.56,2016
+WT,,,North Zone,116,Low Isles,,,7663,-16.3841,145.56,2016
+WT,,,North Zone,589,"Giangurra Beach, Yarrabah",,,3196,-16.90209656,145.8161121,2013
+WT,,,North Zone,589,"Giangurra Beach, Yarrabah",,,11546,-16.90266225,145.8144093,2018
+WT,,,North Zone,589,"Giangurra Beach, Yarrabah",,,14371,-16.90255959,145.8150959,2019
+WT,,,North Zone,589,"Giangurra Beach, Yarrabah",,,14372,-16.9025288,145.814935,2019
+WT,,,North Zone,589,"Giangurra Beach, Yarrabah",,,18769,-16.90245694,145.8150584,2019
+WT,,,North Zone,589,"Giangurra Beach, Yarrabah",,,18801,-16.9019642,145.816834,2019
+WT,,,North Zone,589,"Giangurra Beach, Yarrabah",,,18802,-16.90259552,145.8146346,2019
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,3477,-16.5053908,145.4671688,2013
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,3479,-16.5053908,145.4671688,2013
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,3618,-16.5053908,145.4671688,2014
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,3624,-16.5053908,145.4671688,2014
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,3789,-16.5053908,145.4671688,2014
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,3910,-16.5053908,145.4671688,2014
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,4147,-16.5053908,145.4671688,2014
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,4148,-16.5053908,145.4671688,2014
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,4212,-16.5053908,145.4671688,2014
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,4304,-16.5053908,145.4671688,2014
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,4368,-16.5053908,145.4671688,2014
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,4417,-16.5053908,145.4671688,2014
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,4554,-16.5053908,145.4671688,2014
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,4728,-16.5053908,145.4671688,2014
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,4818,-16.5053908,145.4671688,2015
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,4894,-16.5053908,145.4671688,2015
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,4968,-16.5053908,145.4671688,2015
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,5226,-16.5053908,145.4671688,2015
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,5178,-16.5053908,145.4671688,2015
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,5327,-16.5053908,145.4671688,2015
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,5488,-16.5053908,145.4671688,2015
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,5472,-16.5053908,145.4671688,2015
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,5758,-16.5053908,145.4671688,2015
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,5845,-16.5053908,145.4671688,2015
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,5986,-16.5053908,145.4671688,2015
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,6131,-16.5053908,145.4671688,2015
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,6171,-16.50935507,145.4678731,2016
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,6359,-16.50687029,145.46731,2016
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,6983,-16.5053908,145.4671688,2016
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,7113,-16.5053908,145.4671688,2016
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,7258,-16.5053908,145.4671688,2016
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,7569,-16.5053908,145.4671688,2016
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,7608,-16.5053908,145.4671688,2016
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,7839,-16.5053908,145.4671688,2017
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,8079,-16.5053908,145.4671688,2017
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,8221,-16.5053908,145.4671688,2017
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,8488,-16.5053908,145.4671688,2017
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,8656,-16.5053908,145.4671688,2017
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,9225,-16.5053908,145.4671688,2017
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,9498,-16.5053908,145.4671688,2017
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,9556,-16.50100681,145.4670525,2017
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,10001,-16.50139772,145.4672241,2018
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,10241,-16.51032658,145.4679108,2018
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,11096,-16.50064162,145.4671812,2018
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,11127,-16.50366083,145.4669666,2018
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,11594,-16.50094509,145.4671276,2018
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,11834,-16.50269901,145.4671597,2018
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,12355,-16.50370198,145.4670686,2018
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,12353,-16.50929793,145.4676533,2018
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,12688,-16.50341395,145.4672241,2018
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,13567,-16.51369042,145.4691114,2018
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,14049,-16.51135664,145.4686736,2018
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,14014,-16.51185366,145.4687351,2018
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,14013,-16.51228944,145.468869,2018
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,14050,-16.51070386,145.4683968,2018
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,13896,-16.5020818,145.4671705,2019
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,14240,-16.50534786,145.4671168,2019
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,14443,-16.51045002,145.4680395,2019
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,15019,-16.51456456,145.4695415,2019
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,15493,-16.51249187,145.4685169,2019
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,15658,-16.51431769,145.4691821,2019
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,16206,-16.51213699,145.4685116,2019
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,17787,-16.50361968,145.467031,2019
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,17788,-16.5064794,145.4673314,2019
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,17833,-16.49913457,145.467208,2019
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,18189,-16.4995872,145.4672831,2019
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,18613,-16.50954922,145.468067,2019
+WT,,,North Zone,10,"Four Mile Beach, North End",,,3621,-16.4870368,145.468353,2013
+WT,,,North Zone,10,"Four Mile Beach, North End",,,3625,-16.4870368,145.468353,2014
+WT,,,North Zone,10,"Four Mile Beach, North End",,,3931,-16.4870368,145.468353,2014
+WT,,,North Zone,10,"Four Mile Beach, North End",,,4082,-16.4870368,145.468353,2014
+WT,,,North Zone,10,"Four Mile Beach, North End",,,4142,-16.4870368,145.468353,2014
+WT,,,North Zone,10,"Four Mile Beach, North End",,,5179,-16.4870368,145.468353,2015
+WT,,,North Zone,10,"Four Mile Beach, North End",,,5489,-16.4870368,145.468353,2015
+WT,,,North Zone,10,"Four Mile Beach, North End",,,8487,-16.4870368,145.468353,2017
+WT,,,North Zone,10,"Four Mile Beach, North End",,,9560,-16.48794192,145.4680824,2018
+WT,,,North Zone,10,"Four Mile Beach, North End",,,10723,-16.49287491,145.4679001,2018
+WT,,,North Zone,10,"Four Mile Beach, North End",,,11832,-16.49271534,145.4682541,2018
+WT,,,North Zone,10,"Four Mile Beach, North End",,,11925,-16.4866251,145.4686028,2018
+WT,,,North Zone,10,"Four Mile Beach, North End",,,12354,-16.49000973,145.4679483,2018
+WT,,,North Zone,10,"Four Mile Beach, North End",,,12352,-16.4913574,145.468002,2018
+WT,,,North Zone,10,"Four Mile Beach, North End",,,12689,-16.48868263,145.4683399,2018
+WT,,,North Zone,10,"Four Mile Beach, North End",,,13295,-16.4872274,145.4681136,2018
+WT,,,North Zone,10,"Four Mile Beach, North End",,,14029,-16.49469051,145.4675674,2018
+WT,,,North Zone,10,"Four Mile Beach, North End",,,14684,-16.48769502,145.4682541,2019
+WT,,,North Zone,10,"Four Mile Beach, North End",,,14241,-16.48656337,145.4684472,2019
+WT,,,North Zone,10,"Four Mile Beach, North End",,,14442,-16.48600783,145.468533,2019
+WT,,,North Zone,10,"Four Mile Beach, North End",,,15020,-16.49320399,145.467369,2019
+WT,,,North Zone,10,"Four Mile Beach, North End",,,15491,-16.49329658,145.4675245,2019
+WT,,,North Zone,10,"Four Mile Beach, North End",,,15811,-16.48766416,145.4684043,2019
+WT,,,North Zone,10,"Four Mile Beach, North End",,,16192,-16.49286451,145.4673046,2019
+WT,,,North Zone,10,"Four Mile Beach, North End",,,17783,-16.48866504,145.4678321,2019
+WT,,,North Zone,10,"Four Mile Beach, North End",,,17790,-16.49014944,145.4677106,2019
+WT,,,North Zone,10,"Four Mile Beach, North End",,,17796,-16.49224212,145.4676962,2019
+WT,,,North Zone,10,"Four Mile Beach, North End",,,18362,-16.48764872,145.4682755,2019
+WT,,,North Zone,10,"Four Mile Beach, North End",,,18612,-16.48560147,145.4686618,2019
+WT,,,North Zone,167,"Four Mile Beach, South End",,,3622,-16.5255,145.476,2013
+WT,,,North Zone,167,"Four Mile Beach, South End",,,3626,-16.5255,145.476,2014
+WT,,,North Zone,167,"Four Mile Beach, South End",,,5180,-16.5255,145.476,2015
+WT,,,North Zone,167,"Four Mile Beach, South End",,,6378,-16.5255,145.476,2016
+WT,,,North Zone,167,"Four Mile Beach, South End",,,13292,-16.52522689,145.4757838,2018
+WT,,,North Zone,167,"Four Mile Beach, South End",,,18213.4,-16.51630085,145.4704817,2019
+WT,,,North Zone,167,"Four Mile Beach, South End",,,19947.6,-16.51643195,145.4705328,2019
+WT,,,South Zone,583,Edmund Kennedy National Park,,,3655,-18.2151,146.013,2013
+WT,,,South Zone,583,Edmund Kennedy National Park,,,7590,-18.2151,146.013,2016
+WT,,,South Zone,583,Edmund Kennedy National Park,,,9614,-18.21492117,146.0130215,2017
+WT,,,North Zone,1,Newell Beach,,,4138,-16.43093219,145.4061019,2014
+WT,,,North Zone,1,Newell Beach,,,4167,-16.43092504,145.4061118,2014
+WT,,,North Zone,1,Newell Beach,,,4248,-16.43094828,145.4061207,2014
+WT,,,North Zone,1,Newell Beach,,,4348,-16.43093934,145.4061028,2014
+WT,,,North Zone,1,Newell Beach,,,4418,-16.43093487,145.4061037,2014
+WT,,,North Zone,1,Newell Beach,,,4631,-16.43093487,145.4061055,2014
+WT,,,North Zone,1,Newell Beach,,,4792,-16.43093666,145.4061171,2014
+WT,,,North Zone,1,Newell Beach,,,4901,-16.43094381,145.4061046,2015
+WT,,,North Zone,1,Newell Beach,,,4973,-16.43092772,145.4061297,2015
+WT,,,North Zone,1,Newell Beach,,,5041,-16.43092057,145.4061153,2015
+WT,,,North Zone,1,Newell Beach,,,5218,-16.43091967,145.4061234,2015
+WT,,,North Zone,1,Newell Beach,,,5328,-16.43094202,145.4061073,2015
+WT,,,North Zone,1,Newell Beach,,,5379,-16.43093577,145.4061162,2015
+WT,,,North Zone,1,Newell Beach,,,5504,-16.43093129,145.4061144,2015
+WT,,,North Zone,1,Newell Beach,,,5527,-16.43092951,145.406118,2015
+WT,,,North Zone,1,Newell Beach,,,5792,-16.43093487,145.4061189,2015
+WT,,,North Zone,1,Newell Beach,,,5935,-16.43091967,145.4061189,2015
+WT,,,North Zone,1,Newell Beach,,,7229,-16.4309304,145.4061028,2016
+WT,,,North Zone,165,Cooya Beach,,,4209,-16.44813294,145.4084471,2014
+WT,,,North Zone,165,Cooya Beach,,,4288,-16.44816871,145.408465,2014
+WT,,,North Zone,165,Cooya Beach,,,4287,-16.44815529,145.4084283,2014
+WT,,,North Zone,165,Cooya Beach,,,4327,-16.44815976,145.4084605,2014
+WT,,,North Zone,165,Cooya Beach,,,4608,-16.448124,145.4084337,2014
+WT,,,North Zone,165,Cooya Beach,,,4900,-16.44815082,145.4084426,2015
+WT,,,North Zone,165,Cooya Beach,,,5090,-16.44817765,145.4085365,2015
+WT,,,North Zone,165,Cooya Beach,,,5091,-16.44818212,145.4084426,2015
+WT,,,North Zone,165,Cooya Beach,,,5332,-16.44813473,145.4084167,2015
+WT,,,North Zone,165,Cooya Beach,,,5335,-16.44806588,145.4084918,2015
+WT,,,North Zone,165,Cooya Beach,,,5493,-16.44815172,145.408439,2015
+WT,,,North Zone,165,Cooya Beach,,,5956,-16.44799882,145.4084918,2015
+WT,,,North Zone,165,Cooya Beach,,,6690,-16.44817049,145.4084176,2016
+WT,,,North Zone,165,Cooya Beach,,,6730,-16.44815261,145.4084256,2016
+WT,,,North Zone,165,Cooya Beach,,,7006,-16.44808823,145.4085365,2016
+WT,,,North Zone,165,Cooya Beach,,,7007,-16.44816423,145.4084694,2016
+WT,,,North Zone,165,Cooya Beach,,,7008,-16.44818212,145.408456,2016
+WT,,,North Zone,165,Cooya Beach,,,7583,-16.44813741,145.4084784,2016
+WT,,,North Zone,165,Cooya Beach,,,7582,-16.44811506,145.4084694,2016
+WT,,,North Zone,165,Cooya Beach,,,8667,-16.44814635,145.4084828,2017
+WT,,,North Zone,165,Cooya Beach,,,8829,-16.44815529,145.4085365,2017
+WT,,,North Zone,165,Cooya Beach,,,11544,-16.44667372,145.4081511,2018
+WT,,,North Zone,165,Cooya Beach,,,11926,-16.44775415,145.4083979,2018
+WT,,,North Zone,165,Cooya Beach,,,12024,-16.44306195,145.4075718,2018
+WT,,,North Zone,165,Cooya Beach,,,12549,-16.44444081,145.4077327,2018
+WT,,,North Zone,165,Cooya Beach,,,16300,-16.44058203,145.4069763,2019
+WT,,,North Zone,403,Cape Kimberley,,,4429,-16.27569457,145.4767513,2014
+WT,,,North Zone,403,Cape Kimberley,,,4416,-16.28582839,145.4645205,2014
+WT,,,North Zone,403,Cape Kimberley,,,4898,-16.27643609,145.4755926,2015
+WT,,,North Zone,403,Cape Kimberley,,,4997,-16.27686864,145.4750133,2015
+WT,,,North Zone,403,Cape Kimberley,,,5305,-16.27695103,145.4749274,2015
+WT,,,North Zone,403,Cape Kimberley,,,5505,-16.28591078,145.4644775,2015
+WT,,,North Zone,403,Cape Kimberley,,,5475,-16.27695103,145.4749274,2015
+WT,,,North Zone,403,Cape Kimberley,,,5607,-16.27658027,145.475421,2015
+WT,,,North Zone,403,Cape Kimberley,,,6294,-16.27625071,145.475893,2016
+WT,,,North Zone,403,Cape Kimberley,,,6520,-16.27635369,145.4757643,2016
+WT,,,North Zone,403,Cape Kimberley,,,7905,-16.28644629,145.4639196,2017
+WT,,,North Zone,403,Cape Kimberley,,,9397,-16.27614772,145.4760647,2017
+WT,,,North Zone,403,Cape Kimberley,,,9823,-16.2796287,145.4710436,2018
+WT,,,North Zone,403,Cape Kimberley,,,10859,-16.27994281,145.4709846,2018
+WT,,,North Zone,403,Cape Kimberley,,,11876,-16.27973168,145.4712582,2018
+WT,,,North Zone,403,Cape Kimberley,,,12718,-16.27955146,145.4714513,2018
+WT,,,North Zone,403,Cape Kimberley,,,13868,-16.27942272,145.4716444,2019
+WT,,,North Zone,403,Cape Kimberley,,,17774,-16.28507661,145.46525,2019
+WT,,,North Zone,403,Cape Kimberley,,,18767,-16.28216215,145.4684258,2019
+WT,,,North Zone,1155,Palm Cove,,,4507,-16.74541319,145.6713445,2014
+WT,,,South Zone,1199,Djingalynga Beach,,,4720,-18.02795235,146.0509664,2014
+WT,,,South Zone,1199,Djingalynga Beach,,,7584,-18.02911873,146.051314,2016
+WT,,,South Zone,1199,Djingalynga Beach,,,7591,-18.02955612,146.0511907,2016
+WT,,,South Zone,1199,Djingalynga Beach,,,8572,-18.03003838,146.0511682,2017
+WT,,,Tully,3282,"Edmund Kennedy Memorial Walk Track, South Mission Beach",,,4802,-17.96569578,146.0932302,2015
+WT,,,South Zone,364,Mission Beach,,,4972,-17.86607541,146.1098723,2015
+WT,,,South Zone,1339,"Hillock Point, Hinchinbrook Island",,,5239,-18.41988411,146.3552103,2015
+WT,,,North Zone,621,Rocky Point,,,5269,-16.38960812,145.4184079,2015
+WT,,,North Zone,621,Rocky Point,,,7201,-16.38983456,145.4182792,2016
+WT,,,North Zone,621,Rocky Point,,,10027,-16.38757012,145.419116,2018
+WT,,,North Zone,621,Rocky Point,,,14285,-16.39055506,145.4179573,2019
+WT,,,North Zone,540,Pretty Beach,,,5309,-16.6373,145.559,2015
+WT,,,North Zone,540,Pretty Beach,,,6666,-16.6373,145.559,2016
+WT,,,Mossman,1357,South Mossman Creek,,,5331,-16.48487618,145.3836679,2015
+WT,,,Mossman,1357,South Mossman Creek,,,7014,-16.50234411,145.3689909,2016
+WT,,,Central Zone,1379,"Welcome Bay, Fitzroy Island",,,5389,-16.92678033,145.9904861,2015
+WT,,,Central Zone,1379,"Welcome Bay, Fitzroy Island",,,5541,-16.92664017,145.9905328,2015
+WT,,,Central Zone,1379,"Welcome Bay, Fitzroy Island",,,5542,-16.92668689,145.9905172,2015
+WT,,,Central Zone,1379,"Welcome Bay, Fitzroy Island",,,7948,-16.92659344,145.9905484,2017
+WT,,,Central Zone,1379,"Welcome Bay, Fitzroy Island",,,9845,-16.92859074,145.9898311,2018
+WT,,,Central Zone,1379,"Welcome Bay, Fitzroy Island",,,10830,-16.9289859,145.9897238,2018
+WT,,,Central Zone,1379,"Welcome Bay, Fitzroy Island",,,17029,-16.9266919,145.9904963,2019
+WT,,,Central Zone,1379,"Welcome Bay, Fitzroy Island",,,17751,-16.92664571,145.9905446,2019
+WT,,,Central Zone,1379,"Welcome Bay, Fitzroy Island",,,18755,-16.92993018,145.9894234,2019
+WT,,,Central Zone,1379,"Welcome Bay, Fitzroy Island",,,20985,-16.93165963,145.9880501,2019
+WT,,,Central Zone,1379,"Welcome Bay, Fitzroy Island",,,18682,-16.92676375,145.9904695,2019
+WT,,,Central Zone,1379,"Welcome Bay, Fitzroy Island",,,18685,-16.92678428,145.9904641,2019
+WT,,,Central Zone,1379,"Welcome Bay, Fitzroy Island",,,18680,-16.92678428,145.9904587,2019
+WT,,,North Zone,578,East Trinity Reserve Bund Wall,,,5494,-16.9295,145.788,2013
+WT,,,North Zone,578,East Trinity Reserve Bund Wall,,,5495,-16.9295,145.788,2013
+WT,,,North Zone,578,East Trinity Reserve Bund Wall,,,5496,-16.9295,145.788,2013
+WT,,,North Zone,578,East Trinity Reserve Bund Wall,,,5499,-16.9295,145.788,2013
+WT,,,North Zone,578,East Trinity Reserve Bund Wall,,,5498,-16.9295,145.788,2013
+WT,,,North Zone,578,East Trinity Reserve Bund Wall,,,5645,-16.9295,145.788,2015
+WT,,,North Zone,578,East Trinity Reserve Bund Wall,,,5646,-16.9295,145.788,2015
+WT,,,North Zone,578,East Trinity Reserve Bund Wall,,,5463,-16.9295,145.788,2015
+WT,,,North Zone,578,East Trinity Reserve Bund Wall,,,5497,-16.9295,145.788,2015
+WT,,,North Zone,578,East Trinity Reserve Bund Wall,,,5643,-16.9295,145.788,2015
+WT,,,North Zone,578,East Trinity Reserve Bund Wall,,,5647,-16.9295,145.788,2015
+WT,,,North Zone,578,East Trinity Reserve Bund Wall,,,5644,-16.9295,145.788,2015
+WT,,,North Zone,578,East Trinity Reserve Bund Wall,,,5957,-16.9295,145.788,2015
+WT,,,North Zone,578,East Trinity Reserve Bund Wall,,,6174,-16.9295,145.788,2016
+WT,,,North Zone,578,East Trinity Reserve Bund Wall,,,7950,-16.9295,145.788,2017
+WT,,,North Zone,578,East Trinity Reserve Bund Wall,,,11545,-16.92965305,145.7883596,2018
+WT,,,North Zone,578,East Trinity Reserve Bund Wall,,,12356,-16.92984294,145.7882738,2018
+WT,,,North Zone,578,East Trinity Reserve Bund Wall,,,18805,-16.92803649,145.7885528,2019
+WT,,,North Zone,1351,Coconut Beach,,,5466,-16.10775408,145.4618132,2015
+WT,,,North Zone,1351,Coconut Beach,,,15514,-16.10690008,145.4625974,2019
+WT,,,Barron,1478,"Northern Boardwalk, Cairns Airport",,,5687,-16.8830589,145.7610617,2014
+WT,,,North Zone,966,Low Isles UW,,,6176,-16.3827,145.563,2016
+WT,,,Central Zone,1141,"Nudey Beach, Fitzroy Island",,,6177,-16.9356,145.983,2015
+WT,,,Central Zone,1141,"Nudey Beach, Fitzroy Island",,,6179,-16.9356,145.983,2016
+WT,,,Central Zone,1141,"Nudey Beach, Fitzroy Island",,,6180,-16.9356,145.983,2016
+WT,,,Central Zone,1141,"Nudey Beach, Fitzroy Island",,,6183,-16.9356,145.983,2016
+WT,,,Central Zone,1141,"Nudey Beach, Fitzroy Island",,,6184,-16.9356,145.983,2016
+WT,,,Central Zone,1141,"Nudey Beach, Fitzroy Island",,,6178,-16.9356,145.983,2016
+WT,,,Central Zone,1141,"Nudey Beach, Fitzroy Island",,,10852,-16.9352981,145.9829807,2018
+WT,,,Central Zone,1141,"Nudey Beach, Fitzroy Island",,,17027,-16.9349902,145.9831738,2019
+WT,,,Central Zone,1141,"Nudey Beach, Fitzroy Island",,,17884,-16.93475927,145.9833938,2019
+WT,,,Central Zone,1141,"Nudey Beach, Fitzroy Island",,,18679,-16.93546232,145.9828895,2019
+WT,,,Central Zone,1141,"Nudey Beach, Fitzroy Island",,,18757,-16.93546745,145.9829807,2019
+WT,,,Central Zone,1141,"Nudey Beach, Fitzroy Island",,,20992,-16.93533916,145.9830183,2019
+WT,,,Central Zone,1141,"Nudey Beach, Fitzroy Island",,,18681,-16.93504151,145.9831095,2019
+WT,,,Mulgrave-Russell,1653,"Green Patch, Mulgrave River",,,6352,-17.1003,145.787,2016
+WT,,,North Zone,188,Holloways Beach,,,6363,-16.8394,145.741,2016
+WT,,,North Zone,188,Holloways Beach,,,8219,-16.8394,145.741,2017
+WT,,,Mulgrave-Russell,1683,"Admiralty Island, Cairns",,,6523,-16.9578,145.785,2016
+WT,,,North Zone,186,Buchan Point,,,6680,-16.73690133,145.669284,2016
+WT,,,North Zone,187,Ellis Beach,,,6681,-16.7307,145.656,2016
+WT,,,Mossman,1358,"Mossman River, Mossman",,,6744,-16.4497792,145.3629241,2016
+WT,,,Mossman,1358,"Mossman River, Mossman",,,6796,-16.45028388,145.361347,2016
+WT,,,North Zone,1562,Thornton Beach,,,6866,-16.1524,145.445,2016
+WT,,,North Zone,1562,Thornton Beach,,,7065,-16.1728,145.442,2016
+WT,,,North Zone,1562,Thornton Beach,,,8386,-16.1524,145.445,2017
+WT,,,North Zone,1562,Thornton Beach,,,16565,-16.15788658,145.4434597,2019
+WT,,,North Zone,1562,Thornton Beach,,,17714,-16.15864399,145.4436797,2019
+WT,,,North Zone,537,"Green Island, Cairns",,,6984,-16.7584,145.971,2016
+WT,,,Central Zone,1010,Jilgi Beach,,,7013,-16.97864094,145.902369,2016
+WT,,,North Zone,166,Wonga Beach North End,,,7225,-16.34661804,145.4153738,2016
+WT,,,North Zone,166,Wonga Beach North End,,,7226,-16.34629098,145.4154984,2016
+WT,,,North Zone,166,Wonga Beach North End,,,7230,-16.34655574,145.4153738,2016
+WT,,,North Zone,166,Wonga Beach North End,,,7232,-16.34657131,145.4155607,2016
+WT,,,North Zone,166,Wonga Beach North End,,,7060,-16.34658689,145.4153894,2016
+WT,,,North Zone,166,Wonga Beach North End,,,9848,-16.33381277,145.4214764,2018
+WT,,,North Zone,620,Noah Beach,,,7064,-16.1362,145.452,2016
+WT,,,North Zone,620,Noah Beach,,,9703,-16.13360128,145.4533195,2018
+WT,,,North Zone,3318,"Pebbly Beach, Oak Beach",,,7070,-16.58294568,145.5130094,2016
+WT,,,North Zone,3318,"Pebbly Beach, Oak Beach",,,7130,-16.58293026,145.5130363,2016
+WT,,,North Zone,3318,"Pebbly Beach, Oak Beach",,,18233,-16.57989173,145.5123228,2019
+WT,,,North Zone,643,Wonga Beach South End,,,7131,-16.35940651,145.4155383,2016
+WT,,,North Zone,643,Wonga Beach South End,,,15731,-16.36291786,145.4140866,2019
+WT,,,North Zone,539,Oak Beach,,,7231,-16.5996,145.5228435,2016
+WT,,,North Zone,539,Oak Beach,,,15682,-16.59088368,145.5220699,2019
+WT,,,Barron,2750,"Freshwater Creek, Jenkins Access Road, Cairns",,,7295,-16.91230629,145.7033991,2016
+WT,,,Barron,2750,"Freshwater Creek, Jenkins Access Road, Cairns",,,13342,-16.9224528,145.6987953,2018
+WT,,,North Zone,3545,Clifton Beach,,,7437,-16.7627,145.675,2016
+WT,,,North Zone,193,Yorkeys Knob,,,7570,-16.8092,145.727,2016
+WT,,,North Zone,193,Yorkeys Knob,,,10267,-16.80931825,145.727334,2018
+WT,,,North Zone,193,Yorkeys Knob,,,10272,-16.80743225,145.7262075,2018
+WT,,,North Zone,192,Wangetti Beach,,,7747,-16.65343412,145.5685082,2016
+WT,,,North Zone,192,Wangetti Beach,,,18234,-16.6815459,145.5781335,2019
+WT,,,North Zone,192,Wangetti Beach,,,18231,-16.68117077,145.578053,2019
+WT,,,North Zone,192,Wangetti Beach,,,18229,-16.65954604,145.5704784,2019
+WT,,,North Zone,1445,"Myall Beach, Cape Tribulation",,,7806,-16.08609207,145.4686263,2017
+WT,,,Central Zone,1378,"Kings Beach, Yarrabah",,,7949,-16.90967897,145.9415513,2017
+WT,,,Central Zone,2182,"Etty Bay, Innisfail",,,9315,-17.55850759,146.0902798,2017
+WT,,,Central Zone,2182,"Etty Bay, Innisfail",,,8204,-17.55844621,146.0902852,2017
+WT,,,Central Zone,2182,"Etty Bay, Innisfail",,,11095,-17.55870194,146.0902745,2018
+WT,,,Central Zone,2182,"Etty Bay, Innisfail",,,12934,-17.55775064,146.0903281,2018
+WT,,,North Zone,190,Machans Beach,,,8282,-16.8508723,145.7496431,2017
+WT,,,North Zone,2126,Machans Beach South,,,10048,-16.85956338,145.7587051,2018
+WT,,,North Zone,2126,Machans Beach South,,,10745,-16.8607955,145.7604218,2018
+WT,,,North Zone,2126,Machans Beach South,,,14752,-16.85952744,145.7586247,2019
+WT,,,North Zone,2126,Machans Beach South,,,18310,-16.85645224,145.7546872,2019
+WT,,,Mulgrave-Russell,2155,Cairns CBD,,,10127,-16.93172635,145.7677066,2018
+WT,,,Barron,2893,"Commercial Precinct, Smithfield",,,10192,-16.82005944,145.7041007,2018
+WT,,,Barron,2214,"Freshwater Creek at Goomboora Park, Cairns",,,10220,-16.9054544,145.7039881,2018
+WT,,,Barron,2215,"Freshwater Creek near Lower Freshwater Road, Cairns",,,10221,-16.87924553,145.6987846,2018
+WT,,,Mossman,2229,"Town Centre, Trinity Beach",,,10253,-16.79087031,145.6921971,2018
+WT,,,Barron,2234,"James Cook University Campus, Cairns",,,10265,-16.818026,145.6874174,2018
+WT,,,Barron,2270,"Freshwater Creek at Glenoma Park, Cairns",,,10429,-16.89864332,145.7088751,2018
+WT,,,North Zone,4,Yule Point,,,10858,-16.57126961,145.5090976,2018
+WT,,,North Zone,4,Yule Point,,,12493,-16.57265253,145.5108047,2018
+WT,,,North Zone,4,Yule Point,,,14051,-16.57350603,145.5121779,2018
+WT,,,North Zone,4,Yule Point,,,15283,-16.5710175,145.5090237,2019
+WT,,,North Zone,4,Yule Point,,,18232,-16.57298159,145.5112123,2019
+WT,,,North Zone,4,Yule Point,,,19064,-16.57375796,145.5125427,2019
+WT,,,North Zone,164,"Snapper Island, Queensland",,,11235,-16.29561672,145.4996306,2018
+WT,,,North Zone,2452,Black Rock Reef Beach,,,11390,-16.2441569,145.4799807,2018
+WT,,,North Zone,2497,"Mission Beach, Yarrabah",,,11614,-16.9075461,145.8774613,2018
+WT,,,North Zone,2497,"Mission Beach, Yarrabah",,,12358,-16.90750743,145.8777523,2018
+WT,,,North Zone,2497,"Mission Beach, Yarrabah",,,14306,-16.90752796,145.8778811,2018
+WT,,,North Zone,2497,"Mission Beach, Yarrabah",,,18807,-16.90746124,145.8756226,2019
+WT,,,Central Zone,986,Wungu Beach,,,11622,-16.9529147,145.9250021,2018
+WT,,,Central Zone,986,Wungu Beach,,,12359,-16.95221684,145.9256083,2018
+WT,,,North Zone,1449,Emmagen Beach,,,11851,-16.03942859,145.4630652,2018
+WT,,,North Zone,1449,Emmagen Beach,,,13937,-16.03804689,145.4634676,2019
+WT,,,Mossman,2540,Port Douglas CBD,,,23438,-16.4823232,145.464001,2018
+WT,,,Mossman,2540,Port Douglas CBD,,,23439,-16.48238833,145.464042,2018
+WT,,,Mossman,2540,Port Douglas CBD,,,11911,-16.48191265,145.4634393,2018
+WT,,,North Zone,593,Yarrabah Beach,,,14305,-16.90555705,145.8662724,2018
+WT,,,North Zone,593,Yarrabah Beach,,,14015,-16.90555705,145.8662295,2018
+WT,,,North Zone,593,Yarrabah Beach,,,15101,-16.90446894,145.8640623,2019
+WT,,,North Zone,593,Yarrabah Beach,,,18806,-16.90519264,145.8654302,2019
+WT,,,Mossman,3091,"Bruno Rudweig Park, Port Douglas",,,15645,-16.51613835,145.4694986,2019
+WT,,,North Zone,3189,Oak Beach South,,,17011,-16.60707742,145.5297089,2019
+WT,,,North Zone,3189,Oak Beach South,,,18230,-16.60765318,145.530138,2019
+WT,,,Mulgrave-Russell,3264,"Chinaman Creek Park, Earlville",,,17180,-16.9390648,145.7397044,2019
+WT,,,South Zone,2879,Kurrimine Beach Conservation Park,,,17874,-17.7897046,146.0944907,2019
+WT,,,South Zone,1687,"Kennedy Bay, South Mission",,,17875,-17.97342213,146.0950818,2019
+WT,,,South Zone,3281,"Lugger Bay, South Mission Beach",,,18135,-17.96834924,146.0964328,2019
+WT,,,North Zone,3319,Turtle Cove Beach,,,18228,-16.62624082,145.5482805,2019
+WT,,,Daintree,3357,Rocky Point Boat Ramp and Park,,,18505,-16.38784288,145.4184186,2019
+WT,,,Central Zone,3364,"Welcome Bay, Fitzroy Island UW",,,21007,-16.930818,145.9884417,2019
+WT,,,Central Zone,3364,"Welcome Bay, Fitzroy Island UW",,,18756,-16.93017138,145.9883559,2019
+WT,,,Central Zone,3364,"Welcome Bay, Fitzroy Island UW",,,20988,-16.92964792,145.988667,2019
+WT,,,Central Zone,3364,"Welcome Bay, Fitzroy Island UW",,,18758,-16.92944264,145.9886885,2019
+WT,,,North Zone,163,"Woody Island, Queensland",,,18759,-16.38442044,145.5666375,2019
+WT,,,Mulgrave-Russell,3365,"Mick Creek, Giangurru",,,18770,-16.90151252,145.8203745,2019
+WT,,,Central Zone,3388,"Nudey Beach, Fitzroy Island UW",,,20993,-16.93524679,145.9821332,2019
+WT,,,North Zone,105,"Dickson Inlet, Port Douglas",,,18731.5,-16.49217782,145.4617511,2019
+WT,,,North Zone,105,"Dickson Inlet, Port Douglas",,,19773,-16.49223187,145.4617407,2019
+WT,,,South Zone,1362,"Googarra Beach, Tully Heads",,,18719.5,-18.01101098,146.0616741,2019
+WT,,,South Zone,1362,"Googarra Beach, Tully Heads",,,19898.6,-18.01141859,146.0614611,2019
+WT,,,Central Zone,3239,Coconuts Beach,,,18722.5,-17.50769571,146.0647827,2019
+WT,,,Central Zone,3239,Coconuts Beach,,,19909,-17.50711403,146.0654608,2019
+WT,,,Tully,3240,"Hull River Estuary, Hull Heads",,,18715.5,-17.99375671,146.072423,2019
+WT,,,Tully,3240,"Hull River Estuary, Hull Heads",,,19787.4,-17.9938283,146.0722798,2019
+WT,,,Central Zone,3471,Flying Fish Point Beach,,,20057.6,-17.48867322,146.0766166,2019
+WT,,,North Zone,1,Newell Beach,,,14251,-16.42048943,145.4080975,2019
+WT,,,North Zone,4,Yule Point,,,1016,-16.5744,145.513,2010
+WT,,,North Zone,4,Yule Point,,,3787,-16.5744,145.513,2014
+WT,,,North Zone,4,Yule Point,,,5336,-16.5744,145.513,2015
+WT,,,North Zone,4,Yule Point,,,6182,-16.5744,145.513,2016
+WT,,,North Zone,4,Yule Point,,,7275,-16.5744,145.513,2016
+WT,,,North Zone,4,Yule Point,,,7314,-16.5744,145.513,2016
+WT,,,North Zone,10,"Four Mile Beach, North End",,,3671,-16.4870368,145.468353,2014
+WT,,,North Zone,10,"Four Mile Beach, North End",,,6085,-16.4919913,145.4677116,2015
+WT,,,North Zone,10,"Four Mile Beach, North End",,,7559,-16.4870368,145.468353,2016
+WT,,,North Zone,10,"Four Mile Beach, North End",,,9458,-16.4919913,145.4677116,2017
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,6266,-16.5053908,145.4671688,2016
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,6510,-16.5053908,145.4671688,2016
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,6603,-16.5053908,145.4671688,2016
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,6689,-16.5053908,145.4671688,2016
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,6813,-16.5053908,145.4671688,2016
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,8738,-16.5053908,145.4671688,2017
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,8992,-16.5053908,145.4671688,2017
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,9396,-16.5053908,145.4671688,2017
+WT,,,North Zone,11,"Four Mile Beach, Middle Section",,,14242,-16.51353815,145.4690388,2019
+WT,,,North Zone,116,Low Isles,,,742,-16.3841,145.56,2009
+WT,,,North Zone,116,Low Isles,,,792,-16.3841,145.56,2009
+WT,,,North Zone,116,Low Isles,,,853,-16.3841,145.56,2009
+WT,,,North Zone,116,Low Isles,,,918,-16.3841,145.56,2009
+WT,,,North Zone,116,Low Isles,,,954,-16.3841,145.56,2009
+WT,,,North Zone,116,Low Isles,,,968,-16.3841,145.56,2009
+WT,,,North Zone,116,Low Isles,,,1007,-16.3841,145.56,2009
+WT,,,North Zone,116,Low Isles,,,1015,-16.3841,145.56,2010
+WT,,,North Zone,116,Low Isles,,,1040,-16.3841,145.56,2010
+WT,,,North Zone,116,Low Isles,,,1063,-16.3841,145.56,2010
+WT,,,North Zone,116,Low Isles,,,1087,-16.3841,145.56,2010
+WT,,,North Zone,116,Low Isles,,,1172,-16.3841,145.56,2010
+WT,,,North Zone,116,Low Isles,,,1201,-16.3841,145.56,2010
+WT,,,North Zone,116,Low Isles,,,1241,-16.3841,145.56,2010
+WT,,,North Zone,116,Low Isles,,,1266,-16.3841,145.56,2010
+WT,,,North Zone,116,Low Isles,,,1429,-16.3841,145.56,2011
+WT,,,North Zone,116,Low Isles,,,1547,-16.3841,145.56,2011
+WT,,,North Zone,116,Low Isles,,,1601,-16.3841,145.56,2011
+WT,,,North Zone,116,Low Isles,,,1649,-16.3841,145.56,2011
+WT,,,North Zone,116,Low Isles,,,1688,-16.3841,145.56,2011
+WT,,,North Zone,116,Low Isles,,,1731,-16.3841,145.56,2011
+WT,,,North Zone,116,Low Isles,,,1799,-16.3841,145.56,2011
+WT,,,North Zone,116,Low Isles,,,1844,-16.3841,145.56,2011
+WT,,,North Zone,116,Low Isles,,,1891,-16.3841,145.56,2011
+WT,,,North Zone,116,Low Isles,,,1933,-16.3841,145.56,2011
+WT,,,North Zone,116,Low Isles,,,1975,-16.3841,145.56,2012
+WT,,,North Zone,116,Low Isles,,,2009,-16.3841,145.56,2012
+WT,,,North Zone,116,Low Isles,,,2178,-16.3841,145.56,2012
+WT,,,North Zone,116,Low Isles,,,2294,-16.3841,145.56,2012
+WT,,,North Zone,116,Low Isles,,,2629,-16.3841,145.56,2013
+WT,,,North Zone,116,Low Isles,,,2716,-16.3841,145.56,2013
+WT,,,North Zone,116,Low Isles,,,2863,-16.3841,145.56,2013
+WT,,,North Zone,116,Low Isles,,,2960,-16.3841,145.56,2013
+WT,,,North Zone,116,Low Isles,,,3767,-16.3841,145.56,2014
+WT,,,North Zone,116,Low Isles,,,4228,-16.3841,145.56,2014
+WT,,,North Zone,116,Low Isles,,,7653,-16.3841,145.56,2015
+WT,,,North Zone,116,Low Isles,,,7655,-16.3841,145.56,2015
+WT,,,North Zone,116,Low Isles,,,7657,-16.3841,145.56,2015
+WT,,,North Zone,116,Low Isles,,,7659,-16.3841,145.56,2016
+WT,,,North Zone,116,Low Isles,,,7660,-16.3841,145.56,2016
+WT,,,North Zone,116,Low Isles,,,7662,-16.3841,145.56,2016
+WT,,,North Zone,116,Low Isles,,,7664,-16.3841,145.56,2016
+WT,,,North Zone,163,"Woody Island, Queensland",,,1843,-16.3878972,145.5714416,2011
+WT,,,North Zone,163,"Woody Island, Queensland",,,2454,-16.38878231,145.5714901,2012
+WT,,,North Zone,163,"Woody Island, Queensland",,,3639,-16.38976059,145.5711745,2014
+WT,,,North Zone,163,"Woody Island, Queensland",,,4862,-16.38945779,145.5712231,2015
+WT,,,North Zone,163,"Woody Island, Queensland",,,6175,-16.38929474,145.5713688,2016
+WT,,,North Zone,164,"Snapper Island, Queensland",,,2703,-16.29357802,145.4968846,2013
+WT,,,North Zone,164,"Snapper Island, Queensland",,,3964,-16.2932385,145.4966074,2014
+WT,,,North Zone,164,"Snapper Island, Queensland",,,5220,-16.29361228,145.4969189,2015
+WT,,,North Zone,164,"Snapper Island, Queensland",,,6600,-16.29357179,145.4968846,2016
+WT,,,North Zone,164,"Snapper Island, Queensland",,,8223,-16.29342539,145.4967476,2017
+WT,,,North Zone,165,Cooya Beach,,,1004,-16.44819106,145.4085007,2009
+WT,,,North Zone,165,Cooya Beach,,,1191,-16.44817318,145.4084605,2010
+WT,,,North Zone,165,Cooya Beach,,,1542,-16.44817765,145.4084292,2011
+WT,,,North Zone,165,Cooya Beach,,,3478,-16.44815529,145.4084739,2013
+WT,,,North Zone,166,Wonga Beach North End,,,2399,-16.34657131,145.4154984,2012
+WT,,,North Zone,166,Wonga Beach North End,,,5097,-16.32730571,145.4257679,2015
+WT,,,North Zone,166,Wonga Beach North End,,,6186,-16.33331857,145.4213905,2016
+WT,,,North Zone,166,Wonga Beach North End,,,8340,-16.34666476,145.4154205,2017
+WT,,,North Zone,167,"Four Mile Beach, South End",,,521,-16.5255,145.476,2009
+WT,,,North Zone,167,"Four Mile Beach, South End",,,2471,-16.52475796,145.4755926,2012
+WT,,,North Zone,167,"Four Mile Beach, South End",,,3627,-16.5255,145.476,2014
+WT,,,North Zone,167,"Four Mile Beach, South End",,,3670,-16.5255,145.476,2014
+WT,,,North Zone,186,Buchan Point,,,1017,-16.73668085,145.6691612,2010
+WT,,,North Zone,187,Ellis Beach,,,1023,-16.7307,145.656,2010
+WT,,,North Zone,188,Holloways Beach,,,1050,-16.8394,145.741,2010
+WT,,,North Zone,188,Holloways Beach,,,3468,-16.8394,145.741,2013
+WT,,,North Zone,188,Holloways Beach,,,3635,-16.8394,145.741,2014
+WT,,,North Zone,188,Holloways Beach,,,8088,-16.8394,145.741,2017
+WT,,,North Zone,189,Kewarra Beach,,,1048,-16.7787,145.686,2010
+WT,,,North Zone,189,Kewarra Beach,,,3770,-16.7787,145.686,2014
+WT,,,North Zone,189,Kewarra Beach,,,5384,-16.7787,145.686,2015
+WT,,,North Zone,190,Machans Beach,,,1049,-16.85092555,145.7497007,2010
+WT,,,North Zone,190,Machans Beach,,,2631,-16.85089801,145.74967,2013
+WT,,,North Zone,191,"Reed Road, Trinity Park",,,1022,-16.79732978,145.710317,2010
+WT,,,North Zone,192,Wangetti Beach,,,977,-16.65356824,145.5685976,2009
+WT,,,North Zone,192,Wangetti Beach,,,1019,-16.65345647,145.56862,2010
+WT,,,North Zone,192,Wangetti Beach,,,3638,-16.65361295,145.5685082,2014
+WT,,,North Zone,192,Wangetti Beach,,,4113,-16.65345647,145.5685976,2014
+WT,,,North Zone,192,Wangetti Beach,,,4975,-16.65374707,145.5685753,2015
+WT,,,North Zone,192,Wangetti Beach,,,5100,-16.65334471,145.56862,2015
+WT,,,North Zone,192,Wangetti Beach,,,5382,-16.65334471,145.5686871,2015
+WT,,,North Zone,192,Wangetti Beach,,,6201,-16.65343412,145.5687094,2016
+WT,,,North Zone,192,Wangetti Beach,,,6414,-16.65347883,145.56862,2016
+WT,,,North Zone,193,Yorkeys Knob,,,1046,-16.8092,145.727,2010
+WT,,,North Zone,193,Yorkeys Knob,,,7942,-16.8092,145.727,2017
+WT,,,South Zone,360,Wongaling Beach,,,1430,-17.9062222,146.097393,2011
+WT,,,South Zone,360,Wongaling Beach,,,2013,-17.90491542,146.097393,2012
+WT,,,South Zone,360,Wongaling Beach,,,6575,-17.90565165,146.0973894,2016
+WT,,,South Zone,360,Wongaling Beach,,,7606,-17.9052,146.0975762,2016
+WT,,,South Zone,360,Wongaling Beach,,,11236,-17.90066834,146.0977364,2018
+WT,,,South Zone,361,Narragon Beach,,,6499,-17.8459,146.105,2016
+WT,,,Mulgrave-Russell,368,"O'Leary's Creek, Gordonvale",,,1736,-17.08960286,145.7831078,2011
+WT,,,Mulgrave-Russell,368,"O'Leary's Creek, Gordonvale",,,1742,-17.08973954,145.7831025,2011
+WT,,,Mulgrave-Russell,368,"O'Leary's Creek, Gordonvale",,,2020,-17.08983417,145.7830762,2012
+WT,,,North Zone,403,Cape Kimberley,,,1357,-16.27721879,145.4744983,2011
+WT,,,North Zone,403,Cape Kimberley,,,1377,-16.27723939,145.4744554,2011
+WT,,,North Zone,403,Cape Kimberley,,,1381,-16.27614772,145.4759789,2011
+WT,,,North Zone,403,Cape Kimberley,,,1382,-16.28397468,145.4664516,2011
+WT,,,North Zone,403,Cape Kimberley,,,1409,-16.28364513,145.4667091,2011
+WT,,,North Zone,403,Cape Kimberley,,,1749,-16.27697162,145.4748631,2011
+WT,,,North Zone,403,Cape Kimberley,,,2018,-16.28273887,145.4678249,2012
+WT,,,North Zone,403,Cape Kimberley,,,2252,-16.28175021,145.4688549,2012
+WT,,,North Zone,403,Cape Kimberley,,,2420,-16.28397468,145.4663658,2012
+WT,,,North Zone,403,Cape Kimberley,,,2606,-16.2857872,145.4644775,2013
+WT,,,North Zone,403,Cape Kimberley,,,2694,-16.2875997,145.4626751,2013
+WT,,,North Zone,403,Cape Kimberley,,,2974,-16.28488094,145.4655933,2013
+WT,,,North Zone,403,Cape Kimberley,,,3204,-16.28479856,145.4656363,2013
+WT,,,North Zone,403,Cape Kimberley,,,3308,-16.28479856,145.4655075,2013
+WT,,,North Zone,403,Cape Kimberley,,,3480,-16.28372752,145.4667091,2014
+WT,,,North Zone,403,Cape Kimberley,,,3905,-16.28257409,145.4678249,2014
+WT,,,North Zone,403,Cape Kimberley,,,4190,-16.28348036,145.466795,2014
+WT,,,North Zone,403,Cape Kimberley,,,4395,-16.28364513,145.466795,2014
+WT,,,North Zone,403,Cape Kimberley,,,4805,-16.28554004,145.4648209,2015
+WT,,,North Zone,403,Cape Kimberley,,,5024,-16.28537527,145.4649067,2015
+WT,,,North Zone,403,Cape Kimberley,,,5479,-16.28348036,145.466795,2015
+WT,,,North Zone,403,Cape Kimberley,,,5808,-16.28685823,145.4634476,2015
+WT,,,North Zone,403,Cape Kimberley,,,6172,-16.28735254,145.4630184,2016
+WT,,,North Zone,403,Cape Kimberley,,,6515,-16.28586959,145.4643917,2016
+WT,,,North Zone,403,Cape Kimberley,,,6808,-16.28380991,145.4666233,2016
+WT,,,North Zone,403,Cape Kimberley,,,7168,-16.28537527,145.4648209,2016
+WT,,,North Zone,403,Cape Kimberley,,,7823,-16.28603436,145.46422,2017
+WT,,,North Zone,403,Cape Kimberley,,,8092,-16.28290364,145.4675674,2017
+WT,,,North Zone,403,Cape Kimberley,,,8757,-16.28562243,145.464735,2017
+WT,,,North Zone,403,Cape Kimberley,,,9273,-16.2838923,145.4664516,2017
+WT,,,North Zone,403,Cape Kimberley,,,15520,-16.27946392,145.4716873,2019
+WT,,,North Zone,537,"Green Island, Cairns",,,2335,-16.7584,145.971,2012
+WT,,,North Zone,537,"Green Island, Cairns",,,4282,-16.7584,145.971,2014
+WT,,,North Zone,537,"Green Island, Cairns",,,5477,-16.7584,145.971,2015
+WT,,,North Zone,537,"Green Island, Cairns",,,8969,-16.7584,145.971,2017
+WT,,,North Zone,539,Oak Beach,,,2364,-16.59964471,145.5227988,2012
+WT,,,North Zone,539,Oak Beach,,,7061,-16.5996,145.5227318,2016
+WT,,,North Zone,540,Pretty Beach,,,3239,-16.6373,145.559,2013
+WT,,,North Zone,540,Pretty Beach,,,3637,-16.6373,145.559,2014
+WT,,,North Zone,578,East Trinity Reserve Bund Wall,,,2477,-16.93078721,145.7882309,2012
+WT,,,North Zone,578,East Trinity Reserve Bund Wall,,,2541,-16.9295,145.788,2012
+WT,,,North Zone,578,East Trinity Reserve Bund Wall,,,2566,-16.9295,145.788,2012
+WT,,,North Zone,578,East Trinity Reserve Bund Wall,,,2910,-16.9295,145.788,2013
+WT,,,North Zone,580,Yarrabah Browns Beach,,,2540,-16.8825,145.835,2012
+WT,,,North Zone,580,Yarrabah Browns Beach,,,2548,-16.8825,145.835,2012
+WT,,,South Zone,583,Edmund Kennedy National Park,,,2485,-18.2151,146.013,2012
+WT,,,South Zone,583,Edmund Kennedy National Park,,,2525,-18.2151,146.013,2012
+WT,,,South Zone,583,Edmund Kennedy National Park,,,2637,-18.2151,146.013,2013
+WT,,,South Zone,583,Edmund Kennedy National Park,,,2707,-18.2151,146.013,2013
+WT,,,South Zone,583,Edmund Kennedy National Park,,,3654,-18.2151,146.013,2013
+WT,,,South Zone,583,Edmund Kennedy National Park,,,3656,-18.2151,146.013,2013
+WT,,,South Zone,583,Edmund Kennedy National Park,,,3657,-18.2151,146.013,2013
+WT,,,South Zone,583,Edmund Kennedy National Park,,,3633,-18.2151,146.013,2014
+WT,,,South Zone,583,Edmund Kennedy National Park,,,4637,-18.2151,146.013,2014
+WT,,,South Zone,583,Edmund Kennedy National Park,,,4636,-18.2151,146.013,2014
+WT,,,South Zone,583,Edmund Kennedy National Park,,,6502,-18.2151,146.013,2016
+WT,,,North Zone,589,"Giangurra Beach, Yarrabah",,,2478,-16.90206541,145.8160685,2012
+WT,,,North Zone,589,"Giangurra Beach, Yarrabah",,,2567,-16.90209656,145.8160654,2012
+WT,,,North Zone,589,"Giangurra Beach, Yarrabah",,,2687,-16.90210902,145.8160405,2013
+WT,,,North Zone,589,"Giangurra Beach, Yarrabah",,,5500,-16.90209033,145.8160654,2015
+WT,,,North Zone,589,"Giangurra Beach, Yarrabah",,,5501,-16.9023838,145.8159963,2015
+WT,,,North Zone,589,"Giangurra Beach, Yarrabah",,,12357,-16.90132261,145.8184111,2018
+WT,,,North Zone,593,Yarrabah Beach,,,2237,-16.90453053,145.8642125,2012
+WT,,,North Zone,593,Yarrabah Beach,,,14670,-16.90417458,145.8637765,2019
+WT,,,South Zone,613,South Mission Beach,,,2600,-17.93662361,146.0952523,2013
+WT,,,South Zone,613,South Mission Beach,,,15094,-17.93419304,146.0960466,2019
+WT,,,North Zone,620,Noah Beach,,,2605,-16.1362,145.452,2013
+WT,,,North Zone,620,Noah Beach,,,4482,-16.1362,145.452,2014
+WT,,,North Zone,620,Noah Beach,,,5873,-16.1362,145.452,2015
+WT,,,North Zone,621,Rocky Point,,,2630,-16.38969046,145.418365,2013
+WT,,,North Zone,621,Rocky Point,,,4075,-16.38931992,145.4185367,2014
+WT,,,North Zone,621,Rocky Point,,,5150,-16.38925816,145.4185581,2015
+WT,,,North Zone,621,Rocky Point,,,6362,-16.38966987,145.4183435,2016
+WT,,,North Zone,621,Rocky Point,,,7947,-16.38925816,145.4185367,2017
+WT,,,North Zone,621,Rocky Point,,,12541,-16.38987573,145.4182684,2018
+DT,WT,DT,Halifax Bay,3019,"Picnic Bay, Orpheus Island",,,15529,-18.63957632,146.5039301,2019
+DT,WT,DT,Halifax Bay,3019,"Picnic Bay, Orpheus Island",,,15529,-18.63957632,146.5039301,2019
+DT,WT,DT,Halifax Bay,3232,"Pioneer Bay, Orpheus Island",,,7274,-18.61272521,146.4901443,2016
+DT,WT,DT,Halifax Bay,3232,"Pioneer Bay, Orpheus Island",,,17224,-18.61244087,146.4903635,2019
+DT,WT,DT,Halifax Bay,3018,"South Beach, Orpheus Island",,,17862,-18.65761,146.5017414,2019
+WT,,,North Zone,643,Wonga Beach South End,,,2530,-16.36029251,145.4152019,2012
+WT,,,North Zone,643,Wonga Beach South End,,,3014,-16.35983268,145.415415,2013
+WT,,,North Zone,643,Wonga Beach South End,,,8325,-16.35917099,145.4156168,2017
+WT,,,South Zone,656,Kurrimine Beach,,,2664,-17.77775061,146.1076705,2013
+WT,,,South Zone,656,Kurrimine Beach,,,3769,-17.77756476,146.1078635,2014
+WT,,,South Zone,656,Kurrimine Beach,,,8495,-17.77742895,146.1079564,2017
+WT,,,North Zone,892,Daintree Rivermouth,,,3603,-16.28612238,145.4551533,2013
+WT,,,North Zone,942,Cape Tribulation North,,,3579,-16.07538415,145.4691439,2013
+WT,,,North Zone,966,Low Isles UW,,,3640,-16.38549093,145.5602431,2014
+WT,,,North Zone,966,Low Isles UW,,,20994,-16.38536741,145.5621529,2019
+WT,,,South Zone,982,Goold Island,,,3759,-18.17517087,146.1541057,2012
+WT,,,South Zone,983,Garden Island off Goold Island,,,3760,-18.18434482,146.1432052,2012
+WT,,,Central Zone,986,Wungu Beach,,,3771,-16.9524,145.925,2014
+WT,,,Central Zone,986,Wungu Beach,,,13795,-16.95258117,145.9250075,2018
+WT,,,Central Zone,1010,Jilgi Beach,,,5502,-16.9793573,145.9018263,2013
+WT,,,Central Zone,1010,Jilgi Beach,,,3894,-16.97794629,145.9029551,2014
+WT,,,Central Zone,1141,"Nudey Beach, Fitzroy Island",,,6503,-16.9356,145.983,2016
+WT,,,North Zone,1155,Palm Cove,,,8089,-16.74554514,145.6713651,2017
+DT,WT,DT,Halifax Bay,3018,"South Beach, Orpheus Island",,,18698,-18.66278391,146.4934158,2019
+DT,WT,DT,Halifax Bay,3018,"South Beach, Orpheus Island",,,18697,-18.65728472,146.502192,2019
+DT,WT,DT,Halifax Bay,3018,"South Beach, Orpheus Island",,,15522,-18.66128969,146.4978576,2019
+WT,,,South Zone,1337,"Sunken Reef Beach, Hinchinbrook Island",,,5237,-18.4333,146.336,2015
+WT,,,North Zone,1351,Coconut Beach,,,5308,-16.10862887,145.4611403,2015
+WT,,,North Zone,1351,Coconut Beach,,,6031,-16.10826998,145.4614318,2015
+WT,,,North Zone,1351,Coconut Beach,,,6688,-16.10737277,145.4621272,2016
+WT,,,Mossman,1357,South Mossman Creek,,,11704,-16.48559632,145.3837967,2018
+WT,,,Mulgrave-Russell,1377,"Lily Creek, Cairns",,,5383,-16.91637564,145.7630464,2015
+WT,,,Central Zone,1379,"Welcome Bay, Fitzroy Island",,,6505,-16.92662459,145.9905016,2016
+WT,,,North Zone,1445,"Myall Beach, Cape Tribulation",,,5570,-16.08488083,145.4689179,2015
+WT,,,Barron,1478,"Northern Boardwalk, Cairns Airport",,,6612,-16.8832047,145.7611009,2016
+WT,,,Central Zone,1549,"Buddabadoo, Yarrabah",,,7012,-17.0089442,145.8990303,2016
+WT,,,South Zone,1564,"Picnic Beach, Hinchinbrook Island",,,5985,-18.48602846,146.3227899,2015
+WT,,,North Zone,1606,Banabilla,,,6194,-15.92284947,145.3640244,2016
+WT,,,Mulgrave-Russell,1614,"Mulgrave River, Goldsborough",,,6225,-17.1424,145.751,2016
+DT,WT,DT,Halifax Bay,3018,"South Beach, Orpheus Island",,,15522,-18.66128969,146.4978576,2019
+DT,,DT,Halifax Bay,984,Toolakea,,,3764,-19.1453,146.579,2013
+DT,,DT,Halifax Bay,984,Toolakea,,,16523,-19.14128628,146.5610826,2019
+WT,,,South Zone,1687,"Kennedy Bay, South Mission",,,6532,-17.9798,146.087,2016
+WT,,,South Zone,1687,"Kennedy Bay, South Mission",,,8494,-17.97892522,146.0880542,2017
+WT,,,South Zone,1712,"Stephens Island, Barnard Island Group",,,6606,-17.73828445,146.1562576,2016
+WT,,,South Zone,1713,Bingil Bay Camp Ground,,,6617,-17.8307,146.1,2016
+WT,,,Central Zone,2182,"Etty Bay, Innisfail",,,14338,-17.55868659,146.0902691,2019
+WT,,,North Zone,2452,Black Rock Reef Beach,,,11706,-16.24434745,145.4802704,2018
+WT,,,Central Zone,2463,Bramston Beach,,,9307,-17.35498036,146.025939,2017
+WT,,,North Zone,2497,"Mission Beach, Yarrabah",,,14672,-16.90738425,145.8744264,2019
+WT,,,North Zone,2497,"Mission Beach, Yarrabah",,,15103,-16.90713789,145.8727366,2019
+WT,,,South Zone,2879,Kurrimine Beach Conservation Park,,,14340,-17.79054359,146.0940159,2019
+WT,,,Mossman,3013,Four Mile Beach North End Carpark,,,15022,-16.48529283,145.4684901,2019
+DT,,DT,Halifax Bay,3123,"Yanks Jetty, Orpheus Island",,,15983,-18.65161254,146.4871716,2019
+DT,,DT,Halifax Bay,3123,"Yanks Jetty, Orpheus Island",,,18507,-18.65559732,146.4883089,2019
+WT,,,Mossman,3360,"Coast Watcher Park, Trinity Beach",,,18706,-16.79000751,145.6933022,2019
+WT,,,Mossman,3360,"Coast Watcher Park, Trinity Beach",,,19130,-16.78994588,145.6933182,2019
+WT,,,South Zone,3474,"Zoe Bay, Hinchinbrook Island NP",,,5238,-18.40142896,146.3257757,2015
+DT,,,Halifax Bay,,"Little Pioneer Bay, Orpheus Island. Underwater",Little Pioneer Bay,VLP,,-18.5995547,146.489485,2023
+DT,,,Halifax Bay,,"Fig Tree Bay, Orpheus Island QLD",Fig Tree Bay,HP,,-18.6021019,146.5025445,2023
+DT,,,Halifax Bay,,"Big Rock Bay, Orpheus Island QLD",Big Rock Bay,VHP,,-18.60801188,146.499938,2023
+DT,,,Halifax Bay,,"Pioneer Bay, Orpheus Island",Pioneer Bay,VLP,,-18.61263796,146.490235,2023
+DT,,,Halifax Bay,,"Picnic Bay, Orpheus Island",Picnic Bay,VHP,,-18.63967202,146.5040569,2023
+DT,,,Halifax Bay,,"Fantome Island, Northern End","Fantome Island, Northern End",MP,,-18.66140522,146.5097123,2023
+DT,,,Halifax Bay,,"North West Beach, Fantome Island","Fantome Island, North West Beach",LP,,-18.66209428,146.5068237,2023
+DT,,,Halifax Bay,,"Bushland Beach, Townsville",Bushland Beach,MP,,-19.19012164,146.6772294,2023
+DT,,,Cleveland Bay,,"Radical Bay, Magnetic Island QLD",Radical Bay,VLP,,-19.1129952,146.8744987,2023
+DT,,,Cleveland Bay,,"Horseshoe Bay, Magnetic Island",Horseshoe Bay,VLP,,-19.11690747,146.8606649,2023
+DT,,,Cleveland Bay,,"Florence Bay, Magnetic Island QLD",Florence Bay,MP,,-19.12189054,146.877932,2023
+DT,,,Cleveland Bay,,"Alma Bay, Magnetic Island QLD",Alma Bay,LP,,-19.14876568,146.8692049,2023
+DT,,,Cleveland Bay,,"Alma Bay, Magnetic Island UW QLD","Alma Bay, UW",VLP,,-19.14913981,146.8707639,2023
+DT,,,Cleveland Bay,,"Nelly Bay Beach, Magnetic Island",Nelly Bay Beach,LP,,-19.16811021,146.847773,2023
+DT,,,Cleveland Bay,,"Nelly Bay, Magnetic Island UW",Nelly Bay UW,VLP,,-19.17011786,146.8479596,2023
+DT,,,Cleveland Bay,,"Shelly Beach, Pallarenda",Shelly Beach,MP,,-19.181721,146.72741,2023
+DT,,,Cleveland Bay,,"Shelly Cove, Cape Pallarenda Conservation Park",Shelly Cove,VLP,,-19.1865734,146.7693576,2023
+DT,,,Cleveland Bay,,Pallarenda Beach,Pallarenda Beach,VLP,,-19.19899225,146.7746926,2023
+DT,,,Cleveland Bay,,Rowes Bay,Rowes Bay,VLP,,-19.23524249,146.7878317,2023
+DT,,,Cleveland Bay,,"Secret Beach, Ross River, Townsville, QLD","Secret Beach, Ross River",VLP,,-19.26787127,146.8354547,2023
+DT,,,Ross,,"Strand Rock Pool, Townsville",Strand Rock Pool,LP,,-19.23991081,146.8065931,2023
+DT,,,Ross,,Jezzine Barracks Townsville Heritage Precinct,Jezzine Barracks,LP,,-19.24017567,146.804029,2023
+DT,,,Ross,,"West End, Townsville",West End,LP,,-19.241766,146.7924607,2023
+DT,,,Ross,,"Ross Creek, Townsville",Ross Creek,MP,,-19.26514103,146.8160614,2023
+DT,,,Ross,,"Aplins Weir Rotary Park, Townsville QLD",Aplins Weir,LP,,-19.30349155,146.7813467,2023
+DT,,,Ross,,Lake Idalia Wetland Foreshore,Lake Idalia,MP,,-19.30939169,146.8159407,2023

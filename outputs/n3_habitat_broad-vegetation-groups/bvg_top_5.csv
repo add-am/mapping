@@ -1,0 +1,1531 @@
+"","region","basin","sub_basin","year","total_basin_area","vegetation","area","percent_coverage","y_on_y_area_change","y_on_y_percentage_change"
+"1","Wet Tropics","Barron","Barron","pre_clear",2193.33569,"Eucalypt Variations",1187.20429,54.1278,0,0
+"2","Wet Tropics","Barron","Barron","pre_clear",2193.33569,"Rainforest and Scrubs",838.43786,38.22661,0,0
+"3","Wet Tropics","Barron","Barron","pre_clear",2193.33569,"Melaleuca Open Woodlands",128.03465,5.83744,0,0
+"4","Wet Tropics","Barron","Barron","pre_clear",2193.33569,"Mangroves and Saltmarshes",13.0172,0.59349,0,0
+"5","Wet Tropics","Barron","Barron","pre_clear",2193.33569,"Wetlands",8.23215,0.37533,0,0
+"6","Wet Tropics","Barron","Barron","remnant_1997",2193.33568,"Eucalypt Variations",798.31458,36.39728,-388.88972,-17.73052
+"7","Wet Tropics","Barron","Barron","remnant_1997",2193.33568,"Non-Remnant Vegetation",718.69209,32.76708,718.69209,32.76708
+"8","Wet Tropics","Barron","Barron","remnant_1997",2193.33568,"Rainforest and Scrubs",465.51997,21.22429,-372.91789,-17.00232
+"9","Wet Tropics","Barron","Barron","remnant_1997",2193.33568,"Melaleuca Open Woodlands",104.54387,4.76643,-23.49078,-1.07101
+"10","Wet Tropics","Barron","Barron","remnant_1997",2193.33568,"Water",40.96195,1.86756,38.9867,1.77751
+"11","Wet Tropics","Barron","Barron","remnant_1999",2193.33568,"Eucalypt Variations",794.98499,36.24548,-3.32959,-0.1518
+"12","Wet Tropics","Barron","Barron","remnant_1999",2193.33568,"Non-Remnant Vegetation",723.06642,32.96652,4.37433,0.19944
+"13","Wet Tropics","Barron","Barron","remnant_1999",2193.33568,"Rainforest and Scrubs",465.51072,21.22387,-0.00926,-0.00042
+"14","Wet Tropics","Barron","Barron","remnant_1999",2193.33568,"Melaleuca Open Woodlands",103.44998,4.71656,-1.09389,-0.04987
+"15","Wet Tropics","Barron","Barron","remnant_1999",2193.33568,"Water",41.02035,1.87023,0.0584,0.00266
+"16","Wet Tropics","Barron","Barron","remnant_2000",2193.33568,"Eucalypt Variations",791.31391,36.0781,-3.67108,-0.16737
+"17","Wet Tropics","Barron","Barron","remnant_2000",2193.33568,"Non-Remnant Vegetation",727.34309,33.1615,4.27666,0.19498
+"18","Wet Tropics","Barron","Barron","remnant_2000",2193.33568,"Rainforest and Scrubs",465.12763,21.2064,-0.38308,-0.01747
+"19","Wet Tropics","Barron","Barron","remnant_2000",2193.33568,"Melaleuca Open Woodlands",103.12291,4.70165,-0.32707,-0.01491
+"20","Wet Tropics","Barron","Barron","remnant_2000",2193.33568,"Water",41.12492,1.87499,0.10457,0.00477
+"21","Wet Tropics","Barron","Barron","remnant_2001",2193.33568,"Eucalypt Variations",789.21937,35.98261,-2.09454,-0.0955
+"22","Wet Tropics","Barron","Barron","remnant_2001",2193.33568,"Non-Remnant Vegetation",730.05918,33.28534,2.71609,0.12383
+"23","Wet Tropics","Barron","Barron","remnant_2001",2193.33568,"Rainforest and Scrubs",465.0368,21.20226,-0.09084,-0.00414
+"24","Wet Tropics","Barron","Barron","remnant_2001",2193.33568,"Melaleuca Open Woodlands",102.54546,4.67532,-0.57745,-0.02633
+"25","Wet Tropics","Barron","Barron","remnant_2001",2193.33568,"Water",41.17165,1.87713,0.04674,0.00213
+"26","Wet Tropics","Barron","Barron","remnant_2003",2193.33568,"Eucalypt Variations",786.51323,35.85923,-2.70614,-0.12338
+"27","Wet Tropics","Barron","Barron","remnant_2003",2193.33568,"Non-Remnant Vegetation",732.9472,33.41701,2.88802,0.13167
+"28","Wet Tropics","Barron","Barron","remnant_2003",2193.33568,"Rainforest and Scrubs",464.81664,21.19223,-0.22016,-0.01004
+"29","Wet Tropics","Barron","Barron","remnant_2003",2193.33568,"Melaleuca Open Woodlands",102.50113,4.6733,-0.04433,-0.00202
+"30","Wet Tropics","Barron","Barron","remnant_2003",2193.33568,"Water",41.20315,1.87856,0.03149,0.00144
+"31","Wet Tropics","Barron","Barron","remnant_2005",2193.33568,"Eucalypt Variations",784.68253,35.77576,-1.8307,-0.08347
+"32","Wet Tropics","Barron","Barron","remnant_2005",2193.33568,"Non-Remnant Vegetation",735.02497,33.51174,2.07777,0.09473
+"33","Wet Tropics","Barron","Barron","remnant_2005",2193.33568,"Rainforest and Scrubs",464.71846,21.18775,-0.09818,-0.00448
+"34","Wet Tropics","Barron","Barron","remnant_2005",2193.33568,"Melaleuca Open Woodlands",102.36149,4.66693,-0.13964,-0.00637
+"35","Wet Tropics","Barron","Barron","remnant_2005",2193.33568,"Water",41.20315,1.87856,0,0
+"36","Wet Tropics","Barron","Barron","remnant_2006",2193.33568,"Eucalypt Variations",783.67359,35.72976,-1.00894,-0.046
+"37","Wet Tropics","Barron","Barron","remnant_2006",2193.33568,"Non-Remnant Vegetation",736.13691,33.56244,1.11195,0.0507
+"38","Wet Tropics","Barron","Barron","remnant_2006",2193.33568,"Rainforest and Scrubs",464.67945,21.18597,-0.03901,-0.00178
+"39","Wet Tropics","Barron","Barron","remnant_2006",2193.33568,"Melaleuca Open Woodlands",102.08957,4.65453,-0.27192,-0.0124
+"40","Wet Tropics","Barron","Barron","remnant_2006",2193.33568,"Water",41.20314,1.87856,0,0
+"41","Wet Tropics","Barron","Barron","remnant_2006b",2193.33568,"Eucalypt Variations",783.66902,35.72955,-0.00457,-0.00021
+"42","Wet Tropics","Barron","Barron","remnant_2006b",2193.33568,"Non-Remnant Vegetation",736.19293,33.56499,0.05601,0.00255
+"43","Wet Tropics","Barron","Barron","remnant_2006b",2193.33568,"Rainforest and Scrubs",464.67596,21.18581,-0.00348,-0.00016
+"44","Wet Tropics","Barron","Barron","remnant_2006b",2193.33568,"Melaleuca Open Woodlands",102.08957,4.65453,0,0
+"45","Wet Tropics","Barron","Barron","remnant_2006b",2193.33568,"Water",41.20314,1.87856,0,0
+"46","Wet Tropics","Barron","Barron","remnant_2007",2193.33568,"Eucalypt Variations",783.06095,35.70183,-0.60806,-0.02772
+"47","Wet Tropics","Barron","Barron","remnant_2007",2193.33568,"Non-Remnant Vegetation",736.89454,33.59698,0.70161,0.03199
+"48","Wet Tropics","Barron","Barron","remnant_2007",2193.33568,"Rainforest and Scrubs",464.61938,21.18323,-0.05658,-0.00258
+"49","Wet Tropics","Barron","Barron","remnant_2007",2193.33568,"Melaleuca Open Woodlands",102.05837,4.65311,-0.03119,-0.00142
+"50","Wet Tropics","Barron","Barron","remnant_2007",2193.33568,"Water",41.20314,1.87856,0,0
+"51","Wet Tropics","Barron","Barron","remnant_2009",2193.33568,"Eucalypt Variations",782.63006,35.68218,-0.43089,-0.01965
+"52","Wet Tropics","Barron","Barron","remnant_2009",2193.33568,"Non-Remnant Vegetation",737.39307,33.61971,0.49853,0.02273
+"53","Wet Tropics","Barron","Barron","remnant_2009",2193.33568,"Rainforest and Scrubs",464.54456,21.17982,-0.07482,-0.00341
+"54","Wet Tropics","Barron","Barron","remnant_2009",2193.33568,"Melaleuca Open Woodlands",102.05264,4.65285,-0.00573,-0.00026
+"55","Wet Tropics","Barron","Barron","remnant_2009",2193.33568,"Water",41.21605,1.87915,0.01291,0.00059
+"56","Wet Tropics","Barron","Barron","remnant_2011",2193.33568,"Eucalypt Variations",781.73346,35.64131,-0.8966,-0.04088
+"57","Wet Tropics","Barron","Barron","remnant_2011",2193.33568,"Non-Remnant Vegetation",738.45474,33.66811,1.06167,0.0484
+"58","Wet Tropics","Barron","Barron","remnant_2011",2193.33568,"Rainforest and Scrubs",464.50587,21.17806,-0.0387,-0.00176
+"59","Wet Tropics","Barron","Barron","remnant_2011",2193.33568,"Melaleuca Open Woodlands",101.96063,4.64866,-0.09201,-0.0042
+"60","Wet Tropics","Barron","Barron","remnant_2011",2193.33568,"Water",41.22892,1.87974,0.01287,0.00059
+"61","Wet Tropics","Barron","Barron","remnant_2013",2193.33568,"Eucalypt Variations",781.02456,35.60898,-0.70891,-0.03232
+"62","Wet Tropics","Barron","Barron","remnant_2013",2193.33568,"Non-Remnant Vegetation",739.185,33.70141,0.73027,0.03329
+"63","Wet Tropics","Barron","Barron","remnant_2013",2193.33568,"Rainforest and Scrubs",464.48915,21.17729,-0.01672,-0.00076
+"64","Wet Tropics","Barron","Barron","remnant_2013",2193.33568,"Melaleuca Open Woodlands",101.95599,4.64844,-0.00464,-0.00021
+"65","Wet Tropics","Barron","Barron","remnant_2013",2193.33568,"Water",41.22892,1.87974,0,0
+"66","Wet Tropics","Barron","Barron","remnant_2015",2193.33569,"Eucalypt Variations",778.71968,35.5039,-2.30488,-0.10509
+"67","Wet Tropics","Barron","Barron","remnant_2015",2193.33569,"Non-Remnant Vegetation",741.76233,33.81891,2.57732,0.11751
+"68","Wet Tropics","Barron","Barron","remnant_2015",2193.33569,"Rainforest and Scrubs",464.40523,21.17347,-0.08393,-0.00383
+"69","Wet Tropics","Barron","Barron","remnant_2015",2193.33569,"Melaleuca Open Woodlands",101.76747,4.63985,-0.18852,-0.0086
+"70","Wet Tropics","Barron","Barron","remnant_2015",2193.33569,"Water",41.22892,1.87974,0,0
+"71","Wet Tropics","Barron","Barron","remnant_2017",2193.33569,"Eucalypt Variations",776.77761,35.41535,-1.94207,-0.08854
+"72","Wet Tropics","Barron","Barron","remnant_2017",2193.33569,"Non-Remnant Vegetation",743.72471,33.90839,1.96238,0.08947
+"73","Wet Tropics","Barron","Barron","remnant_2017",2193.33569,"Rainforest and Scrubs",464.40414,21.17342,-0.00108,-0.00005
+"74","Wet Tropics","Barron","Barron","remnant_2017",2193.33569,"Melaleuca Open Woodlands",101.75455,4.63926,-0.01292,-0.00059
+"75","Wet Tropics","Barron","Barron","remnant_2017",2193.33569,"Water",41.24483,1.88046,0.01591,0.00073
+"76","Wet Tropics","Barron","Barron","remnant_2019",2193.33569,"Eucalypt Variations",775.6339,35.36321,-1.14371,-0.05214
+"77","Wet Tropics","Barron","Barron","remnant_2019",2193.33569,"Non-Remnant Vegetation",744.95169,33.96433,1.22698,0.05594
+"78","Wet Tropics","Barron","Barron","remnant_2019",2193.33569,"Rainforest and Scrubs",464.40414,21.17342,0,0
+"79","Wet Tropics","Barron","Barron","remnant_2019",2193.33569,"Melaleuca Open Woodlands",101.7052,4.63701,-0.04935,-0.00225
+"80","Wet Tropics","Barron","Barron","remnant_2019",2193.33569,"Water",41.24483,1.88046,0,0
+"81","Wet Tropics","Barron","Barron","remnant_2021",2193.33569,"Eucalypt Variations",774.73893,35.32241,-0.89497,-0.0408
+"82","Wet Tropics","Barron","Barron","remnant_2021",2193.33569,"Non-Remnant Vegetation",745.97077,34.01079,1.01908,0.04646
+"83","Wet Tropics","Barron","Barron","remnant_2021",2193.33569,"Rainforest and Scrubs",464.22226,21.16513,-0.18189,-0.00829
+"84","Wet Tropics","Barron","Barron","remnant_2021",2193.33569,"Melaleuca Open Woodlands",101.6688,4.63535,-0.0364,-0.00166
+"85","Wet Tropics","Barron","Barron","remnant_2021",2193.33569,"Water",41.45307,1.88996,0.20825,0.00949
+"86","Dry Tropics","Black","Black River","pre_clear",301.75289,"Eucalypt Variations",185.7007,61.54065,0,0
+"87","Dry Tropics","Black","Bluewater Creek","pre_clear",291.80783,"Eucalypt Variations",170.02347,58.26556,0,0
+"88","Dry Tropics","Black","Crystal Creek","pre_clear",239.19389,"Eucalypt Variations",125.28178,52.37666,0,0
+"89","Dry Tropics","Black","Rollingstone Creek","pre_clear",222.04086,"Eucalypt Variations",114.83969,51.72007,0,0
+"90","Dry Tropics","Black","Bluewater Creek","pre_clear",291.80783,"Melaleuca Open Woodlands",93.38394,32.00186,0,0
+"91","Dry Tropics","Black","Black River","remnant_1997",301.75289,"Eucalypt Variations",159.49256,52.85536,-26.20814,-8.6853
+"92","Dry Tropics","Black","Bluewater Creek","remnant_1997",291.80783,"Eucalypt Variations",150.07982,51.43105,-19.94366,-6.83452
+"93","Dry Tropics","Black","Crystal Creek","remnant_1997",239.19388,"Eucalypt Variations",100.30371,41.93406,-24.97807,-10.4426
+"94","Dry Tropics","Black","Rollingstone Creek","remnant_1997",222.04086,"Eucalypt Variations",99.62998,44.87011,-15.20971,-6.84996
+"95","Dry Tropics","Black","Crystal Creek","remnant_1997",239.19388,"Rainforest and Scrubs",71.39927,29.84996,-1.06925,-0.44702
+"96","Dry Tropics","Black","Black River","remnant_1999",301.75289,"Eucalypt Variations",156.77981,51.95636,-2.71275,-0.899
+"97","Dry Tropics","Black","Bluewater Creek","remnant_1999",291.80783,"Eucalypt Variations",149.94533,51.38496,-0.13448,-0.04609
+"98","Dry Tropics","Black","Crystal Creek","remnant_1999",239.19388,"Eucalypt Variations",100.30371,41.93406,0,0
+"99","Dry Tropics","Black","Rollingstone Creek","remnant_1999",222.04086,"Eucalypt Variations",99.47873,44.80199,-0.15125,-0.06812
+"100","Dry Tropics","Black","Crystal Creek","remnant_1999",239.19388,"Rainforest and Scrubs",71.39927,29.84996,0,0
+"101","Dry Tropics","Black","Black River","remnant_2000",301.75289,"Eucalypt Variations",156.25638,51.78289,-0.52343,-0.17346
+"102","Dry Tropics","Black","Bluewater Creek","remnant_2000",291.80783,"Eucalypt Variations",149.35308,51.182,-0.59225,-0.20296
+"103","Dry Tropics","Black","Crystal Creek","remnant_2000",239.19388,"Eucalypt Variations",100.25284,41.91279,-0.05087,-0.02127
+"104","Dry Tropics","Black","Rollingstone Creek","remnant_2000",222.04086,"Eucalypt Variations",99.30214,44.72246,-0.17659,-0.07953
+"105","Dry Tropics","Black","Crystal Creek","remnant_2000",239.19388,"Rainforest and Scrubs",71.39927,29.84996,0,0
+"106","Dry Tropics","Black","Black River","remnant_2001",301.75289,"Eucalypt Variations",155.97657,51.69017,-0.27981,-0.09273
+"107","Dry Tropics","Black","Bluewater Creek","remnant_2001",291.80783,"Eucalypt Variations",149.24007,51.14327,-0.11301,-0.03873
+"108","Dry Tropics","Black","Crystal Creek","remnant_2001",239.19388,"Eucalypt Variations",100.237,41.90617,-0.01584,-0.00662
+"109","Dry Tropics","Black","Rollingstone Creek","remnant_2001",222.04086,"Eucalypt Variations",99.19846,44.67577,-0.10368,-0.04669
+"110","Dry Tropics","Black","Crystal Creek","remnant_2001",239.19388,"Rainforest and Scrubs",71.39927,29.84996,0,0
+"111","Dry Tropics","Black","Black River","remnant_2003",301.75289,"Eucalypt Variations",155.62005,51.57202,-0.35652,-0.11815
+"112","Dry Tropics","Black","Bluewater Creek","remnant_2003",291.80783,"Eucalypt Variations",149.04678,51.07703,-0.19329,-0.06624
+"113","Dry Tropics","Black","Crystal Creek","remnant_2003",239.19388,"Eucalypt Variations",100.11043,41.85326,-0.12656,-0.05291
+"114","Dry Tropics","Black","Rollingstone Creek","remnant_2003",222.04086,"Eucalypt Variations",98.78052,44.48754,-0.41795,-0.18823
+"115","Dry Tropics","Black","Crystal Creek","remnant_2003",239.19388,"Rainforest and Scrubs",71.39927,29.84996,0,0
+"116","Dry Tropics","Black","Black River","remnant_2005",301.75289,"Eucalypt Variations",154.51254,51.20499,-1.10751,-0.36703
+"117","Dry Tropics","Black","Bluewater Creek","remnant_2005",291.80783,"Eucalypt Variations",147.95941,50.7044,-1.08737,-0.37263
+"118","Dry Tropics","Black","Crystal Creek","remnant_2005",239.19388,"Eucalypt Variations",100.04245,41.82484,-0.06798,-0.02842
+"119","Dry Tropics","Black","Rollingstone Creek","remnant_2005",222.04086,"Eucalypt Variations",98.55014,44.38379,-0.23037,-0.10375
+"120","Dry Tropics","Black","Crystal Creek","remnant_2005",239.19388,"Rainforest and Scrubs",71.39927,29.84996,0,0
+"121","Dry Tropics","Black","Black River","remnant_2006",301.75289,"Eucalypt Variations",152.60335,50.57229,-1.90919,-0.6327
+"122","Dry Tropics","Black","Bluewater Creek","remnant_2006",291.80783,"Eucalypt Variations",147.51008,50.55042,-0.44933,-0.15398
+"123","Dry Tropics","Black","Crystal Creek","remnant_2006",239.19388,"Eucalypt Variations",100.03921,41.82348,-0.00325,-0.00136
+"124","Dry Tropics","Black","Rollingstone Creek","remnant_2006",222.04086,"Eucalypt Variations",97.85613,44.07123,-0.69401,-0.31256
+"125","Dry Tropics","Black","Black River","remnant_2006",301.75289,"Non-Remnant Vegetation",71.53075,23.70508,2.46845,0.81804
+"126","Dry Tropics","Black","Black River","remnant_2006b",301.75289,"Eucalypt Variations",152.60335,50.57229,0,0
+"127","Dry Tropics","Black","Bluewater Creek","remnant_2006b",291.80783,"Eucalypt Variations",147.26815,50.46751,-0.24193,-0.08291
+"128","Dry Tropics","Black","Crystal Creek","remnant_2006b",239.19388,"Eucalypt Variations",100.03921,41.82348,0,0
+"129","Dry Tropics","Black","Rollingstone Creek","remnant_2006b",222.04086,"Eucalypt Variations",97.84986,44.06841,-0.00627,-0.00282
+"130","Dry Tropics","Black","Black River","remnant_2006b",301.75289,"Non-Remnant Vegetation",71.53075,23.70508,0,0
+"131","Dry Tropics","Black","Black River","remnant_2007",301.75289,"Eucalypt Variations",152.57882,50.56416,-0.02453,-0.00813
+"132","Dry Tropics","Black","Bluewater Creek","remnant_2007",291.80783,"Eucalypt Variations",147.15575,50.42899,-0.1124,-0.03852
+"133","Dry Tropics","Black","Crystal Creek","remnant_2007",239.19388,"Eucalypt Variations",100.0194,41.8152,-0.01981,-0.00828
+"134","Dry Tropics","Black","Rollingstone Creek","remnant_2007",222.04086,"Eucalypt Variations",97.45828,43.89205,-0.39159,-0.17636
+"135","Dry Tropics","Black","Black River","remnant_2007",301.75289,"Non-Remnant Vegetation",71.6601,23.74794,0.12935,0.04287
+"136","Dry Tropics","Black","Black River","remnant_2009",301.75289,"Eucalypt Variations",152.07151,50.39604,-0.5073,-0.16812
+"137","Dry Tropics","Black","Bluewater Creek","remnant_2009",291.80783,"Eucalypt Variations",146.88051,50.33467,-0.27524,-0.09432
+"138","Dry Tropics","Black","Crystal Creek","remnant_2009",239.19388,"Eucalypt Variations",100.0194,41.8152,0,0
+"139","Dry Tropics","Black","Rollingstone Creek","remnant_2009",222.04086,"Eucalypt Variations",97.45294,43.88964,-0.00534,-0.0024
+"140","Dry Tropics","Black","Black River","remnant_2009",301.75289,"Non-Remnant Vegetation",72.47471,24.0179,0.81461,0.26996
+"141","Dry Tropics","Black","Black River","remnant_2011",301.75289,"Eucalypt Variations",152.03397,50.3836,-0.03754,-0.01244
+"142","Dry Tropics","Black","Bluewater Creek","remnant_2011",291.80783,"Eucalypt Variations",146.28239,50.1297,-0.59812,-0.20497
+"143","Dry Tropics","Black","Crystal Creek","remnant_2011",239.19388,"Eucalypt Variations",99.91965,41.7735,-0.09975,-0.0417
+"144","Dry Tropics","Black","Rollingstone Creek","remnant_2011",222.04086,"Eucalypt Variations",97.28628,43.81459,-0.16666,-0.07506
+"145","Dry Tropics","Black","Black River","remnant_2011",301.75289,"Non-Remnant Vegetation",72.60482,24.06102,0.13011,0.04312
+"146","Dry Tropics","Black","Black River","remnant_2013",301.75289,"Eucalypt Variations",151.91682,50.34478,-0.11716,-0.03882
+"147","Dry Tropics","Black","Bluewater Creek","remnant_2013",291.80783,"Eucalypt Variations",145.83947,49.97791,-0.44292,-0.15179
+"148","Dry Tropics","Black","Crystal Creek","remnant_2013",239.19388,"Eucalypt Variations",99.91746,41.77258,-0.00219,-0.00092
+"149","Dry Tropics","Black","Rollingstone Creek","remnant_2013",222.04086,"Eucalypt Variations",97.2267,43.78775,-0.05958,-0.02683
+"150","Dry Tropics","Black","Black River","remnant_2013",301.75289,"Non-Remnant Vegetation",73.09985,24.22507,0.49503,0.16405
+"151","Dry Tropics","Black","Black River","remnant_2015",301.75289,"Eucalypt Variations",151.28429,50.13516,-0.63253,-0.20962
+"152","Dry Tropics","Black","Bluewater Creek","remnant_2015",291.80783,"Eucalypt Variations",145.47124,49.85173,-0.36823,-0.12619
+"153","Dry Tropics","Black","Crystal Creek","remnant_2015",239.19388,"Eucalypt Variations",99.81126,41.72818,-0.1062,-0.0444
+"154","Dry Tropics","Black","Rollingstone Creek","remnant_2015",222.04086,"Eucalypt Variations",97.04383,43.70539,-0.18287,-0.08236
+"155","Dry Tropics","Black","Black River","remnant_2015",301.75289,"Non-Remnant Vegetation",74.41956,24.66242,1.31972,0.43735
+"156","Dry Tropics","Black","Black River","remnant_2017",301.75289,"Eucalypt Variations",150.57673,49.90067,-0.70756,-0.23448
+"157","Dry Tropics","Black","Bluewater Creek","remnant_2017",291.80783,"Eucalypt Variations",145.43154,49.83812,-0.0397,-0.0136
+"158","Dry Tropics","Black","Crystal Creek","remnant_2017",239.19388,"Eucalypt Variations",99.76685,41.70962,-0.04441,-0.01857
+"159","Dry Tropics","Black","Rollingstone Creek","remnant_2017",222.04086,"Eucalypt Variations",97.00049,43.68588,-0.04334,-0.01952
+"160","Dry Tropics","Black","Black River","remnant_2017",301.75289,"Non-Remnant Vegetation",75.13483,24.89946,0.71527,0.23704
+"161","Dry Tropics","Black","Black River","remnant_2019",301.75289,"Eucalypt Variations",150.50546,49.87706,-0.07127,-0.02362
+"162","Dry Tropics","Black","Bluewater Creek","remnant_2019",291.80783,"Eucalypt Variations",145.32184,49.80053,-0.1097,-0.03759
+"163","Dry Tropics","Black","Crystal Creek","remnant_2019",239.19388,"Eucalypt Variations",99.72687,41.6929,-0.03998,-0.01672
+"164","Dry Tropics","Black","Rollingstone Creek","remnant_2019",222.04086,"Eucalypt Variations",96.38406,43.40825,-0.61644,-0.27762
+"165","Dry Tropics","Black","Black River","remnant_2019",301.75289,"Non-Remnant Vegetation",75.35042,24.9709,0.21559,0.07145
+"166","Dry Tropics","Black","Black River","remnant_2021",301.75289,"Eucalypt Variations",148.04971,49.06323,-2.45575,-0.81383
+"167","Dry Tropics","Black","Bluewater Creek","remnant_2021",291.80783,"Eucalypt Variations",145.28868,49.78916,-0.03316,-0.01136
+"168","Dry Tropics","Black","Crystal Creek","remnant_2021",239.19388,"Eucalypt Variations",99.32858,41.52639,-0.39829,-0.16651
+"169","Dry Tropics","Black","Rollingstone Creek","remnant_2021",222.04086,"Eucalypt Variations",96.06323,43.26376,-0.32083,-0.14449
+"170","Dry Tropics","Black","Black River","remnant_2021",301.75289,"Non-Remnant Vegetation",73.08802,24.22115,-2.2624,-0.74975
+"171","Dry Tropics","Burdekin","Upper Burdekin","pre_clear",40508.93852,"Eucalypt Variations",36292.87133,89.59225,0,0
+"172","Dry Tropics","Burdekin","Belyando","pre_clear",35439.00425,"Eucalypt Variations",23942.86017,67.56076,0,0
+"173","Dry Tropics","Burdekin","Cape Campaspe","pre_clear",20457.93003,"Eucalypt Variations",16563.6031,80.96422,0,0
+"174","Dry Tropics","Burdekin","Belyando","pre_clear",35439.00425,"Acacia Dominated",10535.93156,29.72976,0,0
+"175","Dry Tropics","Burdekin","Broke Bogie","pre_clear",11723.7323,"Eucalypt Variations",9629.02019,82.13272,0,0
+"176","Dry Tropics","Burdekin","Upper Burdekin","remnant_1997",40508.93875,"Eucalypt Variations",35424.47047,87.44853,-868.40086,-2.14373
+"177","Dry Tropics","Burdekin","Belyando","remnant_1997",35439.00425,"Eucalypt Variations",16429.97807,46.36129,-7512.8821,-21.19947
+"178","Dry Tropics","Burdekin","Cape Campaspe","remnant_1997",20457.93006,"Eucalypt Variations",16185.67572,79.11688,-377.92738,-1.84734
+"179","Dry Tropics","Burdekin","Belyando","remnant_1997",35439.00425,"Non-Remnant Vegetation",14769.78326,41.67663,14769.78326,41.67663
+"180","Dry Tropics","Burdekin","Broke Bogie","remnant_1997",11723.73229,"Eucalypt Variations",8408.38936,71.7211,-1220.63084,-10.41162
+"181","Dry Tropics","Burdekin","Upper Burdekin","remnant_1999",40508.93875,"Eucalypt Variations",35406.24978,87.40355,-18.22069,-0.04498
+"182","Dry Tropics","Burdekin","Cape Campaspe","remnant_1999",20457.93006,"Eucalypt Variations",16156.87937,78.97612,-28.79635,-0.14076
+"183","Dry Tropics","Burdekin","Belyando","remnant_1999",35439.00425,"Eucalypt Variations",15802.9547,44.59198,-627.02337,-1.7693
+"184","Dry Tropics","Burdekin","Belyando","remnant_1999",35439.00425,"Non-Remnant Vegetation",15603.82651,44.03009,834.04325,2.35346
+"185","Dry Tropics","Burdekin","Broke Bogie","remnant_1999",11723.73229,"Eucalypt Variations",8401.35157,71.66107,-7.03779,-0.06003
+"186","Dry Tropics","Burdekin","Upper Burdekin","remnant_2000",40508.93875,"Eucalypt Variations",35341.7505,87.24433,-64.49928,-0.15922
+"187","Dry Tropics","Burdekin","Belyando","remnant_2000",35439.00425,"Non-Remnant Vegetation",16323.01944,46.05948,719.19293,2.02938
+"188","Dry Tropics","Burdekin","Cape Campaspe","remnant_2000",20457.93006,"Eucalypt Variations",16121.93784,78.80532,-34.94154,-0.1708
+"189","Dry Tropics","Burdekin","Belyando","remnant_2000",35439.00425,"Eucalypt Variations",15223.45812,42.95679,-579.49658,-1.63519
+"190","Dry Tropics","Burdekin","Suttor","remnant_2000",18220.16386,"Non-Remnant Vegetation",8444.3829,46.34636,154.32587,0.84701
+"191","Dry Tropics","Burdekin","Upper Burdekin","remnant_2001",40508.93875,"Eucalypt Variations",35309.7361,87.1653,-32.01441,-0.07903
+"192","Dry Tropics","Burdekin","Belyando","remnant_2001",35439.00425,"Non-Remnant Vegetation",16726.93829,47.19923,403.91885,1.13976
+"193","Dry Tropics","Burdekin","Cape Campaspe","remnant_2001",20457.93006,"Eucalypt Variations",16053.04659,78.46858,-68.89125,-0.33675
+"194","Dry Tropics","Burdekin","Belyando","remnant_2001",35439.00425,"Eucalypt Variations",14904.82932,42.0577,-318.6288,-0.89909
+"195","Dry Tropics","Burdekin","Suttor","remnant_2001",18220.16386,"Non-Remnant Vegetation",8488.26249,46.58719,43.87959,0.24083
+"196","Dry Tropics","Burdekin","Upper Burdekin","remnant_2003",40508.93875,"Eucalypt Variations",35284.70396,87.1035,-25.03213,-0.06179
+"197","Dry Tropics","Burdekin","Belyando","remnant_2003",35439.00425,"Non-Remnant Vegetation",17329.38476,48.89919,602.44647,1.69995
+"198","Dry Tropics","Burdekin","Cape Campaspe","remnant_2003",20457.93006,"Eucalypt Variations",15977.33436,78.09849,-75.71223,-0.37009
+"199","Dry Tropics","Burdekin","Belyando","remnant_2003",35439.00425,"Eucalypt Variations",14396.0513,40.62205,-508.77803,-1.43564
+"200","Dry Tropics","Burdekin","Suttor","remnant_2003",18220.16386,"Non-Remnant Vegetation",8551.33589,46.93336,63.0734,0.34617
+"201","Dry Tropics","Burdekin","Upper Burdekin","remnant_2005",40508.93875,"Eucalypt Variations",35265.87977,87.05703,-18.8242,-0.04647
+"202","Dry Tropics","Burdekin","Belyando","remnant_2005",35439.00425,"Non-Remnant Vegetation",17673.38112,49.86986,343.99636,0.97067
+"203","Dry Tropics","Burdekin","Cape Campaspe","remnant_2005",20457.93006,"Eucalypt Variations",15967.05544,78.04825,-10.27892,-0.05024
+"204","Dry Tropics","Burdekin","Belyando","remnant_2005",35439.00425,"Eucalypt Variations",14107.49531,39.80782,-288.55598,-0.81423
+"205","Dry Tropics","Burdekin","Suttor","remnant_2005",18220.16387,"Non-Remnant Vegetation",8590.22287,47.14679,38.88697,0.21343
+"206","Dry Tropics","Burdekin","Upper Burdekin","remnant_2006",40508.93875,"Eucalypt Variations",35254.61642,87.02923,-11.26335,-0.0278
+"207","Dry Tropics","Burdekin","Belyando","remnant_2006",35439.00425,"Non-Remnant Vegetation",17753.75539,50.09665,80.37427,0.2268
+"208","Dry Tropics","Burdekin","Cape Campaspe","remnant_2006",20457.93006,"Eucalypt Variations",15885.86982,77.6514,-81.18562,-0.39684
+"209","Dry Tropics","Burdekin","Belyando","remnant_2006",35439.00425,"Eucalypt Variations",14035.35065,39.60425,-72.14467,-0.20357
+"210","Dry Tropics","Burdekin","Suttor","remnant_2006",18220.16387,"Non-Remnant Vegetation",8614.69938,47.28113,24.47651,0.13434
+"211","Dry Tropics","Burdekin","Upper Burdekin","remnant_2006b",40508.93875,"Eucalypt Variations",35252.63721,87.02434,-1.97921,-0.00489
+"212","Dry Tropics","Burdekin","Belyando","remnant_2006b",35439.00425,"Non-Remnant Vegetation",17754.00924,50.09737,0.25385,0.00072
+"213","Dry Tropics","Burdekin","Cape Campaspe","remnant_2006b",20457.93006,"Eucalypt Variations",15885.71265,77.65064,-0.15718,-0.00077
+"214","Dry Tropics","Burdekin","Belyando","remnant_2006b",35439.00425,"Eucalypt Variations",14035.0968,39.60353,-0.25385,-0.00072
+"215","Dry Tropics","Burdekin","Suttor","remnant_2006b",18220.16387,"Non-Remnant Vegetation",8617.64146,47.29728,2.94208,0.01615
+"216","Dry Tropics","Burdekin","Upper Burdekin","remnant_2007",40508.93875,"Eucalypt Variations",35247.32409,87.01123,-5.31313,-0.01312
+"217","Dry Tropics","Burdekin","Belyando","remnant_2007",35439.00425,"Non-Remnant Vegetation",17866.25157,50.41409,112.24234,0.31672
+"218","Dry Tropics","Burdekin","Cape Campaspe","remnant_2007",20457.93006,"Eucalypt Variations",15885.07318,77.64751,-0.63947,-0.00313
+"219","Dry Tropics","Burdekin","Belyando","remnant_2007",35439.00425,"Eucalypt Variations",13927.00737,39.29853,-108.08943,-0.305
+"220","Dry Tropics","Burdekin","Suttor","remnant_2007",18220.16386,"Non-Remnant Vegetation",8635.01591,47.39264,17.37445,0.09536
+"221","Dry Tropics","Burdekin","Upper Burdekin","remnant_2009",40508.93875,"Eucalypt Variations",35243.96288,87.00293,-3.3612,-0.0083
+"222","Dry Tropics","Burdekin","Belyando","remnant_2009",35439.00425,"Non-Remnant Vegetation",17905.14866,50.52385,38.89708,0.10976
+"223","Dry Tropics","Burdekin","Cape Campaspe","remnant_2009",20457.93006,"Eucalypt Variations",15883.05303,77.63763,-2.02015,-0.00987
+"224","Dry Tropics","Burdekin","Belyando","remnant_2009",35439.00425,"Eucalypt Variations",13901.9237,39.22775,-25.08367,-0.07078
+"225","Dry Tropics","Burdekin","Suttor","remnant_2009",18220.16386,"Non-Remnant Vegetation",8656.93148,47.51292,21.91557,0.12028
+"226","Dry Tropics","Burdekin","Upper Burdekin","remnant_2011",40508.93875,"Eucalypt Variations",35242.49171,86.9993,-1.47117,-0.00363
+"227","Dry Tropics","Burdekin","Belyando","remnant_2011",35439.00425,"Non-Remnant Vegetation",17911.20367,50.54093,6.05501,0.01709
+"228","Dry Tropics","Burdekin","Cape Campaspe","remnant_2011",20457.93006,"Eucalypt Variations",15882.16052,77.63327,-0.89251,-0.00436
+"229","Dry Tropics","Burdekin","Belyando","remnant_2011",35439.00425,"Eucalypt Variations",13897.85322,39.21626,-4.07047,-0.01149
+"230","Dry Tropics","Burdekin","Suttor","remnant_2011",18220.16386,"Non-Remnant Vegetation",8669.21229,47.58032,12.28082,0.0674
+"231","Dry Tropics","Burdekin","Upper Burdekin","remnant_2013",40508.93875,"Eucalypt Variations",35239.45714,86.99181,-3.03458,-0.00749
+"232","Dry Tropics","Burdekin","Belyando","remnant_2013",35439.00425,"Non-Remnant Vegetation",17981.09972,50.73816,69.89605,0.19723
+"233","Dry Tropics","Burdekin","Cape Campaspe","remnant_2013",20457.93006,"Eucalypt Variations",15877.76025,77.61176,-4.40027,-0.02151
+"234","Dry Tropics","Burdekin","Belyando","remnant_2013",35439.00425,"Eucalypt Variations",13838.86923,39.04983,-58.98399,-0.16644
+"235","Dry Tropics","Burdekin","Suttor","remnant_2013",18220.16386,"Non-Remnant Vegetation",8715.45514,47.83412,46.24285,0.2538
+"236","Dry Tropics","Burdekin","Upper Burdekin","remnant_2015",40508.93875,"Eucalypt Variations",35233.68907,86.97757,-5.76806,-0.01424
+"237","Dry Tropics","Burdekin","Belyando","remnant_2015",35439.00425,"Non-Remnant Vegetation",18066.77989,50.97993,85.68017,0.24177
+"238","Dry Tropics","Burdekin","Cape Campaspe","remnant_2015",20457.93006,"Eucalypt Variations",15874.1558,77.59414,-3.60445,-0.01762
+"239","Dry Tropics","Burdekin","Belyando","remnant_2015",35439.00425,"Eucalypt Variations",13771.66903,38.8602,-67.2002,-0.18962
+"240","Dry Tropics","Burdekin","Suttor","remnant_2015",18220.16386,"Non-Remnant Vegetation",8736.0716,47.94727,20.61647,0.11315
+"241","Dry Tropics","Burdekin","Upper Burdekin","remnant_2017",40508.93875,"Eucalypt Variations",35214.27044,86.92963,-19.41864,-0.04794
+"242","Dry Tropics","Burdekin","Belyando","remnant_2017",35439.00425,"Non-Remnant Vegetation",18400.93692,51.92284,334.15702,0.94291
+"243","Dry Tropics","Burdekin","Cape Campaspe","remnant_2017",20457.93006,"Eucalypt Variations",15869.70283,77.57238,-4.45297,-0.02177
+"244","Dry Tropics","Burdekin","Belyando","remnant_2017",35439.00425,"Eucalypt Variations",13531.46227,38.1824,-240.20676,-0.6778
+"245","Dry Tropics","Burdekin","Suttor","remnant_2017",18220.16386,"Non-Remnant Vegetation",8765.41751,48.10834,29.34591,0.16106
+"246","Dry Tropics","Burdekin","Upper Burdekin","remnant_2019",40508.93875,"Eucalypt Variations",35209.68283,86.9183,-4.58761,-0.01132
+"247","Dry Tropics","Burdekin","Belyando","remnant_2019",35439.00425,"Non-Remnant Vegetation",18479.12086,52.14345,78.18395,0.22062
+"248","Dry Tropics","Burdekin","Cape Campaspe","remnant_2019",20457.93006,"Eucalypt Variations",15866.35737,77.55603,-3.34547,-0.01635
+"249","Dry Tropics","Burdekin","Belyando","remnant_2019",35439.00425,"Eucalypt Variations",13458.23616,37.97577,-73.22611,-0.20663
+"250","Dry Tropics","Burdekin","Suttor","remnant_2019",18220.16386,"Non-Remnant Vegetation",8846.55893,48.55367,81.14141,0.44534
+"251","Dry Tropics","Burdekin","Upper Burdekin","remnant_2021",40508.93875,"Eucalypt Variations",35082.39949,86.60409,-127.28334,-0.31421
+"252","Dry Tropics","Burdekin","Belyando","remnant_2021",35439.00425,"Non-Remnant Vegetation",18518.17493,52.25365,39.05406,0.1102
+"253","Dry Tropics","Burdekin","Cape Campaspe","remnant_2021",20457.93006,"Eucalypt Variations",15197.88718,74.28849,-668.47018,-3.26754
+"254","Dry Tropics","Burdekin","Belyando","remnant_2021",35439.00425,"Eucalypt Variations",13323.43431,37.5954,-134.80185,-0.38038
+"255","Dry Tropics","Burdekin","Suttor","remnant_2021",18220.16385,"Non-Remnant Vegetation",8904.1213,48.8696,57.56237,0.31593
+"256","Wet Tropics","Daintree","Daintree","pre_clear",2105.0472,"Rainforest and Scrubs",1230.43086,58.45146,0,0
+"257","Wet Tropics","Daintree","Daintree","pre_clear",2105.0472,"Eucalypt Variations",794.47906,37.74163,0,0
+"258","Wet Tropics","Daintree","Daintree","pre_clear",2105.0472,"Mangroves and Saltmarshes",33.71419,1.60159,0,0
+"259","Wet Tropics","Daintree","Daintree","pre_clear",2105.0472,"Melaleuca Open Woodlands",26.43578,1.25583,0,0
+"260","Wet Tropics","Daintree","Daintree","pre_clear",2105.0472,"Other Coastal Communities",9.4778,0.45024,0,0
+"261","Wet Tropics","Daintree","Daintree","remnant_1997",2105.0472,"Rainforest and Scrubs",1148.50258,54.55947,-81.92828,-3.89199
+"262","Wet Tropics","Daintree","Daintree","remnant_1997",2105.0472,"Eucalypt Variations",761.90833,36.19436,-32.57073,-1.54727
+"263","Wet Tropics","Daintree","Daintree","remnant_1997",2105.0472,"Non-Remnant Vegetation",121.09078,5.7524,121.09078,5.7524
+"264","Wet Tropics","Daintree","Daintree","remnant_1997",2105.0472,"Mangroves and Saltmarshes",32.37102,1.53778,-1.34317,-0.06381
+"265","Wet Tropics","Daintree","Daintree","remnant_1997",2105.0472,"Melaleuca Open Woodlands",21.36944,1.01515,-5.06634,-0.24068
+"266","Wet Tropics","Daintree","Daintree","remnant_1999",2105.0472,"Rainforest and Scrubs",1148.10299,54.54049,-0.39959,-0.01898
+"267","Wet Tropics","Daintree","Daintree","remnant_1999",2105.0472,"Eucalypt Variations",761.80845,36.18961,-0.09988,-0.00474
+"268","Wet Tropics","Daintree","Daintree","remnant_1999",2105.0472,"Non-Remnant Vegetation",121.61773,5.77743,0.52695,0.02503
+"269","Wet Tropics","Daintree","Daintree","remnant_1999",2105.0472,"Mangroves and Saltmarshes",32.37102,1.53778,0,0
+"270","Wet Tropics","Daintree","Daintree","remnant_1999",2105.0472,"Melaleuca Open Woodlands",21.34196,1.01385,-0.02748,-0.00131
+"271","Wet Tropics","Daintree","Daintree","remnant_2000",2105.0472,"Rainforest and Scrubs",1148.10299,54.54049,0,0
+"272","Wet Tropics","Daintree","Daintree","remnant_2000",2105.0472,"Eucalypt Variations",761.80759,36.18957,-0.00086,-0.00004
+"273","Wet Tropics","Daintree","Daintree","remnant_2000",2105.0472,"Non-Remnant Vegetation",121.61928,5.77751,0.00155,0.00007
+"274","Wet Tropics","Daintree","Daintree","remnant_2000",2105.0472,"Mangroves and Saltmarshes",32.37102,1.53778,0,0
+"275","Wet Tropics","Daintree","Daintree","remnant_2000",2105.0472,"Melaleuca Open Woodlands",21.34127,1.01381,-0.00069,-0.00003
+"276","Wet Tropics","Daintree","Daintree","remnant_2001",2105.0472,"Rainforest and Scrubs",1148.0984,54.54027,-0.00458,-0.00022
+"277","Wet Tropics","Daintree","Daintree","remnant_2001",2105.0472,"Eucalypt Variations",761.80295,36.18935,-0.00464,-0.00022
+"278","Wet Tropics","Daintree","Daintree","remnant_2001",2105.0472,"Non-Remnant Vegetation",121.6285,5.77795,0.00922,0.00044
+"279","Wet Tropics","Daintree","Daintree","remnant_2001",2105.0472,"Mangroves and Saltmarshes",32.37102,1.53778,0,0
+"280","Wet Tropics","Daintree","Daintree","remnant_2001",2105.0472,"Melaleuca Open Woodlands",21.34127,1.01381,0,0
+"281","Wet Tropics","Daintree","Daintree","remnant_2003",2105.0472,"Rainforest and Scrubs",1148.07779,54.53929,-0.02062,-0.00098
+"282","Wet Tropics","Daintree","Daintree","remnant_2003",2105.0472,"Eucalypt Variations",761.77239,36.1879,-0.03056,-0.00145
+"283","Wet Tropics","Daintree","Daintree","remnant_2003",2105.0472,"Non-Remnant Vegetation",121.68879,5.78081,0.06029,0.00286
+"284","Wet Tropics","Daintree","Daintree","remnant_2003",2105.0472,"Mangroves and Saltmarshes",32.37103,1.53778,0,0
+"285","Wet Tropics","Daintree","Daintree","remnant_2003",2105.0472,"Melaleuca Open Woodlands",21.33216,1.01338,-0.00911,-0.00043
+"286","Wet Tropics","Daintree","Daintree","remnant_2005",2105.0472,"Rainforest and Scrubs",1148.03357,54.53719,-0.04422,-0.0021
+"287","Wet Tropics","Daintree","Daintree","remnant_2005",2105.0472,"Eucalypt Variations",761.74818,36.18675,-0.02421,-0.00115
+"288","Wet Tropics","Daintree","Daintree","remnant_2005",2105.0472,"Non-Remnant Vegetation",121.75919,5.78416,0.0704,0.00334
+"289","Wet Tropics","Daintree","Daintree","remnant_2005",2105.0472,"Mangroves and Saltmarshes",32.36904,1.53769,-0.00198,-0.00009
+"290","Wet Tropics","Daintree","Daintree","remnant_2005",2105.0472,"Melaleuca Open Woodlands",21.33216,1.01338,0,0
+"291","Wet Tropics","Daintree","Daintree","remnant_2006",2105.0472,"Rainforest and Scrubs",1147.90327,54.531,-0.13029,-0.00619
+"292","Wet Tropics","Daintree","Daintree","remnant_2006",2105.0472,"Eucalypt Variations",761.73024,36.1859,-0.01794,-0.00085
+"293","Wet Tropics","Daintree","Daintree","remnant_2006",2105.0472,"Non-Remnant Vegetation",121.90544,5.7911,0.14625,0.00695
+"294","Wet Tropics","Daintree","Daintree","remnant_2006",2105.0472,"Mangroves and Saltmarshes",32.37102,1.53778,0.00198,0.00009
+"295","Wet Tropics","Daintree","Daintree","remnant_2006",2105.0472,"Melaleuca Open Woodlands",21.33217,1.01338,0,0
+"296","Wet Tropics","Daintree","Daintree","remnant_2006b",2105.0472,"Rainforest and Scrubs",1147.90327,54.531,0,0
+"297","Wet Tropics","Daintree","Daintree","remnant_2006b",2105.0472,"Eucalypt Variations",761.73024,36.1859,0,0
+"298","Wet Tropics","Daintree","Daintree","remnant_2006b",2105.0472,"Non-Remnant Vegetation",121.90544,5.7911,0,0
+"299","Wet Tropics","Daintree","Daintree","remnant_2006b",2105.0472,"Mangroves and Saltmarshes",32.37102,1.53778,0,0
+"300","Wet Tropics","Daintree","Daintree","remnant_2006b",2105.0472,"Melaleuca Open Woodlands",21.33217,1.01338,0,0
+"301","Wet Tropics","Daintree","Daintree","remnant_2007",2105.0472,"Rainforest and Scrubs",1147.90327,54.531,0,0
+"302","Wet Tropics","Daintree","Daintree","remnant_2007",2105.0472,"Eucalypt Variations",761.72369,36.18559,-0.00656,-0.00031
+"303","Wet Tropics","Daintree","Daintree","remnant_2007",2105.0472,"Non-Remnant Vegetation",121.912,5.79141,0.00656,0.00031
+"304","Wet Tropics","Daintree","Daintree","remnant_2007",2105.0472,"Mangroves and Saltmarshes",32.37102,1.53778,0,0
+"305","Wet Tropics","Daintree","Daintree","remnant_2007",2105.0472,"Melaleuca Open Woodlands",21.33217,1.01338,0,0
+"306","Wet Tropics","Daintree","Daintree","remnant_2009",2105.0472,"Rainforest and Scrubs",1147.83549,54.52778,-0.06778,-0.00322
+"307","Wet Tropics","Daintree","Daintree","remnant_2009",2105.0472,"Eucalypt Variations",761.69698,36.18432,-0.0267,-0.00127
+"308","Wet Tropics","Daintree","Daintree","remnant_2009",2105.0472,"Non-Remnant Vegetation",122.00446,5.79581,0.09246,0.00439
+"309","Wet Tropics","Daintree","Daintree","remnant_2009",2105.0472,"Mangroves and Saltmarshes",32.37115,1.53779,0.00012,0.00001
+"310","Wet Tropics","Daintree","Daintree","remnant_2009",2105.0472,"Melaleuca Open Woodlands",21.33217,1.01338,0,0
+"311","Wet Tropics","Daintree","Daintree","remnant_2011",2105.0472,"Rainforest and Scrubs",1147.81304,54.52671,-0.02245,-0.00107
+"312","Wet Tropics","Daintree","Daintree","remnant_2011",2105.0472,"Eucalypt Variations",761.62587,36.18094,-0.07112,-0.00338
+"313","Wet Tropics","Daintree","Daintree","remnant_2011",2105.0472,"Non-Remnant Vegetation",122.10042,5.80036,0.09596,0.00456
+"314","Wet Tropics","Daintree","Daintree","remnant_2011",2105.0472,"Mangroves and Saltmarshes",32.37115,1.53779,0,0
+"315","Wet Tropics","Daintree","Daintree","remnant_2011",2105.0472,"Melaleuca Open Woodlands",21.33217,1.01338,0,0
+"316","Wet Tropics","Daintree","Daintree","remnant_2013",2105.0472,"Rainforest and Scrubs",1147.81304,54.52671,0,0
+"317","Wet Tropics","Daintree","Daintree","remnant_2013",2105.0472,"Eucalypt Variations",761.58431,36.17897,-0.04155,-0.00197
+"318","Wet Tropics","Daintree","Daintree","remnant_2013",2105.0472,"Non-Remnant Vegetation",122.14197,5.80234,0.04155,0.00197
+"319","Wet Tropics","Daintree","Daintree","remnant_2013",2105.0472,"Mangroves and Saltmarshes",32.37115,1.53779,0,0
+"320","Wet Tropics","Daintree","Daintree","remnant_2013",2105.0472,"Melaleuca Open Woodlands",21.33217,1.01338,0,0
+"321","Wet Tropics","Daintree","Daintree","remnant_2015",2105.0472,"Rainforest and Scrubs",1147.78885,54.52556,-0.02419,-0.00115
+"322","Wet Tropics","Daintree","Daintree","remnant_2015",2105.0472,"Eucalypt Variations",761.54584,36.17714,-0.03847,-0.00183
+"323","Wet Tropics","Daintree","Daintree","remnant_2015",2105.0472,"Non-Remnant Vegetation",122.20463,5.80532,0.06266,0.00298
+"324","Wet Tropics","Daintree","Daintree","remnant_2015",2105.0472,"Mangroves and Saltmarshes",32.37115,1.53779,0,0
+"325","Wet Tropics","Daintree","Daintree","remnant_2015",2105.0472,"Melaleuca Open Woodlands",21.33217,1.01338,0,0
+"326","Wet Tropics","Daintree","Daintree","remnant_2017",2105.0472,"Rainforest and Scrubs",1147.73929,54.52321,-0.04956,-0.00235
+"327","Wet Tropics","Daintree","Daintree","remnant_2017",2105.0472,"Eucalypt Variations",761.24204,36.16271,-0.3038,-0.01443
+"328","Wet Tropics","Daintree","Daintree","remnant_2017",2105.0472,"Non-Remnant Vegetation",122.55799,5.8221,0.35336,0.01679
+"329","Wet Tropics","Daintree","Daintree","remnant_2017",2105.0472,"Mangroves and Saltmarshes",32.37115,1.53779,0,0
+"330","Wet Tropics","Daintree","Daintree","remnant_2017",2105.0472,"Melaleuca Open Woodlands",21.33217,1.01338,0,0
+"331","Wet Tropics","Daintree","Daintree","remnant_2019",2105.0472,"Rainforest and Scrubs",1147.71645,54.52212,-0.02284,-0.00108
+"332","Wet Tropics","Daintree","Daintree","remnant_2019",2105.0472,"Eucalypt Variations",761.17975,36.15975,-0.06229,-0.00296
+"333","Wet Tropics","Daintree","Daintree","remnant_2019",2105.0472,"Non-Remnant Vegetation",122.66509,5.82719,0.10709,0.00509
+"334","Wet Tropics","Daintree","Daintree","remnant_2019",2105.0472,"Mangroves and Saltmarshes",32.37115,1.53779,0,0
+"335","Wet Tropics","Daintree","Daintree","remnant_2019",2105.0472,"Melaleuca Open Woodlands",21.33217,1.01338,0,0
+"336","Wet Tropics","Daintree","Daintree","remnant_2021",2105.0472,"Rainforest and Scrubs",1147.46468,54.51016,-0.25177,-0.01196
+"337","Wet Tropics","Daintree","Daintree","remnant_2021",2105.0472,"Eucalypt Variations",760.85401,36.14427,-0.32574,-0.01547
+"338","Wet Tropics","Daintree","Daintree","remnant_2021",2105.0472,"Non-Remnant Vegetation",123.35691,5.86005,0.69183,0.03287
+"339","Wet Tropics","Daintree","Daintree","remnant_2021",2105.0472,"Mangroves and Saltmarshes",32.4007,1.53919,0.02955,0.0014
+"340","Wet Tropics","Daintree","Daintree","remnant_2021",2105.0472,"Melaleuca Open Woodlands",21.09901,1.00231,-0.23316,-0.01108
+"341","Mackay Whitsunday Isaac","Don","Don","pre_clear",3746.90336,"Eucalypt Variations",3069.53283,81.92186,0,0
+"342","Mackay Whitsunday Isaac","Don","Don","pre_clear",3746.90336,"Mangroves and Saltmarshes",217.07947,5.79357,0,0
+"343","Mackay Whitsunday Isaac","Don","Don","pre_clear",3746.90336,"Tussock Grasslands",142.09724,3.79239,0,0
+"344","Mackay Whitsunday Isaac","Don","Don","pre_clear",3746.90336,"Melaleuca Open Woodlands",92.47062,2.46792,0,0
+"345","Mackay Whitsunday Isaac","Don","Don","pre_clear",3746.90336,"Mixed Species Woodlands",65.84413,1.75729,0,0
+"346","Mackay Whitsunday Isaac","Don","Don","remnant_1997",3746.90336,"Eucalypt Variations",2142.07931,57.16932,-927.45352,-24.75253
+"347","Mackay Whitsunday Isaac","Don","Don","remnant_1997",3746.90336,"Non-Remnant Vegetation",1147.25031,30.61863,1147.25031,30.61863
+"348","Mackay Whitsunday Isaac","Don","Don","remnant_1997",3746.90336,"Mangroves and Saltmarshes",191.54118,5.11199,-25.5383,-0.68158
+"349","Mackay Whitsunday Isaac","Don","Don","remnant_1997",3746.90336,"Other Coastal Communities",52.58707,1.40348,-13.1309,-0.35045
+"350","Mackay Whitsunday Isaac","Don","Don","remnant_1997",3746.90336,"Melaleuca Open Woodlands",50.84822,1.35707,-41.6224,-1.11085
+"351","Mackay Whitsunday Isaac","Don","Don","remnant_1999",3746.90336,"Eucalypt Variations",2129.2037,56.82569,-12.87561,-0.34363
+"352","Mackay Whitsunday Isaac","Don","Don","remnant_1999",3746.90336,"Non-Remnant Vegetation",1163.51109,31.0526,16.26078,0.43398
+"353","Mackay Whitsunday Isaac","Don","Don","remnant_1999",3746.90336,"Mangroves and Saltmarshes",191.08466,5.0998,-0.45652,-0.01218
+"354","Mackay Whitsunday Isaac","Don","Don","remnant_1999",3746.90336,"Other Coastal Communities",52.23989,1.39421,-0.34718,-0.00927
+"355","Mackay Whitsunday Isaac","Don","Don","remnant_1999",3746.90336,"Melaleuca Open Woodlands",49.86156,1.33074,-0.98666,-0.02633
+"356","Mackay Whitsunday Isaac","Don","Don","remnant_2000",3746.90336,"Eucalypt Variations",2119.8612,56.57635,-9.34249,-0.24934
+"357","Mackay Whitsunday Isaac","Don","Don","remnant_2000",3746.90336,"Non-Remnant Vegetation",1174.12733,31.33594,10.61624,0.28333
+"358","Mackay Whitsunday Isaac","Don","Don","remnant_2000",3746.90336,"Mangroves and Saltmarshes",191.08466,5.0998,0,0
+"359","Mackay Whitsunday Isaac","Don","Don","remnant_2000",3746.90336,"Other Coastal Communities",52.05779,1.38935,-0.1821,-0.00486
+"360","Mackay Whitsunday Isaac","Don","Don","remnant_2000",3746.90336,"Melaleuca Open Woodlands",49.83371,1.33,-0.02785,-0.00074
+"361","Mackay Whitsunday Isaac","Don","Don","remnant_2001",3746.90336,"Eucalypt Variations",2119.03566,56.55432,-0.82555,-0.02203
+"362","Mackay Whitsunday Isaac","Don","Don","remnant_2001",3746.90336,"Non-Remnant Vegetation",1175.29599,31.36713,1.16866,0.03119
+"363","Mackay Whitsunday Isaac","Don","Don","remnant_2001",3746.90336,"Mangroves and Saltmarshes",191.03775,5.09855,-0.04691,-0.00125
+"364","Mackay Whitsunday Isaac","Don","Don","remnant_2001",3746.90336,"Other Coastal Communities",51.76355,1.3815,-0.29424,-0.00785
+"365","Mackay Whitsunday Isaac","Don","Don","remnant_2001",3746.90336,"Melaleuca Open Woodlands",49.83371,1.33,0,0
+"366","Mackay Whitsunday Isaac","Don","Don","remnant_2003",3746.90336,"Eucalypt Variations",2117.90676,56.52419,-1.1289,-0.03013
+"367","Mackay Whitsunday Isaac","Don","Don","remnant_2003",3746.90336,"Non-Remnant Vegetation",1176.44115,31.39769,1.14516,0.03056
+"368","Mackay Whitsunday Isaac","Don","Don","remnant_2003",3746.90336,"Mangroves and Saltmarshes",191.03775,5.09855,0,0
+"369","Mackay Whitsunday Isaac","Don","Don","remnant_2003",3746.90336,"Other Coastal Communities",51.76355,1.3815,0,0
+"370","Mackay Whitsunday Isaac","Don","Don","remnant_2003",3746.90336,"Melaleuca Open Woodlands",49.83371,1.33,0,0
+"371","Mackay Whitsunday Isaac","Don","Don","remnant_2005",3746.90336,"Eucalypt Variations",2116.87235,56.49658,-1.03441,-0.02761
+"372","Mackay Whitsunday Isaac","Don","Don","remnant_2005",3746.90336,"Non-Remnant Vegetation",1178.14055,31.44305,1.69939,0.04535
+"373","Mackay Whitsunday Isaac","Don","Don","remnant_2005",3746.90336,"Mangroves and Saltmarshes",191.03775,5.09855,0,0
+"374","Mackay Whitsunday Isaac","Don","Don","remnant_2005",3746.90336,"Other Coastal Communities",51.76355,1.3815,0,0
+"375","Mackay Whitsunday Isaac","Don","Don","remnant_2005",3746.90336,"Melaleuca Open Woodlands",49.83142,1.32994,-0.0023,-0.00006
+"376","Mackay Whitsunday Isaac","Don","Don","remnant_2006",3746.90336,"Eucalypt Variations",2111.97669,56.36592,-4.89566,-0.13066
+"377","Mackay Whitsunday Isaac","Don","Don","remnant_2006",3746.90336,"Non-Remnant Vegetation",1189.32017,31.74142,11.17962,0.29837
+"378","Mackay Whitsunday Isaac","Don","Don","remnant_2006",3746.90336,"Mangroves and Saltmarshes",191.03498,5.09848,-0.00277,-0.00007
+"379","Mackay Whitsunday Isaac","Don","Don","remnant_2006",3746.90336,"Other Coastal Communities",51.68755,1.37947,-0.076,-0.00203
+"380","Mackay Whitsunday Isaac","Don","Don","remnant_2006",3746.90336,"Melaleuca Open Woodlands",49.82757,1.32983,-0.00385,-0.0001
+"381","Mackay Whitsunday Isaac","Don","Don","remnant_2006b",3746.90336,"Eucalypt Variations",2111.97669,56.36592,0,0
+"382","Mackay Whitsunday Isaac","Don","Don","remnant_2006b",3746.90336,"Non-Remnant Vegetation",1189.32017,31.74142,0,0
+"383","Mackay Whitsunday Isaac","Don","Don","remnant_2006b",3746.90336,"Mangroves and Saltmarshes",191.03498,5.09848,0,0
+"384","Mackay Whitsunday Isaac","Don","Don","remnant_2006b",3746.90336,"Other Coastal Communities",51.68755,1.37947,0,0
+"385","Mackay Whitsunday Isaac","Don","Don","remnant_2006b",3746.90336,"Melaleuca Open Woodlands",49.82757,1.32983,0,0
+"386","Mackay Whitsunday Isaac","Don","Don","remnant_2007",3746.90336,"Eucalypt Variations",2111.20685,56.34538,-0.76984,-0.02055
+"387","Mackay Whitsunday Isaac","Don","Don","remnant_2007",3746.90336,"Non-Remnant Vegetation",1190.32174,31.76815,1.00157,0.02673
+"388","Mackay Whitsunday Isaac","Don","Don","remnant_2007",3746.90336,"Mangroves and Saltmarshes",191.03498,5.09848,0,0
+"389","Mackay Whitsunday Isaac","Don","Don","remnant_2007",3746.90336,"Other Coastal Communities",51.65423,1.37858,-0.03332,-0.00089
+"390","Mackay Whitsunday Isaac","Don","Don","remnant_2007",3746.90336,"Melaleuca Open Woodlands",49.82879,1.32987,0.00122,0.00003
+"391","Mackay Whitsunday Isaac","Don","Don","remnant_2009",3746.90336,"Eucalypt Variations",2110.75426,56.3333,-0.45259,-0.01208
+"392","Mackay Whitsunday Isaac","Don","Don","remnant_2009",3746.90336,"Non-Remnant Vegetation",1191.4273,31.79765,1.10556,0.02951
+"393","Mackay Whitsunday Isaac","Don","Don","remnant_2009",3746.90336,"Mangroves and Saltmarshes",191.03498,5.09848,0,0
+"394","Mackay Whitsunday Isaac","Don","Don","remnant_2009",3746.90336,"Other Coastal Communities",51.41837,1.37229,-0.23586,-0.00629
+"395","Mackay Whitsunday Isaac","Don","Don","remnant_2009",3746.90336,"Melaleuca Open Woodlands",49.75327,1.32785,-0.07552,-0.00202
+"396","Mackay Whitsunday Isaac","Don","Don","remnant_2011",3746.90336,"Eucalypt Variations",2106.65054,56.22378,-4.10371,-0.10952
+"397","Mackay Whitsunday Isaac","Don","Don","remnant_2011",3746.90336,"Non-Remnant Vegetation",1195.53102,31.90718,4.10371,0.10952
+"398","Mackay Whitsunday Isaac","Don","Don","remnant_2011",3746.90336,"Mangroves and Saltmarshes",191.03498,5.09848,0,0
+"399","Mackay Whitsunday Isaac","Don","Don","remnant_2011",3746.90336,"Other Coastal Communities",51.41837,1.37229,0,0
+"400","Mackay Whitsunday Isaac","Don","Don","remnant_2011",3746.90336,"Melaleuca Open Woodlands",49.75327,1.32785,0,0
+"401","Mackay Whitsunday Isaac","Don","Don","remnant_2013",3746.90336,"Eucalypt Variations",2105.18808,56.18474,-1.46246,-0.03903
+"402","Mackay Whitsunday Isaac","Don","Don","remnant_2013",3746.90336,"Non-Remnant Vegetation",1200.26668,32.03356,4.73567,0.12639
+"403","Mackay Whitsunday Isaac","Don","Don","remnant_2013",3746.90336,"Mangroves and Saltmarshes",191.03498,5.09848,0,0
+"404","Mackay Whitsunday Isaac","Don","Don","remnant_2013",3746.90336,"Other Coastal Communities",51.13762,1.3648,-0.28075,-0.00749
+"405","Mackay Whitsunday Isaac","Don","Don","remnant_2013",3746.90336,"Melaleuca Open Woodlands",49.08993,1.31015,-0.66333,-0.0177
+"406","Mackay Whitsunday Isaac","Don","Don","remnant_2015",3746.90336,"Eucalypt Variations",2101.60012,56.08899,-3.58796,-0.09576
+"407","Mackay Whitsunday Isaac","Don","Don","remnant_2015",3746.90336,"Non-Remnant Vegetation",1204.22739,32.13927,3.96071,0.10571
+"408","Mackay Whitsunday Isaac","Don","Don","remnant_2015",3746.90336,"Mangroves and Saltmarshes",190.98187,5.09706,-0.05311,-0.00142
+"409","Mackay Whitsunday Isaac","Don","Don","remnant_2015",3746.90336,"Other Coastal Communities",50.90378,1.35856,-0.23384,-0.00624
+"410","Mackay Whitsunday Isaac","Don","Don","remnant_2015",3746.90336,"Melaleuca Open Woodlands",49.01206,1.30807,-0.07788,-0.00208
+"411","Mackay Whitsunday Isaac","Don","Don","remnant_2017",3746.90336,"Eucalypt Variations",2098.85427,56.0157,-2.74586,-0.07328
+"412","Mackay Whitsunday Isaac","Don","Don","remnant_2017",3746.90336,"Non-Remnant Vegetation",1209.52904,32.28076,5.30165,0.14149
+"413","Mackay Whitsunday Isaac","Don","Don","remnant_2017",3746.90336,"Mangroves and Saltmarshes",190.91657,5.09532,-0.0653,-0.00174
+"414","Mackay Whitsunday Isaac","Don","Don","remnant_2017",3746.90336,"Other Coastal Communities",50.90378,1.35856,0,0
+"415","Mackay Whitsunday Isaac","Don","Don","remnant_2017",3746.90336,"Melaleuca Open Woodlands",48.56702,1.29619,-0.44504,-0.01188
+"416","Mackay Whitsunday Isaac","Don","Don","remnant_2019",3746.90336,"Eucalypt Variations",2097.17436,55.97087,-1.67991,-0.04483
+"417","Mackay Whitsunday Isaac","Don","Don","remnant_2019",3746.90336,"Non-Remnant Vegetation",1211.34556,32.32924,1.81652,0.04848
+"418","Mackay Whitsunday Isaac","Don","Don","remnant_2019",3746.90336,"Mangroves and Saltmarshes",190.91629,5.09531,-0.00029,-0.00001
+"419","Mackay Whitsunday Isaac","Don","Don","remnant_2019",3746.90336,"Other Coastal Communities",50.90378,1.35856,0,0
+"420","Mackay Whitsunday Isaac","Don","Don","remnant_2019",3746.90336,"Melaleuca Open Woodlands",48.44906,1.29304,-0.11795,-0.00315
+"421","Mackay Whitsunday Isaac","Don","Don","remnant_2021",3746.90336,"Eucalypt Variations",2049.53075,54.69932,-47.64361,-1.27155
+"422","Mackay Whitsunday Isaac","Don","Don","remnant_2021",3746.90336,"Non-Remnant Vegetation",1224.91407,32.69137,13.56851,0.36213
+"423","Mackay Whitsunday Isaac","Don","Don","remnant_2021",3746.90336,"Mangroves and Saltmarshes",191.46184,5.10987,0.54555,0.01456
+"424","Mackay Whitsunday Isaac","Don","Don","remnant_2021",3746.90336,"Melaleuca Open Woodlands",73.56899,1.96346,25.11993,0.67042
+"425","Mackay Whitsunday Isaac","Don","Don","remnant_2021",3746.90336,"Other Coastal Communities",48.72268,1.30035,-2.1811,-0.05821
+"426","Dry Tropics","Haughton","Haughton","pre_clear",4070.55236,"Eucalypt Variations",3081.88208,75.71164,0,0
+"427","Dry Tropics","Haughton","Haughton","pre_clear",4070.55236,"Mangroves and Saltmarshes",366.50962,9.00393,0,0
+"428","Dry Tropics","Haughton","Haughton","pre_clear",4070.55236,"Melaleuca Open Woodlands",241.38487,5.93003,0,0
+"429","Dry Tropics","Haughton","Haughton","pre_clear",4070.55236,"Tussock Grasslands",159.08473,3.90819,0,0
+"430","Dry Tropics","Haughton","Haughton","pre_clear",4070.55236,"Wetlands",88.76998,2.18078,0,0
+"431","Dry Tropics","Haughton","Haughton","remnant_1997",4070.55237,"Eucalypt Variations",2046.90044,50.28557,-1034.98163,-25.42607
+"432","Dry Tropics","Haughton","Haughton","remnant_1997",4070.55237,"Non-Remnant Vegetation",1180.04356,28.98976,1180.04356,28.98976
+"433","Dry Tropics","Haughton","Haughton","remnant_1997",4070.55237,"Mangroves and Saltmarshes",327.6736,8.04986,-38.83603,-0.95407
+"434","Dry Tropics","Haughton","Haughton","remnant_1997",4070.55237,"Melaleuca Open Woodlands",204.30588,5.01912,-37.07899,-0.91091
+"435","Dry Tropics","Haughton","Haughton","remnant_1997",4070.55237,"Wetlands",103.82931,2.55074,15.05932,0.36996
+"436","Dry Tropics","Haughton","Haughton","remnant_1999",4070.55237,"Eucalypt Variations",1989.92658,48.88591,-56.97386,-1.39966
+"437","Dry Tropics","Haughton","Haughton","remnant_1999",4070.55237,"Non-Remnant Vegetation",1242.03047,30.51258,61.9869,1.52281
+"438","Dry Tropics","Haughton","Haughton","remnant_1999",4070.55237,"Mangroves and Saltmarshes",327.54084,8.04659,-0.13275,-0.00326
+"439","Dry Tropics","Haughton","Haughton","remnant_1999",4070.55237,"Melaleuca Open Woodlands",203.7443,5.00532,-0.56158,-0.0138
+"440","Dry Tropics","Haughton","Haughton","remnant_1999",4070.55237,"Wetlands",103.44169,2.54122,-0.38762,-0.00952
+"441","Dry Tropics","Haughton","Haughton","remnant_2000",4070.55237,"Eucalypt Variations",1987.03495,48.81487,-2.89163,-0.07104
+"442","Dry Tropics","Haughton","Haughton","remnant_2000",4070.55237,"Non-Remnant Vegetation",1245.12529,30.58861,3.09482,0.07603
+"443","Dry Tropics","Haughton","Haughton","remnant_2000",4070.55237,"Mangroves and Saltmarshes",327.54084,8.04659,0,0
+"444","Dry Tropics","Haughton","Haughton","remnant_2000",4070.55237,"Melaleuca Open Woodlands",203.54112,5.00033,-0.20319,-0.00499
+"445","Dry Tropics","Haughton","Haughton","remnant_2000",4070.55237,"Wetlands",103.44169,2.54122,0,0
+"446","Dry Tropics","Haughton","Haughton","remnant_2001",4070.55237,"Eucalypt Variations",1984.49927,48.75258,-2.53568,-0.06229
+"447","Dry Tropics","Haughton","Haughton","remnant_2001",4070.55237,"Non-Remnant Vegetation",1247.95213,30.65805,2.82684,0.06945
+"448","Dry Tropics","Haughton","Haughton","remnant_2001",4070.55237,"Mangroves and Saltmarshes",327.51532,8.04597,-0.02552,-0.00063
+"449","Dry Tropics","Haughton","Haughton","remnant_2001",4070.55237,"Melaleuca Open Woodlands",203.2691,4.99365,-0.27201,-0.00668
+"450","Dry Tropics","Haughton","Haughton","remnant_2001",4070.55237,"Wetlands",103.45142,2.54146,0.00973,0.00024
+"451","Dry Tropics","Haughton","Haughton","remnant_2003",4070.55237,"Eucalypt Variations",1980.42243,48.65242,-4.07684,-0.10015
+"452","Dry Tropics","Haughton","Haughton","remnant_2003",4070.55237,"Non-Remnant Vegetation",1252.03976,30.75847,4.08763,0.10042
+"453","Dry Tropics","Haughton","Haughton","remnant_2003",4070.55237,"Mangroves and Saltmarshes",327.41733,8.04356,-0.09799,-0.00241
+"454","Dry Tropics","Haughton","Haughton","remnant_2003",4070.55237,"Melaleuca Open Woodlands",203.19836,4.99191,-0.07074,-0.00174
+"455","Dry Tropics","Haughton","Haughton","remnant_2003",4070.55237,"Wetlands",103.4367,2.5411,-0.01472,-0.00036
+"456","Dry Tropics","Haughton","Haughton","remnant_2005",4070.55237,"Eucalypt Variations",1971.50493,48.43335,-8.9175,-0.21907
+"457","Dry Tropics","Haughton","Haughton","remnant_2005",4070.55237,"Non-Remnant Vegetation",1261.67762,30.99524,9.63786,0.23677
+"458","Dry Tropics","Haughton","Haughton","remnant_2005",4070.55237,"Mangroves and Saltmarshes",327.41733,8.04356,0,0
+"459","Dry Tropics","Haughton","Haughton","remnant_2005",4070.55237,"Melaleuca Open Woodlands",202.45429,4.97363,-0.74407,-0.01828
+"460","Dry Tropics","Haughton","Haughton","remnant_2005",4070.55237,"Wetlands",103.44128,2.54121,0.00458,0.00011
+"461","Dry Tropics","Haughton","Haughton","remnant_2006",4070.55237,"Eucalypt Variations",1971.23903,48.42682,-0.26589,-0.00653
+"462","Dry Tropics","Haughton","Haughton","remnant_2006",4070.55237,"Non-Remnant Vegetation",1261.97134,31.00246,0.29371,0.00722
+"463","Dry Tropics","Haughton","Haughton","remnant_2006",4070.55237,"Mangroves and Saltmarshes",327.41733,8.04356,0,0
+"464","Dry Tropics","Haughton","Haughton","remnant_2006",4070.55237,"Melaleuca Open Woodlands",202.42733,4.97297,-0.02696,-0.00066
+"465","Dry Tropics","Haughton","Haughton","remnant_2006",4070.55237,"Wetlands",103.39527,2.54008,-0.04601,-0.00113
+"466","Dry Tropics","Haughton","Haughton","remnant_2006b",4070.55237,"Eucalypt Variations",1970.83127,48.4168,-0.40777,-0.01002
+"467","Dry Tropics","Haughton","Haughton","remnant_2006b",4070.55237,"Non-Remnant Vegetation",1262.37974,31.01249,0.4084,0.01003
+"468","Dry Tropics","Haughton","Haughton","remnant_2006b",4070.55237,"Mangroves and Saltmarshes",327.41733,8.04356,0,0
+"469","Dry Tropics","Haughton","Haughton","remnant_2006b",4070.55237,"Melaleuca Open Woodlands",202.42733,4.97297,0,0
+"470","Dry Tropics","Haughton","Haughton","remnant_2006b",4070.55237,"Wetlands",103.39463,2.54006,-0.00064,-0.00002
+"471","Dry Tropics","Haughton","Haughton","remnant_2007",4070.55237,"Eucalypt Variations",1969.5521,48.38538,-1.27917,-0.03142
+"472","Dry Tropics","Haughton","Haughton","remnant_2007",4070.55237,"Non-Remnant Vegetation",1263.75045,31.04617,1.37071,0.03367
+"473","Dry Tropics","Haughton","Haughton","remnant_2007",4070.55237,"Mangroves and Saltmarshes",327.41642,8.04354,-0.00091,-0.00002
+"474","Dry Tropics","Haughton","Haughton","remnant_2007",4070.55237,"Melaleuca Open Woodlands",202.42104,4.97282,-0.00628,-0.00015
+"475","Dry Tropics","Haughton","Haughton","remnant_2007",4070.55237,"Wetlands",103.39463,2.54006,0,0
+"476","Dry Tropics","Haughton","Haughton","remnant_2009",4070.55237,"Eucalypt Variations",1967.46595,48.33413,-2.08615,-0.05125
+"477","Dry Tropics","Haughton","Haughton","remnant_2009",4070.55237,"Non-Remnant Vegetation",1266.37007,31.11052,2.61962,0.06436
+"478","Dry Tropics","Haughton","Haughton","remnant_2009",4070.55237,"Mangroves and Saltmarshes",327.41642,8.04354,0,0
+"479","Dry Tropics","Haughton","Haughton","remnant_2009",4070.55237,"Melaleuca Open Woodlands",201.88757,4.95971,-0.53347,-0.01311
+"480","Dry Tropics","Haughton","Haughton","remnant_2009",4070.55237,"Wetlands",103.39463,2.54006,0,0
+"481","Dry Tropics","Haughton","Haughton","remnant_2011",4070.55237,"Eucalypt Variations",1967.18159,48.32714,-0.28436,-0.00699
+"482","Dry Tropics","Haughton","Haughton","remnant_2011",4070.55237,"Non-Remnant Vegetation",1266.66424,31.11775,0.29417,0.00723
+"483","Dry Tropics","Haughton","Haughton","remnant_2011",4070.55237,"Mangroves and Saltmarshes",327.41642,8.04354,0,0
+"484","Dry Tropics","Haughton","Haughton","remnant_2011",4070.55237,"Melaleuca Open Woodlands",201.87776,4.95947,-0.00981,-0.00024
+"485","Dry Tropics","Haughton","Haughton","remnant_2011",4070.55237,"Wetlands",103.39463,2.54006,0,0
+"486","Dry Tropics","Haughton","Haughton","remnant_2013",4070.55237,"Eucalypt Variations",1966.06479,48.29971,-1.1168,-0.02744
+"487","Dry Tropics","Haughton","Haughton","remnant_2013",4070.55237,"Non-Remnant Vegetation",1267.84294,31.14671,1.1787,0.02896
+"488","Dry Tropics","Haughton","Haughton","remnant_2013",4070.55237,"Mangroves and Saltmarshes",327.41642,8.04354,0,0
+"489","Dry Tropics","Haughton","Haughton","remnant_2013",4070.55237,"Melaleuca Open Woodlands",201.63926,4.95361,-0.23849,-0.00586
+"490","Dry Tropics","Haughton","Haughton","remnant_2013",4070.55237,"Wetlands",103.39463,2.54006,0,0
+"491","Dry Tropics","Haughton","Haughton","remnant_2015",4070.55237,"Eucalypt Variations",1959.07057,48.12788,-6.99422,-0.17182
+"492","Dry Tropics","Haughton","Haughton","remnant_2015",4070.55237,"Non-Remnant Vegetation",1274.91214,31.32037,7.06919,0.17367
+"493","Dry Tropics","Haughton","Haughton","remnant_2015",4070.55237,"Mangroves and Saltmarshes",327.41642,8.04354,0,0
+"494","Dry Tropics","Haughton","Haughton","remnant_2015",4070.55237,"Melaleuca Open Woodlands",201.59579,4.95254,-0.04347,-0.00107
+"495","Dry Tropics","Haughton","Haughton","remnant_2015",4070.55237,"Wetlands",103.38057,2.53972,-0.01406,-0.00035
+"496","Dry Tropics","Haughton","Haughton","remnant_2017",4070.55237,"Eucalypt Variations",1958.53817,48.1148,-0.53241,-0.01308
+"497","Dry Tropics","Haughton","Haughton","remnant_2017",4070.55237,"Non-Remnant Vegetation",1273.80726,31.29323,-1.10488,-0.02714
+"498","Dry Tropics","Haughton","Haughton","remnant_2017",4070.55237,"Mangroves and Saltmarshes",327.41642,8.04354,0,0
+"499","Dry Tropics","Haughton","Haughton","remnant_2017",4070.55237,"Melaleuca Open Woodlands",201.59579,4.95254,0,0
+"500","Dry Tropics","Haughton","Haughton","remnant_2017",4070.55237,"Wetlands",103.37873,2.53967,-0.00184,-0.00005
+"501","Dry Tropics","Haughton","Haughton","remnant_2019",4070.55237,"Eucalypt Variations",1955.91048,48.05025,-2.62769,-0.06455
+"502","Dry Tropics","Haughton","Haughton","remnant_2019",4070.55237,"Non-Remnant Vegetation",1278.90738,31.41852,5.10013,0.12529
+"503","Dry Tropics","Haughton","Haughton","remnant_2019",4070.55237,"Mangroves and Saltmarshes",327.41642,8.04354,0,0
+"504","Dry Tropics","Haughton","Haughton","remnant_2019",4070.55237,"Melaleuca Open Woodlands",201.57731,4.95209,-0.01848,-0.00045
+"505","Dry Tropics","Haughton","Haughton","remnant_2019",4070.55237,"Wetlands",101.57538,2.49537,-1.80335,-0.0443
+"506","Dry Tropics","Haughton","Haughton","remnant_2021",4070.55237,"Eucalypt Variations",1931.28482,47.44528,-24.62565,-0.60497
+"507","Dry Tropics","Haughton","Haughton","remnant_2021",4070.55237,"Non-Remnant Vegetation",1288.08973,31.6441,9.18235,0.22558
+"508","Dry Tropics","Haughton","Haughton","remnant_2021",4070.55237,"Mangroves and Saltmarshes",328.20227,8.06284,0.78585,0.01931
+"509","Dry Tropics","Haughton","Haughton","remnant_2021",4070.55237,"Melaleuca Open Woodlands",206.26242,5.06719,4.68512,0.1151
+"510","Dry Tropics","Haughton","Haughton","remnant_2021",4070.55237,"Wetlands",109.38031,2.68711,7.80493,0.19174
+"511","Wet Tropics","Herbert","Herbert","pre_clear",9873.45803,"Eucalypt Variations",7685.35929,77.83858,0,0
+"512","Wet Tropics","Herbert","Herbert","pre_clear",9873.45803,"Rainforest and Scrubs",983.01368,9.95612,0,0
+"513","Wet Tropics","Herbert","Herbert","pre_clear",9873.45803,"Melaleuca Open Woodlands",270.34432,2.73809,0,0
+"514","Wet Tropics","Herbert","Herbert","pre_clear",9873.45803,"Other Coastal Communities",235.25474,2.3827,0,0
+"515","Wet Tropics","Herbert","Herbert","pre_clear",9873.45803,"Wetlands",209.19929,2.1188,0,0
+"516","Wet Tropics","Herbert","Herbert","remnant_1997",9873.45803,"Eucalypt Variations",6918.02598,70.0669,-767.33331,-7.77168
+"517","Wet Tropics","Herbert","Herbert","remnant_1997",9873.45803,"Non-Remnant Vegetation",1294.51196,13.11103,1294.51196,13.11103
+"518","Wet Tropics","Herbert","Herbert","remnant_1997",9873.45803,"Rainforest and Scrubs",847.00245,8.57858,-136.01124,-1.37754
+"519","Wet Tropics","Herbert","Herbert","remnant_1997",9873.45803,"Other Coastal Communities",179.33146,1.8163,-55.92328,-0.5664
+"520","Wet Tropics","Herbert","Herbert","remnant_1997",9873.45803,"Mangroves and Saltmarshes",138.07788,1.39848,-13.8165,-0.13994
+"521","Wet Tropics","Herbert","Herbert","remnant_1999",9873.45803,"Eucalypt Variations",6904.51084,69.93002,-13.51513,-0.13688
+"522","Wet Tropics","Herbert","Herbert","remnant_1999",9873.45803,"Non-Remnant Vegetation",1309.78025,13.26567,15.26829,0.15464
+"523","Wet Tropics","Herbert","Herbert","remnant_1999",9873.45803,"Rainforest and Scrubs",846.77927,8.57632,-0.22317,-0.00226
+"524","Wet Tropics","Herbert","Herbert","remnant_1999",9873.45803,"Other Coastal Communities",178.60604,1.80895,-0.72542,-0.00735
+"525","Wet Tropics","Herbert","Herbert","remnant_1999",9873.45803,"Mangroves and Saltmarshes",138.06126,1.39831,-0.01662,-0.00017
+"526","Wet Tropics","Herbert","Herbert","remnant_2000",9873.45803,"Eucalypt Variations",6893.16153,69.81507,-11.34932,-0.11495
+"527","Wet Tropics","Herbert","Herbert","remnant_2000",9873.45803,"Non-Remnant Vegetation",1323.13489,13.40093,13.35464,0.13526
+"528","Wet Tropics","Herbert","Herbert","remnant_2000",9873.45803,"Rainforest and Scrubs",846.70729,8.57559,-0.07198,-0.00073
+"529","Wet Tropics","Herbert","Herbert","remnant_2000",9873.45803,"Other Coastal Communities",177.73547,1.80013,-0.87057,-0.00882
+"530","Wet Tropics","Herbert","Herbert","remnant_2000",9873.45803,"Mangroves and Saltmarshes",138.06126,1.39831,0,0
+"531","Wet Tropics","Herbert","Herbert","remnant_2001",9873.45803,"Eucalypt Variations",6891.22255,69.79543,-1.93898,-0.01964
+"532","Wet Tropics","Herbert","Herbert","remnant_2001",9873.45803,"Non-Remnant Vegetation",1325.28142,13.42267,2.14653,0.02174
+"533","Wet Tropics","Herbert","Herbert","remnant_2001",9873.45803,"Rainforest and Scrubs",846.66795,8.57519,-0.03934,-0.0004
+"534","Wet Tropics","Herbert","Herbert","remnant_2001",9873.45803,"Other Coastal Communities",177.72887,1.80007,-0.0066,-0.00007
+"535","Wet Tropics","Herbert","Herbert","remnant_2001",9873.45803,"Mangroves and Saltmarshes",138.04774,1.39817,-0.01352,-0.00014
+"536","Wet Tropics","Herbert","Herbert","remnant_2003",9873.45803,"Eucalypt Variations",6887.5651,69.75839,-3.65745,-0.03704
+"537","Wet Tropics","Herbert","Herbert","remnant_2003",9873.45803,"Non-Remnant Vegetation",1329.44592,13.46485,4.1645,0.04218
+"538","Wet Tropics","Herbert","Herbert","remnant_2003",9873.45803,"Rainforest and Scrubs",846.62443,8.57475,-0.04352,-0.00044
+"539","Wet Tropics","Herbert","Herbert","remnant_2003",9873.45803,"Other Coastal Communities",177.71633,1.79994,-0.01254,-0.00013
+"540","Wet Tropics","Herbert","Herbert","remnant_2003",9873.45803,"Mangroves and Saltmarshes",138.01581,1.39785,-0.03193,-0.00032
+"541","Wet Tropics","Herbert","Herbert","remnant_2005",9873.45803,"Eucalypt Variations",6872.83211,69.60917,-14.73299,-0.14922
+"542","Wet Tropics","Herbert","Herbert","remnant_2005",9873.45803,"Non-Remnant Vegetation",1345.75958,13.63007,16.31366,0.16523
+"543","Wet Tropics","Herbert","Herbert","remnant_2005",9873.45803,"Rainforest and Scrubs",846.50987,8.57359,-0.11456,-0.00116
+"544","Wet Tropics","Herbert","Herbert","remnant_2005",9873.45803,"Other Coastal Communities",177.63879,1.79915,-0.07754,-0.00079
+"545","Wet Tropics","Herbert","Herbert","remnant_2005",9873.45803,"Mangroves and Saltmarshes",138.00462,1.39773,-0.01119,-0.00011
+"546","Wet Tropics","Herbert","Herbert","remnant_2006",9873.45803,"Eucalypt Variations",6852.67165,69.40498,-20.16046,-0.20419
+"547","Wet Tropics","Herbert","Herbert","remnant_2006",9873.45803,"Non-Remnant Vegetation",1365.94691,13.83453,20.18733,0.20446
+"548","Wet Tropics","Herbert","Herbert","remnant_2006",9873.45803,"Rainforest and Scrubs",846.4938,8.57343,-0.01607,-0.00016
+"549","Wet Tropics","Herbert","Herbert","remnant_2006",9873.45803,"Other Coastal Communities",177.63877,1.79915,-0.00002,0
+"550","Wet Tropics","Herbert","Herbert","remnant_2006",9873.45803,"Mangroves and Saltmarshes",138.00462,1.39773,0,0
+"551","Wet Tropics","Herbert","Herbert","remnant_2006b",9873.45803,"Eucalypt Variations",6851.53092,69.39343,-1.14073,-0.01155
+"552","Wet Tropics","Herbert","Herbert","remnant_2006b",9873.45803,"Non-Remnant Vegetation",1367.08764,13.84609,1.14073,0.01155
+"553","Wet Tropics","Herbert","Herbert","remnant_2006b",9873.45803,"Rainforest and Scrubs",846.49379,8.57343,-0.00001,0
+"554","Wet Tropics","Herbert","Herbert","remnant_2006b",9873.45803,"Other Coastal Communities",177.63877,1.79915,0,0
+"555","Wet Tropics","Herbert","Herbert","remnant_2006b",9873.45803,"Mangroves and Saltmarshes",138.00462,1.39773,0,0
+"556","Wet Tropics","Herbert","Herbert","remnant_2007",9873.45803,"Eucalypt Variations",6850.19421,69.37989,-1.33671,-0.01354
+"557","Wet Tropics","Herbert","Herbert","remnant_2007",9873.45803,"Non-Remnant Vegetation",1368.55669,13.86097,1.46905,0.01488
+"558","Wet Tropics","Herbert","Herbert","remnant_2007",9873.45803,"Rainforest and Scrubs",846.42407,8.57272,-0.06972,-0.00071
+"559","Wet Tropics","Herbert","Herbert","remnant_2007",9873.45803,"Other Coastal Communities",177.6355,1.79912,-0.00327,-0.00003
+"560","Wet Tropics","Herbert","Herbert","remnant_2007",9873.45803,"Mangroves and Saltmarshes",138.00007,1.39769,-0.00456,-0.00005
+"561","Wet Tropics","Herbert","Herbert","remnant_2009",9873.45803,"Eucalypt Variations",6847.35638,69.35115,-2.83783,-0.02874
+"562","Wet Tropics","Herbert","Herbert","remnant_2009",9873.45803,"Non-Remnant Vegetation",1371.42992,13.89007,2.87323,0.0291
+"563","Wet Tropics","Herbert","Herbert","remnant_2009",9873.45803,"Rainforest and Scrubs",846.40774,8.57256,-0.01633,-0.00017
+"564","Wet Tropics","Herbert","Herbert","remnant_2009",9873.45803,"Other Coastal Communities",177.63388,1.79911,-0.00161,-0.00002
+"565","Wet Tropics","Herbert","Herbert","remnant_2009",9873.45803,"Mangroves and Saltmarshes",138.00006,1.39769,0,0
+"566","Wet Tropics","Herbert","Herbert","remnant_2011",9873.45803,"Eucalypt Variations",6846.69076,69.34441,-0.66562,-0.00674
+"567","Wet Tropics","Herbert","Herbert","remnant_2011",9873.45803,"Non-Remnant Vegetation",1372.09633,13.89682,0.66641,0.00675
+"568","Wet Tropics","Herbert","Herbert","remnant_2011",9873.45803,"Rainforest and Scrubs",846.38862,8.57236,-0.01912,-0.00019
+"569","Wet Tropics","Herbert","Herbert","remnant_2011",9873.45803,"Other Coastal Communities",177.62781,1.79904,-0.00607,-0.00006
+"570","Wet Tropics","Herbert","Herbert","remnant_2011",9873.45803,"Mangroves and Saltmarshes",138.00007,1.39769,0,0
+"571","Wet Tropics","Herbert","Herbert","remnant_2013",9873.45803,"Eucalypt Variations",6845.06162,69.32791,-1.62915,-0.0165
+"572","Wet Tropics","Herbert","Herbert","remnant_2013",9873.45803,"Non-Remnant Vegetation",1373.72196,13.91328,1.62563,0.01646
+"573","Wet Tropics","Herbert","Herbert","remnant_2013",9873.45803,"Rainforest and Scrubs",846.36611,8.57213,-0.02251,-0.00023
+"574","Wet Tropics","Herbert","Herbert","remnant_2013",9873.45803,"Other Coastal Communities",177.62781,1.79904,0,0
+"575","Wet Tropics","Herbert","Herbert","remnant_2013",9873.45803,"Mangroves and Saltmarshes",138.00007,1.39769,0,0
+"576","Wet Tropics","Herbert","Herbert","remnant_2015",9873.45803,"Eucalypt Variations",6842.89852,69.306,-2.16309,-0.02191
+"577","Wet Tropics","Herbert","Herbert","remnant_2015",9873.45803,"Non-Remnant Vegetation",1376.41752,13.94058,2.69556,0.0273
+"578","Wet Tropics","Herbert","Herbert","remnant_2015",9873.45803,"Rainforest and Scrubs",846.3258,8.57173,-0.04031,-0.00041
+"579","Wet Tropics","Herbert","Herbert","remnant_2015",9873.45803,"Other Coastal Communities",177.62566,1.79902,-0.00215,-0.00002
+"580","Wet Tropics","Herbert","Herbert","remnant_2015",9873.45803,"Mangroves and Saltmarshes",137.99627,1.39765,-0.00379,-0.00004
+"581","Wet Tropics","Herbert","Herbert","remnant_2017",9873.45803,"Eucalypt Variations",6833.27365,69.20851,-9.62487,-0.09748
+"582","Wet Tropics","Herbert","Herbert","remnant_2017",9873.45803,"Non-Remnant Vegetation",1386.19943,14.03965,9.78191,0.09907
+"583","Wet Tropics","Herbert","Herbert","remnant_2017",9873.45803,"Rainforest and Scrubs",846.30777,8.57154,-0.01803,-0.00018
+"584","Wet Tropics","Herbert","Herbert","remnant_2017",9873.45803,"Other Coastal Communities",177.62566,1.79902,0,0
+"585","Wet Tropics","Herbert","Herbert","remnant_2017",9873.45803,"Mangroves and Saltmarshes",137.99627,1.39765,0,0
+"586","Wet Tropics","Herbert","Herbert","remnant_2019",9873.45803,"Eucalypt Variations",6831.56206,69.19118,-1.71159,-0.01734
+"587","Wet Tropics","Herbert","Herbert","remnant_2019",9873.45803,"Non-Remnant Vegetation",1387.97992,14.05769,1.78049,0.01803
+"588","Wet Tropics","Herbert","Herbert","remnant_2019",9873.45803,"Rainforest and Scrubs",846.30443,8.57151,-0.00334,-0.00003
+"589","Wet Tropics","Herbert","Herbert","remnant_2019",9873.45803,"Other Coastal Communities",177.62566,1.79902,0,0
+"590","Wet Tropics","Herbert","Herbert","remnant_2019",9873.45803,"Mangroves and Saltmarshes",137.99627,1.39765,0,0
+"591","Wet Tropics","Herbert","Herbert","remnant_2021",9873.45803,"Eucalypt Variations",6825.33394,69.1281,-6.22813,-0.06308
+"592","Wet Tropics","Herbert","Herbert","remnant_2021",9873.45803,"Non-Remnant Vegetation",1389.85188,14.07665,1.87195,0.01896
+"593","Wet Tropics","Herbert","Herbert","remnant_2021",9873.45803,"Rainforest and Scrubs",847.98476,8.58853,1.68033,0.01702
+"594","Wet Tropics","Herbert","Herbert","remnant_2021",9873.45803,"Other Coastal Communities",177.92654,1.80207,0.30088,0.00305
+"595","Wet Tropics","Herbert","Herbert","remnant_2021",9873.45803,"Callitris Woodland",138.29968,1.40072,1.17839,0.01193
+"596","Wet Tropics","Johnstone","Johnstone","pre_clear",2317.92637,"Rainforest and Scrubs",2041.94076,88.09343,0,0
+"597","Wet Tropics","Johnstone","Johnstone","pre_clear",2317.92637,"Eucalypt Variations",138.06721,5.9565,0,0
+"598","Wet Tropics","Johnstone","Johnstone","pre_clear",2317.92637,"Melaleuca Open Woodlands",62.76135,2.70765,0,0
+"599","Wet Tropics","Johnstone","Johnstone","pre_clear",2317.92637,"Mangroves and Saltmarshes",37.62237,1.6231,0,0
+"600","Wet Tropics","Johnstone","Johnstone","pre_clear",2317.92637,"Other Coastal Communities",18.75512,0.80913,0,0
+"601","Wet Tropics","Johnstone","Johnstone","remnant_1997",2317.92636,"Rainforest and Scrubs",1151.75819,49.68916,-890.18256,-38.40426
+"602","Wet Tropics","Johnstone","Johnstone","remnant_1997",2317.92636,"Non-Remnant Vegetation",1025.90177,44.25946,1025.90177,44.25946
+"603","Wet Tropics","Johnstone","Johnstone","remnant_1997",2317.92636,"Eucalypt Variations",38.83382,1.67537,-99.23338,-4.28113
+"604","Wet Tropics","Johnstone","Johnstone","remnant_1997",2317.92636,"Mangroves and Saltmarshes",34.72758,1.49822,-2.89479,-0.12489
+"605","Wet Tropics","Johnstone","Johnstone","remnant_1997",2317.92636,"Melaleuca Open Woodlands",31.8825,1.37548,-30.87885,-1.33218
+"606","Wet Tropics","Johnstone","Johnstone","remnant_1999",2317.92636,"Rainforest and Scrubs",1151.15359,49.66308,-0.6046,-0.02608
+"607","Wet Tropics","Johnstone","Johnstone","remnant_1999",2317.92636,"Non-Remnant Vegetation",1026.72501,44.29498,0.82323,0.03552
+"608","Wet Tropics","Johnstone","Johnstone","remnant_1999",2317.92636,"Eucalypt Variations",38.70687,1.66989,-0.12695,-0.00548
+"609","Wet Tropics","Johnstone","Johnstone","remnant_1999",2317.92636,"Mangroves and Saltmarshes",34.72822,1.49825,0.00064,0.00003
+"610","Wet Tropics","Johnstone","Johnstone","remnant_1999",2317.92636,"Melaleuca Open Woodlands",31.79019,1.37149,-0.09232,-0.00398
+"611","Wet Tropics","Johnstone","Johnstone","remnant_2000",2317.92636,"Rainforest and Scrubs",1150.62648,49.64034,-0.52712,-0.02274
+"612","Wet Tropics","Johnstone","Johnstone","remnant_2000",2317.92636,"Non-Remnant Vegetation",1027.3401,44.32152,0.61509,0.02654
+"613","Wet Tropics","Johnstone","Johnstone","remnant_2000",2317.92636,"Eucalypt Variations",38.65256,1.66755,-0.05431,-0.00234
+"614","Wet Tropics","Johnstone","Johnstone","remnant_2000",2317.92636,"Mangroves and Saltmarshes",34.73037,1.49834,0.00215,0.00009
+"615","Wet Tropics","Johnstone","Johnstone","remnant_2000",2317.92636,"Melaleuca Open Woodlands",31.7782,1.37098,-0.01198,-0.00052
+"616","Wet Tropics","Johnstone","Johnstone","remnant_2001",2317.92636,"Rainforest and Scrubs",1150.29059,49.62585,-0.33589,-0.01449
+"617","Wet Tropics","Johnstone","Johnstone","remnant_2001",2317.92636,"Non-Remnant Vegetation",1027.72421,44.33809,0.38411,0.01657
+"618","Wet Tropics","Johnstone","Johnstone","remnant_2001",2317.92636,"Eucalypt Variations",38.61523,1.66594,-0.03733,-0.00161
+"619","Wet Tropics","Johnstone","Johnstone","remnant_2001",2317.92636,"Mangroves and Saltmarshes",34.73037,1.49834,0,0
+"620","Wet Tropics","Johnstone","Johnstone","remnant_2001",2317.92636,"Melaleuca Open Woodlands",31.76731,1.37051,-0.01089,-0.00047
+"621","Wet Tropics","Johnstone","Johnstone","remnant_2003",2317.92636,"Rainforest and Scrubs",1149.99161,49.61295,-0.29897,-0.0129
+"622","Wet Tropics","Johnstone","Johnstone","remnant_2003",2317.92636,"Non-Remnant Vegetation",1028.05463,44.35234,0.33042,0.01426
+"623","Wet Tropics","Johnstone","Johnstone","remnant_2003",2317.92636,"Eucalypt Variations",38.59613,1.66511,-0.0191,-0.00082
+"624","Wet Tropics","Johnstone","Johnstone","remnant_2003",2317.92636,"Mangroves and Saltmarshes",34.73037,1.49834,0,0
+"625","Wet Tropics","Johnstone","Johnstone","remnant_2003",2317.92636,"Melaleuca Open Woodlands",31.75779,1.3701,-0.00952,-0.00041
+"626","Wet Tropics","Johnstone","Johnstone","remnant_2005",2317.92636,"Rainforest and Scrubs",1149.4201,49.58829,-0.57151,-0.02466
+"627","Wet Tropics","Johnstone","Johnstone","remnant_2005",2317.92636,"Non-Remnant Vegetation",1028.71569,44.38086,0.66107,0.02852
+"628","Wet Tropics","Johnstone","Johnstone","remnant_2005",2317.92636,"Eucalypt Variations",38.52392,1.662,-0.07221,-0.00312
+"629","Wet Tropics","Johnstone","Johnstone","remnant_2005",2317.92636,"Mangroves and Saltmarshes",34.73037,1.49834,0,0
+"630","Wet Tropics","Johnstone","Johnstone","remnant_2005",2317.92636,"Melaleuca Open Woodlands",31.74474,1.36953,-0.01305,-0.00056
+"631","Wet Tropics","Johnstone","Johnstone","remnant_2006",2317.92636,"Rainforest and Scrubs",1149.21111,49.57928,-0.20899,-0.00902
+"632","Wet Tropics","Johnstone","Johnstone","remnant_2006",2317.92636,"Non-Remnant Vegetation",1029.07693,44.39645,0.36124,0.01558
+"633","Wet Tropics","Johnstone","Johnstone","remnant_2006",2317.92636,"Eucalypt Variations",38.44282,1.6585,-0.0811,-0.0035
+"634","Wet Tropics","Johnstone","Johnstone","remnant_2006",2317.92636,"Mangroves and Saltmarshes",34.73037,1.49834,0,0
+"635","Wet Tropics","Johnstone","Johnstone","remnant_2006",2317.92636,"Melaleuca Open Woodlands",31.71609,1.3683,-0.02865,-0.00124
+"636","Wet Tropics","Johnstone","Johnstone","remnant_2006b",2317.92636,"Rainforest and Scrubs",1149.20527,49.57902,-0.00584,-0.00025
+"637","Wet Tropics","Johnstone","Johnstone","remnant_2006b",2317.92636,"Non-Remnant Vegetation",1029.08277,44.3967,0.00584,0.00025
+"638","Wet Tropics","Johnstone","Johnstone","remnant_2006b",2317.92636,"Eucalypt Variations",38.44282,1.6585,0,0
+"639","Wet Tropics","Johnstone","Johnstone","remnant_2006b",2317.92636,"Mangroves and Saltmarshes",34.73037,1.49834,0,0
+"640","Wet Tropics","Johnstone","Johnstone","remnant_2006b",2317.92636,"Melaleuca Open Woodlands",31.71609,1.3683,0,0
+"641","Wet Tropics","Johnstone","Johnstone","remnant_2007",2317.92636,"Rainforest and Scrubs",1149.13317,49.57591,-0.0721,-0.00311
+"642","Wet Tropics","Johnstone","Johnstone","remnant_2007",2317.92636,"Non-Remnant Vegetation",1029.1719,44.40054,0.08913,0.00385
+"643","Wet Tropics","Johnstone","Johnstone","remnant_2007",2317.92636,"Eucalypt Variations",38.4345,1.65814,-0.00832,-0.00036
+"644","Wet Tropics","Johnstone","Johnstone","remnant_2007",2317.92636,"Mangroves and Saltmarshes",34.73037,1.49834,0,0
+"645","Wet Tropics","Johnstone","Johnstone","remnant_2007",2317.92636,"Melaleuca Open Woodlands",31.71609,1.3683,0,0
+"646","Wet Tropics","Johnstone","Johnstone","remnant_2009",2317.92636,"Rainforest and Scrubs",1149.06245,49.57286,-0.07072,-0.00305
+"647","Wet Tropics","Johnstone","Johnstone","remnant_2009",2317.92636,"Non-Remnant Vegetation",1029.26565,44.40459,0.09375,0.00404
+"648","Wet Tropics","Johnstone","Johnstone","remnant_2009",2317.92636,"Eucalypt Variations",38.4323,1.65805,-0.0022,-0.00009
+"649","Wet Tropics","Johnstone","Johnstone","remnant_2009",2317.92636,"Mangroves and Saltmarshes",34.73037,1.49834,0,0
+"650","Wet Tropics","Johnstone","Johnstone","remnant_2009",2317.92636,"Melaleuca Open Woodlands",31.71609,1.3683,0,0
+"651","Wet Tropics","Johnstone","Johnstone","remnant_2011",2317.92636,"Rainforest and Scrubs",1148.94131,49.56764,-0.12114,-0.00523
+"652","Wet Tropics","Johnstone","Johnstone","remnant_2011",2317.92636,"Non-Remnant Vegetation",1029.42782,44.41158,0.16216,0.007
+"653","Wet Tropics","Johnstone","Johnstone","remnant_2011",2317.92636,"Eucalypt Variations",38.42412,1.65769,-0.00818,-0.00035
+"654","Wet Tropics","Johnstone","Johnstone","remnant_2011",2317.92636,"Mangroves and Saltmarshes",34.73037,1.49834,0,0
+"655","Wet Tropics","Johnstone","Johnstone","remnant_2011",2317.92636,"Melaleuca Open Woodlands",31.71215,1.36813,-0.00394,-0.00017
+"656","Wet Tropics","Johnstone","Johnstone","remnant_2013",2317.92636,"Rainforest and Scrubs",1148.93108,49.5672,-0.01024,-0.00044
+"657","Wet Tropics","Johnstone","Johnstone","remnant_2013",2317.92636,"Non-Remnant Vegetation",1029.44835,44.41247,0.02054,0.00089
+"658","Wet Tropics","Johnstone","Johnstone","remnant_2013",2317.92636,"Eucalypt Variations",38.41382,1.65725,-0.0103,-0.00044
+"659","Wet Tropics","Johnstone","Johnstone","remnant_2013",2317.92636,"Mangroves and Saltmarshes",34.73037,1.49834,0,0
+"660","Wet Tropics","Johnstone","Johnstone","remnant_2013",2317.92636,"Melaleuca Open Woodlands",31.71215,1.36813,0,0
+"661","Wet Tropics","Johnstone","Johnstone","remnant_2015",2317.92636,"Rainforest and Scrubs",1148.86873,49.56451,-0.06235,-0.00269
+"662","Wet Tropics","Johnstone","Johnstone","remnant_2015",2317.92636,"Non-Remnant Vegetation",1029.51852,44.4155,0.07016,0.00303
+"663","Wet Tropics","Johnstone","Johnstone","remnant_2015",2317.92636,"Eucalypt Variations",38.41382,1.65725,0,0
+"664","Wet Tropics","Johnstone","Johnstone","remnant_2015",2317.92636,"Mangroves and Saltmarshes",34.73037,1.49834,0,0
+"665","Wet Tropics","Johnstone","Johnstone","remnant_2015",2317.92636,"Melaleuca Open Woodlands",31.70434,1.36779,-0.00781,-0.00034
+"666","Wet Tropics","Johnstone","Johnstone","remnant_2017",2317.92636,"Rainforest and Scrubs",1148.80579,49.56179,-0.06294,-0.00272
+"667","Wet Tropics","Johnstone","Johnstone","remnant_2017",2317.92636,"Non-Remnant Vegetation",1029.58884,44.41853,0.07032,0.00303
+"668","Wet Tropics","Johnstone","Johnstone","remnant_2017",2317.92636,"Eucalypt Variations",38.41382,1.65725,0,0
+"669","Wet Tropics","Johnstone","Johnstone","remnant_2017",2317.92636,"Mangroves and Saltmarshes",34.73037,1.49834,0,0
+"670","Wet Tropics","Johnstone","Johnstone","remnant_2017",2317.92636,"Melaleuca Open Woodlands",31.69696,1.36747,-0.00738,-0.00032
+"671","Wet Tropics","Johnstone","Johnstone","remnant_2019",2317.92636,"Rainforest and Scrubs",1148.78083,49.56071,-0.02496,-0.00108
+"672","Wet Tropics","Johnstone","Johnstone","remnant_2019",2317.92636,"Non-Remnant Vegetation",1029.63527,44.42053,0.04643,0.002
+"673","Wet Tropics","Johnstone","Johnstone","remnant_2019",2317.92636,"Eucalypt Variations",38.39235,1.65632,-0.02147,-0.00093
+"674","Wet Tropics","Johnstone","Johnstone","remnant_2019",2317.92636,"Mangroves and Saltmarshes",34.73037,1.49834,0,0
+"675","Wet Tropics","Johnstone","Johnstone","remnant_2019",2317.92636,"Melaleuca Open Woodlands",31.69696,1.36747,0,0
+"676","Wet Tropics","Johnstone","Johnstone","remnant_2021",2317.92637,"Rainforest and Scrubs",1147.96542,49.52553,-0.81541,-0.03518
+"677","Wet Tropics","Johnstone","Johnstone","remnant_2021",2317.92637,"Non-Remnant Vegetation",1029.61805,44.41979,-0.01722,-0.00074
+"678","Wet Tropics","Johnstone","Johnstone","remnant_2021",2317.92637,"Eucalypt Variations",38.47642,1.65995,0.08407,0.00363
+"679","Wet Tropics","Johnstone","Johnstone","remnant_2021",2317.92637,"Mangroves and Saltmarshes",34.85342,1.50365,0.12305,0.00531
+"680","Wet Tropics","Johnstone","Johnstone","remnant_2021",2317.92637,"Melaleuca Open Woodlands",31.83922,1.37361,0.14226,0.00614
+"681","Wet Tropics","Mossman","Mossman","pre_clear",465.75909,"Rainforest and Scrubs",298.68726,64.12913,0,0
+"682","Wet Tropics","Mossman","Mossman","pre_clear",465.75909,"Eucalypt Variations",133.07718,28.57211,0,0
+"683","Wet Tropics","Mossman","Mossman","pre_clear",465.75909,"Mangroves and Saltmarshes",17.61046,3.78102,0,0
+"684","Wet Tropics","Mossman","Mossman","pre_clear",465.75909,"Melaleuca Open Woodlands",11.11314,2.38603,0,0
+"685","Wet Tropics","Mossman","Mossman","pre_clear",465.75909,"Other Coastal Communities",3.18515,0.68386,0,0
+"686","Wet Tropics","Mossman","Mossman","remnant_1997",465.74279,"Rainforest and Scrubs",252.72609,54.26302,-45.96116,-9.86611
+"687","Wet Tropics","Mossman","Mossman","remnant_1997",465.74279,"Non-Remnant Vegetation",98.8159,21.21684,98.8159,21.21684
+"688","Wet Tropics","Mossman","Mossman","remnant_1997",465.74279,"Eucalypt Variations",89.71436,19.26264,-43.36283,-9.30947
+"689","Wet Tropics","Mossman","Mossman","remnant_1997",465.74279,"Mangroves and Saltmarshes",16.29271,3.49822,-1.31774,-0.2828
+"690","Wet Tropics","Mossman","Mossman","remnant_1997",465.74279,"Melaleuca Open Woodlands",4.76366,1.02281,-6.34948,-1.36322
+"691","Wet Tropics","Mossman","Mossman","remnant_1999",465.74279,"Rainforest and Scrubs",252.57604,54.2308,-0.15005,-0.03222
+"692","Wet Tropics","Mossman","Mossman","remnant_1999",465.74279,"Non-Remnant Vegetation",99.02358,21.26143,0.20768,0.04459
+"693","Wet Tropics","Mossman","Mossman","remnant_1999",465.74279,"Eucalypt Variations",89.66072,19.25112,-0.05364,-0.01152
+"694","Wet Tropics","Mossman","Mossman","remnant_1999",465.74279,"Mangroves and Saltmarshes",16.29271,3.49822,0,0
+"695","Wet Tropics","Mossman","Mossman","remnant_1999",465.74279,"Melaleuca Open Woodlands",4.75967,1.02195,-0.00399,-0.00086
+"696","Wet Tropics","Mossman","Mossman","remnant_2000",465.74279,"Rainforest and Scrubs",252.40224,54.19348,-0.1738,-0.03732
+"697","Wet Tropics","Mossman","Mossman","remnant_2000",465.74279,"Non-Remnant Vegetation",99.24152,21.30823,0.21794,0.04679
+"698","Wet Tropics","Mossman","Mossman","remnant_2000",465.74279,"Eucalypt Variations",89.62919,19.24435,-0.03153,-0.00677
+"699","Wet Tropics","Mossman","Mossman","remnant_2000",465.74279,"Mangroves and Saltmarshes",16.29271,3.49822,0,0
+"700","Wet Tropics","Mossman","Mossman","remnant_2000",465.74279,"Melaleuca Open Woodlands",4.74707,1.01925,-0.0126,-0.00271
+"701","Wet Tropics","Mossman","Mossman","remnant_2001",465.74279,"Rainforest and Scrubs",252.40224,54.19348,0,0
+"702","Wet Tropics","Mossman","Mossman","remnant_2001",465.74279,"Non-Remnant Vegetation",99.25125,21.31031,0.00973,0.00209
+"703","Wet Tropics","Mossman","Mossman","remnant_2001",465.74279,"Eucalypt Variations",89.61946,19.24226,-0.00973,-0.00209
+"704","Wet Tropics","Mossman","Mossman","remnant_2001",465.74279,"Mangroves and Saltmarshes",16.29271,3.49822,0,0
+"705","Wet Tropics","Mossman","Mossman","remnant_2001",465.74279,"Melaleuca Open Woodlands",4.74707,1.01925,0,0
+"706","Wet Tropics","Mossman","Mossman","remnant_2003",465.74279,"Rainforest and Scrubs",252.33854,54.17981,-0.06371,-0.01368
+"707","Wet Tropics","Mossman","Mossman","remnant_2003",465.74279,"Non-Remnant Vegetation",99.52478,21.36904,0.27353,0.05873
+"708","Wet Tropics","Mossman","Mossman","remnant_2003",465.74279,"Eucalypt Variations",89.49254,19.21501,-0.12692,-0.02725
+"709","Wet Tropics","Mossman","Mossman","remnant_2003",465.74279,"Mangroves and Saltmarshes",16.29271,3.49822,0,0
+"710","Wet Tropics","Mossman","Mossman","remnant_2003",465.74279,"Melaleuca Open Woodlands",4.66417,1.00145,-0.0829,-0.0178
+"711","Wet Tropics","Mossman","Mossman","remnant_2005",465.74279,"Rainforest and Scrubs",252.28745,54.16884,-0.05108,-0.01097
+"712","Wet Tropics","Mossman","Mossman","remnant_2005",465.74279,"Non-Remnant Vegetation",99.69663,21.40594,0.17186,0.0369
+"713","Wet Tropics","Mossman","Mossman","remnant_2005",465.74279,"Eucalypt Variations",89.39689,19.19448,-0.09565,-0.02054
+"714","Wet Tropics","Mossman","Mossman","remnant_2005",465.74279,"Mangroves and Saltmarshes",16.29271,3.49822,0,0
+"715","Wet Tropics","Mossman","Mossman","remnant_2005",465.74279,"Melaleuca Open Woodlands",4.63905,0.99605,-0.02512,-0.00539
+"716","Wet Tropics","Mossman","Mossman","remnant_2006",465.74279,"Rainforest and Scrubs",252.28172,54.16761,-0.00573,-0.00123
+"717","Wet Tropics","Mossman","Mossman","remnant_2006",465.74279,"Non-Remnant Vegetation",99.74581,21.4165,0.04918,0.01056
+"718","Wet Tropics","Mossman","Mossman","remnant_2006",465.74279,"Eucalypt Variations",89.35616,19.18573,-0.04072,-0.00874
+"719","Wet Tropics","Mossman","Mossman","remnant_2006",465.74279,"Mangroves and Saltmarshes",16.29271,3.49822,0,0
+"720","Wet Tropics","Mossman","Mossman","remnant_2006",465.74279,"Melaleuca Open Woodlands",4.63632,0.99547,-0.00273,-0.00059
+"721","Wet Tropics","Mossman","Mossman","remnant_2006b",465.74279,"Rainforest and Scrubs",252.28172,54.16761,0,0
+"722","Wet Tropics","Mossman","Mossman","remnant_2006b",465.74279,"Non-Remnant Vegetation",99.74942,21.41728,0.00361,0.00077
+"723","Wet Tropics","Mossman","Mossman","remnant_2006b",465.74279,"Eucalypt Variations",89.35256,19.18496,-0.00361,-0.00077
+"724","Wet Tropics","Mossman","Mossman","remnant_2006b",465.74279,"Mangroves and Saltmarshes",16.29271,3.49822,0,0
+"725","Wet Tropics","Mossman","Mossman","remnant_2006b",465.74279,"Melaleuca Open Woodlands",4.63632,0.99547,0,0
+"726","Wet Tropics","Mossman","Mossman","remnant_2007",465.74279,"Rainforest and Scrubs",252.24325,54.15935,-0.03848,-0.00826
+"727","Wet Tropics","Mossman","Mossman","remnant_2007",465.74279,"Non-Remnant Vegetation",99.88382,21.44613,0.1344,0.02886
+"728","Wet Tropics","Mossman","Mossman","remnant_2007",465.74279,"Eucalypt Variations",89.27337,19.16796,-0.07919,-0.017
+"729","Wet Tropics","Mossman","Mossman","remnant_2007",465.74279,"Mangroves and Saltmarshes",16.29271,3.49822,0,0
+"730","Wet Tropics","Mossman","Mossman","remnant_2007",465.74279,"Melaleuca Open Woodlands",4.61958,0.99187,-0.01674,-0.00359
+"731","Wet Tropics","Mossman","Mossman","remnant_2009",465.74279,"Rainforest and Scrubs",252.20001,54.15006,-0.04324,-0.00928
+"732","Wet Tropics","Mossman","Mossman","remnant_2009",465.74279,"Non-Remnant Vegetation",100.04438,21.48061,0.16057,0.03448
+"733","Wet Tropics","Mossman","Mossman","remnant_2009",465.74279,"Eucalypt Variations",89.15411,19.14235,-0.11926,-0.02561
+"734","Wet Tropics","Mossman","Mossman","remnant_2009",465.74279,"Mangroves and Saltmarshes",16.29271,3.49822,0,0
+"735","Wet Tropics","Mossman","Mossman","remnant_2009",465.74279,"Melaleuca Open Woodlands",4.60333,0.98839,-0.01625,-0.00349
+"736","Wet Tropics","Mossman","Mossman","remnant_2011",465.74279,"Rainforest and Scrubs",252.18094,54.14597,-0.01906,-0.00409
+"737","Wet Tropics","Mossman","Mossman","remnant_2011",465.74279,"Non-Remnant Vegetation",100.10648,21.49394,0.0621,0.01333
+"738","Wet Tropics","Mossman","Mossman","remnant_2011",465.74279,"Eucalypt Variations",89.1224,19.13554,-0.03171,-0.00681
+"739","Wet Tropics","Mossman","Mossman","remnant_2011",465.74279,"Mangroves and Saltmarshes",16.28982,3.4976,-0.00289,-0.00062
+"740","Wet Tropics","Mossman","Mossman","remnant_2011",465.74279,"Melaleuca Open Woodlands",4.60212,0.98812,-0.00121,-0.00026
+"741","Wet Tropics","Mossman","Mossman","remnant_2013",465.74279,"Rainforest and Scrubs",252.18094,54.14597,0,0
+"742","Wet Tropics","Mossman","Mossman","remnant_2013",465.74279,"Non-Remnant Vegetation",100.11676,21.49615,0.01028,0.00221
+"743","Wet Tropics","Mossman","Mossman","remnant_2013",465.74279,"Eucalypt Variations",89.11778,19.13455,-0.00463,-0.00099
+"744","Wet Tropics","Mossman","Mossman","remnant_2013",465.74279,"Mangroves and Saltmarshes",16.28943,3.49752,-0.00039,-0.00008
+"745","Wet Tropics","Mossman","Mossman","remnant_2013",465.74279,"Melaleuca Open Woodlands",4.59686,0.98699,-0.00526,-0.00113
+"746","Wet Tropics","Mossman","Mossman","remnant_2015",465.74279,"Rainforest and Scrubs",252.16177,54.14185,-0.01917,-0.00412
+"747","Wet Tropics","Mossman","Mossman","remnant_2015",465.74279,"Non-Remnant Vegetation",100.14248,21.50167,0.02572,0.00552
+"748","Wet Tropics","Mossman","Mossman","remnant_2015",465.74279,"Eucalypt Variations",89.08091,19.12663,-0.03686,-0.00791
+"749","Wet Tropics","Mossman","Mossman","remnant_2015",465.74279,"Mangroves and Saltmarshes",16.28943,3.49752,0,0
+"750","Wet Tropics","Mossman","Mossman","remnant_2015",465.74279,"Melaleuca Open Woodlands",4.59444,0.98648,-0.00242,-0.00052
+"751","Wet Tropics","Mossman","Mossman","remnant_2017",465.74279,"Rainforest and Scrubs",252.16177,54.14185,0,0
+"752","Wet Tropics","Mossman","Mossman","remnant_2017",465.74279,"Non-Remnant Vegetation",100.18159,21.51007,0.03911,0.0084
+"753","Wet Tropics","Mossman","Mossman","remnant_2017",465.74279,"Eucalypt Variations",89.05683,19.12146,-0.02408,-0.00517
+"754","Wet Tropics","Mossman","Mossman","remnant_2017",465.74279,"Mangroves and Saltmarshes",16.28943,3.49752,0,0
+"755","Wet Tropics","Mossman","Mossman","remnant_2017",465.74279,"Melaleuca Open Woodlands",4.57941,0.98325,-0.01503,-0.00323
+"756","Wet Tropics","Mossman","Mossman","remnant_2019",465.74279,"Rainforest and Scrubs",252.16068,54.14162,-0.00109,-0.00023
+"757","Wet Tropics","Mossman","Mossman","remnant_2019",465.74279,"Non-Remnant Vegetation",100.19062,21.51201,0.00903,0.00194
+"758","Wet Tropics","Mossman","Mossman","remnant_2019",465.74279,"Eucalypt Variations",89.04889,19.11976,-0.00794,-0.00171
+"759","Wet Tropics","Mossman","Mossman","remnant_2019",465.74279,"Mangroves and Saltmarshes",16.28943,3.49752,0,0
+"760","Wet Tropics","Mossman","Mossman","remnant_2019",465.74279,"Melaleuca Open Woodlands",4.57941,0.98325,0,0
+"761","Wet Tropics","Mossman","Mossman","remnant_2021",465.75909,"Rainforest and Scrubs",252.30006,54.16965,0.13938,0.02803
+"762","Wet Tropics","Mossman","Mossman","remnant_2021",465.75909,"Non-Remnant Vegetation",100.31651,21.53828,0.12588,0.02627
+"763","Wet Tropics","Mossman","Mossman","remnant_2021",465.75909,"Eucalypt Variations",89.02675,19.11433,-0.02214,-0.00542
+"764","Wet Tropics","Mossman","Mossman","remnant_2021",465.75909,"Mangroves and Saltmarshes",16.13077,3.46333,-0.15866,-0.03419
+"765","Wet Tropics","Mossman","Mossman","remnant_2021",465.75909,"Melaleuca Open Woodlands",4.38247,0.94093,-0.19694,-0.04232
+"766","Wet Tropics","Mulgrave","Mulgrave","pre_clear",1320.34052,"Rainforest and Scrubs",760.10908,57.56917,0,0
+"767","Wet Tropics","Mulgrave","Mulgrave","pre_clear",1320.34052,"Eucalypt Variations",416.55849,31.54932,0,0
+"768","Wet Tropics","Mulgrave","Mulgrave","pre_clear",1320.34052,"Mangroves and Saltmarshes",50.68866,3.83906,0,0
+"769","Wet Tropics","Mulgrave","Mulgrave","pre_clear",1320.34052,"Other Coastal Communities",37.87906,2.86889,0,0
+"770","Wet Tropics","Mulgrave","Mulgrave","pre_clear",1320.34052,"Melaleuca Open Woodlands",34.57515,2.61865,0,0
+"771","Wet Tropics","Mulgrave","Mulgrave","remnant_1997",1320.34053,"Rainforest and Scrubs",601.12257,45.52784,-158.98651,-12.04133
+"772","Wet Tropics","Mulgrave","Mulgrave","remnant_1997",1320.34053,"Non-Remnant Vegetation",317.05836,24.01338,317.05836,24.01338
+"773","Wet Tropics","Mulgrave","Mulgrave","remnant_1997",1320.34053,"Eucalypt Variations",286.58029,21.70503,-129.9782,-9.84429
+"774","Wet Tropics","Mulgrave","Mulgrave","remnant_1997",1320.34053,"Mangroves and Saltmarshes",41.28417,3.12678,-9.40449,-0.71228
+"775","Wet Tropics","Mulgrave","Mulgrave","remnant_1997",1320.34053,"Other Coastal Communities",37.32042,2.82658,-0.55864,-0.04231
+"776","Wet Tropics","Mulgrave","Mulgrave","remnant_1999",1320.34053,"Rainforest and Scrubs",601.10809,45.52675,-0.01448,-0.0011
+"777","Wet Tropics","Mulgrave","Mulgrave","remnant_1999",1320.34053,"Non-Remnant Vegetation",317.09616,24.01624,0.0378,0.00286
+"778","Wet Tropics","Mulgrave","Mulgrave","remnant_1999",1320.34053,"Eucalypt Variations",286.55698,21.70326,-0.02331,-0.00177
+"779","Wet Tropics","Mulgrave","Mulgrave","remnant_1999",1320.34053,"Mangroves and Saltmarshes",41.28417,3.12678,0,0
+"780","Wet Tropics","Mulgrave","Mulgrave","remnant_1999",1320.34053,"Other Coastal Communities",37.32042,2.82658,0,0
+"781","Wet Tropics","Mulgrave","Mulgrave","remnant_2000",1320.34053,"Rainforest and Scrubs",601.10437,45.52646,-0.00372,-0.00028
+"782","Wet Tropics","Mulgrave","Mulgrave","remnant_2000",1320.34053,"Non-Remnant Vegetation",317.11861,24.01794,0.02245,0.0017
+"783","Wet Tropics","Mulgrave","Mulgrave","remnant_2000",1320.34053,"Eucalypt Variations",286.5467,21.70248,-0.01027,-0.00078
+"784","Wet Tropics","Mulgrave","Mulgrave","remnant_2000",1320.34053,"Mangroves and Saltmarshes",41.28417,3.12678,0,0
+"785","Wet Tropics","Mulgrave","Mulgrave","remnant_2000",1320.34053,"Other Coastal Communities",37.32042,2.82658,0,0
+"786","Wet Tropics","Mulgrave","Mulgrave","remnant_2001",1320.34053,"Rainforest and Scrubs",601.10095,45.52621,-0.00342,-0.00026
+"787","Wet Tropics","Mulgrave","Mulgrave","remnant_2001",1320.34053,"Non-Remnant Vegetation",317.29188,24.03106,0.17328,0.01312
+"788","Wet Tropics","Mulgrave","Mulgrave","remnant_2001",1320.34053,"Eucalypt Variations",286.51543,21.70012,-0.03127,-0.00237
+"789","Wet Tropics","Mulgrave","Mulgrave","remnant_2001",1320.34053,"Mangroves and Saltmarshes",41.15162,3.11674,-0.13255,-0.01004
+"790","Wet Tropics","Mulgrave","Mulgrave","remnant_2001",1320.34053,"Other Coastal Communities",37.32042,2.82658,0,0
+"791","Wet Tropics","Mulgrave","Mulgrave","remnant_2003",1320.34053,"Rainforest and Scrubs",601.09433,45.5257,-0.00662,-0.0005
+"792","Wet Tropics","Mulgrave","Mulgrave","remnant_2003",1320.34053,"Non-Remnant Vegetation",317.41632,24.04049,0.12443,0.00942
+"793","Wet Tropics","Mulgrave","Mulgrave","remnant_2003",1320.34053,"Eucalypt Variations",286.49306,21.69842,-0.02237,-0.00169
+"794","Wet Tropics","Mulgrave","Mulgrave","remnant_2003",1320.34053,"Mangroves and Saltmarshes",41.1153,3.11399,-0.03632,-0.00275
+"795","Wet Tropics","Mulgrave","Mulgrave","remnant_2003",1320.34053,"Other Coastal Communities",37.32042,2.82658,0,0
+"796","Wet Tropics","Mulgrave","Mulgrave","remnant_2005",1320.34053,"Rainforest and Scrubs",601.08285,45.52484,-0.01147,-0.00087
+"797","Wet Tropics","Mulgrave","Mulgrave","remnant_2005",1320.34053,"Non-Remnant Vegetation",317.5303,24.04912,0.11399,0.00863
+"798","Wet Tropics","Mulgrave","Mulgrave","remnant_2005",1320.34053,"Eucalypt Variations",286.39941,21.69133,-0.09366,-0.00709
+"799","Wet Tropics","Mulgrave","Mulgrave","remnant_2005",1320.34053,"Mangroves and Saltmarshes",41.1153,3.11399,0,0
+"800","Wet Tropics","Mulgrave","Mulgrave","remnant_2005",1320.34053,"Other Coastal Communities",37.32042,2.82658,0,0
+"801","Wet Tropics","Mulgrave","Mulgrave","remnant_2006",1320.34053,"Rainforest and Scrubs",601.07792,45.52446,-0.00493,-0.00037
+"802","Wet Tropics","Mulgrave","Mulgrave","remnant_2006",1320.34053,"Non-Remnant Vegetation",317.32854,24.03384,-0.20176,-0.01528
+"803","Wet Tropics","Mulgrave","Mulgrave","remnant_2006",1320.34053,"Eucalypt Variations",286.39807,21.69123,-0.00134,-0.0001
+"804","Wet Tropics","Mulgrave","Mulgrave","remnant_2006",1320.34053,"Mangroves and Saltmarshes",41.1153,3.11399,0,0
+"805","Wet Tropics","Mulgrave","Mulgrave","remnant_2006",1320.34053,"Other Coastal Communities",37.32042,2.82658,0,0
+"806","Wet Tropics","Mulgrave","Mulgrave","remnant_2006b",1320.34053,"Rainforest and Scrubs",601.07677,45.52437,-0.00115,-0.00009
+"807","Wet Tropics","Mulgrave","Mulgrave","remnant_2006b",1320.34053,"Non-Remnant Vegetation",317.33633,24.03443,0.00778,0.00059
+"808","Wet Tropics","Mulgrave","Mulgrave","remnant_2006b",1320.34053,"Eucalypt Variations",286.39144,21.69073,-0.00663,-0.0005
+"809","Wet Tropics","Mulgrave","Mulgrave","remnant_2006b",1320.34053,"Mangroves and Saltmarshes",41.1153,3.11399,0,0
+"810","Wet Tropics","Mulgrave","Mulgrave","remnant_2006b",1320.34053,"Other Coastal Communities",37.32042,2.82658,0,0
+"811","Wet Tropics","Mulgrave","Mulgrave","remnant_2007",1320.34053,"Rainforest and Scrubs",601.07792,45.52446,0.00115,0.00009
+"812","Wet Tropics","Mulgrave","Mulgrave","remnant_2007",1320.34053,"Non-Remnant Vegetation",317.47378,24.04484,0.13745,0.01041
+"813","Wet Tropics","Mulgrave","Mulgrave","remnant_2007",1320.34053,"Eucalypt Variations",286.27209,21.68169,-0.11935,-0.00904
+"814","Wet Tropics","Mulgrave","Mulgrave","remnant_2007",1320.34053,"Mangroves and Saltmarshes",41.1153,3.11399,0,0
+"815","Wet Tropics","Mulgrave","Mulgrave","remnant_2007",1320.34053,"Other Coastal Communities",37.31133,2.82589,-0.00909,-0.00069
+"816","Wet Tropics","Mulgrave","Mulgrave","remnant_2009",1320.34053,"Rainforest and Scrubs",601.07506,45.52425,-0.00286,-0.00022
+"817","Wet Tropics","Mulgrave","Mulgrave","remnant_2009",1320.34053,"Non-Remnant Vegetation",317.56989,24.05212,0.09611,0.00728
+"818","Wet Tropics","Mulgrave","Mulgrave","remnant_2009",1320.34053,"Eucalypt Variations",286.17883,21.67462,-0.09325,-0.00706
+"819","Wet Tropics","Mulgrave","Mulgrave","remnant_2009",1320.34053,"Mangroves and Saltmarshes",41.1153,3.11399,0,0
+"820","Wet Tropics","Mulgrave","Mulgrave","remnant_2009",1320.34053,"Other Coastal Communities",37.31133,2.82589,0,0
+"821","Wet Tropics","Mulgrave","Mulgrave","remnant_2011",1320.34053,"Rainforest and Scrubs",601.06641,45.52359,-0.00865,-0.00066
+"822","Wet Tropics","Mulgrave","Mulgrave","remnant_2011",1320.34053,"Non-Remnant Vegetation",317.62015,24.05593,0.05026,0.00381
+"823","Wet Tropics","Mulgrave","Mulgrave","remnant_2011",1320.34053,"Eucalypt Variations",286.16042,21.67323,-0.01842,-0.00139
+"824","Wet Tropics","Mulgrave","Mulgrave","remnant_2011",1320.34053,"Mangroves and Saltmarshes",41.1153,3.11399,0,0
+"825","Wet Tropics","Mulgrave","Mulgrave","remnant_2011",1320.34053,"Other Coastal Communities",37.31133,2.82589,0,0
+"826","Wet Tropics","Mulgrave","Mulgrave","remnant_2013",1320.34053,"Rainforest and Scrubs",601.06641,45.52359,0,0
+"827","Wet Tropics","Mulgrave","Mulgrave","remnant_2013",1320.34053,"Non-Remnant Vegetation",317.65458,24.05853,0.03443,0.00261
+"828","Wet Tropics","Mulgrave","Mulgrave","remnant_2013",1320.34053,"Eucalypt Variations",286.14653,21.67218,-0.01389,-0.00105
+"829","Wet Tropics","Mulgrave","Mulgrave","remnant_2013",1320.34053,"Mangroves and Saltmarshes",41.1039,3.11313,-0.0114,-0.00086
+"830","Wet Tropics","Mulgrave","Mulgrave","remnant_2013",1320.34053,"Other Coastal Communities",37.31133,2.82589,0,0
+"831","Wet Tropics","Mulgrave","Mulgrave","remnant_2015",1320.34053,"Rainforest and Scrubs",601.04585,45.52203,-0.02056,-0.00156
+"832","Wet Tropics","Mulgrave","Mulgrave","remnant_2015",1320.34053,"Non-Remnant Vegetation",317.7043,24.0623,0.04972,0.00377
+"833","Wet Tropics","Mulgrave","Mulgrave","remnant_2015",1320.34053,"Eucalypt Variations",286.13498,21.6713,-0.01154,-0.00087
+"834","Wet Tropics","Mulgrave","Mulgrave","remnant_2015",1320.34053,"Mangroves and Saltmarshes",41.10389,3.11313,-0.00001,0
+"835","Wet Tropics","Mulgrave","Mulgrave","remnant_2015",1320.34053,"Other Coastal Communities",37.31133,2.82589,0,0
+"836","Wet Tropics","Mulgrave","Mulgrave","remnant_2017",1320.34053,"Rainforest and Scrubs",601.00492,45.51893,-0.04093,-0.0031
+"837","Wet Tropics","Mulgrave","Mulgrave","remnant_2017",1320.34053,"Non-Remnant Vegetation",317.76179,24.06665,0.05749,0.00435
+"838","Wet Tropics","Mulgrave","Mulgrave","remnant_2017",1320.34053,"Eucalypt Variations",286.11842,21.67005,-0.01656,-0.00125
+"839","Wet Tropics","Mulgrave","Mulgrave","remnant_2017",1320.34053,"Mangroves and Saltmarshes",41.10389,3.11313,0,0
+"840","Wet Tropics","Mulgrave","Mulgrave","remnant_2017",1320.34053,"Other Coastal Communities",37.31133,2.82589,0,0
+"841","Wet Tropics","Mulgrave","Mulgrave","remnant_2019",1320.34053,"Rainforest and Scrubs",600.96591,45.51598,-0.03901,-0.00295
+"842","Wet Tropics","Mulgrave","Mulgrave","remnant_2019",1320.34053,"Non-Remnant Vegetation",317.8008,24.06961,0.03901,0.00295
+"843","Wet Tropics","Mulgrave","Mulgrave","remnant_2019",1320.34053,"Eucalypt Variations",286.11842,21.67005,0,0
+"844","Wet Tropics","Mulgrave","Mulgrave","remnant_2019",1320.34053,"Mangroves and Saltmarshes",41.10389,3.11313,0,0
+"845","Wet Tropics","Mulgrave","Mulgrave","remnant_2019",1320.34053,"Other Coastal Communities",37.31133,2.82589,0,0
+"846","Wet Tropics","Mulgrave","Mulgrave","remnant_2021",1320.34052,"Rainforest and Scrubs",601.47746,45.55472,0.51155,0.03874
+"847","Wet Tropics","Mulgrave","Mulgrave","remnant_2021",1320.34052,"Non-Remnant Vegetation",317.13976,24.01954,-0.66104,-0.05007
+"848","Wet Tropics","Mulgrave","Mulgrave","remnant_2021",1320.34052,"Eucalypt Variations",286.15214,21.6726,0.03372,0.00255
+"849","Wet Tropics","Mulgrave","Mulgrave","remnant_2021",1320.34052,"Mangroves and Saltmarshes",41.08252,3.11151,-0.02137,-0.00162
+"850","Wet Tropics","Mulgrave","Mulgrave","remnant_2021",1320.34052,"Other Coastal Communities",37.28354,2.82378,-0.02779,-0.00211
+"851","Wet Tropics","Murray","Murray","pre_clear",1526.21633,"Eucalypt Variations",589.60235,38.63164,0,0
+"852","Wet Tropics","Murray","Murray","pre_clear",1526.21633,"Rainforest and Scrubs",361.60002,23.69258,0,0
+"853","Wet Tropics","Murray","Murray","pre_clear",1526.21633,"Melaleuca Open Woodlands",195.42178,12.80433,0,0
+"854","Wet Tropics","Murray","Murray","pre_clear",1526.21633,"Mangroves and Saltmarshes",180.69634,11.8395,0,0
+"855","Wet Tropics","Murray","Murray","pre_clear",1526.21633,"Other Coastal Communities",163.25711,10.69685,0,0
+"856","Wet Tropics","Murray","Murray","remnant_1997",1526.19651,"Eucalypt Variations",406.82016,26.65582,-182.78219,-11.97582
+"857","Wet Tropics","Murray","Murray","remnant_1997",1526.19651,"Rainforest and Scrubs",320.73741,21.01547,-40.86261,-2.67711
+"858","Wet Tropics","Murray","Murray","remnant_1997",1526.19651,"Non-Remnant Vegetation",292.72973,19.18034,292.72973,19.18034
+"859","Wet Tropics","Murray","Murray","remnant_1997",1526.19651,"Mangroves and Saltmarshes",180.97599,11.85797,0.27965,0.01848
+"860","Wet Tropics","Murray","Murray","remnant_1997",1526.19651,"Other Coastal Communities",162.89978,10.67358,-0.35733,-0.02327
+"861","Wet Tropics","Murray","Murray","remnant_1999",1526.19651,"Eucalypt Variations",404.19928,26.48409,-2.62089,-0.17173
+"862","Wet Tropics","Murray","Murray","remnant_1999",1526.19651,"Rainforest and Scrubs",320.65934,21.01036,-0.07807,-0.00512
+"863","Wet Tropics","Murray","Murray","remnant_1999",1526.19651,"Non-Remnant Vegetation",299.32696,19.61261,6.59723,0.43227
+"864","Wet Tropics","Murray","Murray","remnant_1999",1526.19651,"Mangroves and Saltmarshes",180.9782,11.85812,0.0022,0.00014
+"865","Wet Tropics","Murray","Murray","remnant_1999",1526.19651,"Other Coastal Communities",162.89977,10.67358,-0.00001,0
+"866","Wet Tropics","Murray","Murray","remnant_2000",1526.19651,"Eucalypt Variations",403.10582,26.41245,-1.09346,-0.07165
+"867","Wet Tropics","Murray","Murray","remnant_2000",1526.19651,"Rainforest and Scrubs",320.4866,20.99904,-0.17273,-0.01132
+"868","Wet Tropics","Murray","Murray","remnant_2000",1526.19651,"Non-Remnant Vegetation",301.56035,19.75895,2.23339,0.14634
+"869","Wet Tropics","Murray","Murray","remnant_2000",1526.19651,"Mangroves and Saltmarshes",180.97569,11.85795,-0.00251,-0.00016
+"870","Wet Tropics","Murray","Murray","remnant_2000",1526.19651,"Other Coastal Communities",162.89977,10.67358,0,0
+"871","Wet Tropics","Murray","Murray","remnant_2001",1526.19651,"Eucalypt Variations",402.37454,26.36453,-0.73128,-0.04791
+"872","Wet Tropics","Murray","Murray","remnant_2001",1526.19651,"Rainforest and Scrubs",320.25456,20.98384,-0.23204,-0.0152
+"873","Wet Tropics","Murray","Murray","remnant_2001",1526.19651,"Non-Remnant Vegetation",302.78842,19.83941,1.22807,0.08047
+"874","Wet Tropics","Murray","Murray","remnant_2001",1526.19651,"Mangroves and Saltmarshes",180.97569,11.85795,0,0
+"875","Wet Tropics","Murray","Murray","remnant_2001",1526.19651,"Other Coastal Communities",162.89977,10.67358,0,0
+"876","Wet Tropics","Murray","Murray","remnant_2003",1526.19651,"Eucalypt Variations",402.20347,26.35332,-0.17107,-0.01121
+"877","Wet Tropics","Murray","Murray","remnant_2003",1526.19651,"Rainforest and Scrubs",320.23735,20.98271,-0.01721,-0.00113
+"878","Wet Tropics","Murray","Murray","remnant_2003",1526.19651,"Non-Remnant Vegetation",303.25824,19.8702,0.46982,0.03078
+"879","Wet Tropics","Murray","Murray","remnant_2003",1526.19651,"Mangroves and Saltmarshes",180.97569,11.85795,0,0
+"880","Wet Tropics","Murray","Murray","remnant_2003",1526.19651,"Other Coastal Communities",162.89976,10.67358,-0.00001,0
+"881","Wet Tropics","Murray","Murray","remnant_2005",1526.19651,"Eucalypt Variations",401.75432,26.32389,-0.44915,-0.02943
+"882","Wet Tropics","Murray","Murray","remnant_2005",1526.19651,"Rainforest and Scrubs",320.23198,20.98236,-0.00537,-0.00035
+"883","Wet Tropics","Murray","Murray","remnant_2005",1526.19651,"Non-Remnant Vegetation",304.11091,19.92606,0.85267,0.05587
+"884","Wet Tropics","Murray","Murray","remnant_2005",1526.19651,"Mangroves and Saltmarshes",180.97569,11.85795,0,0
+"885","Wet Tropics","Murray","Murray","remnant_2005",1526.19651,"Other Coastal Communities",162.89977,10.67358,0.00001,0
+"886","Wet Tropics","Murray","Murray","remnant_2006",1526.19651,"Eucalypt Variations",401.72548,26.322,-0.02884,-0.00189
+"887","Wet Tropics","Murray","Murray","remnant_2006",1526.19651,"Rainforest and Scrubs",320.23269,20.9824,0.0007,0.00005
+"888","Wet Tropics","Murray","Murray","remnant_2006",1526.19651,"Non-Remnant Vegetation",304.28551,19.93751,0.1746,0.01144
+"889","Wet Tropics","Murray","Murray","remnant_2006",1526.19651,"Mangroves and Saltmarshes",180.97569,11.85795,0,0
+"890","Wet Tropics","Murray","Murray","remnant_2006",1526.19651,"Other Coastal Communities",162.89978,10.67358,0.00001,0
+"891","Wet Tropics","Murray","Murray","remnant_2006b",1526.19651,"Eucalypt Variations",401.72459,26.32194,-0.00089,-0.00006
+"892","Wet Tropics","Murray","Murray","remnant_2006b",1526.19651,"Rainforest and Scrubs",320.2327,20.9824,0.00002,0
+"893","Wet Tropics","Murray","Murray","remnant_2006b",1526.19651,"Non-Remnant Vegetation",304.2944,19.93809,0.00889,0.00058
+"894","Wet Tropics","Murray","Murray","remnant_2006b",1526.19651,"Mangroves and Saltmarshes",180.97569,11.85795,0,0
+"895","Wet Tropics","Murray","Murray","remnant_2006b",1526.19651,"Other Coastal Communities",162.89977,10.67358,-0.00001,0
+"896","Wet Tropics","Murray","Murray","remnant_2007",1526.19651,"Eucalypt Variations",401.67839,26.31892,-0.0462,-0.00303
+"897","Wet Tropics","Murray","Murray","remnant_2007",1526.19651,"Rainforest and Scrubs",320.22445,20.98186,-0.00826,-0.00054
+"898","Wet Tropics","Murray","Murray","remnant_2007",1526.19651,"Non-Remnant Vegetation",304.37095,19.9431,0.07655,0.00502
+"899","Wet Tropics","Murray","Murray","remnant_2007",1526.19651,"Mangroves and Saltmarshes",180.97569,11.85795,0,0
+"900","Wet Tropics","Murray","Murray","remnant_2007",1526.19651,"Other Coastal Communities",162.89978,10.67358,0.00001,0
+"901","Wet Tropics","Murray","Murray","remnant_2009",1526.19651,"Eucalypt Variations",401.57348,26.31204,-0.10491,-0.00687
+"902","Wet Tropics","Murray","Murray","remnant_2009",1526.19651,"Rainforest and Scrubs",320.22447,20.98186,0.00002,0
+"903","Wet Tropics","Murray","Murray","remnant_2009",1526.19651,"Non-Remnant Vegetation",304.60885,19.95869,0.23789,0.01559
+"904","Wet Tropics","Murray","Murray","remnant_2009",1526.19651,"Mangroves and Saltmarshes",180.97569,11.85795,0,0
+"905","Wet Tropics","Murray","Murray","remnant_2009",1526.19651,"Other Coastal Communities",162.89977,10.67358,-0.00001,0
+"906","Wet Tropics","Murray","Murray","remnant_2011",1526.19651,"Eucalypt Variations",401.34432,26.29703,-0.22915,-0.01501
+"907","Wet Tropics","Murray","Murray","remnant_2011",1526.19651,"Rainforest and Scrubs",320.21899,20.9815,-0.00547,-0.00036
+"908","Wet Tropics","Murray","Murray","remnant_2011",1526.19651,"Non-Remnant Vegetation",304.92914,19.97968,0.32029,0.02099
+"909","Wet Tropics","Murray","Murray","remnant_2011",1526.19651,"Mangroves and Saltmarshes",180.97569,11.85795,0,0
+"910","Wet Tropics","Murray","Murray","remnant_2011",1526.19651,"Other Coastal Communities",162.89925,10.67354,-0.00051,-0.00003
+"911","Wet Tropics","Murray","Murray","remnant_2013",1526.19651,"Eucalypt Variations",401.29711,26.29393,-0.04721,-0.00309
+"912","Wet Tropics","Murray","Murray","remnant_2013",1526.19651,"Rainforest and Scrubs",320.21698,20.98137,-0.00201,-0.00013
+"913","Wet Tropics","Murray","Murray","remnant_2013",1526.19651,"Non-Remnant Vegetation",305.01702,19.98544,0.08788,0.00576
+"914","Wet Tropics","Murray","Murray","remnant_2013",1526.19651,"Mangroves and Saltmarshes",180.97569,11.85795,0,0
+"915","Wet Tropics","Murray","Murray","remnant_2013",1526.19651,"Other Coastal Communities",162.89925,10.67354,0,0
+"916","Wet Tropics","Murray","Murray","remnant_2015",1526.19651,"Eucalypt Variations",401.01711,26.27559,-0.28,-0.01835
+"917","Wet Tropics","Murray","Murray","remnant_2015",1526.19651,"Rainforest and Scrubs",320.06069,20.97113,-0.1563,-0.01024
+"918","Wet Tropics","Murray","Murray","remnant_2015",1526.19651,"Non-Remnant Vegetation",305.71166,20.03095,0.69464,0.04551
+"919","Wet Tropics","Murray","Murray","remnant_2015",1526.19651,"Mangroves and Saltmarshes",180.97587,11.85797,0.00018,0.00001
+"920","Wet Tropics","Murray","Murray","remnant_2015",1526.19651,"Other Coastal Communities",162.89925,10.67354,0,0
+"921","Wet Tropics","Murray","Murray","remnant_2017",1526.19651,"Eucalypt Variations",400.71082,26.25552,-0.30629,-0.02007
+"922","Wet Tropics","Murray","Murray","remnant_2017",1526.19651,"Rainforest and Scrubs",320.04016,20.96979,-0.02052,-0.00134
+"923","Wet Tropics","Murray","Murray","remnant_2017",1526.19651,"Non-Remnant Vegetation",306.15434,20.05996,0.44269,0.02901
+"924","Wet Tropics","Murray","Murray","remnant_2017",1526.19651,"Mangroves and Saltmarshes",180.97455,11.85788,-0.00132,-0.00009
+"925","Wet Tropics","Murray","Murray","remnant_2017",1526.19651,"Other Coastal Communities",162.89924,10.67354,-0.00001,0
+"926","Wet Tropics","Murray","Murray","remnant_2019",1526.19651,"Eucalypt Variations",400.66532,26.25254,-0.0455,-0.00298
+"927","Wet Tropics","Murray","Murray","remnant_2019",1526.19651,"Rainforest and Scrubs",320.03963,20.96975,-0.00053,-0.00003
+"928","Wet Tropics","Murray","Murray","remnant_2019",1526.19651,"Non-Remnant Vegetation",306.25817,20.06676,0.10383,0.0068
+"929","Wet Tropics","Murray","Murray","remnant_2019",1526.19651,"Mangroves and Saltmarshes",180.97455,11.85788,0,0
+"930","Wet Tropics","Murray","Murray","remnant_2019",1526.19651,"Other Coastal Communities",162.89288,10.67313,-0.00636,-0.00042
+"931","Wet Tropics","Murray","Murray","remnant_2021",1526.21632,"Eucalypt Variations",400.13709,26.21759,-0.52823,-0.03495
+"932","Wet Tropics","Murray","Murray","remnant_2021",1526.21632,"Rainforest and Scrubs",320.04775,20.97001,0.00811,0.00026
+"933","Wet Tropics","Murray","Murray","remnant_2021",1526.21632,"Non-Remnant Vegetation",306.80741,20.10248,0.54923,0.03573
+"934","Wet Tropics","Murray","Murray","remnant_2021",1526.21632,"Mangroves and Saltmarshes",180.2527,11.81043,-0.72184,-0.04745
+"935","Wet Tropics","Murray","Murray","remnant_2021",1526.21632,"Other Coastal Communities",162.85244,10.67034,-0.04044,-0.00279
+"936","Mackay Whitsunday Isaac","O'Connell","O'Connell","pre_clear",2445.62971,"Eucalypt Variations",1772.39933,72.4721,0,0
+"937","Mackay Whitsunday Isaac","O'Connell","O'Connell","pre_clear",2445.62971,"Rainforest and Scrubs",410.70279,16.79333,0,0
+"938","Mackay Whitsunday Isaac","O'Connell","O'Connell","pre_clear",2445.62971,"Mangroves and Saltmarshes",134.50853,5.49995,0,0
+"939","Mackay Whitsunday Isaac","O'Connell","O'Connell","pre_clear",2445.62971,"Melaleuca Open Woodlands",59.95345,2.45145,0,0
+"940","Mackay Whitsunday Isaac","O'Connell","O'Connell","pre_clear",2445.62971,"Other Coastal Communities",35.5553,1.45383,0,0
+"941","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_1997",2445.62703,"Non-Remnant Vegetation",1095.90099,44.81063,1095.90099,44.81063
+"942","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_1997",2445.62703,"Eucalypt Variations",768.9908,31.4435,-1003.40853,-41.0286
+"943","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_1997",2445.62703,"Rainforest and Scrubs",354.21019,14.48341,-56.4926,-2.30992
+"944","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_1997",2445.62703,"Mangroves and Saltmarshes",131.98943,5.39696,-2.5191,-0.103
+"945","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_1997",2445.62703,"Other Coastal Communities",35.66354,1.45826,0.10825,0.00443
+"946","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_1999",2445.62703,"Non-Remnant Vegetation",1105.18264,45.19015,9.28165,0.37952
+"947","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_1999",2445.62703,"Eucalypt Variations",758.29729,31.00625,-10.6935,-0.43725
+"948","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_1999",2445.62703,"Rainforest and Scrubs",353.9322,14.47204,-0.27799,-0.01137
+"949","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_1999",2445.62703,"Mangroves and Saltmarshes",131.86673,5.39194,-0.1227,-0.00502
+"950","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_1999",2445.62703,"Other Coastal Communities",35.66354,1.45826,0,0
+"951","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2000",2445.62703,"Non-Remnant Vegetation",1113.86129,45.54502,8.67865,0.35486
+"952","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2000",2445.62703,"Eucalypt Variations",750.32341,30.68021,-7.97388,-0.32605
+"953","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2000",2445.62703,"Rainforest and Scrubs",353.80977,14.46704,-0.12244,-0.00501
+"954","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2000",2445.62703,"Mangroves and Saltmarshes",131.85736,5.39156,-0.00937,-0.00038
+"955","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2000",2445.62703,"Other Coastal Communities",35.66354,1.45826,0,0
+"956","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2001",2445.62703,"Non-Remnant Vegetation",1118.17011,45.7212,4.30882,0.17618
+"957","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2001",2445.62703,"Eucalypt Variations",746.36783,30.51846,-3.95559,-0.16174
+"958","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2001",2445.62703,"Rainforest and Scrubs",353.39584,14.45011,-0.41392,-0.01692
+"959","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2001",2445.62703,"Mangroves and Saltmarshes",131.80393,5.38937,-0.05344,-0.00218
+"960","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2001",2445.62703,"Other Coastal Communities",35.66354,1.45826,0,0
+"961","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2003",2445.62703,"Non-Remnant Vegetation",1120.68571,45.82406,2.51561,0.10286
+"962","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2003",2445.62703,"Eucalypt Variations",744.08154,30.42498,-2.28629,-0.09348
+"963","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2003",2445.62703,"Rainforest and Scrubs",353.32354,14.44716,-0.0723,-0.00296
+"964","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2003",2445.62703,"Mangroves and Saltmarshes",131.75585,5.38741,-0.04807,-0.00197
+"965","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2003",2445.62703,"Other Coastal Communities",35.66354,1.45826,0,0
+"966","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2005",2445.62703,"Non-Remnant Vegetation",1126.74981,46.07202,6.0641,0.24796
+"967","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2005",2445.62703,"Eucalypt Variations",738.40237,30.19276,-5.67917,-0.23222
+"968","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2005",2445.62703,"Rainforest and Scrubs",351.8281,14.38601,-1.49544,-0.06115
+"969","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2005",2445.62703,"Mangroves and Saltmarshes",131.80834,5.38955,0.05249,0.00215
+"970","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2005",2445.62703,"Other Coastal Communities",35.66103,1.45815,-0.00251,-0.0001
+"971","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2006",2445.62703,"Non-Remnant Vegetation",1128.51042,46.14401,1.7606,0.07199
+"972","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2006",2445.62703,"Eucalypt Variations",736.54798,30.11694,-1.85439,-0.07582
+"973","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2006",2445.62703,"Rainforest and Scrubs",351.74094,14.38244,-0.08716,-0.00356
+"974","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2006",2445.62703,"Mangroves and Saltmarshes",131.79823,5.38914,-0.01011,-0.00041
+"975","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2006",2445.62703,"Other Coastal Communities",35.66103,1.45815,0,0
+"976","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2006b",2445.62703,"Non-Remnant Vegetation",1128.51141,46.14405,0.001,0.00004
+"977","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2006b",2445.62703,"Eucalypt Variations",736.54699,30.1169,-0.001,-0.00004
+"978","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2006b",2445.62703,"Rainforest and Scrubs",351.74094,14.38244,0,0
+"979","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2006b",2445.62703,"Mangroves and Saltmarshes",131.80424,5.38938,0.00601,0.00025
+"980","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2006b",2445.62703,"Other Coastal Communities",35.66103,1.45815,0,0
+"981","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2007",2445.62703,"Non-Remnant Vegetation",1131.13735,46.25142,2.62594,0.10737
+"982","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2007",2445.62703,"Eucalypt Variations",734.36124,30.02752,-2.18574,-0.08937
+"983","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2007",2445.62703,"Rainforest and Scrubs",351.62095,14.37754,-0.11999,-0.00491
+"984","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2007",2445.62703,"Mangroves and Saltmarshes",131.80637,5.38947,0.00212,0.00009
+"985","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2007",2445.62703,"Other Coastal Communities",35.66103,1.45815,0,0
+"986","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2009",2445.62703,"Non-Remnant Vegetation",1136.39601,46.46645,5.25866,0.21502
+"987","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2009",2445.62703,"Eucalypt Variations",729.56351,29.83135,-4.79773,-0.19618
+"988","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2009",2445.62703,"Rainforest and Scrubs",351.21063,14.36076,-0.41032,-0.01678
+"989","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2009",2445.62703,"Mangroves and Saltmarshes",131.78904,5.38876,-0.01733,-0.00071
+"990","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2009",2445.62703,"Other Coastal Communities",35.65867,1.45806,-0.00236,-0.0001
+"991","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2011",2445.62703,"Non-Remnant Vegetation",1140.56102,46.63675,4.16501,0.1703
+"992","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2011",2445.62703,"Eucalypt Variations",729.16429,29.81502,-0.39922,-0.01632
+"993","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2011",2445.62703,"Rainforest and Scrubs",351.17925,14.35948,-0.03138,-0.00128
+"994","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2011",2445.62703,"Mangroves and Saltmarshes",131.78762,5.3887,-0.00142,-0.00006
+"995","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2011",2445.62703,"Other Coastal Communities",35.65867,1.45806,0,0
+"996","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2013",2445.62703,"Non-Remnant Vegetation",1142.94089,46.73406,2.37987,0.09731
+"997","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2013",2445.62703,"Eucalypt Variations",727.43618,29.74436,-1.72811,-0.07066
+"998","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2013",2445.62703,"Rainforest and Scrubs",351.14336,14.35801,-0.03589,-0.00147
+"999","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2013",2445.62703,"Mangroves and Saltmarshes",131.78573,5.38863,-0.00189,-0.00008
+"1000","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2013",2445.62703,"Other Coastal Communities",35.65867,1.45806,0,0
+"1001","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2015",2445.62703,"Non-Remnant Vegetation",1144.05396,46.77958,1.11307,0.04551
+"1002","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2015",2445.62703,"Eucalypt Variations",726.48893,29.70563,-0.94725,-0.03873
+"1003","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2015",2445.62703,"Rainforest and Scrubs",351.11499,14.35685,-0.02837,-0.00116
+"1004","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2015",2445.62703,"Mangroves and Saltmarshes",131.7959,5.38904,0.01017,0.00042
+"1005","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2015",2445.62703,"Other Coastal Communities",35.65867,1.45806,0,0
+"1006","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2017",2445.62703,"Non-Remnant Vegetation",1146.69099,46.8874,2.63703,0.10783
+"1007","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2017",2445.62703,"Eucalypt Variations",723.96014,29.60223,-2.52879,-0.1034
+"1008","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2017",2445.62703,"Rainforest and Scrubs",351.03956,14.35377,-0.07543,-0.00308
+"1009","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2017",2445.62703,"Mangroves and Saltmarshes",131.79512,5.38901,-0.00078,-0.00003
+"1010","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2017",2445.62703,"Other Coastal Communities",35.65867,1.45806,0,0
+"1011","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2019",2445.62703,"Non-Remnant Vegetation",1147.56066,46.92296,0.86967,0.03556
+"1012","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2019",2445.62703,"Eucalypt Variations",723.179,29.57029,-0.78114,-0.03194
+"1013","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2019",2445.62703,"Rainforest and Scrubs",350.95472,14.3503,-0.08485,-0.00347
+"1014","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2019",2445.62703,"Mangroves and Saltmarshes",131.80077,5.38924,0.00565,0.00023
+"1015","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2019",2445.62703,"Other Coastal Communities",35.65867,1.45806,0,0
+"1016","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2021",2445.62971,"Non-Remnant Vegetation",1151.75163,47.09428,4.19097,0.17131
+"1017","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2021",2445.62971,"Eucalypt Variations",719.0406,29.40104,-4.1384,-0.16925
+"1018","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2021",2445.62971,"Rainforest and Scrubs",350.94752,14.34999,-0.00719,-0.00031
+"1019","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2021",2445.62971,"Mangroves and Saltmarshes",131.70315,5.38524,-0.09763,-0.004
+"1020","Mackay Whitsunday Isaac","O'Connell","O'Connell","remnant_2021",2445.62971,"Other Coastal Communities",35.69885,1.4597,0.04018,0.00164
+"1021","Mackay Whitsunday Isaac","Pioneer","Pioneer","pre_clear",1574.723,"Eucalypt Variations",1149.73707,73.01202,0,0
+"1022","Mackay Whitsunday Isaac","Pioneer","Pioneer","pre_clear",1574.723,"Rainforest and Scrubs",316.68808,20.11072,0,0
+"1023","Mackay Whitsunday Isaac","Pioneer","Pioneer","pre_clear",1574.723,"Melaleuca Open Woodlands",62.94196,3.99702,0,0
+"1024","Mackay Whitsunday Isaac","Pioneer","Pioneer","pre_clear",1574.723,"Tussock Grasslands",18.30994,1.16274,0,0
+"1025","Mackay Whitsunday Isaac","Pioneer","Pioneer","pre_clear",1574.723,"Other Coastal Communities",11.76656,0.74721,0,0
+"1026","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_1997",1574.72302,"Eucalypt Variations",706.92892,44.89227,-442.80815,-28.11975
+"1027","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_1997",1574.72302,"Non-Remnant Vegetation",538.61057,34.20351,538.61057,34.20351
+"1028","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_1997",1574.72302,"Rainforest and Scrubs",284.12782,18.04303,-32.56027,-2.06768
+"1029","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_1997",1574.72302,"Melaleuca Open Woodlands",20.16547,1.28057,-42.77649,-2.71645
+"1030","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_1997",1574.72302,"Other Coastal Communities",11.59128,0.73608,-0.17528,-0.01113
+"1031","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_1999",1574.72302,"Eucalypt Variations",699.07218,44.39334,-7.85674,-0.49893
+"1032","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_1999",1574.72302,"Non-Remnant Vegetation",538.20572,34.1778,-0.40486,-0.02571
+"1033","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_1999",1574.72302,"Rainforest and Scrubs",283.97266,18.03318,-0.15516,-0.00985
+"1034","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_1999",1574.72302,"Melaleuca Open Woodlands",19.26361,1.2233,-0.90186,-0.05727
+"1035","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_1999",1574.72302,"Water",13.45454,0.85441,9.36959,0.595
+"1036","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2000",1574.72302,"Eucalypt Variations",697.53295,44.2956,-1.53923,-0.09775
+"1037","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2000",1574.72302,"Non-Remnant Vegetation",539.83288,34.28113,1.62717,0.10333
+"1038","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2000",1574.72302,"Rainforest and Scrubs",283.93647,18.03088,-0.03619,-0.0023
+"1039","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2000",1574.72302,"Melaleuca Open Woodlands",19.21186,1.22002,-0.05175,-0.00329
+"1040","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2000",1574.72302,"Water",13.4572,0.85458,0.00266,0.00017
+"1041","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2001",1574.72302,"Eucalypt Variations",696.40193,44.22377,-1.13102,-0.07182
+"1042","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2001",1574.72302,"Non-Remnant Vegetation",541.05446,34.35871,1.22158,0.07757
+"1043","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2001",1574.72302,"Rainforest and Scrubs",283.88028,18.02732,-0.05619,-0.00357
+"1044","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2001",1574.72302,"Melaleuca Open Woodlands",18.98901,1.20586,-0.22285,-0.01415
+"1045","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2001",1574.72302,"Water",13.64568,0.86654,0.18848,0.01197
+"1046","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2003",1574.72302,"Eucalypt Variations",694.55467,44.10647,-1.84726,-0.11731
+"1047","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2003",1574.72302,"Non-Remnant Vegetation",542.99357,34.48185,1.93911,0.12314
+"1048","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2003",1574.72302,"Rainforest and Scrubs",283.78248,18.0211,-0.0978,-0.00621
+"1049","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2003",1574.72302,"Melaleuca Open Woodlands",18.97673,1.20508,-0.01228,-0.00078
+"1050","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2003",1574.72302,"Water",13.66555,0.86781,0.01987,0.00126
+"1051","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2005",1574.72302,"Eucalypt Variations",694.00186,44.07136,-0.55282,-0.03511
+"1052","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2005",1574.72302,"Non-Remnant Vegetation",543.61339,34.52121,0.61981,0.03936
+"1053","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2005",1574.72302,"Rainforest and Scrubs",283.72322,18.01734,-0.05927,-0.00376
+"1054","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2005",1574.72302,"Melaleuca Open Woodlands",18.969,1.20459,-0.00773,-0.00049
+"1055","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2005",1574.72302,"Water",13.66555,0.86781,0,0
+"1056","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2006",1574.72302,"Eucalypt Variations",693.93906,44.06737,-0.0628,-0.00399
+"1057","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2006",1574.72302,"Non-Remnant Vegetation",543.67712,34.52525,0.06373,0.00405
+"1058","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2006",1574.72302,"Rainforest and Scrubs",283.72322,18.01734,0,0
+"1059","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2006",1574.72302,"Melaleuca Open Woodlands",18.96807,1.20453,-0.00093,-0.00006
+"1060","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2006",1574.72302,"Water",13.66555,0.86781,0,0
+"1061","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2006b",1574.72302,"Eucalypt Variations",693.93906,44.06737,0,0
+"1062","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2006b",1574.72302,"Non-Remnant Vegetation",543.67712,34.52525,0,0
+"1063","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2006b",1574.72302,"Rainforest and Scrubs",283.72322,18.01734,0,0
+"1064","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2006b",1574.72302,"Melaleuca Open Woodlands",18.96807,1.20453,0,0
+"1065","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2006b",1574.72302,"Water",13.66555,0.86781,0,0
+"1066","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2007",1574.72302,"Eucalypt Variations",693.81744,44.05965,-0.12162,-0.00772
+"1067","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2007",1574.72302,"Non-Remnant Vegetation",543.82511,34.53465,0.14799,0.0094
+"1068","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2007",1574.72302,"Rainforest and Scrubs",283.69535,18.01557,-0.02787,-0.00177
+"1069","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2007",1574.72302,"Melaleuca Open Woodlands",18.96807,1.20453,0,0
+"1070","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2007",1574.72302,"Water",13.66705,0.8679,0.00149,0.00009
+"1071","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2009",1574.72302,"Eucalypt Variations",693.49763,44.03934,-0.31981,-0.02031
+"1072","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2009",1574.72302,"Non-Remnant Vegetation",544.27075,34.56295,0.44563,0.0283
+"1073","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2009",1574.72302,"Rainforest and Scrubs",283.66262,18.01349,-0.03273,-0.00208
+"1074","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2009",1574.72302,"Melaleuca Open Woodlands",18.96807,1.20453,0,0
+"1075","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2009",1574.72302,"Water",13.66705,0.8679,0,0
+"1076","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2011",1574.72302,"Eucalypt Variations",693.29443,44.02644,-0.2032,-0.0129
+"1077","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2011",1574.72302,"Non-Remnant Vegetation",544.49847,34.57741,0.22772,0.01446
+"1078","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2011",1574.72302,"Rainforest and Scrubs",283.6381,18.01194,-0.02452,-0.00156
+"1079","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2011",1574.72302,"Melaleuca Open Woodlands",18.96807,1.20453,0,0
+"1080","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2011",1574.72302,"Water",13.66705,0.8679,0,0
+"1081","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2013",1574.72302,"Eucalypt Variations",693.12721,44.01582,-0.16722,-0.01062
+"1082","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2013",1574.72302,"Non-Remnant Vegetation",544.67364,34.58854,0.17517,0.01112
+"1083","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2013",1574.72302,"Rainforest and Scrubs",283.6234,18.011,-0.0147,-0.00093
+"1084","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2013",1574.72302,"Melaleuca Open Woodlands",18.96273,1.20419,-0.00534,-0.00034
+"1085","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2013",1574.72302,"Water",13.69151,0.86945,0.02446,0.00155
+"1086","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2015",1574.72302,"Eucalypt Variations",692.68619,43.98781,-0.44101,-0.02801
+"1087","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2015",1574.72302,"Non-Remnant Vegetation",545.19979,34.62195,0.52615,0.03341
+"1088","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2015",1574.72302,"Rainforest and Scrubs",283.57917,18.00819,-0.04423,-0.00281
+"1089","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2015",1574.72302,"Melaleuca Open Woodlands",18.92182,1.2016,-0.04091,-0.0026
+"1090","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2015",1574.72302,"Water",13.69151,0.86945,0,0
+"1091","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2017",1574.72302,"Eucalypt Variations",691.9727,43.9425,-0.7135,-0.04531
+"1092","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2017",1574.72302,"Non-Remnant Vegetation",545.90302,34.66661,0.70323,0.04466
+"1093","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2017",1574.72302,"Rainforest and Scrubs",283.57595,18.00799,-0.00322,-0.0002
+"1094","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2017",1574.72302,"Melaleuca Open Woodlands",18.88322,1.19915,-0.0386,-0.00245
+"1095","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2017",1574.72302,"Water",13.74359,0.87276,0.05209,0.00331
+"1096","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2019",1574.72302,"Eucalypt Variations",691.27848,43.89842,-0.69422,-0.04409
+"1097","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2019",1574.72302,"Non-Remnant Vegetation",546.6297,34.71275,0.72668,0.04615
+"1098","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2019",1574.72302,"Rainforest and Scrubs",283.56902,18.00755,-0.00693,-0.00044
+"1099","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2019",1574.72302,"Melaleuca Open Woodlands",18.86417,1.19794,-0.01905,-0.00121
+"1100","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2019",1574.72302,"Water",13.74649,0.87295,0.0029,0.00018
+"1101","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2021",1574.72302,"Eucalypt Variations",683.14195,43.38172,-8.13653,-0.5167
+"1102","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2021",1574.72302,"Non-Remnant Vegetation",548.24294,34.8152,1.61324,0.10245
+"1103","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2021",1574.72302,"Rainforest and Scrubs",283.54726,18.00617,-0.02177,-0.00138
+"1104","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2021",1574.72302,"Melaleuca Open Woodlands",25.32235,1.60805,6.45819,0.41012
+"1105","Mackay Whitsunday Isaac","Pioneer","Pioneer","remnant_2021",1574.72302,"Water",13.76119,0.87388,0.01469,0.00093
+"1106","Mackay Whitsunday Isaac","Plane","Plane","pre_clear",2571.52557,"Eucalypt Variations",1671.81173,65.01245,0,0
+"1107","Mackay Whitsunday Isaac","Plane","Plane","pre_clear",2571.52557,"Melaleuca Open Woodlands",342.28848,13.31072,0,0
+"1108","Mackay Whitsunday Isaac","Plane","Plane","pre_clear",2571.52557,"Mangroves and Saltmarshes",193.72581,7.5335,0,0
+"1109","Mackay Whitsunday Isaac","Plane","Plane","pre_clear",2571.52557,"Rainforest and Scrubs",164.94967,6.41447,0,0
+"1110","Mackay Whitsunday Isaac","Plane","Plane","pre_clear",2571.52557,"Other Coastal Communities",142.33049,5.53487,0,0
+"1111","Mackay Whitsunday Isaac","Plane","Plane","remnant_1997",2571.51893,"Non-Remnant Vegetation",1273.0389,49.50533,1273.0389,49.50533
+"1112","Mackay Whitsunday Isaac","Plane","Plane","remnant_1997",2571.51893,"Eucalypt Variations",667.29816,25.94957,-1004.51357,-39.06288
+"1113","Mackay Whitsunday Isaac","Plane","Plane","remnant_1997",2571.51893,"Mangroves and Saltmarshes",187.19741,7.27964,-6.5284,-0.25385
+"1114","Mackay Whitsunday Isaac","Plane","Plane","remnant_1997",2571.51893,"Rainforest and Scrubs",152.70926,5.93848,-12.2404,-0.47598
+"1115","Mackay Whitsunday Isaac","Plane","Plane","remnant_1997",2571.51893,"Other Coastal Communities",140.04873,5.44615,-2.28177,-0.08872
+"1116","Mackay Whitsunday Isaac","Plane","Plane","remnant_1999",2571.51893,"Non-Remnant Vegetation",1291.01956,50.20455,17.98066,0.69922
+"1117","Mackay Whitsunday Isaac","Plane","Plane","remnant_1999",2571.51893,"Eucalypt Variations",654.46446,25.4505,-12.8337,-0.49907
+"1118","Mackay Whitsunday Isaac","Plane","Plane","remnant_1999",2571.51893,"Mangroves and Saltmarshes",186.96697,7.27068,-0.23043,-0.00896
+"1119","Mackay Whitsunday Isaac","Plane","Plane","remnant_1999",2571.51893,"Rainforest and Scrubs",152.65808,5.93649,-0.05118,-0.00199
+"1120","Mackay Whitsunday Isaac","Plane","Plane","remnant_1999",2571.51893,"Other Coastal Communities",140.02939,5.4454,-0.01933,-0.00075
+"1121","Mackay Whitsunday Isaac","Plane","Plane","remnant_2000",2571.51893,"Non-Remnant Vegetation",1303.12957,50.67548,12.11001,0.47093
+"1122","Mackay Whitsunday Isaac","Plane","Plane","remnant_2000",2571.51893,"Eucalypt Variations",646.64307,25.14635,-7.82139,-0.30415
+"1123","Mackay Whitsunday Isaac","Plane","Plane","remnant_2000",2571.51893,"Mangroves and Saltmarshes",186.7886,7.26375,-0.17837,-0.00694
+"1124","Mackay Whitsunday Isaac","Plane","Plane","remnant_2000",2571.51893,"Rainforest and Scrubs",152.47988,5.92956,-0.1782,-0.00693
+"1125","Mackay Whitsunday Isaac","Plane","Plane","remnant_2000",2571.51893,"Other Coastal Communities",139.26832,5.4158,-0.76107,-0.0296
+"1126","Mackay Whitsunday Isaac","Plane","Plane","remnant_2001",2571.51893,"Non-Remnant Vegetation",1306.11848,50.79171,2.9889,0.11623
+"1127","Mackay Whitsunday Isaac","Plane","Plane","remnant_2001",2571.51893,"Eucalypt Variations",644.16959,25.05016,-2.47348,-0.09619
+"1128","Mackay Whitsunday Isaac","Plane","Plane","remnant_2001",2571.51893,"Mangroves and Saltmarshes",186.77396,7.26318,-0.01465,-0.00057
+"1129","Mackay Whitsunday Isaac","Plane","Plane","remnant_2001",2571.51893,"Rainforest and Scrubs",152.38148,5.92574,-0.0984,-0.00383
+"1130","Mackay Whitsunday Isaac","Plane","Plane","remnant_2001",2571.51893,"Other Coastal Communities",139.15512,5.4114,-0.1132,-0.0044
+"1131","Mackay Whitsunday Isaac","Plane","Plane","remnant_2003",2571.51893,"Non-Remnant Vegetation",1312.6037,51.04391,6.48522,0.25219
+"1132","Mackay Whitsunday Isaac","Plane","Plane","remnant_2003",2571.51893,"Eucalypt Variations",638.7228,24.83835,-5.44679,-0.21181
+"1133","Mackay Whitsunday Isaac","Plane","Plane","remnant_2003",2571.51893,"Mangroves and Saltmarshes",186.75155,7.26231,-0.02241,-0.00087
+"1134","Mackay Whitsunday Isaac","Plane","Plane","remnant_2003",2571.51893,"Rainforest and Scrubs",152.28422,5.92196,-0.09726,-0.00378
+"1135","Mackay Whitsunday Isaac","Plane","Plane","remnant_2003",2571.51893,"Other Coastal Communities",139.15512,5.4114,0,0
+"1136","Mackay Whitsunday Isaac","Plane","Plane","remnant_2005",2571.51893,"Non-Remnant Vegetation",1317.9118,51.25032,5.3081,0.20642
+"1137","Mackay Whitsunday Isaac","Plane","Plane","remnant_2005",2571.51893,"Eucalypt Variations",634.0168,24.65534,-4.706,-0.183
+"1138","Mackay Whitsunday Isaac","Plane","Plane","remnant_2005",2571.51893,"Mangroves and Saltmarshes",186.70953,7.26067,-0.04202,-0.00163
+"1139","Mackay Whitsunday Isaac","Plane","Plane","remnant_2005",2571.51893,"Rainforest and Scrubs",152.26096,5.92105,-0.02326,-0.0009
+"1140","Mackay Whitsunday Isaac","Plane","Plane","remnant_2005",2571.51893,"Other Coastal Communities",138.99826,5.4053,-0.15686,-0.0061
+"1141","Mackay Whitsunday Isaac","Plane","Plane","remnant_2006",2571.51893,"Non-Remnant Vegetation",1319.24478,51.30216,1.33298,0.05184
+"1142","Mackay Whitsunday Isaac","Plane","Plane","remnant_2006",2571.51893,"Eucalypt Variations",632.79149,24.60769,-1.22531,-0.04765
+"1143","Mackay Whitsunday Isaac","Plane","Plane","remnant_2006",2571.51893,"Mangroves and Saltmarshes",186.71599,7.26092,0.00646,0.00025
+"1144","Mackay Whitsunday Isaac","Plane","Plane","remnant_2006",2571.51893,"Rainforest and Scrubs",152.26078,5.92104,-0.00018,-0.00001
+"1145","Mackay Whitsunday Isaac","Plane","Plane","remnant_2006",2571.51893,"Other Coastal Communities",138.92563,5.40247,-0.07264,-0.00282
+"1146","Mackay Whitsunday Isaac","Plane","Plane","remnant_2006b",2571.51893,"Non-Remnant Vegetation",1319.24478,51.30216,0,0
+"1147","Mackay Whitsunday Isaac","Plane","Plane","remnant_2006b",2571.51893,"Eucalypt Variations",632.79149,24.60769,0,0
+"1148","Mackay Whitsunday Isaac","Plane","Plane","remnant_2006b",2571.51893,"Mangroves and Saltmarshes",186.72111,7.26112,0.00513,0.0002
+"1149","Mackay Whitsunday Isaac","Plane","Plane","remnant_2006b",2571.51893,"Rainforest and Scrubs",152.26078,5.92104,0,0
+"1150","Mackay Whitsunday Isaac","Plane","Plane","remnant_2006b",2571.51893,"Other Coastal Communities",138.92563,5.40247,0,0
+"1151","Mackay Whitsunday Isaac","Plane","Plane","remnant_2007",2571.51893,"Non-Remnant Vegetation",1322.99011,51.44781,3.74533,0.14565
+"1152","Mackay Whitsunday Isaac","Plane","Plane","remnant_2007",2571.51893,"Eucalypt Variations",629.2213,24.46886,-3.57018,-0.13884
+"1153","Mackay Whitsunday Isaac","Plane","Plane","remnant_2007",2571.51893,"Mangroves and Saltmarshes",186.72579,7.2613,0.00468,0.00018
+"1154","Mackay Whitsunday Isaac","Plane","Plane","remnant_2007",2571.51893,"Rainforest and Scrubs",152.24982,5.92062,-0.01095,-0.00043
+"1155","Mackay Whitsunday Isaac","Plane","Plane","remnant_2007",2571.51893,"Other Coastal Communities",138.72597,5.39471,-0.19966,-0.00776
+"1156","Mackay Whitsunday Isaac","Plane","Plane","remnant_2009",2571.51893,"Non-Remnant Vegetation",1323.67443,51.47442,0.68433,0.02661
+"1157","Mackay Whitsunday Isaac","Plane","Plane","remnant_2009",2571.51893,"Eucalypt Variations",628.57482,24.44372,-0.64648,-0.02514
+"1158","Mackay Whitsunday Isaac","Plane","Plane","remnant_2009",2571.51893,"Mangroves and Saltmarshes",186.66891,7.25909,-0.05687,-0.00221
+"1159","Mackay Whitsunday Isaac","Plane","Plane","remnant_2009",2571.51893,"Rainforest and Scrubs",152.23849,5.92018,-0.01133,-0.00044
+"1160","Mackay Whitsunday Isaac","Plane","Plane","remnant_2009",2571.51893,"Other Coastal Communities",138.77938,5.39679,0.05341,0.00208
+"1161","Mackay Whitsunday Isaac","Plane","Plane","remnant_2011",2571.51893,"Non-Remnant Vegetation",1324.06837,51.48974,0.39394,0.01532
+"1162","Mackay Whitsunday Isaac","Plane","Plane","remnant_2011",2571.51893,"Eucalypt Variations",627.96698,24.42008,-0.60784,-0.02364
+"1163","Mackay Whitsunday Isaac","Plane","Plane","remnant_2011",2571.51893,"Mangroves and Saltmarshes",186.86117,7.26657,0.19226,0.00748
+"1164","Mackay Whitsunday Isaac","Plane","Plane","remnant_2011",2571.51893,"Rainforest and Scrubs",152.23849,5.92018,0,0
+"1165","Mackay Whitsunday Isaac","Plane","Plane","remnant_2011",2571.51893,"Other Coastal Communities",138.77938,5.39679,0,0
+"1166","Mackay Whitsunday Isaac","Plane","Plane","remnant_2013",2571.51893,"Non-Remnant Vegetation",1325.21153,51.53419,1.14316,0.04445
+"1167","Mackay Whitsunday Isaac","Plane","Plane","remnant_2013",2571.51893,"Eucalypt Variations",626.96529,24.38113,-1.00169,-0.03895
+"1168","Mackay Whitsunday Isaac","Plane","Plane","remnant_2013",2571.51893,"Mangroves and Saltmarshes",186.89739,7.26798,0.03622,0.00141
+"1169","Mackay Whitsunday Isaac","Plane","Plane","remnant_2013",2571.51893,"Rainforest and Scrubs",152.21191,5.91914,-0.02658,-0.00103
+"1170","Mackay Whitsunday Isaac","Plane","Plane","remnant_2013",2571.51893,"Other Coastal Communities",138.77938,5.39679,0,0
+"1171","Mackay Whitsunday Isaac","Plane","Plane","remnant_2015",2571.51893,"Non-Remnant Vegetation",1327.68607,51.63042,2.47454,0.09623
+"1172","Mackay Whitsunday Isaac","Plane","Plane","remnant_2015",2571.51893,"Eucalypt Variations",624.99358,24.30445,-1.97171,-0.07667
+"1173","Mackay Whitsunday Isaac","Plane","Plane","remnant_2015",2571.51893,"Mangroves and Saltmarshes",186.92686,7.26912,0.02947,0.00115
+"1174","Mackay Whitsunday Isaac","Plane","Plane","remnant_2015",2571.51893,"Rainforest and Scrubs",152.11115,5.91523,-0.10077,-0.00392
+"1175","Mackay Whitsunday Isaac","Plane","Plane","remnant_2015",2571.51893,"Other Coastal Communities",138.56812,5.38857,-0.21126,-0.00822
+"1176","Mackay Whitsunday Isaac","Plane","Plane","remnant_2017",2571.51893,"Non-Remnant Vegetation",1330.40551,51.73617,2.71944,0.10575
+"1177","Mackay Whitsunday Isaac","Plane","Plane","remnant_2017",2571.51893,"Eucalypt Variations",622.54157,24.2091,-2.45201,-0.09535
+"1178","Mackay Whitsunday Isaac","Plane","Plane","remnant_2017",2571.51893,"Mangroves and Saltmarshes",186.90125,7.26813,-0.02562,-0.001
+"1179","Mackay Whitsunday Isaac","Plane","Plane","remnant_2017",2571.51893,"Rainforest and Scrubs",152.06577,5.91346,-0.04538,-0.00176
+"1180","Mackay Whitsunday Isaac","Plane","Plane","remnant_2017",2571.51893,"Other Coastal Communities",138.38647,5.38151,-0.18165,-0.00706
+"1181","Mackay Whitsunday Isaac","Plane","Plane","remnant_2019",2571.51893,"Non-Remnant Vegetation",1332.33935,51.81138,1.93383,0.0752
+"1182","Mackay Whitsunday Isaac","Plane","Plane","remnant_2019",2571.51893,"Eucalypt Variations",620.81972,24.14214,-1.72185,-0.06696
+"1183","Mackay Whitsunday Isaac","Plane","Plane","remnant_2019",2571.51893,"Mangroves and Saltmarshes",186.90007,7.26808,-0.00117,-0.00005
+"1184","Mackay Whitsunday Isaac","Plane","Plane","remnant_2019",2571.51893,"Rainforest and Scrubs",152.06522,5.91344,-0.00055,-0.00002
+"1185","Mackay Whitsunday Isaac","Plane","Plane","remnant_2019",2571.51893,"Other Coastal Communities",138.37814,5.38118,-0.00833,-0.00032
+"1186","Mackay Whitsunday Isaac","Plane","Plane","remnant_2021",2571.52555,"Non-Remnant Vegetation",1329.31017,51.69345,-3.02918,-0.11793
+"1187","Mackay Whitsunday Isaac","Plane","Plane","remnant_2021",2571.52555,"Eucalypt Variations",621.35256,24.1628,0.53284,0.02066
+"1188","Mackay Whitsunday Isaac","Plane","Plane","remnant_2021",2571.52555,"Mangroves and Saltmarshes",188.00361,7.31098,1.10354,0.0429
+"1189","Mackay Whitsunday Isaac","Plane","Plane","remnant_2021",2571.52555,"Rainforest and Scrubs",152.36139,5.92494,0.29617,0.0115
+"1190","Mackay Whitsunday Isaac","Plane","Plane","remnant_2021",2571.52555,"Other Coastal Communities",138.35994,5.38046,-0.0182,-0.00072
+"1191","Mackay Whitsunday Isaac","Proserpine","Proserpine","pre_clear",2773.34606,"Eucalypt Variations",1547.60553,55.80283,0,0
+"1192","Mackay Whitsunday Isaac","Proserpine","Proserpine","pre_clear",2773.34606,"Rainforest and Scrubs",600.86796,21.66581,0,0
+"1193","Mackay Whitsunday Isaac","Proserpine","Proserpine","pre_clear",2773.34606,"Melaleuca Open Woodlands",246.73665,8.89671,0,0
+"1194","Mackay Whitsunday Isaac","Proserpine","Proserpine","pre_clear",2773.34606,"Other Coastal Communities",149.29141,5.38308,0,0
+"1195","Mackay Whitsunday Isaac","Proserpine","Proserpine","pre_clear",2773.34606,"Mangroves and Saltmarshes",135.20159,4.87503,0,0
+"1196","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_1997",2773.22942,"Eucalypt Variations",905.98933,32.66911,-641.6162,-23.13372
+"1197","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_1997",2773.22942,"Non-Remnant Vegetation",826.88164,29.81656,826.88164,29.81656
+"1198","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_1997",2773.22942,"Rainforest and Scrubs",577.89352,20.83829,-22.97444,-0.82752
+"1199","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_1997",2773.22942,"Other Coastal Communities",149.60778,5.39471,0.31636,0.01163
+"1200","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_1997",2773.22942,"Mangroves and Saltmarshes",130.84496,4.71814,-4.35663,-0.15689
+"1201","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_1999",2773.22942,"Eucalypt Variations",899.66965,32.44123,-6.31968,-0.22788
+"1202","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_1999",2773.22942,"Non-Remnant Vegetation",832.79127,30.02966,5.90963,0.2131
+"1203","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_1999",2773.22942,"Rainforest and Scrubs",577.79122,20.8346,-0.10231,-0.00369
+"1204","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_1999",2773.22942,"Other Coastal Communities",149.60778,5.39471,0,0
+"1205","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_1999",2773.22942,"Mangroves and Saltmarshes",130.7908,4.71619,-0.05416,-0.00195
+"1206","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2000",2773.22942,"Eucalypt Variations",892.20238,32.17196,-7.46728,-0.26926
+"1207","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2000",2773.22942,"Non-Remnant Vegetation",840.94482,30.32367,8.15355,0.29401
+"1208","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2000",2773.22942,"Rainforest and Scrubs",577.73965,20.83274,-0.05157,-0.00186
+"1209","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2000",2773.22942,"Other Coastal Communities",149.60778,5.39471,0,0
+"1210","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2000",2773.22942,"Mangroves and Saltmarshes",130.76564,4.71528,-0.02516,-0.00091
+"1211","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2001",2773.22942,"Eucalypt Variations",887.50311,32.00251,-4.69927,-0.16945
+"1212","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2001",2773.22942,"Non-Remnant Vegetation",846.80152,30.53485,5.8567,0.21119
+"1213","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2001",2773.22942,"Rainforest and Scrubs",579.34557,20.89065,1.60592,0.05791
+"1214","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2001",2773.22942,"Other Coastal Communities",149.51231,5.39127,-0.09547,-0.00344
+"1215","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2001",2773.22942,"Mangroves and Saltmarshes",130.73743,4.71427,-0.02821,-0.00102
+"1216","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2003",2773.22942,"Eucalypt Variations",886.22674,31.95649,-1.27637,-0.04602
+"1217","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2003",2773.22942,"Non-Remnant Vegetation",848.48485,30.59555,1.68333,0.0607
+"1218","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2003",2773.22942,"Rainforest and Scrubs",579.23968,20.88683,-0.10589,-0.00382
+"1219","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2003",2773.22942,"Other Coastal Communities",149.51231,5.39127,0,0
+"1220","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2003",2773.22942,"Mangroves and Saltmarshes",130.73743,4.71427,0,0
+"1221","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2005",2773.22942,"Eucalypt Variations",884.37805,31.88983,-1.84869,-0.06666
+"1222","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2005",2773.22942,"Non-Remnant Vegetation",851.05677,30.68829,2.57192,0.09274
+"1223","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2005",2773.22942,"Rainforest and Scrubs",578.70014,20.86737,-0.53954,-0.01946
+"1224","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2005",2773.22942,"Other Coastal Communities",149.49965,5.39081,-0.01266,-0.00046
+"1225","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2005",2773.22942,"Mangroves and Saltmarshes",130.72932,4.71397,-0.00811,-0.00029
+"1226","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2006",2773.22942,"Eucalypt Variations",882.8642,31.83524,-1.51385,-0.05459
+"1227","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2006",2773.22942,"Non-Remnant Vegetation",853.03634,30.75967,1.97957,0.07138
+"1228","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2006",2773.22942,"Rainforest and Scrubs",578.59815,20.8637,-0.10199,-0.00368
+"1229","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2006",2773.22942,"Other Coastal Communities",149.48365,5.39024,-0.016,-0.00058
+"1230","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2006",2773.22942,"Mangroves and Saltmarshes",130.72932,4.71397,0,0
+"1231","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2006b",2773.22942,"Eucalypt Variations",882.8642,31.83524,0,0
+"1232","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2006b",2773.22942,"Non-Remnant Vegetation",853.03634,30.75967,0,0
+"1233","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2006b",2773.22942,"Rainforest and Scrubs",578.59815,20.8637,0,0
+"1234","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2006b",2773.22942,"Other Coastal Communities",149.48365,5.39024,0,0
+"1235","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2006b",2773.22942,"Mangroves and Saltmarshes",130.72932,4.71397,0,0
+"1236","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2007",2773.22942,"Eucalypt Variations",881.5932,31.78941,-1.271,-0.04583
+"1237","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2007",2773.22942,"Non-Remnant Vegetation",854.81481,30.8238,1.77847,0.06413
+"1238","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2007",2773.22942,"Rainforest and Scrubs",578.30094,20.85298,-0.29721,-0.01072
+"1239","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2007",2773.22942,"Other Coastal Communities",149.48365,5.39024,0,0
+"1240","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2007",2773.22942,"Mangroves and Saltmarshes",130.62738,4.7103,-0.10194,-0.00368
+"1241","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2009",2773.22942,"Eucalypt Variations",879.60591,31.71775,-1.98728,-0.07166
+"1242","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2009",2773.22942,"Non-Remnant Vegetation",857.42063,30.91777,2.60582,0.09396
+"1243","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2009",2773.22942,"Rainforest and Scrubs",577.93779,20.83988,-0.36315,-0.01309
+"1244","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2009",2773.22942,"Other Coastal Communities",149.48365,5.39024,0,0
+"1245","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2009",2773.22942,"Mangroves and Saltmarshes",130.84227,4.71805,0.21489,0.00775
+"1246","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2011",2773.22942,"Eucalypt Variations",879.01498,31.69644,-0.59093,-0.02131
+"1247","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2011",2773.22942,"Non-Remnant Vegetation",858.26102,30.94807,0.84039,0.0303
+"1248","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2011",2773.22942,"Rainforest and Scrubs",577.93741,20.83987,-0.00038,-0.00001
+"1249","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2011",2773.22942,"Other Coastal Communities",149.48365,5.39024,0,0
+"1250","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2011",2773.22942,"Mangroves and Saltmarshes",130.81014,4.71689,-0.03214,-0.00116
+"1251","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2013",2773.22942,"Eucalypt Variations",873.76089,31.50698,-5.25408,-0.18946
+"1252","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2013",2773.22942,"Non-Remnant Vegetation",863.59484,31.1404,5.33382,0.19233
+"1253","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2013",2773.22942,"Rainforest and Scrubs",577.88561,20.838,-0.05181,-0.00187
+"1254","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2013",2773.22942,"Other Coastal Communities",149.48365,5.39024,0,0
+"1255","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2013",2773.22942,"Mangroves and Saltmarshes",130.82224,4.71732,0.0121,0.00044
+"1256","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2015",2773.22942,"Eucalypt Variations",871.59034,31.42871,-2.17055,-0.07827
+"1257","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2015",2773.22942,"Non-Remnant Vegetation",866.12957,31.2318,2.53473,0.0914
+"1258","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2015",2773.22942,"Rainforest and Scrubs",577.82037,20.83565,-0.06524,-0.00235
+"1259","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2015",2773.22942,"Other Coastal Communities",149.48365,5.39024,0,0
+"1260","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2015",2773.22942,"Mangroves and Saltmarshes",130.83371,4.71774,0.01147,0.00041
+"1261","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2017",2773.22942,"Non-Remnant Vegetation",870.36323,31.38447,4.23365,0.15266
+"1262","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2017",2773.22942,"Eucalypt Variations",867.77954,31.2913,-3.8108,-0.13741
+"1263","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2017",2773.22942,"Rainforest and Scrubs",577.69687,20.8312,-0.1235,-0.00445
+"1264","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2017",2773.22942,"Other Coastal Communities",149.48365,5.39024,0,0
+"1265","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2017",2773.22942,"Mangroves and Saltmarshes",130.83371,4.71774,0,0
+"1266","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2019",2773.22942,"Non-Remnant Vegetation",871.68694,31.4322,1.32371,0.04773
+"1267","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2019",2773.22942,"Eucalypt Variations",866.75451,31.25434,-1.02503,-0.03696
+"1268","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2019",2773.22942,"Rainforest and Scrubs",577.64823,20.82944,-0.04863,-0.00175
+"1269","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2019",2773.22942,"Other Coastal Communities",149.48365,5.39024,0,0
+"1270","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2019",2773.22942,"Mangroves and Saltmarshes",130.82824,4.71754,-0.00547,-0.0002
+"1271","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2021",2773.34606,"Non-Remnant Vegetation",870.3393,31.38228,-1.34764,-0.04991
+"1272","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2021",2773.34606,"Eucalypt Variations",868.42461,31.31324,1.6701,0.05891
+"1273","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2021",2773.34606,"Rainforest and Scrubs",577.49538,20.82306,-0.15285,-0.00639
+"1274","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2021",2773.34606,"Other Coastal Communities",149.545,5.39222,0.06135,0.00199
+"1275","Mackay Whitsunday Isaac","Proserpine","Proserpine","remnant_2021",2773.34606,"Mangroves and Saltmarshes",130.85941,4.71847,0.03117,0.00093
+"1276","Dry Tropics","Ross","Ross River (Upper)","pre_clear",761.32332,"Eucalypt Variations",572.71259,75.22594,0,0
+"1277","Dry Tropics","Ross","Bohle River","pre_clear",328.86869,"Eucalypt Variations",161.72336,49.17566,0,0
+"1278","Dry Tropics","Ross","Alligator Creek","pre_clear",360.60986,"Eucalypt Variations",161.27403,44.72258,0,0
+"1279","Dry Tropics","Ross","Ross River (Upper)","pre_clear",761.32332,"Melaleuca Open Woodlands",127.21584,16.70983,0,0
+"1280","Dry Tropics","Ross","Bohle River","pre_clear",328.86869,"Melaleuca Open Woodlands",107.98988,32.83678,0,0
+"1281","Dry Tropics","Ross","Ross River (Upper)","remnant_1997",761.32332,"Eucalypt Variations",469.95997,61.72936,-102.75262,-13.49658
+"1282","Dry Tropics","Ross","Alligator Creek","remnant_1997",360.60986,"Eucalypt Variations",147.51306,40.90655,-13.76097,-3.81603
+"1283","Dry Tropics","Ross","Ross River (Upper)","remnant_1997",761.32332,"Non-Remnant Vegetation",109.19402,14.34266,109.19402,14.34266
+"1284","Dry Tropics","Ross","Bohle River","remnant_1997",328.86869,"Eucalypt Variations",108.08243,32.86492,-53.64093,-16.31074
+"1285","Dry Tropics","Ross","Alligator Creek","remnant_1997",360.60986,"Mangroves and Saltmarshes",94.29008,26.14739,-3.02527,-0.83893
+"1286","Dry Tropics","Ross","Ross River (Upper)","remnant_1999",761.32331,"Eucalypt Variations",465.58211,61.15432,-4.37786,-0.57503
+"1287","Dry Tropics","Ross","Alligator Creek","remnant_1999",360.60986,"Eucalypt Variations",146.83033,40.71723,-0.68273,-0.18933
+"1288","Dry Tropics","Ross","Ross River (Upper)","remnant_1999",761.32331,"Non-Remnant Vegetation",113.79267,14.94669,4.59865,0.60403
+"1289","Dry Tropics","Ross","Bohle River","remnant_1999",328.86869,"Eucalypt Variations",103.60263,31.50274,-4.47979,-1.36218
+"1290","Dry Tropics","Ross","Bohle River","remnant_1999",328.86869,"Non-Remnant Vegetation",101.529,30.8722,7.50233,2.28125
+"1291","Dry Tropics","Ross","Ross River (Upper)","remnant_2000",761.32331,"Eucalypt Variations",462.63553,60.76729,-2.94658,-0.38703
+"1292","Dry Tropics","Ross","Alligator Creek","remnant_2000",360.60986,"Eucalypt Variations",146.64373,40.66548,-0.1866,-0.05175
+"1293","Dry Tropics","Ross","Ross River (Upper)","remnant_2000",761.32331,"Non-Remnant Vegetation",119.54806,15.70267,5.75539,0.75597
+"1294","Dry Tropics","Ross","Bohle River","remnant_2000",328.86869,"Non-Remnant Vegetation",116.16216,35.32174,14.63316,4.44954
+"1295","Dry Tropics","Ross","Bohle River","remnant_2000",328.86869,"Eucalypt Variations",96.58886,29.37004,-7.01377,-2.1327
+"1296","Dry Tropics","Ross","Ross River (Upper)","remnant_2001",761.32331,"Eucalypt Variations",460.94812,60.54565,-1.68741,-0.22164
+"1297","Dry Tropics","Ross","Alligator Creek","remnant_2001",360.60986,"Eucalypt Variations",146.64345,40.6654,-0.00028,-0.00008
+"1298","Dry Tropics","Ross","Ross River (Upper)","remnant_2001",761.32331,"Non-Remnant Vegetation",122.07521,16.03461,2.52715,0.33194
+"1299","Dry Tropics","Ross","Bohle River","remnant_2001",328.86869,"Non-Remnant Vegetation",118.61064,36.06626,2.44848,0.74452
+"1300","Dry Tropics","Ross","Bohle River","remnant_2001",328.86869,"Eucalypt Variations",95.63364,29.07958,-0.95523,-0.29046
+"1301","Dry Tropics","Ross","Ross River (Upper)","remnant_2003",761.32331,"Eucalypt Variations",460.5308,60.49083,-0.41732,-0.05482
+"1302","Dry Tropics","Ross","Alligator Creek","remnant_2003",360.60986,"Eucalypt Variations",146.55281,40.64027,-0.09064,-0.02514
+"1303","Dry Tropics","Ross","Ross River (Upper)","remnant_2003",761.32331,"Non-Remnant Vegetation",123.07556,16.166,1.00035,0.1314
+"1304","Dry Tropics","Ross","Bohle River","remnant_2003",328.86869,"Non-Remnant Vegetation",119.72006,36.4036,1.10942,0.33734
+"1305","Dry Tropics","Ross","Bohle River","remnant_2003",328.86869,"Eucalypt Variations",95.32916,28.987,-0.30448,-0.09258
+"1306","Dry Tropics","Ross","Ross River (Upper)","remnant_2005",761.32331,"Eucalypt Variations",460.15417,60.44136,-0.37663,-0.04947
+"1307","Dry Tropics","Ross","Alligator Creek","remnant_2005",360.60986,"Eucalypt Variations",146.54577,40.63832,-0.00704,-0.00195
+"1308","Dry Tropics","Ross","Bohle River","remnant_2005",328.86869,"Non-Remnant Vegetation",125.61358,38.19566,5.89352,1.79206
+"1309","Dry Tropics","Ross","Ross River (Upper)","remnant_2005",761.32331,"Non-Remnant Vegetation",123.75706,16.25552,0.6815,0.08951
+"1310","Dry Tropics","Ross","Alligator Creek","remnant_2005",360.60986,"Mangroves and Saltmarshes",94.26092,26.13931,0,0
+"1311","Dry Tropics","Ross","Ross River (Upper)","remnant_2006",761.32331,"Eucalypt Variations",459.49649,60.35497,-0.65767,-0.08639
+"1312","Dry Tropics","Ross","Alligator Creek","remnant_2006",360.60986,"Eucalypt Variations",146.44054,40.60913,-0.10524,-0.02918
+"1313","Dry Tropics","Ross","Bohle River","remnant_2006",328.86869,"Non-Remnant Vegetation",127.72962,38.83909,2.11604,0.64343
+"1314","Dry Tropics","Ross","Ross River (Upper)","remnant_2006",761.32331,"Non-Remnant Vegetation",124.43598,16.3447,0.67892,0.08918
+"1315","Dry Tropics","Ross","Alligator Creek","remnant_2006",360.60986,"Mangroves and Saltmarshes",94.26092,26.13931,0,0
+"1316","Dry Tropics","Ross","Ross River (Upper)","remnant_2006b",761.32331,"Eucalypt Variations",459.49649,60.35497,0,0
+"1317","Dry Tropics","Ross","Alligator Creek","remnant_2006b",360.60986,"Eucalypt Variations",146.44054,40.60913,0,0
+"1318","Dry Tropics","Ross","Bohle River","remnant_2006b",328.86869,"Non-Remnant Vegetation",127.75407,38.84653,0.02445,0.00744
+"1319","Dry Tropics","Ross","Ross River (Upper)","remnant_2006b",761.32331,"Non-Remnant Vegetation",124.43598,16.3447,0,0
+"1320","Dry Tropics","Ross","Alligator Creek","remnant_2006b",360.60986,"Mangroves and Saltmarshes",94.26092,26.13931,0,0
+"1321","Dry Tropics","Ross","Ross River (Upper)","remnant_2007",761.32331,"Eucalypt Variations",459.42927,60.34614,-0.06722,-0.00883
+"1322","Dry Tropics","Ross","Alligator Creek","remnant_2007",360.60986,"Eucalypt Variations",146.44054,40.60913,0,0
+"1323","Dry Tropics","Ross","Bohle River","remnant_2007",328.86869,"Non-Remnant Vegetation",129.86167,39.48739,2.10759,0.64086
+"1324","Dry Tropics","Ross","Ross River (Upper)","remnant_2007",761.32331,"Non-Remnant Vegetation",124.51016,16.35444,0.07418,0.00974
+"1325","Dry Tropics","Ross","Alligator Creek","remnant_2007",360.60986,"Mangroves and Saltmarshes",94.26092,26.13931,0,0
+"1326","Dry Tropics","Ross","Ross River (Upper)","remnant_2009",761.32331,"Eucalypt Variations",458.90599,60.27741,-0.52329,-0.06873
+"1327","Dry Tropics","Ross","Alligator Creek","remnant_2009",360.60986,"Eucalypt Variations",146.44054,40.60913,0,0
+"1328","Dry Tropics","Ross","Bohle River","remnant_2009",328.86869,"Non-Remnant Vegetation",132.76634,40.37062,2.90467,0.88323
+"1329","Dry Tropics","Ross","Ross River (Upper)","remnant_2009",761.32331,"Non-Remnant Vegetation",125.0734,16.42842,0.56323,0.07398
+"1330","Dry Tropics","Ross","Alligator Creek","remnant_2009",360.60986,"Mangroves and Saltmarshes",94.26092,26.13931,0,0
+"1331","Dry Tropics","Ross","Ross River (Upper)","remnant_2011",761.32331,"Eucalypt Variations",458.87375,60.27318,-0.03224,-0.00423
+"1332","Dry Tropics","Ross","Alligator Creek","remnant_2011",360.60986,"Eucalypt Variations",146.44054,40.60913,0,0
+"1333","Dry Tropics","Ross","Bohle River","remnant_2011",328.86869,"Non-Remnant Vegetation",134.75398,40.97501,1.98764,0.60439
+"1334","Dry Tropics","Ross","Ross River (Upper)","remnant_2011",761.32331,"Non-Remnant Vegetation",125.15766,16.43949,0.08427,0.01107
+"1335","Dry Tropics","Ross","Alligator Creek","remnant_2011",360.60986,"Mangroves and Saltmarshes",94.26092,26.13931,0,0
+"1336","Dry Tropics","Ross","Ross River (Upper)","remnant_2013",761.32331,"Eucalypt Variations",458.77641,60.26039,-0.09734,-0.01279
+"1337","Dry Tropics","Ross","Alligator Creek","remnant_2013",360.60986,"Eucalypt Variations",146.34265,40.58199,-0.09789,-0.02715
+"1338","Dry Tropics","Ross","Bohle River","remnant_2013",328.86869,"Non-Remnant Vegetation",137.02591,41.66584,2.27193,0.69083
+"1339","Dry Tropics","Ross","Ross River (Upper)","remnant_2013",761.32331,"Non-Remnant Vegetation",125.255,16.45227,0.09734,0.01279
+"1340","Dry Tropics","Ross","Alligator Creek","remnant_2013",360.60986,"Mangroves and Saltmarshes",94.26092,26.13931,0,0
+"1341","Dry Tropics","Ross","Ross River (Upper)","remnant_2015",761.32331,"Eucalypt Variations",457.78762,60.13051,-0.98879,-0.12988
+"1342","Dry Tropics","Ross","Alligator Creek","remnant_2015",360.60986,"Eucalypt Variations",146.34247,40.58194,-0.00018,-0.00005
+"1343","Dry Tropics","Ross","Bohle River","remnant_2015",328.86869,"Non-Remnant Vegetation",139.7525,42.49492,2.72659,0.82908
+"1344","Dry Tropics","Ross","Ross River (Upper)","remnant_2015",761.32331,"Non-Remnant Vegetation",126.30727,16.59049,1.05227,0.13822
+"1345","Dry Tropics","Ross","Alligator Creek","remnant_2015",360.60986,"Mangroves and Saltmarshes",94.26092,26.13931,0,0
+"1346","Dry Tropics","Ross","Ross River (Upper)","remnant_2017",761.32331,"Eucalypt Variations",457.227,60.05688,-0.56062,-0.07364
+"1347","Dry Tropics","Ross","Alligator Creek","remnant_2017",360.60986,"Eucalypt Variations",146.13098,40.52329,-0.21149,-0.05865
+"1348","Dry Tropics","Ross","Bohle River","remnant_2017",328.86869,"Non-Remnant Vegetation",140.59082,42.74983,0.83832,0.25491
+"1349","Dry Tropics","Ross","Ross River (Upper)","remnant_2017",761.32331,"Non-Remnant Vegetation",126.87219,16.66469,0.56492,0.0742
+"1350","Dry Tropics","Ross","Alligator Creek","remnant_2017",360.60986,"Mangroves and Saltmarshes",94.26092,26.13931,0,0
+"1351","Dry Tropics","Ross","Ross River (Upper)","remnant_2019",761.32331,"Eucalypt Variations",457.15577,60.04752,-0.07123,-0.00936
+"1352","Dry Tropics","Ross","Alligator Creek","remnant_2019",360.60986,"Eucalypt Variations",145.70024,40.40384,-0.43075,-0.11945
+"1353","Dry Tropics","Ross","Bohle River","remnant_2019",328.86869,"Non-Remnant Vegetation",140.93798,42.8554,0.34716,0.10556
+"1354","Dry Tropics","Ross","Ross River (Upper)","remnant_2019",761.32331,"Non-Remnant Vegetation",127.00465,16.68209,0.13247,0.0174
+"1355","Dry Tropics","Ross","Alligator Creek","remnant_2019",360.60986,"Mangroves and Saltmarshes",94.26092,26.13931,0,0
+"1356","Dry Tropics","Ross","Ross River (Upper)","remnant_2021",761.32331,"Eucalypt Variations",449.8037,59.08182,-7.35207,-0.9657
+"1357","Dry Tropics","Ross","Alligator Creek","remnant_2021",360.60986,"Eucalypt Variations",144.93109,40.19055,-0.76914,-0.21329
+"1358","Dry Tropics","Ross","Bohle River","remnant_2021",328.86869,"Non-Remnant Vegetation",141.44522,43.00963,0.50724,0.15424
+"1359","Dry Tropics","Ross","Ross River (Upper)","remnant_2021",761.32331,"Non-Remnant Vegetation",128.69392,16.90398,1.68927,0.22189
+"1360","Dry Tropics","Ross","Alligator Creek","remnant_2021",360.60986,"Mangroves and Saltmarshes",93.59991,25.956,-0.66101,-0.1833
+"1361","Wet Tropics","Russell","Russell","pre_clear",670.96822,"Rainforest and Scrubs",582.74513,86.85138,0,0
+"1362","Wet Tropics","Russell","Russell","pre_clear",670.96822,"Melaleuca Open Woodlands",42.66255,6.35836,0,0
+"1363","Wet Tropics","Russell","Russell","pre_clear",670.96822,"Eucalypt Variations",21.08653,3.1427,0,0
+"1364","Wet Tropics","Russell","Russell","pre_clear",670.96822,"Wetlands",14.65305,2.18387,0,0
+"1365","Wet Tropics","Russell","Russell","pre_clear",670.96822,"Mangroves and Saltmarshes",6.25067,0.93159,0,0
+"1366","Wet Tropics","Russell","Russell","remnant_1997",670.72735,"Rainforest and Scrubs",410.5686,61.21244,-172.17653,-25.63893
+"1367","Wet Tropics","Russell","Russell","remnant_1997",670.72735,"Non-Remnant Vegetation",201.5708,30.05257,201.5708,30.05257
+"1368","Wet Tropics","Russell","Russell","remnant_1997",670.72735,"Melaleuca Open Woodlands",30.36684,4.52745,-12.29571,-1.83091
+"1369","Wet Tropics","Russell","Russell","remnant_1997",670.72735,"Eucalypt Variations",12.95163,1.93098,-8.1349,-1.21172
+"1370","Wet Tropics","Russell","Russell","remnant_1997",670.72735,"Mangroves and Saltmarshes",6.28373,0.93685,0.03306,0.00526
+"1371","Wet Tropics","Russell","Russell","remnant_1999",670.72735,"Rainforest and Scrubs",409.99025,61.12622,-0.57835,-0.08623
+"1372","Wet Tropics","Russell","Russell","remnant_1999",670.72735,"Non-Remnant Vegetation",202.27149,30.15704,0.70069,0.10447
+"1373","Wet Tropics","Russell","Russell","remnant_1999",670.72735,"Melaleuca Open Woodlands",30.2445,4.50921,-0.12235,-0.01824
+"1374","Wet Tropics","Russell","Russell","remnant_1999",670.72735,"Eucalypt Variations",12.95163,1.93098,0,0
+"1375","Wet Tropics","Russell","Russell","remnant_1999",670.72735,"Mangroves and Saltmarshes",6.28373,0.93685,0,0
+"1376","Wet Tropics","Russell","Russell","remnant_2000",670.72735,"Rainforest and Scrubs",409.82333,61.10133,-0.16693,-0.02489
+"1377","Wet Tropics","Russell","Russell","remnant_2000",670.72735,"Non-Remnant Vegetation",202.44572,30.18301,0.17423,0.02598
+"1378","Wet Tropics","Russell","Russell","remnant_2000",670.72735,"Melaleuca Open Woodlands",30.2372,4.50812,-0.0073,-0.00109
+"1379","Wet Tropics","Russell","Russell","remnant_2000",670.72735,"Eucalypt Variations",12.95163,1.93098,0,0
+"1380","Wet Tropics","Russell","Russell","remnant_2000",670.72735,"Mangroves and Saltmarshes",6.28373,0.93685,0,0
+"1381","Wet Tropics","Russell","Russell","remnant_2001",670.72735,"Rainforest and Scrubs",409.10113,60.99366,-0.72219,-0.10767
+"1382","Wet Tropics","Russell","Russell","remnant_2001",670.72735,"Non-Remnant Vegetation",203.17193,30.29128,0.72621,0.10827
+"1383","Wet Tropics","Russell","Russell","remnant_2001",670.72735,"Melaleuca Open Woodlands",30.23318,4.50752,-0.00402,-0.0006
+"1384","Wet Tropics","Russell","Russell","remnant_2001",670.72735,"Eucalypt Variations",12.95163,1.93098,0,0
+"1385","Wet Tropics","Russell","Russell","remnant_2001",670.72735,"Mangroves and Saltmarshes",6.28373,0.93685,0,0
+"1386","Wet Tropics","Russell","Russell","remnant_2003",670.72735,"Rainforest and Scrubs",409.04995,60.98603,-0.05118,-0.00763
+"1387","Wet Tropics","Russell","Russell","remnant_2003",670.72735,"Non-Remnant Vegetation",203.23687,30.30097,0.06493,0.00968
+"1388","Wet Tropics","Russell","Russell","remnant_2003",670.72735,"Melaleuca Open Woodlands",30.21942,4.50547,-0.01376,-0.00205
+"1389","Wet Tropics","Russell","Russell","remnant_2003",670.72735,"Eucalypt Variations",12.95163,1.93098,0,0
+"1390","Wet Tropics","Russell","Russell","remnant_2003",670.72735,"Mangroves and Saltmarshes",6.28373,0.93685,0,0
+"1391","Wet Tropics","Russell","Russell","remnant_2005",670.72735,"Rainforest and Scrubs",408.96906,60.97396,-0.0809,-0.01206
+"1392","Wet Tropics","Russell","Russell","remnant_2005",670.72735,"Non-Remnant Vegetation",203.47595,30.33661,0.23908,0.03565
+"1393","Wet Tropics","Russell","Russell","remnant_2005",670.72735,"Melaleuca Open Woodlands",30.07325,4.48368,-0.14617,-0.02179
+"1394","Wet Tropics","Russell","Russell","remnant_2005",670.72735,"Eucalypt Variations",12.95163,1.93098,0,0
+"1395","Wet Tropics","Russell","Russell","remnant_2005",670.72735,"Mangroves and Saltmarshes",6.28373,0.93685,0,0
+"1396","Wet Tropics","Russell","Russell","remnant_2006",670.72735,"Rainforest and Scrubs",408.93921,60.96952,-0.02984,-0.00445
+"1397","Wet Tropics","Russell","Russell","remnant_2006",670.72735,"Non-Remnant Vegetation",203.51823,30.34291,0.04228,0.0063
+"1398","Wet Tropics","Russell","Russell","remnant_2006",670.72735,"Melaleuca Open Woodlands",30.07151,4.48342,-0.00174,-0.00026
+"1399","Wet Tropics","Russell","Russell","remnant_2006",670.72735,"Eucalypt Variations",12.94094,1.92939,-0.0107,-0.00159
+"1400","Wet Tropics","Russell","Russell","remnant_2006",670.72735,"Mangroves and Saltmarshes",6.28373,0.93685,0,0
+"1401","Wet Tropics","Russell","Russell","remnant_2006b",670.72735,"Rainforest and Scrubs",408.93841,60.9694,-0.00081,-0.00012
+"1402","Wet Tropics","Russell","Russell","remnant_2006b",670.72735,"Non-Remnant Vegetation",203.51904,30.34304,0.00081,0.00012
+"1403","Wet Tropics","Russell","Russell","remnant_2006b",670.72735,"Melaleuca Open Woodlands",30.07151,4.48342,0,0
+"1404","Wet Tropics","Russell","Russell","remnant_2006b",670.72735,"Eucalypt Variations",12.94094,1.92939,0,0
+"1405","Wet Tropics","Russell","Russell","remnant_2006b",670.72735,"Mangroves and Saltmarshes",6.28373,0.93685,0,0
+"1406","Wet Tropics","Russell","Russell","remnant_2007",670.72735,"Rainforest and Scrubs",408.90991,60.96515,-0.02849,-0.00425
+"1407","Wet Tropics","Russell","Russell","remnant_2007",670.72735,"Non-Remnant Vegetation",203.55266,30.34805,0.03362,0.00501
+"1408","Wet Tropics","Russell","Russell","remnant_2007",670.72735,"Melaleuca Open Woodlands",30.06638,4.48265,-0.00513,-0.00076
+"1409","Wet Tropics","Russell","Russell","remnant_2007",670.72735,"Eucalypt Variations",12.94094,1.92939,0,0
+"1410","Wet Tropics","Russell","Russell","remnant_2007",670.72735,"Mangroves and Saltmarshes",6.28373,0.93685,0,0
+"1411","Wet Tropics","Russell","Russell","remnant_2009",670.72735,"Rainforest and Scrubs",408.89935,60.96357,-0.01056,-0.00157
+"1412","Wet Tropics","Russell","Russell","remnant_2009",670.72735,"Non-Remnant Vegetation",203.56322,30.34962,0.01056,0.00157
+"1413","Wet Tropics","Russell","Russell","remnant_2009",670.72735,"Melaleuca Open Woodlands",30.06638,4.48265,0,0
+"1414","Wet Tropics","Russell","Russell","remnant_2009",670.72735,"Eucalypt Variations",12.94094,1.92939,0,0
+"1415","Wet Tropics","Russell","Russell","remnant_2009",670.72735,"Mangroves and Saltmarshes",6.28373,0.93685,0,0
+"1416","Wet Tropics","Russell","Russell","remnant_2011",670.72735,"Rainforest and Scrubs",408.89935,60.96357,0,0
+"1417","Wet Tropics","Russell","Russell","remnant_2011",670.72735,"Non-Remnant Vegetation",203.56322,30.34962,0,0
+"1418","Wet Tropics","Russell","Russell","remnant_2011",670.72735,"Melaleuca Open Woodlands",30.06638,4.48265,0,0
+"1419","Wet Tropics","Russell","Russell","remnant_2011",670.72735,"Eucalypt Variations",12.94094,1.92939,0,0
+"1420","Wet Tropics","Russell","Russell","remnant_2011",670.72735,"Mangroves and Saltmarshes",6.28373,0.93685,0,0
+"1421","Wet Tropics","Russell","Russell","remnant_2013",670.72735,"Rainforest and Scrubs",408.89935,60.96357,0,0
+"1422","Wet Tropics","Russell","Russell","remnant_2013",670.72735,"Non-Remnant Vegetation",203.56323,30.34962,0,0
+"1423","Wet Tropics","Russell","Russell","remnant_2013",670.72735,"Melaleuca Open Woodlands",30.06638,4.48265,0,0
+"1424","Wet Tropics","Russell","Russell","remnant_2013",670.72735,"Eucalypt Variations",12.94094,1.92939,0,0
+"1425","Wet Tropics","Russell","Russell","remnant_2013",670.72735,"Mangroves and Saltmarshes",6.28373,0.93685,0,0
+"1426","Wet Tropics","Russell","Russell","remnant_2015",670.72735,"Rainforest and Scrubs",408.87108,60.95936,-0.02827,-0.00421
+"1427","Wet Tropics","Russell","Russell","remnant_2015",670.72735,"Non-Remnant Vegetation",203.59149,30.35384,0.02827,0.00421
+"1428","Wet Tropics","Russell","Russell","remnant_2015",670.72735,"Melaleuca Open Woodlands",30.06638,4.48265,0,0
+"1429","Wet Tropics","Russell","Russell","remnant_2015",670.72735,"Eucalypt Variations",12.94094,1.92939,0,0
+"1430","Wet Tropics","Russell","Russell","remnant_2015",670.72735,"Mangroves and Saltmarshes",6.28373,0.93685,0,0
+"1431","Wet Tropics","Russell","Russell","remnant_2017",670.72735,"Rainforest and Scrubs",408.87108,60.95936,0,0
+"1432","Wet Tropics","Russell","Russell","remnant_2017",670.72735,"Non-Remnant Vegetation",203.59149,30.35384,0,0
+"1433","Wet Tropics","Russell","Russell","remnant_2017",670.72735,"Melaleuca Open Woodlands",30.06638,4.48265,0,0
+"1434","Wet Tropics","Russell","Russell","remnant_2017",670.72735,"Eucalypt Variations",12.94094,1.92939,0,0
+"1435","Wet Tropics","Russell","Russell","remnant_2017",670.72735,"Mangroves and Saltmarshes",6.28373,0.93685,0,0
+"1436","Wet Tropics","Russell","Russell","remnant_2019",670.72735,"Rainforest and Scrubs",408.87108,60.95936,0,0
+"1437","Wet Tropics","Russell","Russell","remnant_2019",670.72735,"Non-Remnant Vegetation",203.59149,30.35384,0,0
+"1438","Wet Tropics","Russell","Russell","remnant_2019",670.72735,"Melaleuca Open Woodlands",30.06638,4.48265,0,0
+"1439","Wet Tropics","Russell","Russell","remnant_2019",670.72735,"Eucalypt Variations",12.94094,1.92939,0,0
+"1440","Wet Tropics","Russell","Russell","remnant_2019",670.72735,"Mangroves and Saltmarshes",6.28373,0.93685,0,0
+"1441","Wet Tropics","Russell","Russell","remnant_2021",670.96822,"Rainforest and Scrubs",409.21422,60.98861,0.34315,0.02926
+"1442","Wet Tropics","Russell","Russell","remnant_2021",670.96822,"Non-Remnant Vegetation",202.30896,30.15179,-1.28253,-0.20204
+"1443","Wet Tropics","Russell","Russell","remnant_2021",670.96822,"Melaleuca Open Woodlands",31.31239,4.66675,1.246,0.18409
+"1444","Wet Tropics","Russell","Russell","remnant_2021",670.96822,"Eucalypt Variations",14.00045,2.0866,1.05951,0.15721
+"1445","Wet Tropics","Russell","Russell","remnant_2021",670.96822,"Mangroves and Saltmarshes",6.23323,0.92899,-0.0505,-0.00786
+"1446","Wet Tropics","Tully","Tully","pre_clear",1684.69604,"Rainforest and Scrubs",1255.54515,74.52651,0,0
+"1447","Wet Tropics","Tully","Tully","pre_clear",1684.69604,"Eucalypt Variations",247.58235,14.69597,0,0
+"1448","Wet Tropics","Tully","Tully","pre_clear",1684.69604,"Melaleuca Open Woodlands",108.57283,6.44465,0,0
+"1449","Wet Tropics","Tully","Tully","pre_clear",1684.69604,"Tussock Grasslands",29.9595,1.77833,0,0
+"1450","Wet Tropics","Tully","Tully","pre_clear",1684.69604,"Mangroves and Saltmarshes",19.35272,1.14874,0,0
+"1451","Wet Tropics","Tully","Tully","remnant_1997",1684.56777,"Rainforest and Scrubs",1039.64042,61.71556,-215.90473,-12.81095
+"1452","Wet Tropics","Tully","Tully","remnant_1997",1684.56777,"Non-Remnant Vegetation",419.20779,24.88518,419.20779,24.88518
+"1453","Wet Tropics","Tully","Tully","remnant_1997",1684.56777,"Eucalypt Variations",135.01422,8.01477,-112.56813,-6.6812
+"1454","Wet Tropics","Tully","Tully","remnant_1997",1684.56777,"Melaleuca Open Woodlands",36.86917,2.18864,-71.70366,-4.25601
+"1455","Wet Tropics","Tully","Tully","remnant_1997",1684.56777,"Mangroves and Saltmarshes",18.97865,1.12662,-0.37406,-0.02212
+"1456","Wet Tropics","Tully","Tully","remnant_1999",1684.56777,"Rainforest and Scrubs",1039.24488,61.69208,-0.39553,-0.02348
+"1457","Wet Tropics","Tully","Tully","remnant_1999",1684.56777,"Non-Remnant Vegetation",420.07401,24.9366,0.86622,0.05142
+"1458","Wet Tropics","Tully","Tully","remnant_1999",1684.56777,"Eucalypt Variations",134.74777,7.99895,-0.26645,-0.01582
+"1459","Wet Tropics","Tully","Tully","remnant_1999",1684.56777,"Melaleuca Open Woodlands",36.64928,2.17559,-0.21989,-0.01305
+"1460","Wet Tropics","Tully","Tully","remnant_1999",1684.56777,"Mangroves and Saltmarshes",18.97865,1.12662,0,0
+"1461","Wet Tropics","Tully","Tully","remnant_2000",1684.56777,"Rainforest and Scrubs",1039.06705,61.68152,-0.17783,-0.01056
+"1462","Wet Tropics","Tully","Tully","remnant_2000",1684.56777,"Non-Remnant Vegetation",420.40802,24.95643,0.33401,0.01983
+"1463","Wet Tropics","Tully","Tully","remnant_2000",1684.56777,"Eucalypt Variations",134.67725,7.99477,-0.07052,-0.00419
+"1464","Wet Tropics","Tully","Tully","remnant_2000",1684.56777,"Melaleuca Open Woodlands",36.56363,2.1705,-0.08566,-0.00508
+"1465","Wet Tropics","Tully","Tully","remnant_2000",1684.56777,"Mangroves and Saltmarshes",18.97865,1.12662,0,0
+"1466","Wet Tropics","Tully","Tully","remnant_2001",1684.56777,"Rainforest and Scrubs",1038.99209,61.67707,-0.07496,-0.00445
+"1467","Wet Tropics","Tully","Tully","remnant_2001",1684.56777,"Non-Remnant Vegetation",420.64225,24.97034,0.23423,0.0139
+"1468","Wet Tropics","Tully","Tully","remnant_2001",1684.56777,"Eucalypt Variations",134.58949,7.98956,-0.08776,-0.00521
+"1469","Wet Tropics","Tully","Tully","remnant_2001",1684.56777,"Melaleuca Open Woodlands",36.51912,2.16786,-0.0445,-0.00264
+"1470","Wet Tropics","Tully","Tully","remnant_2001",1684.56777,"Mangroves and Saltmarshes",18.97865,1.12662,0,0
+"1471","Wet Tropics","Tully","Tully","remnant_2003",1684.56777,"Rainforest and Scrubs",1038.87803,61.6703,-0.11406,-0.00677
+"1472","Wet Tropics","Tully","Tully","remnant_2003",1684.56777,"Non-Remnant Vegetation",421.07238,24.99587,0.43013,0.02553
+"1473","Wet Tropics","Tully","Tully","remnant_2003",1684.56777,"Eucalypt Variations",134.38872,7.97764,-0.20077,-0.01192
+"1474","Wet Tropics","Tully","Tully","remnant_2003",1684.56777,"Melaleuca Open Woodlands",36.40382,2.16102,-0.1153,-0.00684
+"1475","Wet Tropics","Tully","Tully","remnant_2003",1684.56777,"Mangroves and Saltmarshes",18.97865,1.12662,0,0
+"1476","Wet Tropics","Tully","Tully","remnant_2005",1684.56777,"Rainforest and Scrubs",1038.80052,61.6657,-0.0775,-0.0046
+"1477","Wet Tropics","Tully","Tully","remnant_2005",1684.56777,"Non-Remnant Vegetation",421.30558,25.00971,0.2332,0.01384
+"1478","Wet Tropics","Tully","Tully","remnant_2005",1684.56777,"Eucalypt Variations",134.29166,7.97188,-0.09706,-0.00576
+"1479","Wet Tropics","Tully","Tully","remnant_2005",1684.56777,"Melaleuca Open Woodlands",36.35332,2.15802,-0.05051,-0.003
+"1480","Wet Tropics","Tully","Tully","remnant_2005",1684.56777,"Mangroves and Saltmarshes",18.97578,1.12645,-0.00288,-0.00017
+"1481","Wet Tropics","Tully","Tully","remnant_2006",1684.56777,"Rainforest and Scrubs",1038.6124,61.65453,-0.18812,-0.01117
+"1482","Wet Tropics","Tully","Tully","remnant_2006",1684.56777,"Non-Remnant Vegetation",421.60811,25.02767,0.30253,0.01796
+"1483","Wet Tropics","Tully","Tully","remnant_2006",1684.56777,"Eucalypt Variations",134.18294,7.96542,-0.10872,-0.00645
+"1484","Wet Tropics","Tully","Tully","remnant_2006",1684.56777,"Melaleuca Open Woodlands",36.35088,2.15788,-0.00244,-0.00014
+"1485","Wet Tropics","Tully","Tully","remnant_2006",1684.56777,"Mangroves and Saltmarshes",18.97578,1.12645,0,0
+"1486","Wet Tropics","Tully","Tully","remnant_2006b",1684.56777,"Rainforest and Scrubs",1038.60865,61.65431,-0.00376,-0.00022
+"1487","Wet Tropics","Tully","Tully","remnant_2006b",1684.56777,"Non-Remnant Vegetation",421.62636,25.02876,0.01825,0.00108
+"1488","Wet Tropics","Tully","Tully","remnant_2006b",1684.56777,"Eucalypt Variations",134.17161,7.96475,-0.01133,-0.00067
+"1489","Wet Tropics","Tully","Tully","remnant_2006b",1684.56777,"Melaleuca Open Woodlands",36.34771,2.15769,-0.00316,-0.00019
+"1490","Wet Tropics","Tully","Tully","remnant_2006b",1684.56777,"Mangroves and Saltmarshes",18.97578,1.12645,0,0
+"1491","Wet Tropics","Tully","Tully","remnant_2007",1684.56777,"Rainforest and Scrubs",1038.58059,61.65264,-0.02806,-0.00167
+"1492","Wet Tropics","Tully","Tully","remnant_2007",1684.56777,"Non-Remnant Vegetation",421.67557,25.03168,0.04921,0.00292
+"1493","Wet Tropics","Tully","Tully","remnant_2007",1684.56777,"Eucalypt Variations",134.15073,7.96351,-0.02088,-0.00124
+"1494","Wet Tropics","Tully","Tully","remnant_2007",1684.56777,"Melaleuca Open Woodlands",36.34744,2.15767,-0.00027,-0.00002
+"1495","Wet Tropics","Tully","Tully","remnant_2007",1684.56777,"Mangroves and Saltmarshes",18.97578,1.12645,0,0
+"1496","Wet Tropics","Tully","Tully","remnant_2009",1684.56777,"Rainforest and Scrubs",1038.5377,61.6501,-0.04289,-0.00255
+"1497","Wet Tropics","Tully","Tully","remnant_2009",1684.56777,"Non-Remnant Vegetation",421.8012,25.03913,0.12563,0.00746
+"1498","Wet Tropics","Tully","Tully","remnant_2009",1684.56777,"Eucalypt Variations",134.08023,7.95933,-0.0705,-0.00418
+"1499","Wet Tropics","Tully","Tully","remnant_2009",1684.56777,"Melaleuca Open Woodlands",36.3352,2.15694,-0.01225,-0.00073
+"1500","Wet Tropics","Tully","Tully","remnant_2009",1684.56777,"Mangroves and Saltmarshes",18.97578,1.12645,0,0
+"1501","Wet Tropics","Tully","Tully","remnant_2011",1684.56777,"Rainforest and Scrubs",1038.43272,61.64387,-0.10498,-0.00623
+"1502","Wet Tropics","Tully","Tully","remnant_2011",1684.56777,"Non-Remnant Vegetation",422.04384,25.05354,0.24264,0.0144
+"1503","Wet Tropics","Tully","Tully","remnant_2011",1684.56777,"Eucalypt Variations",134.01141,7.95524,-0.06883,-0.00409
+"1504","Wet Tropics","Tully","Tully","remnant_2011",1684.56777,"Melaleuca Open Woodlands",36.33259,2.15679,-0.00261,-0.00015
+"1505","Wet Tropics","Tully","Tully","remnant_2011",1684.56777,"Mangroves and Saltmarshes",18.97049,1.12613,-0.00529,-0.00031
+"1506","Wet Tropics","Tully","Tully","remnant_2013",1684.56777,"Rainforest and Scrubs",1038.39296,61.64151,-0.03976,-0.00236
+"1507","Wet Tropics","Tully","Tully","remnant_2013",1684.56777,"Non-Remnant Vegetation",422.10596,25.05723,0.06213,0.00369
+"1508","Wet Tropics","Tully","Tully","remnant_2013",1684.56777,"Eucalypt Variations",133.99377,7.95419,-0.01764,-0.00105
+"1509","Wet Tropics","Tully","Tully","remnant_2013",1684.56777,"Melaleuca Open Woodlands",36.33259,2.15679,0,0
+"1510","Wet Tropics","Tully","Tully","remnant_2013",1684.56777,"Mangroves and Saltmarshes",18.97049,1.12613,0,0
+"1511","Wet Tropics","Tully","Tully","remnant_2015",1684.56777,"Rainforest and Scrubs",1038.29283,61.63556,-0.10013,-0.00594
+"1512","Wet Tropics","Tully","Tully","remnant_2015",1684.56777,"Non-Remnant Vegetation",422.21503,25.0637,0.10907,0.00647
+"1513","Wet Tropics","Tully","Tully","remnant_2015",1684.56777,"Eucalypt Variations",133.8663,7.94663,-0.12748,-0.00757
+"1514","Wet Tropics","Tully","Tully","remnant_2015",1684.56777,"Melaleuca Open Woodlands",36.23513,2.151,-0.09746,-0.00579
+"1515","Wet Tropics","Tully","Tully","remnant_2015",1684.56777,"Mangroves and Saltmarshes",18.97049,1.12613,0,0
+"1516","Wet Tropics","Tully","Tully","remnant_2017",1684.56777,"Rainforest and Scrubs",1038.25654,61.63341,-0.03629,-0.00215
+"1517","Wet Tropics","Tully","Tully","remnant_2017",1684.56777,"Non-Remnant Vegetation",422.33158,25.07062,0.11654,0.00692
+"1518","Wet Tropics","Tully","Tully","remnant_2017",1684.56777,"Eucalypt Variations",133.80366,7.94291,-0.06263,-0.00372
+"1519","Wet Tropics","Tully","Tully","remnant_2017",1684.56777,"Melaleuca Open Woodlands",36.23513,2.151,0,0
+"1520","Wet Tropics","Tully","Tully","remnant_2017",1684.56777,"Mangroves and Saltmarshes",18.97049,1.12613,0,0
+"1521","Wet Tropics","Tully","Tully","remnant_2019",1684.56777,"Rainforest and Scrubs",1038.2373,61.63227,-0.01924,-0.00114
+"1522","Wet Tropics","Tully","Tully","remnant_2019",1684.56777,"Non-Remnant Vegetation",422.37899,25.07343,0.04741,0.00281
+"1523","Wet Tropics","Tully","Tully","remnant_2019",1684.56777,"Eucalypt Variations",133.80366,7.94291,0,0
+"1524","Wet Tropics","Tully","Tully","remnant_2019",1684.56777,"Melaleuca Open Woodlands",36.20945,2.14948,-0.02568,-0.00152
+"1525","Wet Tropics","Tully","Tully","remnant_2019",1684.56777,"Mangroves and Saltmarshes",18.97049,1.12613,0,0
+"1526","Wet Tropics","Tully","Tully","remnant_2021",1684.69604,"Rainforest and Scrubs",1036.93091,61.55003,-1.30639,-0.08224
+"1527","Wet Tropics","Tully","Tully","remnant_2021",1684.69604,"Non-Remnant Vegetation",422.91869,25.10356,0.53969,0.03013
+"1528","Wet Tropics","Tully","Tully","remnant_2021",1684.69604,"Eucalypt Variations",134.94082,8.0098,1.13716,0.06689
+"1529","Wet Tropics","Tully","Tully","remnant_2021",1684.69604,"Melaleuca Open Woodlands",35.13268,2.0854,-1.07677,-0.06408
+"1530","Wet Tropics","Tully","Tully","remnant_2021",1684.69604,"Mangroves and Saltmarshes",19.55361,1.16066,0.58312,0.03453

@@ -1,0 +1,14 @@
+Zone,Reef,Program,Composition_Score,Coral_Cover_Score,Cover_Change_Score,Juv_Score,MA_Score,Index_Score,Composition_Grade,Coral_Cover_Grade,Cover_Change_Grade,Juv_Grade,MA_Grade,Index_Grade
+Cleveland Bay,Geoffrey Bay,MMP RCA,50,51,65,29,0,39,C,C,B,D,E,D
+Cleveland Bay,Alma Bay,RCA,NA,63,NA,NA,NA,NA,NA,B,NA,NA,NA,NA
+Cleveland Bay,Florence Bay,RCA,NA,65,NA,NA,NA,NA,NA,B,NA,NA,NA,NA
+Cleveland Bay,Middle Reef,RCA,NA,70,NA,NA,NA,NA,NA,B,NA,NA,NA,NA
+Cleveland Bay,Nelly Bay,RCA,NA,25,NA,NA,NA,NA,NA,D,NA,NA,NA,NA
+Cleveland Bay,Cleveland Bay,MMP RCA,50,53,65,29,0,39,C,C,B,D,E,D
+Halifax Bay,Palms East,MMP,100,67,29,27,100,65,A,B,D,D,A,B
+Halifax Bay,Palms West,MMP,0,51,49,52,100,50,E,C,C,C,A,C
+Halifax Bay,Pandora,MMP,75,25,34,31,20,37,B,D,D,D,E,D
+Halifax Bay,Havannah,MMP,100,53,44,30,0,45,A,C,C,D,E,C
+Halifax Bay,Pandora North,LTMP,0,85,44,40,11,36,E,A,C,D,E,D
+Halifax Bay,Havannah North,LTMP,100,29,50,62,0,48,A,D,C,B,E,C
+Halifax Bay,Halifax Bay,MMP LTMP,62,52,42,40,38,47,B,C,C,D,D,C

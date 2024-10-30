@@ -1,0 +1,220 @@
+---
+title: "Fish Barriers Script 5 - Analysisng Data"
+subtitle: "A Healthy Waters Partnership Analysis"
+description: "Script 5 in a series of scripts designed to identify, prioritise, and rank, fish barriers on waterways in the Northern Three reporting region."
+author: "Adam Shand"
+date: "`r format(Sys.time(), '%d, %B, %Y')`"
+format: html
+params:
+  project_crs: "EPSG:7844"
+---
+
+# Introduction
+
+This script will extract and analyse data from the spatial files create in earlier scripts. Specifically we will be focusing on extracting:
+
+ - Total river network length per sub basin
+ - Total area per sub basin
+ - Prioritization scores per sub basin per site
+
+# Script Set Up
+
+This script requires multiple packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, sf, janitor)
+
+```
+
+Then we set the coordinate reference system and save location.
+
+```{r}
+#| label: global vars and initial setup
+
+#set crs
+proj_crs <- params$project_crs
+
+#create a file path to help with saving things
+save_path <- here("outputs/dt_habitat_fish-barriers_s5-data-analysis/")
+
+#we cant create a read path though as we will be pulling from several locations
+
+#bring that path to life
+dir.create(save_path)
+
+#turn off S2 mapping
+sf_use_s2(FALSE)
+
+#read in the custom function to clean column names into our specific style
+source("../functions/name_cleaning.R")
+
+```
+
+# Load Data (simple)
+
+Next we load in the data, given the nature of this script we will be pulling data from a lot of places in a fairly complex way.
+
+Firstly we will focus on the simple datasets: pulling in the underlying spatial files used throughout the analysis.
+
+```{r}
+#| label: load region dataset
+
+#load in the n3 spatial file and restrict to just the DT
+n3_region <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg")) |> 
+  name_cleaning()
+
+```
+
+Then we will pull in the watercourse dataset that was also part of the underlying analysis.
+
+```{r}
+#| label: load watercourse dataset
+
+#load in the n3 watercourse file
+n3_watercourse <- st_read(here("data/n3_prep_watercourse-builder/n3_watercourse.gpkg")) |> 
+  name_cleaning()
+
+```
+
+## Data Analyis (simple)
+
+Following this we can quickly perform the analysis of these easy to access datasets before moving on to the more complicated components.
+
+To do this we will filter the region dataset to our specific area of interest and get the total area per basin.
+
+```{r}
+#| label: extract area per sub basin
+
+#restrict to our focus area and calculate area
+dt_region <- n3_region |> 
+  filter(Region == "Dry Tropics",
+         Environment != "Marine") |> 
+  select(!Environment) |> 
+  group_by(SubBasinOrSubZone) |> 
+  mutate(geom = st_union(geom),
+         Area = st_area(geom)) |> 
+  unique()
+
+#update area units
+dt_region$Area <- units::set_units(dt_region$Area, km^2)
+
+#filter for only the essential information
+dt_sub_basin_areas <- dt_region |> 
+  select(SubBasinOrSubZone, Area) |> 
+  st_drop_geometry() |> 
+  rename(`Area (km2)` = Area)
+
+#save to file
+write_csv(dt_sub_basin_areas, glue("{save_path}/dt_sub_basin_area.csv"))
+
+```
+
+Then we can do almost the same thing for the watercourse dataset.
+
+```{r}
+#| label: extract length per sub basin
+
+#filter down to the components we are interested in (retrieve the lines component, and only of stream order >= 2, <100)
+dt_watercourse <- n3_watercourse |> 
+  filter(Region == "Dry Tropics") |> 
+  st_collection_extract("LINESTRING") |> 
+  filter(StreamOrder >= 2 & StreamOrder < 100) |> 
+  select(!Environment)
+  
+#following this we can group by sub basin and calculate total length
+dt_watercourse <- dt_watercourse |> 
+  mutate(Length = st_length(geom)) |> 
+  group_by(SubBasinOrSubZone) |>
+  mutate(Length = sum(Length))
+
+#update area units
+dt_watercourse$Length <- units::set_units(dt_watercourse$Length, km)
+
+#filter for only the essential information
+dt_sub_basin_lengths <- dt_watercourse |> 
+  select(SubBasinOrSubZone, Length) |> 
+  st_drop_geometry() |> 
+  unique() |> 
+  rename(`Length (km)` = Length)
+
+#save to file
+write_csv(dt_sub_basin_lengths, glue("{save_path}/dt_sub_basin_lengths.csv"))
+
+```
+
+# Load Data (complex)
+
+Now that the simple stuff is done we can focus on the more complicated data extraction - pulling in all of the spatial files for all of the barriers that are split across a myriad of folders.
+
+
+```{r}
+#| label: pull in complex data
+
+#set path to parent folder
+parent_folder <- here("outputs/dt_habitat_fish-barriers_s3-prioritization-and-ranking/")
+
+#read in a test datset so we know what we are dealing with
+test <- st_read(glue("{parent_folder}/alligator_creek_sub_basin/alligator_creek_network_3_all_barriers_ranked.gpkg")) |> 
+  name_cleaning()
+
+#create path to child folders
+child_folders <- list.dirs(parent_folder, full.names = TRUE, recursive = FALSE)
+
+for (i in 1:length(child_folders)) {#for each of the child folders
+  
+  #get a list of files in the child folder
+  files <- list.files(child_folders[i], full.names = TRUE)
+
+  for (j in 1:length(files)) {#for each file that we find in the child folder
+    
+    #read the file in
+    data <- st_read(glue("{files[j]}")) |> 
+      name_cleaning()
+    
+    if (i == 1 & j == 1){#if on the very first loop create the master dataset
+      
+      final_data <- data
+      
+    }
+    
+    #otherwise, add to our final dataset
+    final_data <- rbind(final_data, data)
+  }
+}
+
+```
+
+## Clean Data
+
+Once all the data is read in we can clean the data.
+
+```{r}
+#| label: analyse data
+
+#remove rows that don't have a classification
+final_data <- final_data |> 
+  filter(!is.na(BarrierClassification))
+  
+#keep unique only
+final_data <- unique(final_data)
+    
+#get final score and classification
+final_data <- final_data |> 
+  select(Region, BasinOrZone, SubBasinOrSubZone, FinalScore, BarrierClassification)
+
+```
+
+## Save Data
+
+Then save the data for it to be analysed by the intern.
+
+```{r}
+#| label: save data
+
+write_csv(final_data, glue("{save_path}/dt_priorities_and_scores.csv"))
+
+```
+

@@ -1,0 +1,171 @@
+---
+title: "Dry Tropics Pesticides"
+subtitle: "A Healthy Waters Partnership Analysis"
+description: "This script creates a map of all pesticide sampling locations in the Dry Tropics region. The output of this is used in the Dry Tropics Technical Report."
+author: "Adam Shand"
+format: html
+params:
+  project_crs: "EPSG:7844"
+  target_fyear: 2023 
+---
+
+# Introduction
+
+The purpose of this script is to create maps identifying the sampling site locations for the freshwater pesticides index.
+
+These maps are used in the body of the methods document, and in the appendix of the technical report.
+
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, janitor, sf, tmap, readxl, grid)
+
+```
+
+
+
+We also need to set up key variables for the script such as where we are going to save the outputs, and what coordinate reference system (crs) we are going to be using.
+
+```{r}
+#| label: global vars and initial setup
+
+#set project variables
+proj_crs <- params$project_crs
+current_fyear <- params$target_fyear
+
+#get a date variable (this is important for naming as it is anticipated multiple runs of the script will be required).
+date <- format(Sys.time(), "%Y-%m-%d")
+
+#create a file path for the year of data that is being looked at
+year_folder <- glue("{here()}/outputs/dt_pesticides/{current_fyear-1}-{current_fyear}_maps/")
+
+#create that folder
+dir.create(year_folder)
+
+#create a file path to help with saving things, make sure to include date
+save_path <- glue("{year_folder}/maps_created_on_{date}/")
+
+#create folder
+dir.create(save_path, recursive = T)
+
+#turn off spherical geometry
+sf_use_s2(F)
+
+```
+
+# Load Data
+
+Now the script is set up we need to load in all of the required datasets. Spatial data for the northern three regions should be readily available in the repo, the dataset is created by the n3_region-builder.qmd script in the repo that should be the first script run for new users. If the dataset is not available refer back to the README document in the GitHub repo. The other parts of spatial data here should go off without a hitch if the region-builder script has been run.
+
+```{r}
+#| label: load in all data
+
+#read in the custom function to clean column names into our specific style
+source("../functions/name_cleaning.R")
+
+#read in the northern three spatial files and reduce down to only the components we need
+dt_region <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg")) |> 
+  name_cleaning() |> 
+  filter(Region == "Dry Tropics",
+         !str_detect(BasinOrZone, "Burd|Haug"), 
+         Environment != "Marine") |> 
+  group_by(BasinOrZone, SubBasinOrSubZone) |> 
+  summarise(geom = st_union(geom)) |> 
+  ungroup() |> st_cast() |> st_make_valid()
+  
+#load a Queensland outline from the aims package
+qld <- get(data("gbr_feat", package = "gisaimsr")) |> 
+  name_cleaning() |> 
+  filter(FeatName %in% c("Mainland", "Island")) |> 
+  st_transform(proj_crs)
+
+#get only the dry tropics waterways
+dt_watercourses <- st_read(here("data/n3_prep_watercourse-builder/n3_watercourse.gpkg")) |> 
+  name_cleaning() |>
+  filter(Region == "Dry Tropics",
+         !StreamOrder %in% c(0,1))
+
+#read in site coords and convert to a simple feature object, filter for only CLMP sites
+sites <- read_excel(path = here("data/dt_water-quality_freshwater/raw/dt_wq_freshwater_metadata.xlsx"), sheet = "Current_Sites") |>
+  name_cleaning() |> 
+  select(Basin, SubBasin, Watercourse, Code, Lat, Long) |> 
+  filter(str_detect(Code, "CLMP")) |> 
+  st_as_sf(coords = c("Long", "Lat"), crs = proj_crs)
+
+#calculate extent of query area
+dt_bbox <- st_bbox(dt_region)
+
+#query the osm database for waterways and natural waters (no idea why they are separate categories) and points of interest
+poi <- opq(dt_bbox, timeout = 100) |> add_osm_feature(key = "place", value = c("town", "city")) |> osmdata_sf()
+
+#transform and filter data to only get specific data types
+poi <- st_transform(poi$osm_points, crs = proj_crs) |> 
+  name_cleaning()
+
+```
+
+# Create Map
+
+Now we can put everything together. We will loop over the Ross and Black to make individual maps.
+
+```{r}
+#| label: create region maps
+
+#create target vector to loop lover
+target_vect <- unique(dt_region$BasinOrZone)
+
+for (i in target_vect){
+  
+  #filter sites and rename column
+  filtered_sites <- sites |> filter(Basin == i) |> rename("Sub Basin: Reported" = SubBasin)
+  
+  #define focus area and rename column
+  focus_area <- dt_region |> filter(BasinOrZone == i) |> rename("Sub Basin: All" = SubBasinOrSubZone)
+
+  #create a box of the focus area
+  focus_bbox <- st_as_sfc(st_bbox(focus_area))
+  
+  #create an inset map
+  inset_map <- tm_shape(qld) +
+    tm_polygons(col = "grey80", border.col = "black") +
+    tm_shape(dt_region, is.master = T) +
+    tm_polygons(col = "grey90", border.col = "black") +
+    tm_shape(focus_bbox) +
+    tm_borders(lwd = 2, col = "red")
+  
+  #create the main map
+  map <- tm_shape(qld) +
+    tm_polygons(col = "grey80", border.col = "black") +
+    tm_shape(focus_area) +
+    tm_polygons(col = "grey90", border.col = "grey90") +
+    tm_shape(focus_area, is.master = T) +
+    tm_polygons(col = "Sub Basin: All", border.col = "black", alpha = 0.5, palette = "Pastel1") +
+    tm_shape(dt_watercourses) +
+    tm_lines(col = "dodgerblue") +
+    tm_shape(dt_watercourses) +
+    tm_polygons(col = "aliceblue", border.col = "dodgerblue") +
+    tm_shape(poi) +
+    tm_symbols(size = 0.3, col = "white", border.col = "black", border.lwd = 1, shape = 23) +
+    tm_text("Name", shadow = T, auto.placement = T, size = 0.6) +
+    tm_shape(filtered_sites) +
+    tm_symbols(size = 0.6, col = "Sub Basin: Reported", border.col = "black", border.lwd = 2, shape = 21, palette = "Set1") +
+    tm_text("Code", shadow = T, auto.placement = T, size = 0.9) +
+    tm_layout(legend.bg.color = "white", legend.frame = "black", asp = 1.1)
+  
+  #figure out the aspect of the inset map and the view port
+  asp2 <- (dt_bbox$ymax - dt_bbox$ymin)/(dt_bbox$xmax - dt_bbox$xmin)
+  w <- 0.2
+  h <- asp2 * w
+  vp <- viewport(x = 0.98, y = 0.97, width = w, height = h, just = c("right", "top"))
+
+  #save map
+  tmap_save(map, glue("{save_path}/{i}_Pesticides.png"), insets_tm = inset_map, insets_vp = vp)
+  
+}
+
+```

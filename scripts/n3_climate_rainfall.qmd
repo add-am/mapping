@@ -1,0 +1,1099 @@
+---
+title: "Climate: Rainfall"
+subtitle: "A Healthy Waters Partnership Analysis"
+description: "This script analyses and presents rainfall data in the Northern Three reporting regions. The output of this is used in the Northern Three technical reports."
+author: "Adam Shand" 
+format: html
+params: 
+  target_fyear: 2019
+  disagg_factor: 5
+  project_crs: "EPSG:7844"
+---
+
+# Introduction
+
+This script contains the methods used to wrangle, analyse and present rainfall data in the Northern Three regions. For a guide on downloading rainfall data refer to the README document for the Spatial Analysis GitHub repo.
+
+Rainfall data is predominantly used within the climate section of the technical report to "set the scene" for each basin in each region. Rainfall plays a key role in water quality, particularly the spatial distribution, frequency and amount of rain. The main objectives of this script are to:
+
+ - Create a key table and summary statistics table
+ - Create a simplified monthly percentiles table for the technical report
+ - Plot the long term annual trends for rainfall in each basin and region
+ - Plot the current year of rainfall for each basin and region
+ - Create maps of the current year of rainfall for each basin and region
+
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, janitor, sf, tmap, exactextractr, terra, RColorBrewer, ggplot2)
+
+```
+
+
+Then we also need to set up key variables for the script, as well as the output location.
+
+```{r}
+#| label: global vars and initial setup
+
+#set project variables: crs factor and current_fyear
+proj_crs <- params$project_crs
+fac <- params$disagg_factor
+current_fyear <- params$target_fyear
+
+#create a file path to help with saving things
+save_path <- here(glue("outputs/n3_climate_rainfall/{current_fyear}/"))
+
+#bring that path to life
+dir.create(save_path)
+
+#create a few extras off of this for plots and maps
+dir.create(glue("{save_path}/plots/"))
+dir.create(glue("{save_path}/maps/"))
+
+#turn off spherical geometry
+sf_use_s2(F)
+
+```
+# Load Data
+
+Now the script is set up we need to load in all of the required datasets. This will be broken into two segments:
+
+ - Spatial data specific to the N3 region - such as the region, basin, and sub basin boundaries.
+ - Rainfall data
+
+## Spatial Data
+
+Load data from the data folder.
+
+``` {r}
+#| label: Load data
+
+#read in the custom function to clean column names into our specific style
+source("../functions/name_cleaning.R")
+
+#read in qld outlines data from the gisaimsr package, filter for land and islands, update crs
+qld <- get(data("gbr_feat", package = "gisaimsr")) |> 
+  name_cleaning() |> 
+  filter(FeatName %in% c("Mainland", "Island")) |> 
+  st_transform(proj_crs)
+
+#get the whole n3 data set
+n3_region <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg")) |> 
+  name_cleaning()
+
+#trim down
+n3_trimmed <- n3_region |> 
+  filter(Environment != "Marine") |> 
+  rename(Basin = BasinOrZone, 
+         SubBasin = SubBasinOrSubZone)
+
+#get basins and sub basins separately
+n3_basins <- n3_trimmed |> group_by(Region, Basin) |> 
+  summarise(geom = st_union(geom)) |> 
+  ungroup() |> st_cast()
+
+n3_sub_basins <- n3_trimmed |> group_by(Region, Basin, SubBasin) |> 
+  summarise(geom = st_union(geom)) |> 
+  ungroup() |> st_cast()
+
+#create a point for Townsville
+tsv <- st_as_sf(data.frame(Place = "Townsville", x = "-19.2590", y = "146.8169"), coords = c("y", "x"), crs = proj_crs)
+
+#clean
+rm(n3_trimmed)
+
+```
+
+## Rainfall Data
+
+Rainfall data is provided from the BOM AWO portal as a single (very large) netcdf (.nc) file for the entirety of Australia. The code below loads the data and cuts it down to only the N3 regions. The next time the code is run it will check if the cut-down step has already been completed, and load in the processed dataset if so - saving considerable time.
+
+:::{.callout-note}
+If new data is required, the script will have to be edited to not automatically load in the pre-processed dataset, **or**, the pre-processed dataset deleted from the folder.
+:::
+
+```{R}
+#| label: Reading Data
+
+path1 <- here("data/n3_climate_rainfall/n3_rainfall.nc")
+
+if (file.exists(path1) == T){
+  
+  n3_rain <- rast(path1)
+  
+} else {
+  
+  #read data using Terra package
+  rain <- rast(here("data/n3_climate_rainfall/monthly_rainfall.nc"))
+
+  #update crs
+  crs(rain) <- proj_crs
+
+  #cut the data down to only the northern three regions
+  n3_rain <- crop(rain, ext(n3_basins))
+
+  #save the cut down version
+  writeCDF(n3_rain, path1, overwrite = T)
+  
+  n3_rain <- rast(path1)
+  
+}
+
+#clean up
+rm(path1)
+
+```
+
+# Analyse Data
+
+Now all the data loading has been completed we can begin the analysis. Key steps that occur in this section of the script are: 
+
+ - Creation of a "Key Table" (a table that contains all layer names, dates, and associated info (e.g. financial year)).
+ - Creation of a summary table that will store all important data.
+ - Creation of a report table that contains only the essentials needed for presentation in the technical report.
+
+## Key Table
+
+Data in the NetCDF/Raster format is provided as multiple layers of gridded cells.  Each layer contains a grid of `r dim(n3_rain)[2]` (across) by `r dim(n3_rain)[1]` (down) cells. There are `r dim(n3_rain)[3]` layers in this data set. Each layer has its own name, characteristics, and information.
+
+To assist in parsing this data a "key table" is created that contains all layer names and dates, and then associates additional information such as month, year, and financial year with each layer name. We can then use this table to easily select layers we want.
+
+```{r}
+#| label: creating key table
+
+#create a tibble of layer names and dates
+name_date_tbl <- tibble("LayerName" = names(n3_rain), "LayerDate" = time(n3_rain))
+
+#add extra info (fyear, year, month, etc.)
+name_date_tbl <- name_date_tbl |> mutate(Year = year(LayerDate),
+                                         Month = month(LayerDate, label = T),
+                                         Fyear = case_when(month(LayerDate) > 6 ~ Year + 1, T ~ Year))
+
+```
+
+## Summary Table
+
+The first analysis we will do is to create a summary table that provides an overview of all important aspects. This table will include information per basin on:
+
+- Monthly mean
+- Annual mean
+- Long-term temperature
+- Monthly percentile rank
+- Annual percentile rank
+- Anomaly (+/- the ltm)
+- Percentage of ltm
+
+### Means
+
+First up is mean the exact means we are going to calculate are as follows:
+
+ - Monthly Mean: This is the SPATIAL mean of all the rainfall cells across the basin. We will calculate this using the exact_extract(). For example, if there were 3 rainfall cells in the Ross Basin for the date of 01/01/2020, that had the values 3mm, 4mm, and 5mm. Then the monthly mean value for the Ross Basin for the date of 01/01/2020 would be 4mm.
+ - Annual Mean: This is calculated as the SUM of the monthly mean values for each basin. However, because it is the sum of the SPATIAL mean monthly values, we will also call it a mean - as it is the mean of the total annual rainfall values experienced across the entire basin.
+ - Long-Term Mean (LTM): To understand if the current year had lots, or not much, rainfall, we need to compare it against something, the LTM is what we compare it against. The LTM is calculated by taking the mean of the annual mean values for each basin from a 30-year block of data known as a climate normal (more on this in the LTM section below).
+ 
+#### Monthly Mean
+
+This happens first at the monthly time frame. It is important to note that the monthly MEAN is the mean of all the rainfall cells across the basin. I.e. This is a spatial mean.
+
+To get data from we need to specify the layers we are interested in. We use the "key table" from earlier to help here. For example, below I specify I want layers from the `r current_fyear` financial year. (This can be updated by changing the globally set current_fyear variable).
+
+```{r}
+#| label: calculate monthly mean
+
+#increase cache size
+terra::gdalCache(1400)
+
+#get mean, min and max from all layers
+rain_mean_basin <- tibble(exact_extract(n3_rain, n3_basins, fun = "mean", append_cols = T))
+
+#fix column names
+names(rain_mean_basin) <- sub('mean.', '', names(rain_mean_basin))
+
+#pivot the data and round values, then use left_join() to add time values, year, mon, and fyear from the key table, round values
+monthly_basin_rainfall <- pivot_longer(rain_mean_basin, cols = 3:ncol(rain_mean_basin),
+                                       names_to = "LayerName", values_to = "MonthlyMeanRainfall") |> 
+  mutate(MonthlyMeanRainfall = round(MonthlyMeanRainfall, 0)) |> 
+  left_join(name_date_tbl, by = "LayerName")
+
+#remove financial years without a full set of data (sually just 1911, and sometimes the most recent fyear).
+removal_rows <- monthly_basin_rainfall |> 
+  group_by(Basin, Fyear) |> 
+  summarise(MonthCount = length(unique(Month))) |> 
+  ungroup() |> 
+  filter(MonthCount < 12)
+
+#subtract from the main table, any rows that appear in the removal table
+monthly_basin_rainfall <- anti_join(monthly_basin_rainfall, removal_rows, by = "Fyear")
+
+#clean up
+rm(rain_mean_basin, removal_rows)
+
+```
+
+#### Annual Mean
+
+We can then easily calculate the annual rainfall by summing the monthly mean values.
+
+It is important to note that we are summing the monthly MEAN values (which as covered above, are the spatial mean of all rainfall cells within the basin). Thus, the total annual MEAN rainfall for the basin, is also a spatial mean of all rainfall cells in the basin.
+
+```{r}
+#| label: calculate annual mean
+
+#calculate financial year annual rainfall statistics
+annual_basin_rainfall <- monthly_basin_rainfall |> 
+  group_by(Region, Basin, Fyear) |> 
+  summarise(AnnualMeanRainfall = round(sum(MonthlyMeanRainfall), 0)) |> 
+  ungroup()
+
+#combine the monthly and annual tables
+annual_basin_rainfall <- left_join(monthly_basin_rainfall, annual_basin_rainfall)
+
+#clean up
+rm(monthly_basin_rainfall)
+
+```
+
+We now need to take a moment to store all of this historic data to the side, as for one plot later on we will need every year.
+
+```{r}
+#| label: store all years of data
+
+all_years_rainfall <- annual_basin_rainfall
+
+```
+
+However, for the most part. we only need to keep the current year of data, and the 30 years of data that will be used for the LTM (below).
+
+```{r}
+#| label: keep only relevant data
+
+#remove everything we don't need
+annual_basin_rainfall <- annual_basin_rainfall |> 
+  filter(Fyear %in% c((1991:2020), current_fyear))
+
+```
+
+#### Long Term Mean 
+
+To understand if the current year had lots, or not much, rainfall, we need to compare it against something, the LTM is what we compare it against. The LTM is calculated by taking the mean of the annual mean values for each basin from a 30-year block of data known as a climate normal For rainfall data, the 30-year climate normal that we are using is 1991 to 2020. This wont be updated until the year 2050 (2021 to 2050).
+
+Something important to note is that, because we are working on the financial year for our results, the LTM will also be based on the financial year. So the 30-year period 1991 to 2020 is more specifically from 1st July 1990 to 30th June 2020.
+
+```{r}
+#| label: calculate LTM
+
+#select our 30 year reference period and calculate the ltm values (note we have to create this as a seperate dataset to not accidentally grab the current year of data if it sits outside the LTM period).
+climate_normal <- annual_basin_rainfall |> 
+  filter(Fyear %in% (1991:2020)) |>
+  group_by(Region, Basin) |> 
+  mutate(AnnualLtm = round(mean(AnnualMeanRainfall), 0)) |> 
+  group_by(Region, Basin, Month, AnnualLtm) |> 
+  summarise(monthly_ltm = round(mean(MonthlyMeanRainfall), 0)) |> 
+  ungroup()
+
+#bind 30 ltm climate normal values to the main dataset
+annual_basin_rainfall <- left_join(annual_basin_rainfall, climate_normal)
+
+#clean up
+rm(climate_normal)
+
+```
+
+### Percentiles (Monthly and Annual)
+
+Now that the three types of means have been calculated we can work on determining the percentiles for the data.
+
+It is important to note here that the percentiles are calculated only from the same 30 years of data that are used by the LTM. This is a change from how we previously calculated percentiles (using the entire dataset).
+
+```{r}
+#| label: calculate percentiles
+
+#calculate the percentile ranks for the mean rainfall in each basin each month. Percentiles are calculated from all years of data
+annual_basin_rainfall <- annual_basin_rainfall |> 
+  group_by(Basin, Month) |> 
+  mutate(MonthlyMeanRainfallPercentileRank = round(percent_rank(MonthlyMeanRainfall)*100, 0)) |> 
+  ungroup() |> 
+  group_by(Region, Basin) |> 
+  mutate(AnnualMeanRainfallPercentileRank = round(percent_rank(AnnualMeanRainfall)*100, 0)) |>  
+  ungroup()
+
+```
+
+### Anomalies
+
+Once we have calculated the LTM we can then compare the current year of data against the LTM and add the last lot of statistics to the summary table which are the current years anomaly from the ltm and percentage of the ltm.
+
+```{r}
+#| label: calculate anomaly and percentage of ltm
+
+#compare LTM and current year data
+summary_tbl <- annual_basin_rainfall |> 
+  mutate("annual_anomaly" = round((AnnualMeanRainfall - AnnualLtm), 0),
+         "monthly_anomaly" = round((MonthlyMeanRainfall - monthly_ltm), 0),
+         "annual_percentage_of_ltm" = round(((AnnualMeanRainfall/AnnualLtm)*100), 1),
+         "monthly_percentage_of_ltm" = round(((MonthlyMeanRainfall/monthly_ltm)*100), 1)) |> 
+  ungroup()
+
+#clean up
+rm(annual_basin_rainfall)
+
+```
+
+### Save Summary Table
+
+With the summary table (containing all relevant statistics) now completed we can save that table to our output location.
+
+Remember, this summary table should only include the 30 years of data for the LTM period, and the single year that is the current fyear for the script.
+
+```{r}
+#| label: save summary table
+
+#save to the main output folder
+write_csv(summary_tbl, glue("{save_path}/rainfall_summary.csv"))
+
+```
+
+## Monthly Percentiles Table
+
+The final table we need to create is the simplified percentiles table that will be directly put into the technical report. This table contains the monthly basin percentiles for the current year, and the annual percentile. However before saving, the data needs to be adjusted to fit into the following groupings:
+
+-   "Lowest 1%": percentile rank $\le$ 1
+-   "Very much below average": percentile rank $\gt$ 1 to $\lt$ 10
+-   "Below average": percentile rank = 10 to $\lt$ 30
+-   "Average": percentile rank = 30 to $\lt$ 70
+-   "Above average": percentile rank = 70 to $\lt$ 90
+-   "Very much above average": percentile rank = 90 to $\lt$ 99
+-   "Highest 1%": percentile rank $\ge$ 99
+
+It is also important to note that the percentiles are calculated from the LTM period, so some of the percentile bands might be a bit "loose".
+
+```{r}
+#| label: create monthly percentiles table
+
+#filter for current year and drop unnecessary columns
+monthly_percentiles_tbl <- summary_tbl |> 
+  filter(Fyear == current_fyear) |> 
+  select(c(Region, Basin, Month, MonthlyMeanRainfallPercentileRank, AnnualMeanRainfallPercentileRank))
+
+#standardise values for each group
+monthly_percentiles_tbl <-  monthly_percentiles_tbl |> 
+  mutate(across(where(is.numeric), ~ case_when(. <= 1 ~ 1,
+                                               . > 1 & . < 10 ~ 2,
+                                               . >= 10 & . < 30 ~ 3,
+                                               . >= 30 & . < 70 ~ 4,
+                                               . >= 70 & . < 90 ~ 5,
+                                               . >= 90 & . < 99 ~ 6,
+                                               . >= 99 ~ 7)))
+
+#pivot data wider for presenting
+monthly_per_wide <- pivot_wider(monthly_percentiles_tbl, names_from = Month, values_from = MonthlyMeanRainfallPercentileRank) |> 
+  relocate(AnnualMeanRainfallPercentileRank, .after = last_col())
+
+```
+
+Before we save this table, we will use a custom function to create an excel workbook that embeds coloring rules into the output. This function relies on a R package (openxlsx2) that is currently in the development stage, and may or may not run smoothly. An overview of the custom function (called cond_form_climate()) is as follows:
+
+`cond_form_climate(df, file_name, indicator)`
+
+Where: 
+
+ - df: any tbl or data.frame - although this function will obviously only work with the monthly climate tables
+ - file name: whatever you want the output file to be named
+ - indicator: can chose from three options: rainfall, air_temperature, or sea_surface_temperature (changes the colour scheme)
+ 
+```{r}
+#| label: load and use conditional formatting function
+
+#read in climate condition formatting function
+source(here("functions/cond_form_climate.R"))
+
+#run function, noting to specify which colour system we want to use
+cond_form_climate(monthly_per_wide, glue("{save_path}/rainfall_monthly-percentiles"), indicator = "rainfall")
+
+```
+
+# Visualise Data
+
+The final component of this script is to visualise rainfall data, using both plots and maps. Below we will create:
+
+ - Line plots of all historic rainfall for each basin
+ - Line plots of the current year of rainfall for each basin
+ - Maps of the current year of rainfall for each basin
+ - Maps of the current years' anomaly from long term mean (30-year) for each basin
+
+## All Historical Data Plot
+
+The standard plot that we create for all climate indicators is a line plot of data over time - to see long-term trends. This plot is currently included as appendix material for the technical reports.
+
+```{r}
+#| label: plotting annual mean against percentage difference from mean
+
+#set up variables for the background data
+groups <- factor(c("200-250%", "150-200%", "125-150%", "100-125%", "80-100%", "60-80%", "40-60%", "20-40%", "0-20%"),
+                 levels = c("200-250%", "150-200%", "125-150%", "100-125%", "80-100%", "60-80%", 
+                            "40-60%", "20-40%", "0-20%"))
+
+#set up variables for the background data  
+transformer <- c(2, 1.5, 1.25, 1, 0.8, 0.6, 0.4, 0.2, 0)
+
+#set up variables for the background data
+x = rep(c(1911, current_fyear+1), each = length(groups))
+  
+#build the background data df
+df <- data.frame(X = x, Groups = groups, Transformer = transformer)
+
+#create colour palette to be used throughout
+col_palette <- rev(rep(brewer.pal(length(groups), "BrBG"),2)) 
+
+#start loop at the region level
+for (i in unique(n3_basins$Region)){
+
+  #pick out the data for the entire region 
+  region_temp <- all_years_rainfall |> filter(Region == i) 
+  
+  #and take the mean values
+  region_mean <- region_temp |> 
+    select(!c(MonthlyMeanRainfall, Basin)) |> 
+    group_by(Region, LayerDate, Fyear) |> 
+    summarise(AnnualMeanRainfall = mean(AnnualMeanRainfall))
+  
+  #get the ltm (30-year) for the region
+  region_ltm <- region_mean |> filter(Fyear %in% (1991:2020)) |>
+    pull(unique(AnnualMeanRainfall))
+  
+  region_ltm <- round(mean(region_ltm), 1)
+  
+  #expand on the background dataframe, customising to the region and creating hi and low lims
+  region_df <- df |> mutate(Y = region_ltm) |>
+    mutate(Ylo = region_ltm * Transformer,
+           Yhi = region_ltm * lag(Transformer)) |> 
+    mutate(Yhi = case_when(is.na(Yhi) ~ region_ltm * 2.5,
+                           Yhi == 0 ~ region_ltm * 2.5,
+                           T ~ Yhi)) |> 
+    mutate(across(where(is.numeric), \(x) round(x, 0)))
+  
+  #get min, max and break values for breaks
+  min_per <- min(region_df$Ylo)
+  max_per <- max(region_df$Yhi)
+  breaks <- unique(region_df$Yhi)
+    
+  #get max two values
+  max_2 <- head(unique(sort(df$Yhi, decreasing = T)),2)
+    
+  #use these breaks to calculate the perfect spot for an annotation label
+  label_location <- max_2[1] - (max_2[1]-max_2[2])/2
+  
+  #plot the background layer
+  background <- ggplot(region_df) +
+    geom_ribbon(aes(x = X, ymin = Ylo, ymax = Yhi, fill = Groups), alpha = 1) +
+    geom_line(aes(x = X, y = Y, color = Groups)) +
+    scale_color_manual(values = col_palette, name = "Percentage of \nLong-Term Mean") + 
+    scale_fill_manual(values = col_palette, name = "Percentage of \nLong-Term Mean")
+    
+  #create the main plot
+  percent_df_plot <- background +
+    geom_point(data = region_mean, mapping = aes(x = Fyear, y = AnnualMeanRainfall), colour = "black") +
+    geom_line(data = region_mean, mapping = aes(x = Fyear, y = AnnualMeanRainfall), colour = "black") + 
+    geom_hline(aes(yintercept = region_ltm, linetype = glue("{region_ltm}mm")), colour = "red") +
+    scale_linetype_manual(name = "Long-Term Mean", values = 1) +
+    geom_vline(xintercept = 1990, linetype = "dashed", colour = "blue") +
+    geom_vline(xintercept = 2020, linetype = "dashed", colour = "blue") +
+    annotate(geom = "label", x = 2004, y = label_location, label = "30-Year Climate Normal", 
+             size = 3, hjust = 0.4, fill = "blue", colour = "white", fontface = "bold") +
+    scale_y_continuous(name = "Rainfall (mm)", limits = c(min_per, max_per), breaks = breaks, expand = c(0, 0)) +
+    scale_x_continuous(name = "Financial Year (ending)", expand = c(0, 0)) + 
+    ggtitle(glue("Mean annual rainfall in the {i} region since 1911")) +
+    theme_bw() + theme(panel.grid.major = element_blank(), 
+                       panel.grid.minor = element_blank()) +
+    theme(plot.title = element_text(hjust = 0.5))
+    
+  #edit target basin variable slightly for better save path
+  i <- tolower(gsub(" ", "-", gsub("'", "", i)))
+    
+  #save the static plot
+  ggsave(percent_df_plot, filename = glue("{save_path}/plots/{i}-region_yearly_rainfall.png"), 
+         height = 7, width = 12)
+
+  #initialize plotting loop
+  for (j in unique(region_temp$Basin)) {
+  
+    #pick out data based on the basin name for all years
+    basin_temp <- all_years_rainfall |> filter(Basin == j)
+    
+    #get the ltm (30-year) for the basin
+    basin_ltm <- summary_tbl |> filter(Basin == j, Fyear %in% (1991:2020)) |> 
+      select(AnnualLtm) |> max()
+    
+    #expand on the background dataframe, customising to the region and creating hi and low lims
+    basin_df <- df |> mutate(Y = basin_ltm) |>
+      mutate(Ylo = basin_ltm * Transformer,
+             Yhi = basin_ltm * lag(Transformer)) |> 
+      mutate(Yhi = case_when(is.na(Yhi) ~ basin_ltm * 2.5,
+                             Yhi == 0 ~ basin_ltm * 2.5,
+                             T ~ Yhi)) |> 
+      mutate(across(where(is.numeric), \(x) round(x, 0)))
+    
+    #get min, max and break values for breaks
+    min_per <- min(basin_df$Ylo)
+    max_per <- max(basin_df$Yhi)
+    breaks <- unique(basin_df$Yhi)
+    
+    #get max two values
+    max_2 <- head(unique(sort(df$Yhi, decreasing = T)),2)
+    
+    #use these breaks to calculate the perfect spot for an annotation label
+    label_location <- max_2[1] - (max_2[1]-max_2[2])/2
+  
+    #plot the background layer
+    background <- ggplot(basin_df) +
+      geom_ribbon(aes(x = X, ymin = Ylo, ymax = Yhi, fill = Groups), alpha = 1) +
+      geom_line(aes(x = X, y = Y, color = Groups)) +
+      scale_color_manual(values = col_palette, name = "Percentage of \nLong-Term Mean") + 
+      scale_fill_manual(values = col_palette, name = "Percentage of \nLong-Term Mean")
+    
+    #create the main plot
+    percent_df_plot <- background +
+      geom_point(data = basin_temp, mapping = aes(x = Fyear, y = AnnualMeanRainfall), colour = "black") +
+      geom_line(data = basin_temp, mapping = aes(x = Fyear, y = AnnualMeanRainfall), colour = "black") + 
+      geom_hline(aes(yintercept = basin_ltm, linetype = glue("{basin_ltm}mm")), colour = "red") +
+      scale_linetype_manual(name = "Long-Term Mean", values = 1) +
+      geom_vline(xintercept = 1990, linetype = "dashed", colour = "blue") +
+      geom_vline(xintercept = 2020, linetype = "dashed", colour = "blue") +
+      annotate(geom = "label", x = 2004, y = label_location, label = "30-Year Climate Normal", 
+               size = 3, hjust = 0.4, fill = "blue", colour = "white", fontface = "bold") +
+      scale_y_continuous(name = "Rainfall (mm)", limits = c(min_per, max_per), breaks = breaks, expand = c(0, 0)) +
+      scale_x_continuous(name = "Financial Year (ending)", expand = c(0, 0)) + 
+      ggtitle(glue("Mean annual rainfall in the {j} basin since 1911")) +
+      theme_bw() + theme(panel.grid.major = element_blank(), 
+                         panel.grid.minor = element_blank()) +
+      theme(plot.title = element_text(hjust = 0.5))
+    
+    #edit target basin variable slightly for better save path
+    j <- tolower(gsub(" ", "-", gsub("'", "", j)))
+    
+    #save the static plot
+    ggsave(percent_df_plot, filename = glue("{save_path}/plots/{j}-basin_yearly_rainfall.png"), 
+           height = 7, width = 12)
+  }
+  
+}
+
+
+```
+
+long term annual plots are now saved, see below for an example.
+
+```{r}
+#| label: show long term annual plot
+#| output: true
+
+percent_df_plot
+
+```
+
+## Wet/Dry Annual Breakdown
+
+This is a new plot added per TWG request that compares wet season vs dry season rainfall for each year.
+
+```{r}
+#| label: wet/dry annual break down
+
+#first we need to assign wet/dry to each month and select from 1991 to present
+seasonal_rain <- all_years_rainfall |> 
+  mutate(Season = case_when(Month %in% c("Nov", "Dec", "Jan", "Feb", "Mar", "Apr") ~ "Wet (Nov - Apr)",
+                            T ~ "Dry (May - Oct)")) |> 
+  filter(Fyear %in% (1991:current_fyear))
+
+#then calculate the total rainfall per season
+seasonal_rain <- seasonal_rain |> 
+  group_by(Region, Basin, Fyear, Season) |> 
+  summarise(season_rain = sum(MonthlyMeanRainfall)) |> 
+  ungroup()
+
+#start at a region level
+for (i in unique(n3_basins$Region)){
+  
+  #pick out data based on the basin name
+  region_temp <- seasonal_rain |> filter(Region == i)
+  
+  #and take the mean values
+  region_mean <- region_temp |> 
+    select(!Basin) |> 
+    group_by(Region, Season, Fyear) |> 
+    summarise(season_rain = mean(season_rain))
+
+  #make the stacked bar chart
+  stacked_bar <- ggplot() +
+    geom_bar(data = region_temp, aes(x = Fyear, y = season_rain, fill = Season), position = "stack", stat = "identity") +
+    scale_fill_manual(values = c("#B7DCE9", "#0000FF")) +
+    geom_hline(aes(yintercept = basin_ltm, linetype = glue("{basin_ltm}mm")), colour = "red") +
+    scale_linetype_manual(name = "Long-Term Mean", values = 1) +
+    scale_x_continuous(name = "Financial Year (ending)", expand = c(0, 0)) + 
+    scale_y_continuous(name = "Rainfall (mm)", expand = c(0, 0)) +
+    ggtitle(glue("Season-Specific Annual rainfall in the {i} region since 1990")) +
+    theme(panel.background = element_blank(), panel.border = element_blank(), panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
+          axis.title.x = element_blank(), axis.title.y = element_blank(),
+          plot.title = element_text(hjust = 0.5))
+  
+  #edit target basin variable slightly for better save path
+  i <- tolower(gsub(" ", "-", gsub("'", "", i)))
+    
+  #save the static plot
+  ggsave(stacked_bar, filename = glue("{save_path}/plots/{i}-region_seasonal_rainfall.png"), 
+         height = 7, width = 12)
+  
+  #then we can create the plots
+  for (j in unique(region_temp$Basin)) {
+  
+    #pick out data based on the basin name
+    basin_temp <- seasonal_rain |> filter(Basin == j)
+    
+    #get the ltm (30-year) for the basin
+    basin_ltm <- summary_tbl |> filter(Basin == j, Fyear %in% (1991:2020)) |> 
+      select(AnnualLtm) |> max()
+    
+    #make the stacked bar chart
+    stacked_bar <- ggplot() +
+      geom_bar(data = basin_temp, aes(x = Fyear, y = season_rain, fill = Season), position = "stack", stat = "identity") +
+      scale_fill_manual(values = c("#B7DCE9", "#0000FF")) +
+      geom_hline(aes(yintercept = basin_ltm, linetype = glue("{basin_ltm}mm")), colour = "red") +
+      scale_linetype_manual(name = "Long-Term Mean", values = 1) +
+      scale_x_continuous(name = "Financial Year (ending)", expand = c(0, 0)) + 
+      scale_y_continuous(name = "Rainfall (mm)", expand = c(0, 0)) +
+      ggtitle(glue("Season-Specific Annual rainfall in the {j} basin since 1990")) +
+      theme(panel.background = element_blank(), panel.border = element_blank(), panel.grid.major = element_blank(),
+            panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
+            axis.title.x = element_blank(), axis.title.y = element_blank(),
+            plot.title = element_text(hjust = 0.5))
+  
+    #edit target basin variable slightly for better save path
+    j <- tolower(gsub(" ", "-", gsub("'", "", j)))
+    
+    #save the static plot
+    ggsave(stacked_bar, filename = glue("{save_path}/plots/{j}-basin_seasonal_rainfall.png"), 
+           height = 7, width = 12)
+  }
+    
+}
+
+
+```
+
+## Current Year Plot
+
+A newer plot that we are looking at creating is a plot of the current year (monthly) compared to the long term expected value for each month. This plot is not currently included in the technical report but may be so in the future.
+
+```{r}
+#| label: plot current year
+
+#create ltm and confidence band data
+summary_tbl <- summary_tbl |>
+  mutate(MonthNumb = case_when(Month == "Jan" ~ 7, Month == "Feb" ~ 8, Month == "Mar" ~ 9,
+                                Month == "Apr" ~ 10, Month == "May" ~ 11, Month == "Jun" ~ 12,
+                                Month == "Jul" ~ 1, Month == "Aug" ~ 2, Month == "Sep" ~ 3,
+                                Month == "Oct" ~ 4, Month == "Nov" ~ 5, Month == "Dec" ~ 6))
+
+#initialise plot at the region level
+for (i in unique(n3_basins$Region)){
+  
+  #select a region
+  ltm_region <- summary_tbl |> filter(Region == i, Fyear %in% (1991:2020))
+  
+  #get the 99th and 1st values for each month
+  max_per <- ltm_region |> 
+    group_by(MonthNumb) |> 
+    summarise(max_rain = quantile(MonthlyMeanRainfall, 0.99),
+              min_rain = quantile(MonthlyMeanRainfall, 0.01))  
+  
+  #get the 90th and 10th values for each month
+  outer_per <- ltm_region |> 
+    group_by(MonthNumb) |> 
+    summarise(max_rain = quantile(MonthlyMeanRainfall, 0.9),
+              min_rain = quantile(MonthlyMeanRainfall, 0.1))
+  
+  #get the 30th and 70th values for each month
+  inner_per <- ltm_region |> 
+    group_by(MonthNumb) |> 
+    summarise(max_rain = quantile(MonthlyMeanRainfall, 0.7),
+              min_rain = quantile(MonthlyMeanRainfall, 0.3))
+  
+  #get a current year table
+  cy_region <- summary_tbl |> filter(Region == i, Fyear == current_fyear) |> 
+    select(!c(Basin)) |> 
+    group_by(Region, MonthNumb, Month) |> 
+    summarise(MonthlyMeanRainfall = mean(MonthlyMeanRainfall))
+  
+  #get a spline (smoothed version)
+  spline.d <- as.data.frame(spline(cy_region$MonthNumb, cy_region$MonthlyMeanRainfall))
+
+  #plot the graph
+  plot <- ggplot() +
+    geom_ribbon(data = max_per, aes(x = MonthNumb, ymin = min_rain, ymax = max_rain, fill = "#EEF7F5")) +    # Add shaded ribbon
+    geom_ribbon(data = outer_per, aes(x = MonthNumb, ymin = min_rain, ymax = max_rain, fill = "#c3e8e0")) +  # Add shaded ribbon
+    geom_ribbon(data = inner_per, aes(x = MonthNumb, ymin = min_rain, ymax = max_rain, fill = "#79b0a5")) +  # Add shaded ribbon
+    geom_smooth(data = ltm_region, aes(x = MonthNumb, y = MonthlyMeanRainfall, color = "black"), se = F, linewidth = 1.5) +
+    geom_line(data = cy_region, aes(x = MonthNumb, y = MonthlyMeanRainfall, colour = "blue"), linewidth = 1.5, show.legend = T) +
+    scale_fill_identity(name = "Percentile", labels = c("30th-70th", "10th-90th", "1st-99th"), guide = "legend") +
+    scale_color_identity(name = "Rainfall", labels = c("LTM", "CY"), guide = "legend") +
+    scale_x_continuous(name = "", breaks = 1:12, labels = cy_region$Month, expand = c(0, 0)) +
+    scale_y_continuous(name = "Rainfall (mm)", expand = c(0, 0)) +
+    ggtitle(glue("Monthly rainfall in the {i} region for the {current_fyear} Financial Year")) +
+    theme(panel.background = element_blank(), panel.border = element_blank(), panel.grid.major = element_blank(),
+          axis.title.x = element_blank(), axis.line = element_line(colour = "black"),
+          plot.title = element_text(hjust = 0.5))
+
+  #edit target basin variable slightly for better save path
+  i <- tolower(gsub(" ", "-", gsub("'", "", i)))
+  
+  ggsave(glue("{save_path}/plots/{i}-region_monthly_rainfall.png"), plot, width = 10, height = 4)
+
+  #initialize plotting loop
+  for (j in unique(ltm_region$Basin)) {
+    
+    #select a basin
+    ltm_basin <- summary_tbl |> filter(Basin == j, Fyear %in% (1991:2020))
+    
+    #get the 99th and 1st values for each month
+    max_per <- ltm_basin |> 
+      group_by(MonthNumb) |> 
+      summarise(max_rain = quantile(MonthlyMeanRainfall, 0.99),
+                min_rain = quantile(MonthlyMeanRainfall, 0.01))  
+    
+    #get the 90th and 10th values for each month
+    outer_per <- ltm_basin |> 
+      group_by(MonthNumb) |> 
+      summarise(max_rain = quantile(MonthlyMeanRainfall, 0.9),
+                min_rain = quantile(MonthlyMeanRainfall, 0.1))
+    
+    #get the 30th and 70th values for each month
+    inner_per <- ltm_basin |> 
+      group_by(MonthNumb) |> 
+      summarise(max_rain = quantile(MonthlyMeanRainfall, 0.7),
+                min_rain = quantile(MonthlyMeanRainfall, 0.3))
+    
+    #get a current year table
+    cy_basin <- summary_tbl |> filter(Basin == j, Fyear == current_fyear)
+    
+    #get a spline (smoothed version)
+    spline.d <- as.data.frame(spline(cy_basin$MonthNumb, cy_basin$MonthlyMeanRainfall))
+  
+    #plot the graph
+    plot <- ggplot() +
+      geom_ribbon(data = max_per, aes(x = MonthNumb, ymin = min_rain, ymax = max_rain, fill = "#EEF7F5")) +    # Add shaded ribbon
+      geom_ribbon(data = outer_per, aes(x = MonthNumb, ymin = min_rain, ymax = max_rain, fill = "#c3e8e0")) +  # Add shaded ribbon
+      geom_ribbon(data = inner_per, aes(x = MonthNumb, ymin = min_rain, ymax = max_rain, fill = "#79b0a5")) +  # Add shaded ribbon
+      geom_smooth(data = ltm_basin, aes(x = MonthNumb, y = MonthlyMeanRainfall, color = "black"), se = F, linewidth = 1.5) +
+      geom_line(data = cy_basin, aes(x = MonthNumb, y = MonthlyMeanRainfall, colour = "blue"), linewidth = 1.5, show.legend = T) +
+      scale_fill_identity(name = "Percentile", labels = c("30th-70th", "10th-90th", "1st-99th"), guide = "legend") +
+      scale_color_identity(name = "Rainfall", labels = c("LTM", "CY"), guide = "legend") +
+      scale_x_continuous(name = "", breaks = 1:12, labels = cy_basin$Month, expand = c(0, 0)) +
+      scale_y_continuous(name = "Rainfall (mm)", expand = c(0, 0)) +
+      ggtitle(glue("Monthly rainfall in the {j} basin for the {current_fyear} Financial Year")) +
+      theme(panel.background = element_blank(), panel.border = element_blank(), panel.grid.major = element_blank(),
+            axis.title.x = element_blank(), axis.line = element_line(colour = "black"),
+            plot.title = element_text(hjust = 0.5))
+  
+    #edit target basin variable slightly for better save path
+    j <- tolower(gsub(" ", "-", gsub("'", "", j)))
+    
+    ggsave(glue("{save_path}/plots/{j}-basin_monthly_rainfall.png"), plot, width = 10, height = 4)
+  }
+  
+}
+
+```
+
+These plots are much simpler and might be useful for more educational/quick-read pieces.
+
+```{r}
+#| label: show cy plot
+#| output: true
+
+plot
+
+```
+
+## Current Year and Anomaly Maps
+
+Another staple of the technical report is a map of the mean annual rainfall for each basin for the current year. To compliment this map we will also create a map of the current years' anomaly from the long term mean annual rainfall for each basin, and them plot them side-by-side.
+
+### Create Raster Layers
+
+In the first code chunk we create each of the raster layers required.
+
+```{r}
+#| label: get map for current year
+
+#select only the current financial year
+target_period <- name_date_tbl |> filter(Fyear == current_fyear)
+
+#create a sum of current fyear map
+cy_rain_map <- sum(subset(n3_rain, target_period$LayerName))
+
+#create an empty SpatRaster to store the 30-year long term mean data
+ltm_30_stack <- rast()
+
+for (i in 1991:2020) {
+  
+  #create a name based on iteration
+  layer_name <- glue("fyear_{i-1}_{i}")
+  
+  #create a subset of the name_date_tbl for the date range
+  target_period <- name_date_tbl |> filter(Fyear == i)
+  
+  #Use subset to select layers and sum into a single layer
+  raster_layer <- sum(subset(n3_rain, target_period$LayerName))
+  
+  #update layer name
+  names(raster_layer) <- layer_name
+    
+  #put layers into a single stack
+  ltm_30_stack <- c(ltm_30_stack, raster_layer)
+
+}
+
+#create a ltm map
+ltm_30_rain_map <- mean(ltm_30_stack)
+
+#put the two SpatRasters into one for next operation
+anom_rast <- c(cy_rain_map, ltm_30_rain_map)
+
+#subtract ltm from cy mean to get an anomaly map
+anom_rain_map <- lapp(anom_rast, fun = function(r1, r2){return(r1 - r2)})  
+
+#rename layer
+names(anom_rain_map) <- "Rainfall_Anomaly_(mm)"
+
+#interpolate data to increase resolution and therefore accuracy
+if (fac > 1) {
+  cy_rain_map <- disagg(cy_rain_map, fac, "bilinear")
+  anom_rain_map <- disagg(anom_rain_map, fac, "bilinear")
+}
+
+#then mask again to get a precise border
+cy_rain_n3_crop <- mask(cy_rain_map, vect(n3_basins))
+anom_rain_n3_crop <- mask(anom_rain_map, vect(n3_basins))
+
+```
+
+### Calculate Legend Values
+
+Then we need to determine the min and max values to use for the legend for the anomaly map.
+
+It is important to note here that it was decided that the anomaly maps require a consistent legend between years (so they also share a colour scheme - i.e. dark green in all maps is associated with the same mm rainfall values). It was also decided that this was not necessary for the current year rainfall maps.
+
+Work was done to experiment with a range of options to determine the best min and max values to use and it was decided to use the min and max anomalies values that have been recorded in the 30-year climate normal period.
+
+This is actually really easy to do as well (in this specific example, other options were a right pain).
+
+```{r}
+#| label: finding the largest anomalies
+
+#create an empty raster to store the output
+all_anomalies <- rast()
+
+#for each fyear in the 30 year period, calculate the annual value, then compare it to the ltm value and save the anomalies for that year
+for (i in 1991:2020){
+  
+  #create a name based on iteration
+  layer_name <- glue("fyear_{i-1}_{i}")
+  
+  #create a subset of the name_date_tbl for the date range
+  target_period <- name_date_tbl |> filter(Fyear == i)
+  
+  #Use subset to select layers and sum into a single layer
+  raster_layer <- sum(subset(n3_rain, target_period$LayerName))
+  
+  #update layer name
+  names(raster_layer) <- layer_name
+
+  #put the two SpatRasters into one for next operation
+  comparison_rast <- c(raster_layer, ltm_30_rain_map)
+  
+  #subtract ltm from target year mean to get an anomaly map
+  comparison_rast_map <- lapp(comparison_rast, fun = function(r1, r2){return(r1 - r2)})
+  
+  #rename layer
+  names(comparison_rast_map) <- glue("fyear_{i-1}_{i}")
+  
+  #stack all the comparisons together to be looked through later
+  all_anomalies <- c(all_anomalies, comparison_rast_map)
+  
+}
+
+#interpolate data to increase resolution and therefore accuracy
+if (fac > 1) {
+  all_anomalies <- disagg(all_anomalies, fac, "bilinear")
+}
+
+#then mask again to get a precise border
+all_anomalies_n3_crop <- mask(all_anomalies, vect(n3_basins))
+
+```
+
+We also need to check if the anomaly for the current year exceeds the maximum anomaly recorded from within the 30-year climate normal. The easiest way to do this, is just to add the cy anomaly map to the full stack of anomaly maps, and if it just so happens to be the greatest (+ or -) then it will be selected.
+
+```{r}
+#| label: add cy anomaly to the stack
+
+#stack together
+all_anomalies_n3_crop <- c(all_anomalies_n3_crop, anom_rain_n3_crop)
+
+```
+
+We can finally then plot the current year, and current year anomaly, rainfall data at a region level and basin level.
+
+A important change that was made here was that, as with at the region level, the anomaly legend maps' min and max values are now determined by the min and max values from all anomalies from the entire 30-year climate normal period. However, ADDITIONALLY, the basin total rainfall legend and anomaly legend min and max values are determined by the min and max values for the entire region. This means that when looking at the basin maps compared to the region maps they will share the exact same scale and colours, and just look like a zoomed in version of the same map.
+
+```{r}
+#| label: plot cy rainfall map
+
+#change name of layer for plot
+names(cy_rain_n3_crop) <- "Annual Rainfall (mm)"
+names(anom_rain_n3_crop) <- "Anom. Rainfall (mm)"
+
+#create some vectors of objects in the global environment to iterate over
+reg_map_type <- c("anom", "cy")
+bas_map_type <- c("anom_basin", "cy_basin")
+pal_type <- c("BrBG", "Blues")
+mid_type <- list(0, NULL)
+break_type <- c("anom_break", "cy_break")
+
+for (i in unique(n3_basins$Region)) {
+  
+  #filter by region
+  target_region <- n3_basins |> filter(Region == i) 
+  
+  #mask to the specific region
+  cy <- trim(mask(cy_rain_n3_crop, vect(target_region)))
+  anom <- trim(mask(anom_rain_n3_crop, vect(target_region)))
+  all_anoms_stack <- trim(mask(all_anomalies_n3_crop, vect(target_region)))
+  
+  #calculate the breaks for the cy legend based on the min and max for the actually cy data for the region
+  cy_break <- plyr::round_any(seq(from = minmax(cy)[1], to = minmax(cy)[2], length.out = 11), 10)
+
+  #calculate the breaks for the anom legend based on the min and max for all 30 years of ltm data for the region
+  anom_break <- plyr::round_any(seq(from = min(as.data.frame(minmax(all_anoms_stack))), 
+                                    to = max(as.data.frame(minmax(all_anoms_stack))), 
+                                    length.out = 11), 10)
+  
+  for (j in 1:2){
+    
+    #create a map of the area
+    map <- tm_shape(qld) +
+      tm_polygons(col = "grey80", border.col = "black") +
+      tm_shape(get(reg_map_type[j]), is.master = T) +
+      tm_raster(legend.reverse = T, palette = pal_type[j], midpoint = mid_type[[j]], style = "fixed", breaks = get(break_type[j])) +
+      tm_shape(target_region) +
+      tm_borders(col = "black") +
+      tm_text("Basin", size = 0.6, shadow = T) +
+      tm_shape(tsv) +
+      tm_symbols(size = 0.3, col = "white", border.col = "black", border.lwd = 2, shape = 23) +
+      tm_text("Place", shadow = T, xmod = 1.8, ymod = 0.1, size = 0.7) +
+      tm_layout(legend.frame = T, legend.bg.color = "White", asp = 1.1, legend.text.size = 0.7, 
+                legend.position = c("left", "bottom")) + 
+      tm_scale_bar(width = 0.15, text.size = 0.7, position = c(0.27, 0)) +
+      tm_compass(position = c("right", "top"))
+    
+    #edit variable name for better save path
+    i_edit <- tolower(gsub(" ", "-", gsub("'", "", i)))
+    
+    #save map for later
+    assign(glue("{reg_map_type[j]}_mean_map_{i_edit}_region"), map)
+      
+    #save the map as a png
+    tmap_save(map, filename = glue("{save_path}/maps/{i_edit}-region_{reg_map_type[j]}_rainfall.png"))
+    
+    for (k in unique(target_region$Basin)) {
+      
+      #filter by basin
+      target_basin <- target_region |> filter(Basin == k)
+      target_sub_basins <- target_region |> filter(Basin == k)
+      
+      #mask to the specific basin
+      cy_basin <- trim(mask(cy_rain_n3_crop, vect(target_basin)))
+      anom_basin <- trim(mask(anom_rain_n3_crop, vect(target_basin)))
+      
+      #create a map of the area
+      map <- tm_shape(qld) +
+        tm_polygons(col = "grey80", border.col = "black") +
+        tm_shape(get(bas_map_type[j]), is.master = T) +
+        tm_raster(legend.reverse = T, palette = pal_type[j], midpoint = mid_type[[j]], style = "fixed", breaks = get(break_type[j])) +
+        tm_shape(target_region) +
+        tm_borders(col = "black") +
+        tm_text("Basin", size = 0.6, shadow = T) +
+        tm_shape(tsv) +
+        tm_symbols(size = 0.3, col = "white", border.col = "black", border.lwd = 2, shape = 23) +
+        tm_text("Place", shadow = T, xmod = 1.8, ymod = 0.1, size = 0.7) +
+        tm_layout(legend.frame = T, legend.bg.color = "White", asp = 1.1, legend.text.size = 0.7, 
+                  legend.position = c("left", "bottom")) + 
+        tm_scale_bar(width = 0.15, text.size = 0.7, position = c(0.27, 0)) +
+        tm_compass(position = c("right", "top"))
+        
+      #edit variable name for better save path
+      k_edit <- tolower(gsub(" ", "-", gsub("'", "", k)))
+        
+      #save map for later
+      assign(glue("{reg_map_type[j]}_mean_map_{k_edit}_basin"), map)
+          
+      #save the map as a png
+      tmap_save(map, filename = glue("{save_path}/maps/{k_edit}-basin_{reg_map_type[j]}_rainfall.png"))
+        
+    }
+  }
+}
+
+```
+
+With an example output that looks like this (the actually outputs look much better, without overlap etc.)
+
+```{r}
+#| label: show example map 1
+#| output: true
+
+map
+
+```
+
+
+Finally, we can combined all of these plots into side-by-side versions.
+
+``` {r} 
+#| label: side by side maps
+
+for (i in unique(n3_basins$Region)) {
+  
+  #edit variable name for better save path
+  i <- tolower(gsub(" ", "-", gsub("'", "", i)))
+  
+  #grab two of the maps
+  x <- get(glue("cy_mean_map_{i}_region"))
+  y <- get(glue("anom_mean_map_{i}_region"))
+  
+  #combine them
+  map <- tmap_arrange(x,y)
+  
+  #save the map as a png
+  tmap_save(map, filename = glue("{save_path}/maps/{i}-region_rainfall_facet-map.png"))
+}
+
+for (i in unique(n3_basins$Basin)) {
+  
+  i <- tolower(gsub(" ", "-", gsub("'", "", i)))
+
+  x <- get(glue("cy_mean_map_{i}_basin"))
+  y <- get(glue("anom_mean_map_{i}_basin"))
+
+  map <- tmap_arrange(x,y)
+
+  tmap_save(map, filename = glue("{save_path}/maps/{i}-basin_rainfall_facet-map.png"))
+}
+
+```
+

@@ -1,0 +1,219 @@
+---
+title: "Burdekin Water Quality Sites"
+subtitle: "A Healthy Waters Partnership Analysis"
+description: "This script creates a water quality sites map in the Burdekin region. The output of this was used in the Burdekin expansion project."
+author: "Adam Shand"
+format: html
+params:
+  project_crs: "EPSG:7844"
+---
+
+# Introduction
+
+The purpose of this script is to create a map of the Burdekin region's water quality sites in comparision to the wq sites available for the Ross and Black Basins. We will also include the land use type (either urban or rural), main rivers, and key points of interest.
+
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, sf, tmap, janitor, terra, rayshader, readxl)
+
+```
+
+
+We also need to set up key variables for the script such as where we are going to save the outputs, and what coordinate reference system (crs) we are going to be using.
+
+```{r}
+#| label: global vars and initial setup
+
+#set project variables: crs factor and current_fyear
+proj_crs <- params$project_crs
+
+#format the date for the path below and to be used as a variable in naming later
+date <- format(Sys.time(), "%Y-%m-%d")
+
+#create a file path to help with saving things
+save_path <- here("outputs/dt_maps_burdekin-wq-sites/")
+
+#this script does not have unique data
+
+#bring the paths to life
+dir.create(save_path)
+
+#turn off spherical geometry
+sf_use_s2(F)
+
+```
+
+# Load Data
+
+## Spatial Outlines
+
+Now the script is set up we need to load in all of the required datasets. Spatial data for the northern three regions should be readily available in the repo, the dataset is created by the n3_region-builder.qmd script in the repo that should be the first script run for new users. If the dataset is not available refer back to the README document in the GitHub repo. The other parts of spatial data here should go off without a hitch if the region-builder script has been run.
+
+```{r}
+#| label: load the n3 region
+
+#read in the custom function to clean column names into our specific style
+source("../functions/name_cleaning.R")
+
+#load in the entire northern three region
+n3_region <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg")) |> 
+  name_cleaning()
+
+#reduce down to only the components we need (Dry Tropics, all)
+black_ross <- n3_region |> 
+  filter(BasinOrZone %in% c("Black","Ross"), Environment != "Marine") |> 
+  group_by(BasinOrZone) |> summarise(geom = st_union(geom)) |> 
+  rename(FocusArea = BasinOrZone)
+
+burdekin <- n3_region |> 
+  filter(BasinOrZone %in% c("Burdekin","Haughton"), Environment != "Marine") |> 
+  group_by(SubBasinOrSubZone) |> summarise(geom = st_union(geom)) |> 
+  rename(FocusArea = SubBasinOrSubZone)
+
+dt_all <- rbind(black_ross, burdekin)
+
+#get only the dry tropics waterways
+dt_watercourses <- st_read(here("data/n3_prep_watercourse-builder/n3_watercourse.gpkg")) |> 
+  name_cleaning() |>
+  filter(Region == "Dry Tropics",
+         !StreamOrder %in% c(0,1))
+
+#load a Queensland outline from the aims package
+qld <- get(data("gbr_feat", package = "gisaimsr")) |> 
+  name_cleaning() |> 
+  filter(FeatName %in% c("Mainland", "Island")) |> 
+  st_transform(proj_crs)
+
+```
+
+## Land Use
+
+We can pull land use data from the associated data folder.
+
+```{r}
+#| label: get land use data
+
+land_use <- st_read(here("data/n3_climate_land-use/n3_land_use.gpkg")) |> 
+  name_cleaning() |> 
+  filter(Year == "2021", Basin %in% c("Black", "Ross", "Burdekin", "Haughton")) |> 
+  mutate(`Land Use` = case_when(str_detect(Landuse, "Urban|Mining") ~ "Urban",
+                              T ~ "Rural")) |> 
+  group_by(Basin, `Land Use`) |> 
+  summarise(geom = st_union(geom))
+
+```
+
+## Rivers and Cities
+
+We can get river and city data from the osm project.
+
+```{r}
+#| label: create overlays
+
+#get extent of area to target
+osm_ext <- st_bbox(dt_all)
+
+#query the osm database for waterways and natural waters (no idea why they are separate categories) and points of interest
+poi <- opq(osm_ext, timeout = 100) |> add_osm_feature(key = "place", value = c("town", "city")) |> osmdata_sf()
+
+#transform and filter data to only get specific data types
+poi <- st_transform(poi$osm_points, crs = proj_crs) |> 
+  name_cleaning() |> 
+  st_intersection(st_union(dt_all))
+
+```
+
+## Water Quality Points
+
+We can steal the fresh and estuarine wq points for Ross and Black from the associated folders.
+
+```{r}
+#| label: water quality points
+
+#read in ross black freshwater site coords and convert to a simple feature object
+rb_fw <- read_excel(path = here("data/dt_water-quality_freshwater/raw/dt_wq_freshwater_metadata.xlsx"), sheet = "Current_Sites") |>
+  name_cleaning() |> 
+  select(Basin, SubBasin, Watercourse, Code, Lat, Long) |> 
+  st_as_sf(coords = c("Long", "Lat"), crs = proj_crs)
+
+#read in ross black estuarine sites
+rb_est <- read_excel(path = here("data/dt_water-quality_estuarine/raw/dt_wq_estuarine_metadata.xlsx"), sheet = "Current_Sites") |> 
+  name_cleaning() |> 
+  select(Basin, SubBasin, Watercourse, Code, Lat, Long) |> 
+  st_as_sf(coords = c("Long", "Lat"), crs = proj_crs)
+
+#read in clmp burdekin sites from the generic maps folder
+burd_sites <- read_excel(path = here("data/dt_maps/clmp_burdekin_sites.xlsx"), sheet = "Site Details") |>
+  name_cleaning() |> 
+  filter(Region == "Burdekin") |> select("Basin", "Catchment", "SiteId", 6, 7) |> 
+  st_as_sf(coords = c(5, 4), crs = proj_crs) |> 
+  rename(SubBasin = Catchment, Code = "SiteId") |> mutate(Watercourse = NA)
+
+#join all the data together
+all_wq <- rbind(rb_fw, rb_est, burd_sites)
+
+```
+
+# Create Map
+
+Finally we can create out map. This is achieved by calling in the array from earlier and the adding
+each of the overlays one by one, using the extent to define the area, and the matrix from earlier to
+define the height. The final map looks like this:
+
+```{r}
+#| label: create map of Burdekin
+
+#create map
+no_wq_points <- tm_shape(qld) +
+  tm_polygons() +
+  tm_shape(land_use) +
+  tm_polygons(col = "Land Use", border.alpha = 0, palette = c("#8DD3C7", "red")) +
+  tm_shape(dt_all, is.master = T) +
+  tm_polygons(alpha = 0, border.col = "black") + 
+  tm_shape(dt_watercourses) +
+  tm_lines(col = "dodgerblue") +
+  tm_shape(dt_watercourses) +
+  tm_polygons(col = "aliceblue", border.col = "dodgerblue") +
+  tm_shape(poi) +
+  tm_symbols(size = 0.3, col = "white", border.col = "black", border.lwd = 1, shape = 23) +
+  tm_text("Name", shadow = T, auto.placement = T, size = 0.6) +
+  tm_layout(legend.bg.color = "white", legend.frame = "black", asp = 1.1)
+
+with_wq_points <- tm_shape(qld) +
+  tm_polygons() +
+  tm_shape(land_use) +
+  tm_polygons(col = "Land Use", border.alpha = 0, palette = c("#8DD3C7", "red")) +
+  tm_shape(dt_all, is.master = T) +
+  tm_polygons(alpha = 0, border.col = "black") + 
+  tm_shape(dt_watercourses) +
+  tm_lines(col = "dodgerblue") +
+  tm_shape(dt_watercourses) +
+  tm_polygons(col = "aliceblue", border.col = "dodgerblue") +
+  tm_shape(poi) +
+  tm_symbols(size = 0.3, col = "white", border.col = "black", border.lwd = 1, shape = 23) +
+  tm_text("Name", shadow = T, auto.placement = T, size = 0.6) +
+  tm_shape(all_wq) +
+  tm_symbols(size = 0.2, border.col = "black", border.lwd = 0.8, shape = 21, col = "Basin", palette = "Dark2") +
+  tm_layout(legend.bg.color = "white", legend.frame = "black", asp = 1.1)
+
+```
+
+Which we will then need to save:
+
+```{r}
+#| label: save maps
+
+tmap_save(no_wq_points, filename = glue("{save_path}/burdekin_land_use.png"))
+tmap_save(with_wq_points, filename = glue("{save_path}/burdekin_land_use_and_wq.png"))
+
+```
+
+
+
+

@@ -1,0 +1,252 @@
+---
+title: "Northern Three Spatial Analyses (Inshore Marine: Water Quality)"
+author: "Adam Shand"
+date: "`r format(Sys.time(), '%d, %B, %Y')`"
+format: html
+params:
+  project_crs: "EPSG:7844"
+---
+
+A simple script to create a map for the sampling locations/extent for Inshore marine water quality. 
+
+# Global Controls
+
+As always we begin by setting the global variables for the script, this includes loading packages, the output save location, the script crs, and a date-time tracker.
+
+```{r}
+#| label: Load packages
+#| output: false
+#| echo: false
+
+#mapping packages
+library(RColorBrewer) #colour palettes, and create custom palettes
+library(sf) #read and manipulate simple features
+library(terra)
+library(tmap) #map data
+library(readxl)
+
+#general setup and data manipulation
+library(glue) #easier to create strings, particularly those contains variables
+library(lubridate) #time manipulation
+library(tidyverse) #contains multiple useful packages (https://www.tidyverse.org/packages/)
+library(dataaimsr) #load the aims datasets
+```
+
+```{r}
+#| label: global vars and initial setup
+#| output: false
+
+#set project variables: crs factor and current_fyear
+proj_crs <- params$project_crs
+
+#format the date for the path below and to be used as a variable in naming later
+date <- format(Sys.time(), "%Y-%m-%d")
+
+#create a file path to help with saving things
+save_path <- glue("output/{date}_n3-inshore-marine_water-quality-maps/")
+
+#bring that path to life
+dir.create(save_path)
+
+#turn off s2 geometry
+sf_use_s2(F)
+
+```
+
+# Load data
+
+Next we load in the data. This data can be found in the **data/inshore-marine_water-quality** folder in the github repo. If this is the first time running the analysis please refer to the .README for this repo for a guide on accessing the data.
+
+```{r}
+#| label: load in wetland data
+#| output: false
+
+#please note if the data is not in the basin builder folder, try running the basin builder script
+dry_tropics <- st_read("data/dry-tropics_basin-builder/Dry-Tropics-Basins-Detailed.shp") |> st_transform(proj_crs)
+
+#read in qld outlines data from the gisaimsr package, filter for land and islands, update crs
+qld <- get(data("gbr_feat", package = "gisaimsr")) |> filter(FEAT_NAME %in% c("Mainland", "Island")) |> 
+  st_transform(proj_crs)
+
+#read data and transform into shapefile
+wq <- st_as_sf(read_xlsx("data/inshore-marine_water-quality/DT_inshore_sites_gv_lor_raw.xlsx"),
+               coords = c("long", "lat")) |> st_set_crs(proj_crs)
+
+```
+
+# Maipulate Data
+
+Before we can create the map we just need to manipulate the data bit to remove unnecessary visual clutter.
+
+```{r}
+#| label: clean up data
+
+#group the data for our region and drop everything but the marine sections
+dry_tropics <- dry_tropics |> filter(env == "marine") |> filter(zone != "Offshore")
+
+#de-identify site names
+wq <- wq |> mutate(Code = case_when(site == "RR07" ~ "1", site == "RR09" ~ "2", site == "SB01" ~ "3",
+                                    site == "CB1" ~ "4", site == "CB2" ~ "5", site == "CB6" ~ "6",
+                                    site == "RP1" ~ "7", site == "SJ01" ~ "8",
+                                    site == "CB16" ~ "9", site == "CB15" ~ "10", site == "P05" ~ "11",
+                                    site == "S2" ~ "12", site == "Beagle" ~ "13", site == "BUR4" ~ "14",
+                                    site == "Geoffrey" ~ "15", site == "ORN1" ~ "16", site == "ORN2" ~ "17",
+                                    site == "BUR2" ~ "18", site == "Pandora" ~ "19", site == "BUR1" ~ "20",
+                                    site == "Pelorus" ~ "21", T ~ site))
+
+#filter for only CB data
+wq_cb <- wq |> filter(zone == "Cleveland")
+
+#edit names
+wq_cb <- wq_cb |> mutate(geographic_area = case_when(geographic_area == "C.Enclosed Coastal.Inside.Port.Subzone" ~ "E.C Inside P.Z",
+                                          geographic_area == "C.Enclosed Coastal.Outside.Port.Subzone" ~ "E.C Outside P.Z",
+                                          geographic_area == "C.Open Coastal.Inside.Port.Subzone" ~ "O.C Inside P.Z",
+                                          geographic_area == "C.Open Coastal.Outside.Port.Subzone" ~ "O.C Outside P.Z",
+                                          T ~  geographic_area))
+
+#filter for only HB data
+wq_hb <- wq |> filter(zone == "Halifax")
+
+#edit names
+wq_hb <- wq_hb |> mutate(geographic_area = case_when(geographic_area == "H.Enclosed Coastal" ~ "Enclosed Coastal",
+                                          geographic_area == "H.Open Coastal" ~ "Open Coastal",
+                                          T ~  geographic_area))
+
+
+```
+
+# Create Map
+
+The core objective of this map is to visually present the seagrass in our technical report style.
+
+```{r}
+#| label: create map
+#| output: false
+
+#create a townsville point coord
+test1 <- data.frame(place = "Townsville", x = "-19.2610", y = "146.8129")
+test2 <- st_as_sf(test1, coords = c("y", "x"), crs = proj_crs)
+
+#create a map of the area
+map <-   tm_shape(dry_tropics) +
+  tm_borders() +
+  tm_shape(qld) +
+  tm_polygons(col = "grey80", border.col = "black") +
+  tm_shape(test2) +
+  tm_symbols(size = 0.5, col = "white", border.col = "black", border.lwd = 2, shape = 23) +
+  tm_text("place", shadow = T, xmod = -2.5, ymod = 0.1) +
+  tm_shape(wq_cb) +
+  tm_symbols(size = 0.8, col = "geographic_area", border.col = "black", border.lwd = 2, shape = 21) +
+  tm_text("Code", shadow = T, auto.placement = 0.1, size = 0.8) +
+  tm_shape(st_buffer(wq_cb, 0.03), is.master = T) +
+  tm_symbols(size = 0) +
+  tm_add_legend(type = "line", col = "grey60", labels = "Boundaries")  +
+  tm_layout(legend.frame = T, legend.bg.color = "White", asp = 1.1, 
+            legend.text.size = 0.7, legend.position = c("left", "bottom")) +
+  tm_scale_bar(width = 0.15, text.size = 0.7, position = c(0.21, 0)) +
+  tm_compass(position = c("right", "top"))
+
+#save the map as a png
+tmap_save(map, filename = glue("{save_path}inshore-marine_water-quality-cleveland.png"))
+
+#create a map of the area
+map <-   tm_shape(dry_tropics) +
+  tm_borders() +
+  tm_shape(qld) +
+  tm_polygons(col = "grey80", border.col = "black") +
+  tm_shape(test2) +
+  tm_symbols(size = 0.5, col = "white", border.col = "black", border.lwd = 2, shape = 23) +
+  tm_text("place", shadow = T, xmod = -2.5, ymod = 0.1) +
+  tm_shape(wq_hb) +
+  tm_symbols(size = 0.8, col = "geographic_area", border.col = "black", border.lwd = 2, shape = 21) +
+  tm_text("Code", shadow = T, auto.placement = 0.1, size = 0.8) +
+  tm_shape(st_buffer(wq_hb, 0.08), is.master = T) +
+  tm_symbols(size = 0) +
+  tm_add_legend(type = "line", col = "grey60", labels = "Boundaries")  +
+  tm_layout(legend.frame = T, legend.bg.color = "White", asp = 1.1, 
+            legend.text.size = 0.7, legend.position = c("left", "bottom")) +
+  tm_scale_bar(width = 0.15, text.size = 0.7, position = c(0.21, 0)) +
+  tm_compass(position = c("right", "top"))
+
+#save the map as a png
+tmap_save(map, filename = glue("{save_path}inshore-marine_water-quality-halifax.png"))
+
+
+
+```
+
+
+# Create Inshore marine overview map
+
+```{r}
+#| label: inshore marine overview map
+
+#combine zone and subzone for a naming col
+str_extract_all(dry_tropics$zone, pattern = "[A-Z]")
+
+dry_tropics$zone_sum <- sapply(stringr::str_extract_all(dry_tropics$zone, '[A-Z]'),paste0, collapse = '')
+
+dry_tropics <- dry_tropics |> unite("Sub Zone", c("zone_sum", "sub_zone"), sep = ": ", remove = F) |> 
+  rename(Zone = zone)
+
+#create a map of the area
+map <- tm_shape(dry_tropics) +
+  tm_polygons(col = "Sub Zone", border.col = "black") +
+  tm_shape(qld) +
+  tm_polygons(col = "grey80", border.col = "black") +
+  tm_shape(test2) +
+  tm_symbols(size = 0.5, col = "white", border.col = "black", border.lwd = 2, shape = 23) +
+  tm_text("place", shadow = T, xmod = 2.5, ymod = 0.1) +
+  #tm_shape(wq_cb) +
+  #tm_symbols(size = 0.8, col = "Name", border.col = "black", border.lwd = 2, shape = 21) +
+  #tm_text("Code", shadow = T, auto.placement = 0.1, size = 0.8) +
+  #tm_shape(st_buffer(wq_cb, 0.03), is.master = T) +
+  #tm_symbols(size = 0) +
+  tm_layout(legend.frame = T, legend.bg.color = "White", asp = 1.1, 
+            legend.text.size = 0.7, legend.position = c("left", "bottom")) +
+  tm_scale_bar(width = 0.15, text.size = 0.7, position = c(0.24, 0)) +
+  tm_compass(position = c("right", "top"))
+
+#save the map as a png
+tmap_save(map, filename = glue("{save_path}inshore-marine_sub_zone.png"))
+
+#create a map of the area
+map1 <- tm_shape(dry_tropics) +
+  tm_polygons(col = "Zone", border.col = "black") +
+  tm_shape(qld) +
+  tm_polygons(col = "grey80", border.col = "black") +
+  tm_shape(test2) +
+  tm_symbols(size = 0.5, col = "white", border.col = "black", border.lwd = 2, shape = 23) +
+  tm_text("place", shadow = T, xmod = 2.5, ymod = 0.1) +
+  #tm_shape(wq_cb) +
+  #tm_symbols(size = 0.8, col = "Name", border.col = "black", border.lwd = 2, shape = 21) +
+  #tm_text("Code", shadow = T, auto.placement = 0.1, size = 0.8) +
+  #tm_shape(st_buffer(wq_cb, 0.03), is.master = T) +
+  #tm_symbols(size = 0) +
+  tm_layout(legend.frame = T, legend.bg.color = "White", asp = 1.1, 
+            legend.text.size = 0.7, legend.position = c("left", "bottom")) +
+  tm_scale_bar(width = 0.15, text.size = 0.7, position = c(0.18, 0)) +
+  tm_compass(position = c("right", "top"))
+
+#save the map as a png
+tmap_save(map1, filename = glue("{save_path}inshore-marine_zone.png"))
+
+
+#combine them
+map <- tmap_arrange(map1, map)
+  
+#save the map as a png
+tmap_save(map, filename = glue("{save_path}inshore-marine_side_side.png"))
+
+
+
+
+
+
+
+
+
+
+
+```
+

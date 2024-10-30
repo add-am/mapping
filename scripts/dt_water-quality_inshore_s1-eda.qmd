@@ -1,0 +1,680 @@
+---
+title: "Inshore Marine Water Quality Exploratory Data Analysis"
+subtitle: "A Healthy Waters Partnership Analysis"
+description: "Script 1 in a series of script designed to analyse, score, and present inshore marine water quality in the Dry Tropics region. The output of this is used in the Dry Tropics Technical Report."
+author: "Adam Shand"
+format: html
+params:
+  project_crs: "EPSG:7844"
+  target_fyear: 2023 
+---
+
+:::{.callout-note}
+The Water Quality suite of scripts currently do not adhere to the CamelCase naming rules. This is due to filtering and code that relies on snake_case naming to work. This will take a significant amount of time to overhaul.
+:::
+
+# Introduction
+
+The purpose of this script is to analyse water quality data for the dry tropics technical report. Key steps include:
+
+ - Loading all metadata
+ - Loading all sampling data
+ - Assigning metadata to every sample
+ - Performing QA/QC such as checking LOR values, conducting EDA, calculating summary statistics
+ - Calculating Scores and Grades (main component of script)
+ - Creating box plots
+ - Creating line plots
+
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, sf, tmap, janitor, readxl, ggplot2)
+
+```
+
+
+```{r}
+
+#turn off scientific notation
+options(scipen = 999)
+
+#set a path to the data reading location
+data_path <- here("data/dt_water-quality_inshore/raw/")
+
+#establish what financial year we are looking at
+current_fyear <- params$target_fyear
+
+#get a date variable (this is important for naming as it is anticipated multiple runs of the script will be required).
+date <- format(Sys.time(), "%Y-%m-%d")
+
+#create a file path for the year of data that is being looked at
+year_folder <- glue("{here()}/outputs/dt_water-quality_inshore_s1-eda/{current_fyear-1}-{current_fyear}_eda/")
+
+#create that folder
+dir.create(year_folder, recursive = T)
+
+#create a file path to help with saving things, make sure to include date
+save_path <- glue("{year_folder}/eda_conducted_on_{date}/")
+
+#create folder
+dir.create(save_path, recursive = T)
+
+#create additional extension folders from this
+dir.create(glue("{save_path}/spreadsheets/"))
+dir.create(glue("{save_path}/graphs/"))
+
+```
+
+# Load Data
+
+Data for this script is provided in two spreadsheets: a metadata spreadsheet, and a master spreadsheet. 
+
+The metadata spreadsheet contains (for all current sites):
+
+ - Grouping information for each site (region, environment, zone, sub_zone, geographic_area, code),
+ - Location information for each site i.e., where the site is (lat, long)
+ - Supplier information (who provides the data),
+ - Alternative names the site might be known by,
+ - Water quality objective (WQO) information for each site,
+ - Limit of reporting (LOR) information for each site,
+ - The original source for WQO and LOR values,
+ - plus the above information for all historical sites.
+ 
+The master spreadsheet contains:
+
+ - Codes for all data, to be cross checked against metadata,
+ - All sample data for all current sites for as far back as possible (~2019),
+ - All currently monitored variables,
+ - Units for each variable, to cross check against metadata,
+ - Peripheral variables as need to calculated main variables.
+
+## Metadata Spreadsheet
+
+```{r}
+#| label: load metadata
+
+#create list of sheets to target
+target_sheets <- c("Current_Sites", "WQO", "LOR")
+
+#create empty dataframe to hold metadata
+site_metadata <- data.frame()
+
+#get the total number of sheets excluding the first one (which is the README sheet)
+for (i in 1:length(target_sheets)){
+  
+  #read in the target sheet
+  temp_sheet <- read_excel(glue("{data_path}/dt_wq_inshore_metadata.xlsx"),
+                           sheet = target_sheets[i], na = c("", "NA", "NULL", "null")) 
+
+  #if it is the first sheet(the "Current_Sites" sheet) then rename it to the main metadata variable
+  if (i == 1){site_metadata <- temp_sheet |> select(-c(Site_Name, AKA))} 
+  
+  else {#otherwise, pivot the data and then merge it onto the main metadata variable
+    
+    temp_sheet <- pivot_longer(temp_sheet, cols = 2:ncol(temp_sheet), #select data, then target columns
+                               names_to = c(".value", "Indicator"), names_pattern = "([A-Za-z]+)_(.+)")
+    #.value indicates this part of the col name defines the name of the output column (it overrides the "values_to" arg)
+    #names_pattern = how to split. this has two groups marked by brackets: 1. any letter left of underscore, 2. everything else.
+    
+    #merge onto main
+    site_metadata <- merge(site_metadata, temp_sheet)}
+
+}
+
+#convert LOR values to the correct units (for MMP indicators only)
+site_metadata <- site_metadata |> 
+  mutate(LOR = case_when(Supplier == "MMP" & Indicator %in% c("NOX", "PN") ~ (LOR*14.01)/1000,
+                        Supplier == "MMP" & Indicator %in% c("PP", "FRP") ~ (LOR*30.97)/1000,
+                        T ~ LOR))
+
+#add units of measure, direction of failure, and statistic used. These should be able to be crossed check against the human readable pages in the excel metadata spreadsheet if anything seems off
+site_metadata <- site_metadata |> 
+  mutate(Units = case_when(Indicator == "Turbidity" ~ "NTU", 
+                           Indicator == "Secchi" ~ "m", 
+                           Indicator == "Chla" ~ "ug.L", 
+                           T ~ "mg.L"), 
+         Failure = case_when(Indicator == "Secchi" ~ "low", T ~ "high"), 
+         Stat = case_when(Indicator %in% c("Turbidity", "TP", "NOX") ~ "median", T ~ "mean"))
+
+#clean up
+rm(target_sheets, temp_sheet)
+
+```
+
+## Master Data Spreadsheet
+
+The master data sheet is built over a couple of stages:
+
+### Import Datasets
+
+Each of the datasets needs to be imported, they are stored in separate sheets so must be read in separately. 
+
+ !!! need to change this, now do manually - Note the logic to remove the < symbol. These values are handled later using the metadata information.
+ - Note the replacement of "aturat" (catches any variation of "saturated" (caps of otherwise)) with the value 100.
+ - Note dates: some are provided as date_time, others, only date. The edit drops time and does not affect rows without time attached.
+
+```{r}
+#| label: Import datasheets
+
+#get a variable listing all available sheets
+sheets <- excel_sheets(glue("{data_path}/dt_wq_inshore_data_master.xlsx"))
+
+#get the total number of sheets excluding the first one (which is the README sheet)
+for (i in 2:length(sheets)){
+  
+  #read in the target sheet
+  temp_sheet <- read_excel(glue("{data_path}/dt_wq_inshore_data_master.xlsx"), 
+                           sheet = sheets[i], na = c("", "NA", "NULL", "null"),
+                           guess_max = 5000) |> #force guess_max to 5000 so loggers don't get read as boolean 
+    select(-Site_Name) #drop site name immediately as it is an uncontrolled variable only included for the human reader
+  
+  #assign the correct name, remove < symbols, and convert columns to numeric
+  assign(sheets[i], temp_sheet |> 
+           mutate(#across(everything(), ~ str_replace(.x, "<", "")), #this should now be obsolete
+                  across(c(3:ncol(temp_sheet)), as.numeric),
+                  Date = Date + seconds(1), #add one second to avoid date-time error
+                  Date = ymd_hms(Date), FY = get_fy(Date), .after = Date) |> 
+           filter(FY > 2012,
+                  FY <= current_fyear)) #to allow for specific reporting year targeting
+}
+
+#clean up
+rm(temp_sheet, i)
+
+```
+
+### Special Treatment of Datasets
+
+Some of the datasets have unique treatments that they received before they can be combined together, for example, below we calculate mg/L of NOX, PN and PP from umol/L.
+
+```{r}
+#| label: special treatment of datasets
+
+#convert data
+MMP_Grab <- MMP_Grab |> mutate(NOX_mg.L = ((NO2_umol.L + NO3_umol.L)*14.01)/1000, 
+                               PN_mg.L = (PN_umol.L*14.01)/1000,
+                               PP_mg.L = (PP_umol.L*30.97)/1000,
+                               FRP_mg.L = (DIP_umol.L*30.97)/1000, #FRP and DIP are equivalent and stated to be measuring the same thing)
+                               .keep = "unused") 
+
+#rename old POTL codes
+POTL_Grab <- POTL_Grab |> mutate(Code = case_when(Code == "CB01" ~ "CB15", Code == "CB02" ~ "CB16",
+                                                  Code == "IH108" ~ "SB01", Code == "PC14" ~ "P05",
+                                                  T ~ Code))
+
+```
+
+### Bind Datasheets
+
+now all sheets can be combined and provided with metadata and the finishing touches added. This includes adjusting values that are at or below the limit of reporting, and making sure logger and grab data are complimentary.
+
+```{r}
+#| label: bind datasheets
+
+#Each of the spreadsheets (now aligned) can be given the same process
+inshore_wq <- bind_rows(mget(sheets[2:length(sheets)]))
+
+inshore_wq_all <- inshore_wq |> 
+  pivot_longer(cols = 4:ncol(inshore_wq), names_to = "Indicator", values_to = "Values") |> #pivot data longer
+  separate_wider_regex("Indicator", c("Indicator" = ".*", "_", "Units" = ".*")) |> #split names into indicator and units
+  mutate(Date = ymd(substr(Date, 1, 10))) |> #drop time so we can get daily means
+  group_by(Code, Date, FY, Indicator, Units) |> 
+  summarise(Values = mean(Values)) |> ungroup() |>  #get daily mean
+  left_join(site_metadata) |> 
+  filter(!is.na(Values))
+
+#clean up
+rm(list = sheets[2:length(sheets)], sheets)
+
+```
+
+# QA/QC Checks
+
+We can now take this opportunity to perform the required QA/QC Checks, at the moment this includes:
+
+ - Units
+ - Locations and Codes
+ - LOR/value comparison
+ - LOR/WQO comparison
+ 
+Please add more as you see fit.
+
+## Unit Check
+
+First we will check the units, we are looking to detect if any of the indicators have more than one set of units assigned.
+
+```{r}
+#| label: Unit Check
+#| warning: true
+
+#group by indicator and units
+unit_check <- inshore_wq_all |> 
+  group_by(Indicator, Units) |> 
+  summarize(.groups = "drop")
+
+#then check if the number of indicators is equal to the number of indicator-unit pairs
+if (length(unique(unit_check$Indicator)) == n_distinct(unit_check)){
+  
+  print("Test passed. No erroneous indicator units.")
+  
+  rm(unit_check)
+  
+} else {
+  
+  #save csv
+  write_csv(unit_check, glue("{save_path}/spreadsheets/unit_check.csv"))
+
+stop("Test fail, an indicator has data with two different units. Raw data might be provided with two 
+     different units, or the units listed in the metadata may not match the master data. Review the
+     'unit_check' table for more information.")
+}
+
+```
+
+## Locations and Codes
+
+We will check the number of locations found in the dataset matches what we expect to find (which for inshore is 8 unique geographic areas and 20 unique codes (sites)).
+
+```{r}
+#| label: Location and Code Check
+#| warning: true
+
+#group by the different levels of location
+location_check <- inshore_wq_all |> 
+  group_by(Region, Environment, Zone, Sub_Zone, Geographic_Area) |> 
+  summarize(.groups = "drop")
+
+#get the number of locations that are expected
+num_locs <- ifelse(current_fyear <= 2020, 7, 8)
+
+#then check if we have the right number of locations
+if (nrow(location_check) == num_locs & !any(is.na(location_check))){
+  
+  print("Test passed. Correct number of locations.")
+  
+  rm(location_check)
+  
+} else {
+  
+  #save csv
+  write_csv(location_check, glue("{save_path}/spreadsheets/location_check.csv"))
+
+stop("Test fail, currently the DT report should have 8 unique geographic areas, please cross check if 
+     there are locations missing, or if there have been new locations added. Review the 
+     'location_check' table for more information.")
+}
+
+#group by geographic areas and code
+code_check <- inshore_wq_all |> 
+  group_by(Geographic_Area, Code) |> 
+  summarize(.groups = "drop")
+
+#get the number of codes that are expected
+num_codes <- ifelse(current_fyear <= 2020, 18, 20)
+
+#then check if we have the right number of geographic areass and codes
+if (nrow(code_check) == num_codes & !any(is.na(code_check))){
+  
+  print("Test passed. Correct number of sites.")
+  
+  rm(code_check)
+  
+} else {
+  
+  #save csv
+  write_csv(code_check, glue("{save_path}/spreadsheets/code_check.csv"))
+
+stop("Test fail, currently the DT report should have 20 unique codes(sites), please cross check if 
+     there are codes missing, or if there have been new codes added. Review the 'code_check' table
+     for more information.")
+}
+
+```
+
+## LOR/Value Comparison
+
+We will now compare the LOR values against the concentration values recorded in the master spreadsheet. What we are trying to spot is how many of the concentrations values are half (or less) of the LOR. If lots of the concentration values are half the LOR then this is a warning sign that the LOR is likely not low enough and not fit for purpose.
+
+```{r}
+#| label: LOR Value check
+#| warning: true
+
+#check how many values are half of the LOR compared to the total number of values for the reporting period
+value_lor_check <- inshore_wq_all |> 
+  filter(FY == current_fyear) |> 
+  mutate(`Value_Halved?` = case_when(Values <= LOR ~ "Value_Halved", 
+                                     T ~ "Value_Unchanged")) |> 
+  group_by(Code, Indicator, `Value_Halved?`) |> 
+  summarise(Count = n(), .groups = "drop") |> 
+  pivot_wider(names_from = `Value_Halved?`, values_from = Count) |> 
+  filter(!is.na(Value_Halved))
+
+if (!any(value_lor_check$Value_Halved > value_lor_check$Value_Unchanged)){
+  
+  print("Minimal values were changed.")
+  
+  rm(value_lor_check)
+  
+} else {
+  
+  #save the value lor check table
+  write_csv(value_lor_check, glue("{save_path}/spreadsheets/value_lor_check.csv"))
+
+warning("At >= one site, there are more values that have been changed to half the LOR than have 
+been left unchanged. This is not inherently wrong, but should be double checked. Check the 
+'value_lor_check' table for a list of all sites with changed values.")
+
+}
+
+```
+
+## LOR/WQO Comparison
+
+Finally we will compare the LOR and WQO values. This an important comparison as if the WQO value is equal to or less than the LOR value it becomes impossible to determine if the actual concentration values are equal to or less than the WQO value. For example:
+
+ - If LOR = 1,
+ - And WQO = 0.5,
+ - The lowest a concentration can be recorded is <1 (half LOR).
+ - Therefore, is the concentration (<1) lower than the WQO (0.5)?
+ - It is impossible to know.
+ 
+The below code chunk will flag any site that has:
+ - an LOR <= WQO and,
+ - more than half of the concentration values also <= WQO (i.e. cannot be interpreted). 
+ 
+For any site that is flagged, the offending indicator will be removed.
+
+```{r}
+#| label: LOR WQO check
+#| warning: true
+
+#check if the LOR is equal to or greater than the WQO, whilst also checking if any values are also in this range
+wqo_lor_check_p1 <- inshore_wq_all |> 
+  filter(FY == current_fyear, Indicator != LOR) |> #this gets current year and ignore FRP
+  mutate(Comparison = case_when(LOR >= WQO & Values > LOR ~ "Val_Warn",
+                                LOR >= WQO & Values <= LOR ~ "Val_Fail",
+                                T ~ "Val_Pass")) |>
+  group_by(Code, Indicator, LOR, WQO, Comparison) |> 
+  summarise(Count = n(), .groups = "drop") |>
+  pivot_wider(names_from = Comparison, values_from = Count)
+
+#check if warning or fail values exists
+if (any("Val_Fail" %in% colnames(wqo_lor_check_p1))){
+
+  #conduct checks for each indicator to determine if enough samples are above LOR/WQO to be allowed to use the site
+  wqo_lor_check_p2 <- wqo_lor_check_p1 |> 
+    mutate(across(everything(), ~ replace_na(.x, 0))) |> 
+    group_by(Code, Indicator) |> 
+    summarise(across(contains("Val"), ~ sum(.x)),
+              Keep_Site = case_when(Val_Fail < (if(exists("wqo_lor_check_p1$Val_Warn")){Val_Warn + Val_Pass} else {Val_Pass}) ~ "Keep", 
+                                    T ~ "Remove"), .groups = "drop") |> 
+    ungroup()
+
+  #save the lor WQO check table
+  write_csv(wqo_lor_check_p2, glue("{save_path}/spreadsheets/wqo_lor_check.csv"))
+  
+  #check if any sites need to be removed
+  if (!any(str_detect(wqo_lor_check_p2$Keep_Site, "Rem"))){
+    
+    #if no sites need to be removed save the data
+    write_csv(inshore_wq_all, glue("{save_path}/spreadsheets/inshore_wq_all.csv"))
+  
+    print("Test passed. No sites need to be removed.")
+    
+  } else { #if warning and fail values outnumber values that pass then remove those rows
+  
+    #to remove problem sites create a table containing the code-indicator pair of any failed sites
+    removal_table <- wqo_lor_check_p2 |> 
+      filter(Keep_Site == "Remove") |> 
+      select(Code, Indicator)
+  
+    #use the full dataset to add all information about the code-indicator pair of any failed sites
+    removal_table <- semi_join(filter(inshore_wq_all, FY == current_fyear), removal_table, by = join_by(Code, Indicator))
+  
+    #subtract from the main table, any rows that appear in the removal table
+    inshore_wq_removed <- suppressMessages(anti_join(inshore_wq_all, removal_table))
+      
+    #save the before and after site removal tables
+    write_csv(inshore_wq_all, glue("{save_path}/spreadsheets/inshore_wq_all_pre_site_removal.csv"))
+    write_csv(inshore_wq_removed, glue("{save_path}/spreadsheets/inshore_wq_all_post_site_removal.csv"))
+    
+    #save the table that lists what was actually removed
+    write_csv(removal_table, glue("{save_path}/spreadsheets/inshore_wq_all_sites_removed.csv"))
+    
+    warning("At >= one site, the LOR is >= WQO AND >= 50% of the values are <= LOR. This means at 
+    least one site has failed. The offending sites and indicators have been removed, however the 
+    code will provide a warning here so the user is aware and can inspect the cause of the issue.")
+
+  }
+  
+} else {#if there are no fail values
+  
+  #save the dataset
+  write_csv(inshore_wq_all, glue("{save_path}/spreadsheets/inshore_wq_all.csv"))
+  
+  print("Test passed. No sites need to be removed.")
+
+}    
+
+```
+
+The code chunk above has automatically removed the offending indicators from the offending sites. Now, in the code chunk below, we will overwrite the main inshore dataset with the dataset we just created that has some values removed.
+
+```{r}
+#| label: overwrite old data
+
+#if data needed to be removed, store the main dataset as "old" and assign the updated dataset back to the main dataset
+if (exists("inshore_wq_removed")){
+  
+  inshore_wq_pre_removal <- inshore_wq_all
+  
+  inshore_wq_all <- inshore_wq_removed}
+
+```
+
+# EDA Checks
+
+After some mostly automated QA/QC we will now conduct some exploratory data analysis to see if we can spot anything wrong with this years data.
+
+
+```{r}
+#| label: select this years data
+
+inshore_wq_cy <- inshore_wq_all |> filter(FY == current_fyear)
+
+```
+
+## Histograms
+
+Next we will create histograms for this years data, e.g.:
+
+```{r}
+#| label: EDA histograms
+
+for (i in unique(inshore_wq_cy$Indicator)){#for each indicator
+  
+  #get only that indicator
+  target_data <- inshore_wq_cy |> filter(Indicator == i)
+
+  #plot data
+  temp_plot <- ggplot(target_data, aes(x = Values, color = Code, fill = Code)) +
+    geom_histogram(alpha = 0.6, bins = 100) +
+    viridis::scale_fill_viridis(discrete = T) +
+    viridis::scale_colour_viridis(discrete = T) +
+    theme_bw() +
+    theme(legend.position="none",
+          panel.spacing = unit(0.1, "lines"),
+          strip.text.x = element_text(size = 8)) +
+      xlab(glue("{i}")) +
+      ylab("Count") +
+    facet_wrap(~Code, scales = "free")
+  
+  #save to file
+  ggsave(glue("{save_path}/graphs/{i}_histogram.png"))
+  
+}
+
+#show last plot
+temp_plot
+
+
+```
+
+## Boxplots
+
+and as a box plots, e.g.:
+
+```{r}
+#| label: EDA Boxplots
+
+#create custom log function for tick breaks
+base_breaks <- function(n = 10){
+    function(x) {
+        axisTicks(log10(range(x, na.rm = TRUE)), log = TRUE, n = n)
+    }
+}
+
+for (i in unique(inshore_wq_cy$Indicator)){#for each indicator
+  
+  #get only that indicator
+  target_data <- inshore_wq_cy |> filter(Indicator == i)
+
+  #plot data
+  temp_plot <- ggplot(target_data, aes(x = Indicator, y = Values, fill = Code)) +
+    geom_boxplot(alpha = 0.6) +
+    theme_bw() +
+    theme(legend.position="none",
+          panel.spacing = unit(0.1, "lines"),
+          strip.text.x = element_text(size = 8)) +
+    xlab("") +
+    scale_y_continuous(trans = scales::log_trans(), breaks = base_breaks(),
+                   labels = prettyNum) +
+    facet_wrap(~Code, scales = "free")
+  
+  #save to file
+  ggsave(glue("{save_path}/graphs/{i}_boxplot.png"))
+  
+}
+
+#show last plot
+temp_plot
+
+```
+
+## Lineplots
+
+and some line plots, e.g.:
+
+```{r}
+#| label: EDA line plots
+
+for (i in unique(inshore_wq_cy$Indicator)){#for each indicator
+  
+  #get only that indicator and convert from ymd_hms to ymd only
+  target_data <- inshore_wq_cy |> filter(Indicator == i) |> mutate(Date = ymd(substr(Date, 1, 10)))
+
+  #plot data
+  temp_plot <- ggplot(target_data, aes(x = Date, y = Values, color = Code)) +
+    geom_line(na.rm = T) +
+    geom_point(size = 0.4) +
+    theme_bw() +
+    theme(legend.position="none",
+          panel.spacing = unit(0.1, "lines"),
+          strip.text.x = element_text(size = 8)) +
+    xlab(glue("{i}")) +
+    scale_x_date(breaks = scales::pretty_breaks(n = 2))+
+    facet_wrap(~Code, scales = "free")
+  
+  #save to file
+  ggsave(glue("{save_path}/graphs/{i}_lineplot.png"))
+  
+}
+
+#show last plot
+temp_plot
+
+```
+
+# Action Outstanding EDA
+
+Earlier in the script we conducted preliminary QA/QC and were also able to automated some of the common actions required. However after conducting preliminary EDA there is no easy way to automate the actions required by the findings of this. Thus this section is the custom response to the EDA findings that were determined for the **2023** (financial year) data.
+
+**It is important to note that this section should manually be rewritten each year to specifically address the EDA finding of the year.**
+
+To make sure we don't miss anything we will go indicator by indicator:
+
+ - Chla: Nothing major to note
+    + Some sites don't measure Chla, this is expected
+    + No significant outliers or erroneous values detected
+ - FRP: Nothing major to note
+    + This indicator is still not even scored, thus errors here are irrelevant
+    + Some sites don't measure FRP, this is expected
+    + Only one sample has FRP not at the LOR, nothing exciting
+ - NOX: Nothing major to note
+    + Some sites don't measure NOX, this is expected
+    + there are a range of values for NOX, most nearby sites match up with the timing of peaks and troughs
+    + any outliers are well within expected ranges for NOX
+ - PN: Nothing major to note
+    + only measured by AIMS
+    + no significant outliers or values of note.
+ - PP: Nothing major to note
+    + only measured by AIMS
+    + no significant outliers or values of note.
+ - Secchi: Nothing major to note.
+    + Some sites don't measure secchi, this is expected
+    + Higher (better) values are recorded offshore, this is expected.
+    + No unrealistic values noted.
+ - TN: Nothing major to note
+    + Some sites don't measure TN, this is expected
+    + Spreads and ranges are within expectations
+ - TP: Nothing major to note
+    + Some sites don't measure TP, this is expected
+    + Relatively high value noted at RP1 site (~1.5) however, although much greater than other locations, a value of 1.5 is not unrealistic.
+    The RP1 site is also in close proximity to a water treatment facility.
+ - TSS: Nothing major to note
+    + Some sites don't measure TSS, this is expected
+    + All values are within expected ranges.
+ - Turbidity: Wrong/False values detected for site S2
+  + The S2 logger recorded multiple values in the thousands (~4000, ~9000, ~3000). Turbidity values this high are extremely unlikely. Further investigation into these values has determined these values to be errors (values surrounding (15 minutes before and after) are roughly 3-5, more than 1000 times less).
+  + These values have now been removed.
+
+```{r}
+#| label: action EDA findings
+
+print("This year, there were several Turbidity values dectected by the S2 logger that were more than 1000 times greater than the preceeding and following recorded values. These values (5 total values) were removed from the dataset.")
+
+```
+
+# Save Data
+
+Now that all QA/QC and EDA actions are completed we can save the processed data in the main data folder, ready for the main analysis script. This save step is quite important as we dont want to overwrite old dataset prematurely, thus we will include the year of data that was targeted for the eda checks.
+
+Also, once again it should be noted that the dataset may have had some values removed during the LOR/WQO QA/QC step. If this is the case the dataset will contain an extra bit of information in the file name stating as such.
+
+```{r}
+#| label: save data to main data folder
+
+if (exists("inshore_wq_removed")) {# a removed and non-removed set exists, save both
+  
+  #save the data with the removed sites
+  write_csv(inshore_wq_all, 
+            glue("{here()}/data/dt_water-quality_inshore/processed/{current_fyear-1}-{current_fyear}_inshore_wq_all_sites_removed.csv"))
+  
+  #save the original without the removed sites - this is useful for inspecting at a later date
+  write_csv(inshore_wq_pre_removal, 
+            glue("{here()}/data/dt_water-quality_inshore/processed/{current_fyear-1}-{current_fyear}_inshore_wq_all_pre_removal.csv"))
+
+} else {#otherwise just save the one
+  
+  write_csv(inshore_wq_all, 
+            glue("{here()}/data/dt_water-quality_inshore/processed/{current_fyear-1}-{current_fyear}_inshore_wq_all.csv"))
+
+}
+
+```
+

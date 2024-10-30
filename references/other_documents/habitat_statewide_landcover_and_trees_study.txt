@@ -1,0 +1,7 @@
+Statewide Landcover and Trees Study (SLATS)
+
+home page: https://www.qld.gov.au/environment/land/management/mapping/statewide-monitoring/slats
+about page: https://www.qld.gov.au/environment/land/management/mapping/statewide-monitoring/slats/slats-explained
+data page: https://qldspatial.information.qld.gov.au/catalogue/custom/detail.page?fid={BFE72491-2233-4FDF-8F6A-274E49F42FDC}
+
+note: there is currently a new version of the SLATS data in the works that will supersede old data

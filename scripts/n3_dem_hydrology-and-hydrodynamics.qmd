@@ -1,0 +1,267 @@
+---
+title: "Northern Three Spatial Analyses (Digital Elevation Models - Hydrology and Hydrodynamics)"
+author: "Adam Shand"
+date: "`r format(Sys.time(), '%d, %B, %Y')`" 
+format: html
+params:
+  dataset_resolution: 30
+  project_crs: "EPSG:7844"
+---
+
+::: {.callout-tip}
+## R Version
+For R session info at the time of rendering this script see @sec-sessioninfo.
+:::
+
+# Introduction
+
+This is the hydrology and hydrodynamics version of the Digital Elevation Model process. For a guide on general usage of the functions used in this process refer to `n3_dem_example-workflow.qmd` or the rendered version of the script.
+
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, janitor, sf, tmap, raster, terra, rayshader)
+
+```
+
+We also need to set up key variables for the script such as where we are going to save the outputs, and what coordinate reference system (crs) we are going to be using. Note that the crs is first established under 'params' at the start of the script.
+
+```{r}
+#| label: establish global controls and settings
+#| output: false
+
+#set project variables
+proj_crs <- params$project_crs
+
+#create a file path to help with saving things
+save_path <- here("outputs/n3_dem_hydrology-and-hydrodynamics/")
+
+#bring that path to life
+dir.create(save_path)
+
+#turn of spherical geometry
+sf_use_s2(FALSE)
+
+```
+
+# Load Data
+
+Now the script is set up we need to load in all of the required datasets. This will be broken into two segments:
+- Spatial data specific to the N3 region - such as the region, basin, and sub basin boundaries.
+- Digital Elevation Model (DEM) data
+
+## Spatial Data
+
+Spatial data for the northern three regions should be readily available in the repo, the dataset is created by the n3_region-builder.qmd script in the repo that should be the first script run for new users. If the dataset is not available refer back to the README document in the GitHub repo. The other parts of spatial data here should go off without a hitch if the region-builder script has been run.
+
+```{r}
+#| label: load N3 spatial data
+
+#read in the northern three spatial files
+n3_region <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg")) #|> 
+  #filter(is.na(stream_order))
+
+#get a bounding box of the n3 region then convert it into a spatVect for later
+n3_box <- st_as_sfc(st_bbox(n3_region)) |> vect()
+
+```
+
+## DEM data
+
+We can use the custom built `dem_data_pre_processing.R` function for this step. Refer to the n3_dem_example-workflow script for more information.
+
+```{r}
+#| label: load and cut down DEM datasets
+
+#set area of interest
+dt_area <- st_as_sfc(st_bbox(dt_land)) 
+
+#then converting to a SpatVector
+dt_area <- vect(dt_area)
+
+#read in the function
+source(here("functions/dem_data_pre_processing.R"))
+
+#use the function, refer to text chuck above for guidance.
+dem_data_pre_processing(dt_area, name = "dry_tropics", save = save_path, resolution = 30, reload = T)
+
+```
+
+# Visualise Data
+
+We can now begin to visualise our dem.
+
+## Create Base Elements
+
+We can then convert the SpatRaster into the base components needed for a 3D model. A function called `dem_base_map()` has been created to help in this process, and will handle the base map elements creation. For a detailed look at the function refer to the generic dem_workflow script.
+
+```{r}
+#| label: create base map elements using function
+
+#read in the function
+source(here("functions/dem_base_map.R"))
+
+#use the function, try not to use spaces in the name
+dem_base_map(dry_tropics_30m_dem, sea_level = 0, z_scale = 15, name = "dry_tropics", save = save_path, reload = FALSE)
+
+```
+
+This function shouldn't need to be edited unless it breaks. If so, the best way to learn about the function is to go and read above the underlying R packages that the function uses [here](https://www.tylermw.com/).
+
+## Create A Map
+
+Now we can use the array and matrix created above, along with some variations of the focus area, to create a 3D map with highlights, low lights, and rivers.
+
+Once an array and matrix have been created a 3D map can be made from the objects as follows:
+
+```{r}
+#| label: plot the 3D map
+
+#get the extent using the original SpatVector that defines the area of interest - this tells the overlay where to put itself
+dt_extent <- ext(dt_area)
+
+#create a sf polygon
+dt_poly <- n3_region |> filter(basin_or_zone %in% c("Black", "Ross")) |> st_union() |> st_as_sf()
+
+#create an inverted version of the above polygon to darken the surrounding area
+not_dt_poly <- n3_region |> filter(!basin_or_zone %in% c("Black", "Ross"), environment != "Marine")
+
+#using the extent above create an osm friendly version (order is 1,3,2,4)
+osm_ext <- c(dt_extent[1], dt_extent[3], dt_extent[2], dt_extent[4])
+
+#query the osm database for waterways
+waterways <- opq(osm_ext, timeout = 100) |> add_osm_feature("waterway") |> osmdata_sf()
+      
+#transform, filter for only lines, add length and remove unnamed waters
+waterways <- st_transform(waterways$osm_lines, crs = crs(proj_crs)) |> 
+  filter(!is.na(name) & !is.na(waterway)) |> 
+  group_by(name) |> summarise(geometry = st_union(geometry)) |> 
+  ungroup() |> mutate(length = st_length(geometry))
+
+nat <- opq(osm_ext, timeout = 100) |> add_osm_feature(key = "natural", value = "water") |> osmdata_sf()
+
+#transform and filter data to only get specific data types
+nat <- st_transform(nat$osm_polygons, crs = proj_crs)
+
+#crop waterways to only within focus region and select top 20
+waterways <- st_intersection(waterways, st_as_sf(dt_poly)) |> slice_max(length, n = 50)
+
+#create some overlays
+dt_overlay_1 <- generate_polygon_overlay(dt_poly, extent = dt_extent,
+                                         dry_tropics_matrix, palette = "transparent",
+                                         linecolor = "black", linewidth = "8")
+dt_overlay_2 <- generate_polygon_overlay(dt_poly, extent = dt_extent,
+                                         dry_tropics_matrix, palette = "transparent",
+                                         linecolor = "white", linewidth = "7")
+dt_overlay_3 <- generate_polygon_overlay(not_dt_poly, extent = dt_extent,
+                                         dry_tropics_matrix, palette = "black",
+                                         linecolor = "black", linewidth = "0")
+dt_overlay_4 <- generate_line_overlay(waterways, extent = dt_extent,
+                                      dry_tropics_matrix, color = "dodgerblue",
+                                      linewidth = "5")
+dt_overlay_5 <- generate_polygon_overlay(nat, extent = dt_extent,
+                                         dry_tropics_matrix, palette = "dodgerblue",
+                                         linecolor = "dodgerblue", linewidth = "0")
+
+#add the overlays to the base array
+dry_tropics_array_1 <- dry_tropics_array |> 
+  add_overlay(dt_overlay_1) |>
+  add_overlay(dt_overlay_2) |> 
+  add_overlay(dt_overlay_3, alphalayer = 0.7) |> 
+    add_overlay(dt_overlay_4) |> 
+  add_overlay(dt_overlay_5)
+
+#re run the 3d map
+plot_3d(dry_tropics_array_1, dry_tropics_matrix, windowsize = c(50, 50, 1920, 1080), zscale = 10,
+        theta = 0, phi = 36.77, fov = 20, zoom = 0.61, soliddepth = -500)
+
+```
+
+```{r}
+#| label: close the rgl window 1
+
+#close the rgl window
+rgl::close3d()
+
+```
+
+## Save A Map
+
+Once you are happy with the map, it is time to save. This is a fairly standard procedure and uses the `render_snapshot()` function. Note that the rgl window has to be open to save (and that labels have to be added to the rgl window before saving - they cant be saved to the underlying array and matrix).
+
+```{r}
+#| label: save the map
+
+#use render camera to get angles
+#render_camera()
+
+#re run the 3d map
+plot_3d(dry_tropics_array, dry_tropics_matrix, windowsize = c(50, 50, 1920, 1080), zscale = 10,
+        theta = 0, phi = 36.77, fov = 0, zoom = 0.61, soliddepth = -500)
+
+#save the map
+render_snapshot(glue("{save_path}/dry_tropics_tech_report_angled"))
+
+#save as a video
+#render_movie(glue("{save_path}/dry_tropics_example.mp4"), frames = 1200, fps = 30)
+
+#close the rgl window
+rgl::close3d()
+
+```
+
+There is also the option of creating a gif or mp4 of the 3D map, such as of it spinning:
+
+:::{.callout-note}
+This code chunk is not run due to the significant time cost.
+:::
+
+```{r}
+#| label: show render option
+
+#render_movie(glue("{save_path}/magnetic_island_example.mp4"), frames = 90, fps = 12)
+
+```
+
+## Print A Map
+
+One final thing that is possible using this rayshader package is to export the 3D map as an STL file. What is an STL file? It is the file type that 3D printers use. Yes, these maps can literally be printed! :)
+
+The code below exports the map as an STL file, make sure to chat with your local 3D printing company on exactly how they want things (for example a bigger base is usually needed for stability), happy printing.
+
+``` {r}
+#| label: create STL file
+
+#resize the file to be much smaller
+magnetic_island_matrix <- resize_matrix(magnetic_island_matrix, scale = 0.3)
+
+#pull up the plot
+plot_3d(magnetic_island_array, magnetic_island_matrix, windowsize = c(50, 50, 1920, 1080), zscale = 30,
+        theta = 45.54, phi = 36.77, fov = 0, zoom = 0.61)
+
+#export the STL
+save_3dprint(glue("{save_path}/magnetic_island_example.stl"), maxwidth = 100, unit = "mm")
+
+#close the rgl window
+rgl::close3d()
+
+```
+
+And with that, the script is complete. Have fun modelling!
+
+# Session Info {#sec-sessioninfo}
+
+Below is the session info at the time of rendering this script. Of greatest importance is to note the R version, and the "other attached packages" as these are the most significant drivers of success/failure. It is also good to check the "attached base packages" and "loaded via a namespace" packages as well. To check your session info use `sessionInfo()`.
+
+```{r}
+#| label: show session info
+
+sessionInfo()
+
+```
+

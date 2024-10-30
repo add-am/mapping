@@ -1,0 +1,145 @@
+region,basin,landuse,units,2021,2016,2015,2009,1999
+Dry Tropics,Black,Conservation,km,492.6,516.2,NA,482.1,338.5
+Dry Tropics,Burdekin,Conservation,km,10873.9,7879.7,NA,7081.3,5572.9
+Dry Tropics,Haughton,Conservation,km,553.5,596.1,NA,584.7,564.1
+Dry Tropics,Ross,Conservation,km,538.1,509.7,NA,498.8,496.6
+Mackay Whitsunday Isaac,Don,Conservation,km,207.3,230.8,NA,243.8,230.5
+Mackay Whitsunday Isaac,O'Connell,Conservation,km,511,704.4,NA,691.1,663.1
+Mackay Whitsunday Isaac,Pioneer,Conservation,km,335.7,463.2,NA,386.8,395.8
+Mackay Whitsunday Isaac,Plane,Conservation,km,400.3,830.9,NA,872.8,871.8
+Mackay Whitsunday Isaac,Proserpine,Conservation,km,876.7,994.8,NA,922.3,889.6
+Wet Tropics,Barron,Conservation,km,766.7,NA,788.6,633.3,227.6
+Wet Tropics,Daintree,Conservation,km,1815.1,NA,1824.3,938.8,843.7
+Wet Tropics,Herbert,Conservation,km,3063.7,NA,2912.3,2908,2616.3
+Wet Tropics,Johnstone,Conservation,km,1290.9,NA,1326.4,1305.9,697.3
+Wet Tropics,Mossman,Conservation,km,339.8,NA,380.6,382.8,242.6
+Wet Tropics,Mulgrave,Conservation,km,936.7,NA,954.5,955.2,698.6
+Wet Tropics,Murray,Conservation,km,1086.7,NA,1097.9,1100.9,870.1
+Wet Tropics,Russell,Conservation,km,474.3,NA,497.6,497.6,497.1
+Wet Tropics,Tully,Conservation,km,1218.9,NA,1272.7,1272.9,511.3
+Dry Tropics,Black,Dryland Agriculture,km,1.1,1.1,NA,1,0.8
+Dry Tropics,Burdekin,Dryland Agriculture,km,1375.6,1339.7,NA,1269.6,1216
+Dry Tropics,Haughton,Dryland Agriculture,km,0.4,6.5,NA,6.7,7.1
+Dry Tropics,Ross,Dryland Agriculture,km,0.6,2,NA,2.4,1.8
+Mackay Whitsunday Isaac,Don,Dryland Agriculture,km,3.2,1.5,NA,0.7,0.5
+Mackay Whitsunday Isaac,O'Connell,Dryland Agriculture,km,6.5,0.7,NA,14.3,0.8
+Mackay Whitsunday Isaac,Pioneer,Dryland Agriculture,km,1.1,0.3,NA,0.4,0.2
+Mackay Whitsunday Isaac,Plane,Dryland Agriculture,km,1.2,1.3,NA,1.8,0.8
+Mackay Whitsunday Isaac,Proserpine,Dryland Agriculture,km,3,5.9,NA,49.7,1.8
+Wet Tropics,Barron,Dryland Agriculture,km,74.3,NA,64.9,73.8,73
+Wet Tropics,Daintree,Dryland Agriculture,km,38.2,NA,40.4,41.7,44.2
+Wet Tropics,Herbert,Dryland Agriculture,km,674.6,NA,662.7,691.8,665.9
+Wet Tropics,Johnstone,Dryland Agriculture,km,308.1,NA,293.8,318.2,360.1
+Wet Tropics,Mossman,Dryland Agriculture,km,44.5,NA,46.6,47.8,51.9
+Wet Tropics,Mulgrave,Dryland Agriculture,km,154.8,NA,161.8,165.8,173.2
+Wet Tropics,Murray,Dryland Agriculture,km,245.7,NA,236.9,235,218.7
+Wet Tropics,Russell,Dryland Agriculture,km,96.2,NA,99.7,105.3,115.1
+Wet Tropics,Tully,Dryland Agriculture,km,214.4,NA,209.7,222.4,215.7
+Dry Tropics,Black,Forestry,km,78,78,NA,78.1,206.8
+Dry Tropics,Burdekin,Forestry,km,756.1,755.2,NA,825.4,1190.6
+Dry Tropics,Haughton,Forestry,km,32.6,32.6,NA,32.6,32.6
+Dry Tropics,Ross,Forestry,km,45,45,NA,45,45
+Mackay Whitsunday Isaac,Don,Forestry,km,0.2,0.2,NA,0.2,0.2
+Mackay Whitsunday Isaac,O'Connell,Forestry,km,149.1,158.4,NA,167.4,197.4
+Mackay Whitsunday Isaac,Pioneer,Forestry,km,297.7,297.1,NA,373,365.2
+Mackay Whitsunday Isaac,Plane,Forestry,km,148.4,146.4,NA,107.7,121.5
+Mackay Whitsunday Isaac,Proserpine,Forestry,km,134.7,134.7,NA,210.7,251.9
+Wet Tropics,Barron,Forestry,km,204.5,NA,204.6,360.7,771.1
+Wet Tropics,Daintree,Forestry,km,NA,NA,NA,903.4,1000.4
+Wet Tropics,Herbert,Forestry,km,371.2,NA,343.2,346.7,513.6
+Wet Tropics,Johnstone,Forestry,km,NA,NA,NA,22.4,637.5
+Wet Tropics,Mossman,Forestry,km,0,NA,0,0.1,158.6
+Wet Tropics,Mulgrave,Forestry,km,1.2,NA,1.2,1.2,251.8
+Wet Tropics,Murray,Forestry,km,40.7,NA,40.7,40.7,266.1
+Wet Tropics,Russell,Forestry,km,NA,NA,NA,NA,23.2
+Wet Tropics,Tully,Forestry,km,28.7,NA,NA,NA,766.4
+Dry Tropics,Black,Grazing,km,456.9,443.8,NA,479.9,499.5
+Dry Tropics,Burdekin,Grazing,km,113743.7,120014.8,NA,121624.7,122412.3
+Dry Tropics,Haughton,Grazing,km,2302.2,2307,NA,2328.8,2366.6
+Dry Tropics,Ross,Grazing,km,795.1,846.1,NA,870.4,899.4
+Mackay Whitsunday Isaac,Don,Grazing,km,2978.9,3079.8,NA,3093.1,3167
+Mackay Whitsunday Isaac,O'Connell,Grazing,km,1173.9,975.7,NA,949.6,948.5
+Mackay Whitsunday Isaac,Pioneer,Grazing,km,496.8,366.6,NA,356.4,338.4
+Mackay Whitsunday Isaac,Plane,Grazing,km,965,560.6,NA,550.7,515.1
+Mackay Whitsunday Isaac,Proserpine,Grazing,km,1232.7,1114.3,NA,1073.7,1134.1
+Wet Tropics,Barron,Grazing,km,659.1,NA,874.3,844.6,856.3
+Wet Tropics,Daintree,Grazing,km,168.4,NA,170,153.3,152.4
+Wet Tropics,Herbert,Grazing,km,5040.6,NA,5343.4,5355.5,5494.8
+Wet Tropics,Johnstone,Grazing,km,502.3,NA,628,603.1,560.4
+Wet Tropics,Mossman,Grazing,km,26.1,NA,16.6,16.7,13.7
+Wet Tropics,Mulgrave,Grazing,km,43.4,NA,41,38.8,41.8
+Wet Tropics,Murray,Grazing,km,71.6,NA,82.9,75.3,80
+Wet Tropics,Russell,Grazing,km,58.7,NA,57.7,52.7,46.3
+Wet Tropics,Tully,Grazing,km,108.7,NA,105.8,89.2,110.1
+Dry Tropics,Black,Irrigated Agriculture,km,20.3,12.8,NA,12.8,12.8
+Dry Tropics,Burdekin,Irrigated Agriculture,km,318.4,221.1,NA,235,250.2
+Dry Tropics,Haughton,Irrigated Agriculture,km,801,762.4,NA,755.3,765.7
+Dry Tropics,Ross,Irrigated Agriculture,km,10.8,1.5,NA,1.8,2.4
+Mackay Whitsunday Isaac,Don,Irrigated Agriculture,km,210.5,72.9,NA,71.5,82
+Mackay Whitsunday Isaac,O'Connell,Irrigated Agriculture,km,321.9,322.6,NA,343.1,369.1
+Mackay Whitsunday Isaac,Pioneer,Irrigated Agriculture,km,318.9,320.6,NA,334,357.2
+Mackay Whitsunday Isaac,Plane,Irrigated Agriculture,km,657.8,654,NA,665.3,701.3
+Mackay Whitsunday Isaac,Proserpine,Irrigated Agriculture,km,247.7,249.2,NA,249.1,243.9
+Wet Tropics,Barron,Irrigated Agriculture,km,232,NA,134,145.3,149.4
+Wet Tropics,Daintree,Irrigated Agriculture,km,2.1,NA,0.1,0.1,NA
+Wet Tropics,Herbert,Irrigated Agriculture,km,213,NA,174.1,168.1,189.9
+Wet Tropics,Johnstone,Irrigated Agriculture,km,77.4,NA,8.3,8.9,8.8
+Wet Tropics,Mossman,Irrigated Agriculture,km,0.7,NA,0.1,0.1,0.1
+Wet Tropics,Mulgrave,Irrigated Agriculture,km,3.9,NA,0,0.4,1.3
+Wet Tropics,Murray,Irrigated Agriculture,km,8.4,NA,0.1,0.3,0.8
+Wet Tropics,Russell,Irrigated Agriculture,km,12,NA,0,NA,NA
+Wet Tropics,Tully,Irrigated Agriculture,km,44.3,NA,0.1,0,0.1
+Dry Tropics,Black,Mining,km,5.3,5.3,NA,4.9,4.4
+Dry Tropics,Burdekin,Mining,km,211,147.7,NA,123.6,85.2
+Dry Tropics,Haughton,Mining,km,3.2,3.1,NA,2.7,2.2
+Dry Tropics,Ross,Mining,km,5.5,5.5,NA,4.5,3.1
+Mackay Whitsunday Isaac,Don,Mining,km,4.1,3.4,NA,2.8,2.3
+Mackay Whitsunday Isaac,O'Connell,Mining,km,1.9,1.9,NA,1.8,1.7
+Mackay Whitsunday Isaac,Pioneer,Mining,km,1.2,1.4,NA,1,0.8
+Mackay Whitsunday Isaac,Plane,Mining,km,2.5,2.6,NA,2,1.6
+Mackay Whitsunday Isaac,Proserpine,Mining,km,1.5,1.4,NA,1.4,0.9
+Wet Tropics,Barron,Mining,km,3.7,NA,3.8,3.5,3.2
+Wet Tropics,Daintree,Mining,km,NA,NA,NA,NA,0.1
+Wet Tropics,Herbert,Mining,km,5.5,NA,4,3.7,2.8
+Wet Tropics,Johnstone,Mining,km,1.2,NA,1.2,1.2,0.9
+Wet Tropics,Mossman,Mining,km,0.4,NA,0.3,0.3,0.3
+Wet Tropics,Mulgrave,Mining,km,1.2,NA,1.1,1.1,1
+Wet Tropics,Murray,Mining,km,0.4,NA,0.4,0.3,0.3
+Wet Tropics,Russell,Mining,km,0.1,NA,0.1,0.1,0.1
+Wet Tropics,Tully,Mining,km,0.6,NA,0.6,0.5,0.4
+Dry Tropics,Black,Urban/Intensive,km,62.1,69.5,NA,67.3,62.7
+Dry Tropics,Burdekin,Urban/Intensive,km,230.4,275.5,NA,254.2,199.7
+Dry Tropics,Haughton,Urban/Intensive,km,71.3,123.1,NA,115.8,86.7
+Dry Tropics,Ross,Urban/Intensive,km,223.6,229.3,NA,217.6,187.9
+Mackay Whitsunday Isaac,Don,Urban/Intensive,km,52.4,174.3,NA,160.1,140
+Mackay Whitsunday Isaac,O'Connell,Urban/Intensive,km,94.8,94.5,NA,91.2,79.2
+Mackay Whitsunday Isaac,Pioneer,Urban/Intensive,km,68,66.8,NA,64.4,58.2
+Mackay Whitsunday Isaac,Plane,Urban/Intensive,km,136.4,141.3,NA,135.6,120.1
+Mackay Whitsunday Isaac,Proserpine,Urban/Intensive,km,97.8,89.1,NA,83.5,69.5
+Wet Tropics,Barron,Urban/Intensive,km,173.9,NA,237.5,229.9,224.2
+Wet Tropics,Daintree,Urban/Intensive,km,27.4,NA,27.3,27.1,23.5
+Wet Tropics,Herbert,Urban/Intensive,km,80.9,NA,98.4,94.5,88.3
+Wet Tropics,Johnstone,Urban/Intensive,km,81.5,NA,147.1,146,144
+Wet Tropics,Mossman,Urban/Intensive,km,33.1,NA,31.1,29.6,25.7
+Wet Tropics,Mulgrave,Urban/Intensive,km,87.6,NA,84.7,82.4,74.3
+Wet Tropics,Murray,Urban/Intensive,km,18.2,NA,26.5,31.7,36.5
+Wet Tropics,Russell,Urban/Intensive,km,10.1,NA,21.8,20.7,17.5
+Wet Tropics,Tully,Urban/Intensive,km,25.3,NA,80.7,83.7,71.1
+Dry Tropics,Black,Water,km,29.4,30.7,NA,30.6,32.1
+Dry Tropics,Burdekin,Water,km,2605.2,2598.9,NA,2598,2590.1
+Dry Tropics,Haughton,Water,km,304.7,326.5,NA,333.3,334.6
+Dry Tropics,Ross,Water,km,137.6,138.1,NA,139.6,140.3
+Mackay Whitsunday Isaac,Don,Water,km,296.1,304.2,NA,302.1,299.7
+Mackay Whitsunday Isaac,O'Connell,Water,km,186.9,187.7,NA,187.3,186.1
+Mackay Whitsunday Isaac,Pioneer,Water,km,55.2,55.1,NA,55,55.1
+Mackay Whitsunday Isaac,Plane,Water,km,258.3,222.5,NA,223.6,227.4
+Mackay Whitsunday Isaac,Proserpine,Water,km,177.6,182.7,NA,181.8,180.6
+Wet Tropics,Barron,Water,km,79.1,NA,78,77.7,77.2
+Wet Tropics,Daintree,Water,km,53.5,NA,53.5,56.1,59
+Wet Tropics,Herbert,Water,km,423.6,NA,414.4,428.5,431.9
+Wet Tropics,Johnstone,Water,km,56.4,NA,51.6,51.6,51.7
+Wet Tropics,Mossman,Water,km,20.7,NA,20.7,20.7,20.6
+Wet Tropics,Mulgrave,Water,km,90.9,NA,89,89,91.3
+Wet Tropics,Murray,Water,km,52.6,NA,52.6,53.1,67
+Wet Tropics,Russell,Water,km,19.2,NA,19.4,19.4,19.5
+Wet Tropics,Tully,Water,km,43.9,NA,43.9,43.7,43.7

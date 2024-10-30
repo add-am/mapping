@@ -1,0 +1,99 @@
+---
+title: "All Regional Report Card Boundaries"
+subtitle: "A Healthy Waters Partnership Analysis"
+description: "This script creates a map of all five regional report card boundaries"
+author: "Adam Shand"
+format: html
+params:
+  project_crs: "EPSG:7844"
+---
+
+# Introduction
+
+This is a simple script to produce a map of Regional Report Card (all) boundaries.
+
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, sf, tmap, janitor)
+
+```
+
+
+Then set the coordinate reference system and save location.
+
+```{r}
+#| label: global vars and initial setup
+
+#set crs
+proj_crs <- params$project_crs
+
+#create a file path to help with saving things
+save_path <- here("outputs/rrc_map_boundaries/")
+
+#and a path to load data
+data_path <- here("data/dt_maps_rrc-boundaries/")
+
+#bring that path to life
+dir.create(save_path)
+
+#turn off s2 geometry
+sf_use_s2(F)
+
+```
+
+# Load Data
+
+Next we load in the data, refer to the README in the GitHub repo if data is missing.
+
+```{r}
+#| label: load in coral data
+
+#read in the custom function to clean column names into our specific style
+source("../functions/name_cleaning.R")
+
+#please note if the data is not in the basin builder folder, try running the basin builder script
+n3 <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg")) |>
+  name_cleaning() |> 
+  st_transform(proj_crs)
+
+#read in qld outlines data from the gisaimsr package, filter for land and islands, update crs
+qld <- get(data("gbr_feat", package = "gisaimsr")) |> 
+  name_cleaning() |> 
+  filter(FeatName %in% c("Mainland", "Island")) |> 
+  st_transform(proj_crs)
+
+#read in fitzroy
+fitzroy <- st_read(glue("{data_path}/frhp_marine_boundaries.gpkg")) |> 
+  name_cleaning() |> 
+  st_transform(proj_crs)
+
+#read in lgas from the generic folder
+lga <- st_read(here("data/dt_maps/lga.gpkg")) |> 
+  name_cleaning() |> 
+  st_transform(proj_crs)
+
+#read in nrms from the generic folder
+nrm <- st_read(here("data/dt_maps/nrm.gpkg")) |> 
+  name_cleaning() |> 
+  st_transform(proj_crs)
+
+#get extent of area to target
+#osm_ext <- st_bbox(burd_basin)
+
+#query the osm database for points of interest
+#poi <- opq(osm_ext, timeout = 100) |> add_osm_feature(key = "place", value = c("town", "city")) |> osmdata_sf()
+
+#transform and filter data to only get specific data types
+#poi <- st_transform(poi$osm_points, crs = proj_crs) |> 
+  #name_cleaning() |> 
+  #st_intersection(st_union(burd_basin))
+
+```
+
+TBC.

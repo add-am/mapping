@@ -1,0 +1,459 @@
+---
+title: "Northern Three Spatial Analyses (Litter)"
+author: "Adam Shand"
+date: "`r format(Sys.time(), '%d, %B, %Y')`"
+format:
+  html: 
+    fig-height: 10
+params:
+  project_crs: "EPSG:7844"
+---
+
+# Introduction
+
+This is a simple script to produce a map of sampling locations for the Litter Index in all of the Northern Three regions.
+
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, janitor, sf, tmap, dataaimsr, grid, RColorBrewer)
+
+```
+
+
+Then set the coordinate reference system and save location.
+
+```{r}
+#| label: define script variables
+
+#set project crs
+proj_crs <- params$project_crs
+
+#create a file path to help with saving things
+save_path <- here("outputs/n3_litter/")
+
+#bring that path to life
+dir.create(save_path)
+
+#turn off s2 geometry
+sf_use_s2(F)
+
+```
+
+# Load Data
+
+Next we load in the data, refer to the README in the GitHub repo if data is missing.
+
+```{r}
+#| label: load in wetland data
+
+#read in qld outlines data from the gisaimsr package, filter for land and islands, update crs
+qld <- get(data("gbr_feat", package = "gisaimsr")) |> filter(FEAT_NAME %in% c("Mainland", "Island")) |> 
+  st_transform(proj_crs)
+
+#read in n3 file
+n3_region <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg"))
+
+#get the marine and land sections seperately
+dt_land <- n3_region |> 
+  filter(region == "Dry Tropics", environment != "Marine") |> 
+  group_by(region, basin_or_zone, sub_basin_or_sub_zone) |> 
+  summarise(geom = st_union(geom)) |> 
+  ungroup() |> st_cast() |> st_make_valid()
+
+dt_marine <- n3_region |> 
+  filter(region == "Dry Tropics", environment == "Marine")
+
+#get only the dry tropics waterways
+dt_watercourses <- st_read(here("data/n3_prep_region-builder/n3_watercourse.gpkg")) |> 
+  filter(region == "Dry Tropics",
+         !stream_order %in% c(0,1))
+
+#ghhp_region <- st_read(here("data/n3_litter/GHHP Reporting Zones.shp")) |> st_transform(proj_crs) |> 
+#  st_union()
+
+#read data and transform into shapefile
+litter <- st_as_sf(read_csv(here("data/n3_litter/Litter_all_regions_sites_baseline_model.csv")), 
+                   coords = c("Long", "Lat")) |> st_set_crs(proj_crs) |> 
+  mutate(Region_2 = case_when(is.na(Region_2) ~ Region,
+                              T ~ Region_2)) |> 
+  filter(fyear == 2023)
+
+#create a point for Townsville
+tsv <- st_as_sf(data.frame(place = "Townsville", x = "-19.2590", y = "146.8169"), coords = c("y", "x"), crs = proj_crs)
+
+```
+
+create colour connection
+
+```{r}
+#| label: create colour connection
+
+litter <- litter |> 
+  mutate(palette = case_when(Grade == "VHP" ~ "#FF0000",
+                             Grade == "HP" ~ "#FFC000",
+                             Grade == "MP" ~ "#FFFF00",
+                             Grade == "LP" ~ "#92D050",
+                             Grade == "VLP" ~ "#00B050"))
+
+
+```
+
+```{r}
+
+#create target vector to loop lover
+target_vect <- unique(dt_land$basin_or_zone)
+
+#get a dt bbox
+dt_bbox <- st_bbox(dt_land)
+
+#crop waterways to be within focus area (we do this outside the loop as sometimes the focus area is only marine)
+focus_dt_water <- dt_watercourses |> st_intersection(st_union(dt_land))
+
+for (i in unique(litter$Zone)){
+  
+  #filter sites
+  filtered_sites <- litter |> filter(Zone == i)
+  
+  #define focus area 
+  if (str_detect(i, "Bay")){focus_area <- dt_marine |> filter(basin_or_zone == i)
+  } else {focus_area <- dt_land |> filter(basin_or_zone == i)}
+  
+  #edit focus area slightly
+  focus_area <- focus_area |> rename("Sub Basin: All" = sub_basin_or_sub_zone)
+
+  #create a box of the focus area
+  focus_bbox <- st_as_sfc(st_bbox(filtered_sites))
+  
+  #create an inset map
+  inset_map <- tm_shape(qld) +
+    tm_polygons(col = "grey80", border.col = "black") +
+    tm_shape(dt_land, is.master = T) +
+    tm_polygons(col = "grey90", border.col = "black") +
+    tm_shape(focus_bbox) +
+    tm_borders(lwd = 2, col = "red")
+  
+  #create the main map
+  map <- tm_shape(st_buffer(focus_bbox, 0.18)) +
+    tm_borders(alpha = 0) +
+    tm_shape(qld) +
+    tm_polygons(col = "grey80", border.col = "black") +
+    tm_shape(dt_land) +
+    tm_polygons(col = "grey90", border.col = "black") +
+    tm_shape(focus_area) +
+    tm_polygons(col = "Sub Basin: All", border.col = "black", alpha = 0.5, palette = "Pastel1") +
+    tm_shape(focus_dt_water) +
+    tm_lines(col = "dodgerblue") +
+    tm_shape(focus_dt_water) +
+    tm_polygons(col = "aliceblue", border.col = "dodgerblue") +
+    tm_shape(tsv) +
+    tm_symbols(size = 0.3, col = "white", border.col = "black", border.lwd = 2, shape = 23) +
+    tm_text("place", shadow = T, auto.placement = T, size = 0.8) +
+    tm_shape(filtered_sites) +
+    tm_symbols(col = "palette", border.col = "black", legend.col.show = F) +
+    tm_shape(filtered_sites) +
+    tm_text("Secondary Name", shadow = T, size = 0.7, auto.placement = T) +
+    tm_layout(legend.bg.color = "white", legend.frame = "black", asp = 1.1, legend.position = c("left", "bottom"))
+
+  #figure out the aspect of the inset map and the view port
+  asp2 <- (dt_bbox$ymax - dt_bbox$ymin)/(dt_bbox$xmax - dt_bbox$xmin)
+  w <- 0.2
+  h <- asp2 * w
+
+  if (str_detect(i, "Halifax Bay")){vp <- viewport(x = 0.98, y = 0.97, width = w, height = h, just = c("right", "top"))
+  } else {vp <- viewport(x = 0.02, y = 0.97, width = w, height = h, just = c("left", "top"))}
+
+  #save map
+  tmap_save(map, glue("{save_path}/{i}_litter-sites_2023.png"), 
+            insets_tm = inset_map, insets_vp = vp)
+
+}
+
+```
+
+Create a second halifax map without bushy beach.
+
+```{r}
+
+#filter sites
+filtered_sites <- litter |> filter(Zone == "Halifax Bay", `Secondary Name` != "Bushland Beach")
+  
+#define focus area 
+focus_area <- dt_marine |> filter(basin_or_zone == "Halifax Bay")
+
+#edit focus area slightly
+focus_area <- focus_area |> rename("Sub Basin: All" = sub_basin_or_sub_zone)
+
+#create a box of the focus area
+focus_bbox <- st_as_sfc(st_bbox(filtered_sites))
+  
+#create an inset map
+inset_map <- tm_shape(qld) +
+  tm_polygons(col = "grey80", border.col = "black") +
+  tm_shape(dt_land, is.master = T) +
+  tm_polygons(col = "grey90", border.col = "black") +
+  tm_shape(focus_bbox) +
+  tm_borders(lwd = 2, col = "red")
+  
+#create the main map
+map <- tm_shape(st_buffer(focus_bbox, 0.08)) + #but add a small buffer to zoom out
+  tm_borders(alpha = 0) +
+  tm_shape(qld) +
+  tm_polygons(col = "grey80", border.col = "black") +
+  tm_shape(dt_land) +
+  tm_polygons(col = "grey90", border.col = "black") +
+  tm_shape(focus_area) +
+  tm_polygons(col = "Sub Basin: All", border.col = "black", alpha = 0.5, palette = "Pastel1") +
+  tm_shape(focus_dt_water) +
+  tm_lines(col = "dodgerblue") +
+  tm_shape(focus_dt_water) +
+  tm_polygons(col = "aliceblue", border.col = "dodgerblue") +
+  tm_shape(tsv) +
+  tm_symbols(size = 0.3, col = "white", border.col = "black", border.lwd = 2, shape = 23) +
+  tm_text("place", shadow = T, auto.placement = T, size = 0.8) +
+  tm_shape(filtered_sites) +
+  tm_symbols(col = "palette", border.col = "black", legend.col.show = F) +
+  tm_text("Secondary Name", shadow = T, size = 0.7, auto.placement = T) +
+  tm_layout(legend.bg.color = "white", legend.frame = "black", asp = 1.1, legend.position = c("left", "bottom"))
+
+#figure out the aspect of the inset map and the view port
+asp2 <- (dt_bbox$ymax - dt_bbox$ymin)/(dt_bbox$xmax - dt_bbox$xmin)
+w <- 0.2
+h <- asp2 * w
+vp <- viewport(x = 0.98, y = 0.97, width = w, height = h, just = c("right", "top"))
+
+
+#save map
+tmap_save(map, glue("{save_path}/palm-only_litter-sites_2023.png"), 
+          insets_tm = inset_map, insets_vp = vp)
+
+
+
+```
+text break
+
+```{r}
+#| column: screen
+
+#tmap_mode("view")
+
+#tm_shape(litter, is.master = T) +
+  #tm_dots(jitter = 0, size = 0.1, col = "fyear", palette = "Accent", text = "Site") + 
+  #tm_view()
+
+```
+
+clean and plot
+
+```{r}
+
+litter <- litter |> mutate(fyear = as.character(fyear)) |> relocate("Site", .before = "Region") |> 
+  rename("Year" = fyear)
+
+dt_litter <- litter |> filter(Region_3 == "DT")
+wt_litter <- litter |> filter(Region_2 == "WT")
+mwi_litter <- litter |> filter(Region == "MWI")
+ghhp_litter <- litter |> filter(Region == "GHHP")
+
+dt_region <- n3_region |> filter(region == "Dry Tropics", basin_or_zone != "Burdekin", basin_or_zone != "Haughton",
+                                 basin_or_zone != "Burdekin Marine") |> group_by(region, basin_or_zone) |> summarise(geom = st_union(geom))
+wt_region <- n3_region |> filter(region == "Wet Tropics") |> group_by(region, basin_or_zone) |> summarise(geom = st_union(geom))
+mwi_region <- n3_region |> filter(region == "Mackay Whitsunday Isaac") |> group_by(region, basin_or_zone) |> summarise(geom = st_union(geom))
+
+map <- tm_shape(qld) +
+  tm_polygons(col = "grey80", border.col = "black") +
+  tm_shape(dt_region, is.master = T) +
+  tm_borders(col = "black") +
+  tm_shape(dt_litter, legend.reverse = T) +
+  tm_symbols(size = 0.5, col = "Year", palette = "-Accent", legend.col.reverse = T) +
+  tm_layout(legend.position = c("left", "bottom"))
+  
+tmap_save(map, glue("{save_path}/dt_litter_map.png"), width = 8, height = 8)
+
+map <- tm_shape(qld) +
+  tm_polygons(col = "grey80", border.col = "black") +
+  tm_shape(wt_region, is.master = T) +
+  tm_borders(col = "black") +
+  tm_shape(wt_litter, legend.reverse = T) +
+  tm_symbols(size = 0.5, col = "Year", palette = "-Accent", legend.col.reverse = T) +
+  tm_layout(legend.position = c("left", "bottom"))
+  
+tmap_save(map, glue("{save_path}/wt_litter_map.png"), width = 8, height = 8)
+
+map <- tm_shape(qld) +
+  tm_polygons(col = "grey80", border.col = "black") +
+  tm_shape(mwi_region, is.master = T) +
+  tm_borders(col = "black") +
+  tm_shape(mwi_litter, legend.reverse = T) +
+  tm_symbols(size = 0.5, col = "Year", palette = "-Accent", legend.col.reverse = T) +
+  tm_layout(legend.position = c("left", "bottom"))
+  
+tmap_save(map, glue("{save_path}/mwi_litter_map.png"), width = 8, height = 8)
+
+map <- tm_shape(qld) +
+  tm_polygons(col = "grey80", border.col = "black") +
+  tm_shape(dt_region) +
+  tm_borders(col = "black") +
+  tm_shape(wt_region) +
+  tm_borders(col = "black") +
+  tm_shape(mwi_region) +
+  tm_borders(col = "black") +
+  tm_shape(ghhp_region) +
+  tm_borders(col = "black") +
+  tm_shape(litter, is.master = T, legend.reverse = T) +
+  tm_symbols(size = 0.5, col = "Year", palette = "-Accent", legend.col.reverse = T) +
+  tm_layout(legend.position = c("left", "bottom"))
+  
+tmap_save(map, glue("{save_path}/litter_map.png"), width = 8, height = 8)
+
+map <- tm_shape(qld) +
+  tm_polygons(col = "grey80", border.col = "black") +
+  tm_shape(ghhp_region, is.master = T) +
+  tm_borders(col = "black") +
+  tm_shape(ghhp_litter, is.master = T, legend.reverse = T) +
+  tm_symbols(size = 0.5, col = "Year", palette = "-Accent", legend.col.reverse = T) +
+  tm_layout(legend.position = c("left", "bottom"))
+  
+tmap_save(map, glue("{save_path}/ghhp_litter_map.png"), width = 8, height = 8)
+
+
+```
+
+
+
+
+# Maipulate Data
+
+Edit data to remove unnecessary visual clutter.
+
+```{r}
+#| label: clean up data
+
+#split score and grade column
+#litter <- litter |> separate(Score_Grade, into = c("Score", "Grade"), sep = "\\(|\\)", convert = T) |> 
+  #mutate(across(where(is.character), str_trim)) |> mutate(xmod = NA, ymod = NA)
+
+#create column for coloring
+#litter <- litter |> mutate(colour = case_when(Grade == "VLP" ~ "#00B050",
+#                                              Grade == "LP" ~ "#92D050",
+#                                              Grade == "MP" ~ "#FFFF00",
+#                                              Grade == "HP" ~ "#FFC000",
+#                                              Grade == "VHP" ~ "#FF0000"))
+
+#create list of items for each site. Ordering is Site name = xmod, ymod
+#litter_list <- list("Big Rock Bay, Orpheus Island" = c(0, 0.7),
+#                    "Fig Tree Beach, Orpheus Island" = c(0, -0.7),
+#                   "Picnic Bay, Orpheus Island" = c(0, 0.7),
+#                    "Boulder Beach North, Orpheus Island" = c(0, 0.7),
+#                    "Boulder Beach, Orpheus Island" = c(0, 0.7),              
+#                    "South Beach, Orpheus Island" = c(0, 0.7),                   
+#                    "Fantome Island, Northern End" = c(0, -0.7),                   
+#                    "Toomulla main beach" = c(0, 0.7),                            
+#                    "Horseshoe Bay, Magnetic Island" = c(-1.5, -0.7),                
+#                    "Alma Bay, Magnetic Island" = c(0, -0.7),                      
+#                    "Nelly Bay Beach, Magnetic Island" = c(-4, 0.7),             
+#                    "Nelly Bay, Magnetic Island UW" = c(1, -0.7),                 
+#                    "Shelly Cove, Cape Pallarenda Conservation Park" = c(0, 0.7), 
+#                    "Pallarenda Beach" = c(0, -0.7),                               
+#                    "Rowes Bay" = c(0, 0.7),                                     
+#                    "Queensland Country Bank Stadium" = c(5.4, 0.2),               
+#                    "Ross Creek, Townsville" = c(-3.9, -0.1),                        
+#                    "Anderson Park, Townsville" = c(-4.3, 0.1),                     
+#                    "Sherriff Park Townsville" = c(3.8, 0),                      
+#                    "Aplins Weir Rotary Park" = c(0, -0.6),                        
+#                    "Apex Park, Condon" = c(0, 0.7))
+
+
+#loop over the list and add each item
+#for (i in 1:length(litter_list)){
+  
+#  litter <- litter |> mutate(xmod = case_when(Site == names(litter_list)[i] ~ litter_list[[i]][1], T ~ xmod),
+#                             ymod = case_when(Site == names(litter_list)[i] ~ litter_list[[i]][2], T ~ ymod))
+
+#}
+
+#split data into different areas
+#cb_litter <- litter |> filter(Zone == "Cleveland Bay")
+#hb_litter <- litter |> filter(Zone == "Halifax Bay") |> filter(Site != "Toomulla main beach")
+
+#edit to remove names on specific rows for main area
+#litter <- litter |> mutate(Name = case_when(Zone == "Cleveland Bay" ~ "",
+#                                            Zone == "Halifax Bay" & Site != "Toomulla main beach" ~ "", T ~ Site))
+
+```
+
+# Create Map
+
+And finally we can produce the required maps to be used in our technical report style.
+
+```{r}
+#| label: create map
+
+#create a map of the area
+#map <- tm_shape(qld) +
+#  tm_polygons(col = "grey80", border.col = "black") +
+#  tm_shape(dry_tropics) +
+#  tm_borders() +
+#  tm_shape(litter) +
+#  tm_symbols(size = 0.8, col = "colour", border.col = "black", border.lwd = 2, shape = 21) +
+#  tm_text("Name", shadow = T, size = 0.8, xmod = "xmod", ymod = "ymod") +
+#  tm_shape(st_buffer(litter, 0.007), is.master = T) +
+#  tm_symbols(size = 0) +
+#  tm_layout(legend.show = F, asp = 1.1) +
+#  tm_scale_bar(width = 0.15, text.size = 0.7, position = c(0.02, 0)) +
+#  tm_compass(position = c("right", "top"))
+
+#save the map as a png
+#tmap_save(map, filename = glue("{save_path}/Dry_Tropics.png"))
+
+#create a map of the area
+#map <- tm_shape(qld) +
+#  tm_polygons(col = "grey80", border.col = "black") +
+#  tm_shape(dry_tropics) +
+#  tm_borders() +
+#  tm_shape(cb_litter) +
+#  tm_symbols(size = 0.8, col = "colour", border.col = "black", border.lwd = 2, shape = 21) +
+#  tm_text("Site", shadow = T, size = 0.8, xmod = "xmod", ymod = "ymod") +
+#  tm_shape(st_buffer(cb_litter, 0.007), is.master = T) +
+#  tm_symbols(size = 0) +
+#  tm_layout(legend.show = F, asp = 1.1) +
+#  tm_scale_bar(width = 0.15, text.size = 0.7, position = c(0.02, 0)) +
+#  tm_compass(position = c("right", "top"))
+
+#save the map as a png
+#tmap_save(map, filename = glue("{save_path}/Cleveland_bay.png"))
+
+#create a map of the area
+#map <- tm_shape(qld) +
+#  tm_polygons(col = "grey80", border.col = "black") +
+#  tm_shape(dry_tropics) +
+#  tm_borders() +
+#  tm_shape(hb_litter) +
+#  tm_symbols(size = 0.8, col = "colour", border.col = "black", border.lwd = 2, shape = 21) +
+#  tm_text("Site", shadow = T, size = 0.8, xmod = "xmod", ymod = "ymod") +
+#  tm_shape(st_buffer(hb_litter, 0.007), is.master = T) +
+#  tm_symbols(size = 0) +
+#  tm_layout(legend.show = F, asp = 1.1) +
+#  tm_scale_bar(width = 0.15, text.size = 0.7, position = c(0.02, 0)) +
+#  tm_compass(position = c("right", "top"))
+
+#save the map as a png
+#tmap_save(map, filename = glue("{save_path}/Halifax_Bay.png"))
+
+```
+
+Script complete :) Below is an interactive example of the maps created.
+
+```{r}
+#| label: interactive map example
+
+#tmap_mode("view")
+
+#map
+
+```

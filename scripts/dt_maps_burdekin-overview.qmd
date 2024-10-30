@@ -1,0 +1,210 @@
+---
+title: "Burdekin Overview Map"
+subtitle: "A Healthy Waters Partnership Analysis"
+description: "This script creates a general overview map of the Burdekin region. The output of this was used in the Burdekin expansion project."
+author: "Adam Shand"
+format: html
+params:
+  project_crs: "EPSG:7844"
+---
+
+# Introduction
+
+The purpose of this script is to create an overview map of the Burdekin region, this map should include the elevation, main rivers, basin and sub basin outlines, and some key towns.
+
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, sf, tmap, janitor, terra, rayshader)
+
+```
+
+
+We also need to set up key variables for the script such as where we are going to save the outputs, and what coordinate reference system (crs) we are going to be using.
+
+```{r}
+#| label: global vars and initial setup
+
+#set project variables: crs factor and current_fyear
+proj_crs <- params$project_crs
+
+#format the date for the path below and to be used as a variable in naming later
+date <- format(Sys.time(), "%Y-%m-%d")
+
+#create a file path to help with saving things
+save_path <- here("outputs/dt_maps_burdekin-overview/")
+
+#this script does not have unique data
+
+#bring the paths to life
+dir.create(save_path)
+
+#turn off spherical geometry
+sf_use_s2(F)
+
+```
+
+# Load Data
+
+## Spatial Outlines
+
+Now the script is set up we need to load in all of the required datasets. Spatial data for the northern three regions should be readily available in the repo, the dataset is created by the n3_region-builder.qmd script in the repo that should be the first script run for new users. If the dataset is not available refer back to the README document in the GitHub repo. The other parts of spatial data here should go off without a hitch if the region-builder script has been run.
+
+```{r}
+#| label: load the n3 region
+
+#read in the custom function to clean column names into our specific style
+source("../functions/name_cleaning.R")
+
+#load in the entire northern three region
+n3_region <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg")) |> 
+  name_cleaning()
+
+#reduce down to only the components we need (burdekin and don)
+burdekin_region <- n3_region |> 
+  filter(Region == "Burdekin" | BasinOrZone == "Don")
+
+#get only the dry tropics waterways
+dt_watercourses <- st_read(here("data/n3_prep_watercourse-builder/n3_watercourse.gpkg")) |> 
+  name_cleaning() |>
+  filter(Region == "Burdekin" | BasinOrZone == "Don",
+         !StreamOrder %in% c(0,1))
+
+#load a Queensland outline from the aims package
+qld <- get(data("gbr_feat", package = "gisaimsr")) |> 
+  name_cleaning() |> 
+  filter(FeatName %in% c("Mainland", "Island")) |> 
+  st_transform(proj_crs)
+
+```
+
+## Elevation
+
+We can pull in elevation data from the DEM data folder. If the data is not already there, follow the dem example workflow script to get started.
+
+```{r}
+#| label: load in elevation data
+
+#read in the dem data extractor function
+source(here("functions/dem_data_pre_processing.R"))
+
+#use the function, refer to text chuck above for guidance. This should auto build the data
+dem_data_pre_processing()
+
+#create a vect of the bounding box of the burdekin region (the trim(mask()) wants a vect file type)
+burdekin_vect <- vect(st_as_sfc(st_bbox(burdekin_region)))
+
+#use the vect to cut the dem file to size
+burdekin_dem <- trim(mask(n3_100m_dem, burdekin_vect))
+
+#read in the dem base map creator function
+source(here("functions/dem_base_map.R"))
+
+#use the function, for a break down on how the function can be used see the dem example workflow script.
+dem_base_map(dem = burdekin_dem, sea_level = 0, z_scale = 15, 
+            name = "burdekin", save = save_path, reload = T, 
+            texture = "desert", scale = 0.3)
+
+```
+
+One the functions have been run we should then have all the components needed to create the basemap of the burdekin region. The function also saves these components to file so for the next run they can be loaded back in to save time.
+
+## Overlays
+
+Next we need to source all of the overlays, these are things like rivers and lakes, townnames, basin and sub basin outlines and shader.
+
+```{r}
+#| label: create overlays
+
+#get the extent using the original burdekin vect - this tells the overlays where to put itself
+burdekin_extent <- ext(burdekin_vect)
+
+#drop the marine region on the burdekin polygon
+burdekin_land <- burdekin_region |> filter(Environment != "Marine")
+
+#first we will make the burdekin basin and sub basin overlay
+burdekin_overlay <- generate_line_overlay(burdekin_land, extent = burdekin_extent,
+                                          heightmap = burdekin_matrix, color = NA, linewidth = 1)
+
+#create an inverted burdekin overlay (to darken everything outside the burdekin)
+not_burdekin <- st_as_sf(st_difference(st_as_sfc(st_bbox(burdekin_region)), st_union(burdekin_land)))
+
+#create the inverted overlay
+not_burdekin_overlay <- generate_polygon_overlay(not_burdekin, extent = burdekin_extent,
+                                             burdekin_matrix, palette = "black",
+                                             linecolor = "black", linewidth = "0")
+
+#-------------
+#   OSM DATA
+#-------------
+
+#using the extent we calculated earlier create an osm friendly version (order is 1,3,2,4)
+osm_ext <- c(burdekin_extent[1], burdekin_extent[3], burdekin_extent[2], burdekin_extent[4])
+
+#query the osm database for towns and cities
+towns <- opq(osm_ext, timeout = 100) |> add_osm_feature(key = "place", value = "town") |> osmdata_sf()
+cities <- opq(osm_ext, timeout = 100) |> add_osm_feature(key = "place", value = "city") |> osmdata_sf()
+        
+#transform and filter data to only get specific data types then crop within our region
+towns <- st_transform(towns$osm_points, crs = crs(proj_crs)) |> 
+  st_intersection(st_union(burdekin_land))
+cities <- st_transform(cities$osm_points, crs = crs(proj_crs)) #note we dont want to crop cities as they might be outside our area of interest
+
+#create some overlays
+waterway_overlay <- generate_line_overlay(dt_watercourses, extent = burdekin_extent,
+                                             burdekin_matrix, color = "dodgerblue",
+                                             linewidth = "1")
+natural_overlay_1 <- generate_polygon_overlay(dt_watercourses, extent = burdekin_extent,
+                                             burdekin_matrix, palette = "dodgerblue", 
+                                             linecolor = "dodgerblue")
+town_overlay <- generate_label_overlay(towns, extent = burdekin_extent,
+                                     text_size = 1.5, point_size = 1, 
+                                     halo_color = "white",halo_expand = 3, 
+                                     seed = 1, heightmap = burdekin_matrix, 
+                                     data_label_column = "name")
+city_overlay <- generate_label_overlay(cities, extent = burdekin_extent,
+                                     text_size = 1.5, point_size = 1, 
+                                     halo_color = "white",halo_expand = 3, 
+                                     seed = 1,heightmap = burdekin_matrix, 
+                                     data_label_column = "name")
+
+```
+
+# Create Map
+
+Finally we can create out map. This is achieved by calling in the array from earlier and the adding
+each of the overlays one by one, using the extent to define the area, and the matrix from earlier to
+define the height. The final map looks like this:
+
+```{r}
+#| label: create map of Burdekin
+#| output: true
+
+#create map
+burdekin_map <- burdekin_array |> 
+  add_overlay(not_burdekin_overlay, alphalayer = 0.7) |> 
+  add_overlay(waterway_overlay) |> 
+  add_overlay(natural_overlay_1) |> 
+  add_overlay(burdekin_overlay) |> 
+  add_overlay(town_overlay) |> 
+  add_overlay(city_overlay) 
+  
+#show map
+plot_map(burdekin_map)
+
+```
+
+Which we will then need to save:
+
+```{r}
+#| label: save
+
+save_png(burdekin_map, glue("{save_path}/burdekin_overview_map.png"))
+
+```
+

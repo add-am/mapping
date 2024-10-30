@@ -1,0 +1,53 @@
+﻿Site,FlowType,FlowCutSign,FlowCutValue,FlowUnit,Indicator,IndicatorUnit,Objective
+Barratta,Low,Less Than,3.6,m3/s,Amm N,ug/L,18
+Barratta,Low,Less Than,3.6,m3/s,Oxid N,ug/L,85
+Barratta,Low,Less Than,3.6,m3/s,Total N,ug/L,590
+Barratta,Low,Less Than,3.6,m3/s,FRP,ug/L,25
+Barratta,Low,Less Than,3.6,m3/s,Total P,ug/L,65
+Barratta,Low,Less Than,3.6,m3/s,Chl-a,ug/L,2
+Barratta,Low,Less Than,3.6,m3/s,Low DO,%,85
+Barratta,Low,Less Than,3.6,m3/s,High DO,%,110
+Barratta,Low,Less Than,3.6,m3/s,Turb,NTU,35
+Barratta,Low,Less Than,3.6,m3/s,TSS,mg/L,10
+Barratta,Low,Less Than,3.6,m3/s,Low pH,NA,6.5
+Barratta,Low,Less Than,3.6,m3/s,High pH,NA,8
+Barratta,Low,Less Than,3.6,m3/s,Conductivity,us/cm,370
+Barratta,High,Greater Than or Equal To,3.6,m3/s,Amm N,ug/L,10
+Barratta,High,Greater Than or Equal To,3.6,m3/s,Oxid N,ug/L,45
+Barratta,High,Greater Than or Equal To,3.6,m3/s,Total N,ug/L,760
+Barratta,High,Greater Than or Equal To,3.6,m3/s,FRP,ug/L,40
+Barratta,High,Greater Than or Equal To,3.6,m3/s,Total P,ug/L,120
+Barratta,High,Greater Than or Equal To,3.6,m3/s,Chl-a,ug/L,2
+Barratta,High,Greater Than or Equal To,3.6,m3/s,Low DO,%,85
+Barratta,High,Greater Than or Equal To,3.6,m3/s,High DO,%,110
+Barratta,High,Greater Than or Equal To,3.6,m3/s,Turb,NTU,100
+Barratta,High,Greater Than or Equal To,3.6,m3/s,TSS,mg/L,40
+Barratta,High,Greater Than or Equal To,3.6,m3/s,Low pH,NA,6.5
+Barratta,High,Greater Than or Equal To,3.6,m3/s,High pH,NA,8
+Barratta,High,Greater Than or Equal To,3.6,m3/s,Conductivity,us/cm,320
+Sellheim,Low,Less Than,175.9,m3/s,Amm N,ug/L,10
+Sellheim,Low,Less Than,175.9,m3/s,Oxid N,ug/L,10
+Sellheim,Low,Less Than,175.9,m3/s,Total N,ug/L,240
+Sellheim,Low,Less Than,175.9,m3/s,FRP,ug/L,10
+Sellheim,Low,Less Than,175.9,m3/s,Total P,ug/L,30
+Sellheim,Low,Less Than,175.9,m3/s,Chl-a,ug/L,5
+Sellheim,Low,Less Than,175.9,m3/s,Low DO,%,85
+Sellheim,Low,Less Than,175.9,m3/s,High DO,%,110
+Sellheim,Low,Less Than,175.9,m3/s,Turb,NTU,7
+Sellheim,Low,Less Than,175.9,m3/s,TSS,mg/L,10
+Sellheim,Low,Less Than,175.9,m3/s,Low pH,NA,6.5
+Sellheim,Low,Less Than,175.9,m3/s,High pH,NA,8.5
+Sellheim,Low,Less Than,175.9,m3/s,Conductivity,us/cm,290
+Sellheim,High,Greater Than or Equal To,175.9,m3/s,Amm N,ug/L,10
+Sellheim,High,Greater Than or Equal To,175.9,m3/s,Oxid N,ug/L,25
+Sellheim,High,Greater Than or Equal To,175.9,m3/s,Total N,ug/L,690
+Sellheim,High,Greater Than or Equal To,175.9,m3/s,FRP,ug/L,25
+Sellheim,High,Greater Than or Equal To,175.9,m3/s,Total P,ug/L,180
+Sellheim,High,Greater Than or Equal To,175.9,m3/s,Chl-a,ug/L,NA
+Sellheim,High,Greater Than or Equal To,175.9,m3/s,Low DO,%,85
+Sellheim,High,Greater Than or Equal To,175.9,m3/s,High DO,%,110
+Sellheim,High,Greater Than or Equal To,175.9,m3/s,Turb,NTU,190
+Sellheim,High,Greater Than or Equal To,175.9,m3/s,TSS,mg/L,280
+Sellheim,High,Greater Than or Equal To,175.9,m3/s,Low pH,NA,6.58.5
+Sellheim,High,Greater Than or Equal To,175.9,m3/s,High pH,NA,80
+Sellheim,High,Greater Than or Equal To,175.9,m3/s,Conductivity,us/cm,

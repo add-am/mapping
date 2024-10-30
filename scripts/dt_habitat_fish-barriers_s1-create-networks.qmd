@@ -1,0 +1,340 @@
+---
+title: "Fish Barriers Script 1 - Creating River Networks"
+subtitle: "A Healthy Waters Partnership Analysis"
+description: "Script 1 in a series of scripts designed to identify, prioritise, and rank, fish barriers on waterways in the Northern Three reporting region."
+author: "Adam Shand"
+date: "`r format(Sys.time(), '%d, %B, %Y')`"
+format: html
+params:
+  project_crs: "EPSG:7844"
+  sub_basin: "Stuart Creek"
+  network_number: 3
+---
+
+# Introduction
+
+This script is part of a series of script that experiment with the automated identification of fish barriers using a variety of tools and datasets. Each script builds upon the last. The method is inspired by the 2008 Burdekin Barriers study conducted by Alluvium on behalf of NQDT (methods doc in the additional resources folder). Some adjustments have been made however the main stages are the same.
+
+This is script 1, and focuses on creating robust and connected river networks for a selected area. This is a highly involved process that requires manual input, thus deserving of its own script.
+
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, sf, janitor, riverdist)
+
+```
+
+
+Then we also need to set up key variables for the script, as well as the output location.
+
+```{r}
+#| label: create save path and establish project crs part 1
+
+#read in the custom function to clean column names into our specific style
+source("../functions/name_cleaning.R")
+
+#set project crs
+proj_crs <- params$project_crs
+
+#set the focus basin, make sure it is capitalized for the data filtering
+focus_sub_basin <- str_to_title(params$sub_basin)
+
+#update the sub basin variable
+focus_sub_basin_saving <- str_to_lower(str_replace_all(focus_sub_basin, c(" " = "_", "\\(" = "", "\\)" = "", "'" = "")))
+
+#check the sub basin exists by reading in dataset and comparing
+n3_region <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg")) |> 
+  name_cleaning()
+
+```
+
+```{r}
+#| label: check if exists
+#| output: true
+
+if (focus_sub_basin %in% n3_region$SubBasinOrSubZone){#if it exists, do nothing
+  
+  print("The targeted sub_basin or sub_zone exists. The script will continue.")
+  
+} else {# if the sub basin target does not exist
+  
+  to_check <- glue_collapse(unique(n3_region$SubBasinOrSubZone), sep = ", ", last = " and ")
+  
+  stop(glue("The sub basin that was targeted does not exist. The sub basins you can select from include:
+            {to_check}."))
+  
+  #clean up
+  rm(to_check)
+  
+}
+
+```
+
+```{r}
+#| label: create save path and establish project crs part 2
+
+#create the file path to save data
+save_path <- glue(here("outputs/dt_habitat_fish-barriers_s1-create-networks/{focus_sub_basin_saving}_sub_basin/"))
+
+#bring the path to life
+dir.create(save_path, recursive = T)
+
+#turn off s2 geometry
+sf_use_s2(FALSE)
+
+```
+
+# Burdekin Exceptions
+
+Due to the large size of the Burdekin basin we need to add in an extra step to introduce smaller sub basins. This will require several user inputs.
+
+```{r}
+#| label: deal with Burdekin exceptions
+
+#load in custom function
+#source(here("functions/fish_barriers_burdekin_basins.R"))
+
+
+#run custom function
+y_n_burd <- readline("Are you dealing with the Burdekin or Haughton basins? (y/n):")
+
+{
+if (y_n_burd == "y"){#if yes, run function
+  
+  #read in EPP data, and check if the cut down version already exists
+  raw <- "epp_water_management_intent_qld"
+  edited <- "n3_epp_mi"
+  
+  if (file.exists(here(glue("data/n3_prep_region-builder/processed/{edited}.gpkg")))) {#if the edited version exists, read that in
+      
+    assign(edited, st_read(here(glue("data/n3_prep_region-builder/processed/{edited}.gpkg")), quiet = T))
+      
+  } else {#otherwise recommend running the region-builder script
+      
+    print("The desired file does not exists, we reccommend you re-run the 'n3_prep_region-builder' script.")
+      
+  }
+  
+  #strip data to the bare minimum
+  dt_epp_mi <- n3_epp_mi |> 
+    filter(str_detect(ProjectName, "Burd")) |> 
+    filter(!str_detect(Schedule, "Don")) |> 
+    select(EnvValueZone) |> 
+    st_make_valid()
+  
+  #cut down n3 to just burdekin
+  burd <- n3_region |> 
+    filter(BasinOrZone %in% c("Burdekin", "Haughton")) |> 
+    st_make_valid()
+  
+  #intersect data
+  burd_refined <- st_intersection(burd, dt_epp_mi)
+  
+  #create list of possible areas
+  possible_areas <- unique(dt_epp_mi$EnvValueZone)
+  
+  print(possible_areas)
+  
+  #ask user for specific area
+  area_of_choice <- readline("Which area are you looking for? Your choices have been printed in the console. ")
+  
+  #select only that specific location
+  return_location <- burd_refined |> 
+    filter(EnvValueZone == area_of_choice)
+
+  #update the sub basin variable
+  area_of_choice <- str_to_lower(str_replace_all(area_of_choice, c(" " = "_", "\\(" = "", "\\)" = "", "'" = "")))
+  
+  #expand save location
+  save_path <- glue(here("outputs/dt_habitat_fish-barriers_s1-create-networks/{focus_sub_basin_saving}_sub_basin/{area_of_choice}/"))
+  
+  #bring the path to life
+  dir.create(save_path, recursive = T)
+  
+  #update the sub basin variable
+  focus_sub_basin_saving <- area_of_choice
+
+} else {} #otherwise do nothing
+}
+```
+
+# Load Data
+
+First we need to load in the raw watercourse data for the Northern Three region, and then cut the data down to the sub basin that we are interested in, and the specific stream orders that we are interested in (stream order \>1)
+
+```{r}
+#| label: read in basic data
+
+#read in the n3_watercourse data
+n3_watercourse <- st_read(here("data/n3_prep_watercourse-builder/n3_watercourse.gpkg")) |> 
+  name_cleaning()
+
+y_n_est <- readline("Do you want to include estuarine areas? (y/n):")
+
+if (y_n_est == "y"){#if keep estuarine
+
+  if (y_n_burd == "y"){#if working in Burdekin
+    
+    #cutdown using spatial filter rather than text
+     target_network <- n3_watercourse |> 
+       st_intersection(return_location) |> 
+       filter(StreamOrder %in% c(2:15)) |> 
+       select(-c(Environment, Source)) |> 
+       st_transform(proj_crs)
+     
+  } else {
+      
+    #cut down to sub basin target (although we only score freshwater we still need to keep estuarine as this tells us where the mouth is).
+    target_network <- n3_watercourse |> 
+      filter(SubBasinOrSubZone == focus_sub_basin,
+             StreamOrder %in% c(2:15)) |> 
+      select(-c(Environment, Source)) |> 
+      st_transform(proj_crs)
+  }
+    
+} else {#if don't keep estuarine
+  
+    if (y_n_burd == "y"){#if working in Burdekin
+    
+    #cutdown using spatial filter rather than text
+     target_network <- n3_watercourse |> 
+       st_intersection(return_location) |> 
+       filter(StreamOrder %in% c(2:15),
+              Environment == "Freshwater") |> 
+       select(-c(Environment, Source)) |> 
+       st_transform(proj_crs)
+     
+     } else {
+
+     #cut down to sub basin target (although we only score freshwater we still need to keep estuarine as this tells us where the mouth is).
+    target_network <- n3_watercourse |> 
+      filter(SubBasinOrSubZone == focus_sub_basin,
+             StreamOrder %in% c(2:15),
+             Environment == "Freshwater") |> 
+      select(-c(Environment, Source)) |> 
+      st_transform(proj_crs)
+     }
+  
+}
+
+```
+
+Following this we can remove any watercourses found on islands in the associated sub basin (for example Hinchinbrook Island is associated with the Murray Basin).
+
+```{r}
+#| label: remove island data
+
+#read in the n3_region dataset (we actually already did this above to check sub basin names) and create an inverse and fill the holes (islands) to remove the island water course data
+n3_marine <- n3_region |> 
+  filter(Environment == "Marine") |> 
+  st_union() |> 
+  nngeo::st_remove_holes()
+
+#use the marine boundaries to delete any island watercourses
+target_network <- st_difference(target_network, n3_marine)
+
+```
+
+# Convert Data to Riverdist Format
+
+We can then perform the core function of this script - creating a connected and valid watercourse. This is achieved using the riverdist package, which requires data to be loaded in using its specific functions. So the first thing we will do is save the data that we just filtered above, and reload it in using riverdist.
+
+```{r}
+#| label: convert data to riverdist format
+
+#reproject data to a meters format (riverdist needs a meters format)
+target_network_reprojected <- target_network |> 
+  st_transform("EPSG:7855")
+
+#save the target watercourse as a shapefile (river dist needs it to be a shp file type).
+st_write(target_network_reprojected, glue("{save_path}/{focus_sub_basin_saving}_watercourses.shp"), delete_dsn = T)
+
+#read the target watercourse back in
+target_network <- line2network(path = save_path, layer = glue("{focus_sub_basin_saving}_watercourses"))
+
+```
+
+Then we can run the riverdist cleaning and set up functions. As noted above, this clean up is unfortunately a manual process that requires user interaction. Actions include y/n dissolves, y/n segment removes, and identification of river mouths etc. To make matters worse, the interactive process is thrown off by the Quarto interactive code chunks and the user cannot effectively view the maps/plots that are meant to help the user answer each question.
+
+::: callout-tip
+To assist the user the following code chunk should be run in the console, this will move the plot/graph outputs to the plot panel on the right of RStudio, rather than within the script.
+:::
+
+::: callout-tip
+Further assistance for this chunk comes in the form of saving the output as the .RData type. This saves the object exactly as it looks in the global environment. Once the manual edit has been done once we can then load it back in each time without having to redo the manual edits.
+:::
+
+As flagged in [issue 93](https://github.com/Northern-3/spatial-analyses/issues/93) this method only works on a single river network at a time (i.e. the final dataset collectively can only have 1 outlet (river mouth)). What this means is that for any sub basin in which more than one valid river mouth exists, this script must be run once for each river network. To keep track of each river network, another variable has been added to the yaml called "network_number". This should iterate from 1 for each time the scripts is run per sub basins. Roughly, the final result of this would look like:
+
+rollingstone_creek/
+ - rollingstone_creek_network_1.RData 
+ - rollingstone_creek_network_2.RData 
+ - rollingstone_creek_network_3.RData 
+ - rollingstone_creek_network_4.RData 
+ - rollingstone_creek_network_5.RData
+
+![river network example](dt_habitat_fish_barriers_network_example.png)
+
+```{r}
+#| label: update network number
+
+#update the network number by pulling it from the yaml
+net_num <- params$network_number
+
+```
+
+```{r}
+#| label: run cleanup function
+#| output: true
+
+if (!file.exists(glue("{save_path}/{focus_sub_basin_saving}_river_network_{net_num}.RData"))){#if the file doesn't exist
+  
+  warning("The edited river network file does not exists. To create this network file you must run the following function: 'target_network_clean <- cleanup(target_network)'. This function requires several manual imputs and is best run from the console rather than from the Quarto script.\n\n")
+  
+  stop("Once the river network file has been created it must be saved. Use the function 'save(target_network_clean, file = glue({save_path}/{focus_sub_basin_saving}_river_network_{net_num}.RData))'.")
+  
+  #run the clean up function. NOTE - FOR EASE OF USE RUN THIS IN THE CONSOLE
+  #target_network_clean <- cleanup(target_network)
+  
+  #save the output
+  #save(target_network_clean, file = glue("{save_path}/{focus_sub_basin_saving}_river_network_{net_num}.RData"))
+  
+} else {#if the file does exist
+
+  #load it back in
+  load(glue("{save_path}/{focus_sub_basin_saving}_river_network_{net_num}.RData"))
+  
+}
+
+#clean up
+rm(target_network)
+
+```
+
+Once the specific network has been selected and created, we can pull the resulting geometry data back out of the rivernetwork data type and recreate a sf data type. This is important as it is the data that we will be using the find potential barriers.However unfortunately if we inspect this data what we will find is that all of the information about the features is lost (e.g. the region, sub basin, stream order, etc). A trick we can do is to use this data as a tool to cut out the same network from the original data, essentially the same thing we do when we are finding the riparian vegetation data.
+
+```{r}
+#| label: pull out edited geom
+
+#pull out the geometry information
+specific_network_geometry <- target_network_clean$sf_current
+
+#create a small buffer around the data to allow for any minor changes, and change to a polygon
+specific_network_buffer <- st_buffer(specific_network_geometry, 20)
+
+#then use this to cut from the original
+target_network_sf <- st_intersection(target_network_reprojected, specific_network_buffer)
+
+#save this with the correct network number
+st_write(target_network_sf, glue("{save_path}/{focus_sub_basin_saving}_river_network_{net_num}.gpkg"), delete_dsn = T)
+
+#clean up
+rm(specific_network_geometry, specific_network_buffer)
+
+```
+

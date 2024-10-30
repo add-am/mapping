@@ -1,0 +1,611 @@
+---
+title: "Fish Barriers Script 2 - Identifying Fish Barriers"
+subtitle: "A Healthy Waters Partnership Analysis"
+description: "Script 2 in a series of scripts designed to identify, prioritise, and rank, fish barriers on waterways in the Northern Three reporting region."
+author: "Adam Shand"
+date: "`r format(Sys.time(), '%d, %B, %Y')`"
+format: html
+params:
+  project_crs: "EPSG:7844"
+  sub_basin: "Stuart Creek"
+  burdekin_addition: "NA"
+  burdekin_y_n: "n"
+  network_number: 3
+execute: 
+  warning: false
+---
+
+# Introduction
+
+This script is part of a series of script that experiment with the automated identification of fish barriers using a variety of tools and datasets. Each script builds upon the last. The method is inspired by the 2008 Burdekin Barriers study conducted by Alluvium on behalf of NQDT (methods doc in the additional resources folder). Some adjustments have been made however the main stages are the same. 
+
+This is script 2, and focuses on identifying and collating all possible barriers within an area. Barriers are identified as follows:
+
+- By downloading three watercourse barrier datasets:
+    + dams_weirs_barrages
+    + major_dam_walls
+    + minor_dam_walls
+- And by intersecting all known watercourses with all known roads and rails
+
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, sf, tmap, janitor, terra, igraph, riverdist)
+
+```
+
+
+Then we also need to set up key variables for the script, as well as the output location.
+
+This script also has a special parameter in the yaml that is used to set the sub basin that the script targets. The reason for this is that some of the processes that occur below are very resource intensive and not suited to do for the entire dry tropics region at once.
+
+```{r}
+#| label: create save path and establish project crs part 1
+
+#read in the custom function to clean column names into our specific style
+source("../functions/name_cleaning.R")
+
+#set project crs
+proj_crs <- params$project_crs
+
+#set the network number to tell us which river network we are focusing on in the sub basin
+net_num <- params$network_number
+
+#set the focus basin, make sure it is capitalized for the data filtering
+focus_sub_basin <- str_to_title(params$sub_basin)
+
+#create a second version that is better optimized for saving (but wouldnt match the col variables)
+focus_sub_basin_saving <- str_to_lower(str_replace_all(focus_sub_basin, c(" " = "_", "\\(" = "", "\\)" = "", "'" = "")))
+
+#check the sub basin exists by reading in dataset and comparing
+n3_region <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg")) |> 
+  name_cleaning()
+
+```
+
+```{r}
+#| label: check if exists
+#| output: true
+
+if (focus_sub_basin %in% n3_region$SubBasinOrSubZone){#if it exists, do nothing
+  
+  print("The targeted sub_basin or sub_zone exists. The script will continue.")
+  
+} else {# if the sub basin target does not exist
+  
+  to_check <- glue_collapse(unique(n3_region$SubBasinOrSubZone), sep = ", ", last = " and ")
+  
+  stop(glue("The sub basin that was targeted does not exist. The sub basins you can select from include:
+            {to_check}."))
+  
+  #clean up
+  rm(to_check)
+  
+}
+
+```
+
+```{r}
+#| label: create save path and establish project crs part 2
+
+
+if (params$burdekin_y_n == "y"){#if yes, run function
+  
+  #extra the extra burdekin information
+  burd_extra <- params$burdekin_addition
+
+  #update the sub basin variable
+  burd_extra <- str_to_lower(str_replace_all(burd_extra, c(" " = "_", "\\(" = "", "\\)" = "", "'" = "")))
+  
+  #update file paths
+  save_path <- glue(here("outputs/dt_habitat_fish-barriers_s2-identification/{str_to_lower(focus_sub_basin_saving)}_sub_basin/{burd_extra}/"))
+  data_path_1 <- glue(here("outputs/dt_habitat_fish-barriers_s1-create-networks/{focus_sub_basin_saving}_sub_basin/{burd_extra}/"))
+  data_path_2 <- glue(here("data/dt_habitat_fish-barriers/"))
+  
+  #update the sub basin variable
+  focus_sub_basin_saving <- burd_extra
+
+  } else {# do original file path
+  
+  #create a file path to help with saving outputs and loading data from the previous script
+  save_path <- glue(here("outputs/dt_habitat_fish-barriers_s2-identification/{str_to_lower(focus_sub_basin_saving)}_sub_basin/"))
+  data_path_1 <- glue(here("outputs/dt_habitat_fish-barriers_s1-create-networks/{focus_sub_basin_saving}_sub_basin/"))
+  data_path_2 <- glue(here("data/dt_habitat_fish-barriers/"))
+
+}
+
+#bring the path to life
+dir.create(save_path, recursive = T)
+dir.create(data_path_1)
+
+#turn off s2 geometry
+sf_use_s2(FALSE)
+tmap_mode("plot")
+
+```
+
+# Load Data
+
+We can now load in all of the datasets that we will be using. This can be broken down in four main categories. 
+
+- The generic northern three region data
+- The river network specific watercourse information 
+- Pre-existing barrier datasets (x3)
+- Datasets to calculate additional barriers
+  + N3 region watercourses,
+  + Roads and rails
+
+## Generic N3 Data
+
+Below we load the generic northern three data and refine to our target location
+
+```{r}
+#| label: read in basic data
+
+#read in the n3_region dataset (we actually already did this above to check sub basin names)
+
+#cut down to only the target location
+target_sub_basin <- n3_region |> 
+  filter(Environment != "Marine",
+         SubBasinOrSubZone == focus_sub_basin) |> 
+  st_transform(proj_crs)
+
+```
+
+## River Network Data
+
+Then we will load in the river network data that was prepped during the previous script. This actually comes in two parts, one part is the full rivernetwork data type created by riverdist, the other is the sf data type that just contains the original geometries - this one is much easier to do the initial steps with.
+
+```{r}
+#| label: read in network data
+
+#load the full river network file
+load(glue("{data_path_1}/{focus_sub_basin_saving}_river_network_{net_num}.RData"))
+
+#and load the sf version that doesn't contain network information
+target_network_sf <- st_read(glue("{data_path_1}/{focus_sub_basin_saving}_river_network_{net_num}.gpkg")) |> 
+  name_cleaning() |> 
+  st_transform(proj_crs)
+
+```
+
+## Pre-Existing Barrier Datasets
+
+We can then load in the three datasets that cover all of the main dams and weirs in the area. As annoying as it may seem, we do actually need all three to correctly identify all of the barriers...
+
+```{r}
+#| label: load in pre-existing barrier datasets
+
+#load in each of the three datasets
+dams_weirs_barrages <- st_read(glue("{data_path_2}/dams_weirs_and_barrages.gpkg")) |> 
+  name_cleaning() |> 
+  st_transform(proj_crs)
+
+major_dam_walls <- st_read(glue("{data_path_2}/major_dam_walls.gpkg")) |> 
+  name_cleaning() |> 
+  st_transform(proj_crs)
+
+minor_dam_walls <- st_read(glue("{data_path_2}/minor_dam_walls.gpkg")) |> 
+  name_cleaning() |> 
+  st_transform(proj_crs)
+
+```
+
+### Refining Pre-Existing Barrier Data
+
+Then we refine this data specifically to our specific target network. However, instead of making sure that each barrier inherits the features of the location we will just do a boolean in/out, and instead allow barriers to inherit features based on proximity to our refined watercourse dataset.
+
+The in/out boolean is achieved by simply using st_union on the test_location file. This will assign features such as region, basin, and sub basin to each of the pre-existing barriers.
+
+::: {.callout-note}
+For the duration of the experimentation phase the dams weirs and barrages, and major dam datasets will be empty, but when doing the full analysis they will contain data.
+:::
+
+```{r}
+#| label: intersect pre-existing data
+
+#intersect each of the pre-existing barrier datasets with our target location to obtain location specific information
+location_dwb <- st_intersection(dams_weirs_barrages, st_union(target_sub_basin))
+location_major_dam <- st_intersection(major_dam_walls, st_union(target_sub_basin))
+location_minor_dam <- st_intersection(minor_dam_walls, st_union(target_sub_basin))
+
+#select columns we are interested in and rename to be consistent
+location_dwb <- location_dwb |> 
+  select(Infrastructure) |> 
+  rename(Construct = Infrastructure)
+
+location_major_dam <- location_major_dam |> 
+  select(DamType) |> 
+  rename(Construct = DamType)
+
+location_minor_dam <- location_minor_dam |> 
+  select(FeatureType) |> 
+  rename(Construct = FeatureType)
+
+#join the preexisting data
+pre_existing_points <- rbind(location_dwb, location_major_dam, location_minor_dam)
+
+#get center points as some of the data is provided as a polygon
+pre_existing_points <- st_centroid(pre_existing_points)
+
+#clean up
+rm(dams_weirs_barrages, major_dam_walls, minor_dam_walls, location_dwb, location_major_dam, location_minor_dam)
+
+```
+
+### Repositioning Pre-Existing Barriers
+
+After refining the barriers to just the n3 region we need to refine the barriers to watercourses that we care about. As noted in [issue 94](https://github.com/Northern-3/spatial-analyses/issues/94) these pre-existing barriers don't indicate which watercourse they are on (relative to our n3 watercourse dataset), nor do they indicate if the are even on a watercourse that we are looking at. 
+
+We will kill three birds with one stone by doing the following actions:
+
+- determine if the barrier is with 100m of one of our watercourses
+- determine, if so, which watercourse the barrier is closest too
+- move the barrier to intersect perfectly with the watercourse, and inherit its features.
+
+#### Find the Nearest Watercourse
+
+To find the nearest watercourse we can run the nearest points function, which creates linestring geometries. The line start at the barrier, and goes to the closest part of the watercourse. It does this from the barrier to every single one of the watercourse geometries. So in total we have x number of barriers times y number of watercourses worth of lines. Which is: `r nrow(pre_existing_points)` x `r nrow(target_network_sf)` = `r nrow(pre_existing_points)*nrow(target_network_sf)`.
+
+```{r}
+#| label: draw lines to watercourse
+
+#add a unique identifier for each row
+pre_existing_points <- pre_existing_points |> 
+  mutate(SpecialId = row_number(pre_existing_points))
+
+#we then run the nearest points function
+lines_from_point_to_watercourse <- st_sf(geom = st_nearest_points(pre_existing_points, 
+                                                                  target_network_sf), crs = proj_crs)
+
+```
+
+After this is done we need to add back on the special IDs. As noted above, we know that there will be `r nrow(pre_existing_points)*nrow(target_network_sf)` rows of data. So to correctly add the special ID we need to repeat the `r nrow(pre_existing_points)` unique IDs a total of `r nrow(target_network_sf)` times. 
+
+Here we will also add back the information about the type of barrier that the point represents.
+
+```{r}
+#| label: add extra information
+
+#add each of the vectors
+nearest_points <- lines_from_point_to_watercourse |> 
+  mutate(SpecialId = rep(pre_existing_points$SpecialId, 
+                          each = nrow(target_network_sf)),
+         Construct = rep(pre_existing_points$Construct,
+                         each = nrow(target_network_sf)))
+```
+
+Once the ID column is added, we calculate the length of every single line, then group by the ID and select line with the shortest length. The line with the shortest length is the line that points from the barrier to the closest watercourse. The start coords of this line will be the coords of the barrier, and the end coords of this line will the coords of the closest point on the closest watercourse that we can snap the line to.
+
+```{r}
+#| lable: find shortest line
+
+#we can then measure the length of each line casted, group by the variables we just added, and pick the line with the shortest length
+nearest_points <- nearest_points |> 
+  mutate(Length = st_length(geom)) |> 
+  group_by(across(-c(geom, Length))) |> 
+  filter(Length == min(Length)) |> 
+  ungroup()
+
+```
+
+Once this is do we can also use this opportunity to check if the barrier is even within a 100m of the closest watercourse. We have decided that those that are not within 100m are too far away to be of consideration. A simple true/false column will be used to extract the rows of interest
+
+```{r}
+#| label: check proximity to watercourse
+
+#check if length is equal to or less than 100 (i.e. if barrier is within 100m of watercourse)
+nearest_points <- nearest_points |> 
+  mutate(InProximity = case_when(Length > units::set_units(100, "m") ~ FALSE,
+                                 T ~ TRUE))
+
+#select only rows that are TRUE for in proximity and clean up the dataset by removing unnecessary columns
+nearest_points <- nearest_points |> 
+  filter(InProximity) |> 
+  select(SpecialId, Construct)
+
+```
+
+#### Snap Barriers to Watercourse
+
+Following this, we then convert the lines to points. For each row, the line string contains 4 coordinates, a pair of coordinates for the start of the line, and a pair for the end. The first pair is always the origin, thus the second pair is on the watercourse. We convert the data from line to point, and then select every second row (i.e. every second pair).
+
+```{r}
+#| label: convert lines to points
+
+#then we can extract the second pair of geometries from the line strings to find the end points of each line. which will be the closest point on the waterbody to the line
+nearest_points <- st_cast(nearest_points, "POINT")
+
+if (!nrow(nearest_points) == 0){
+  
+  #simply sequence by 2 up to the length of the table
+  snap_to_points <- nearest_points[seq(2, nrow(nearest_points), by = 2),]
+  
+}
+
+```
+
+To recap, we now have a dataset that connects to the original barriers dataset through the "special_ID" column. This new dataset contains the coordinates that the original barriers should be snapped to so that they land perfectly on our watercourse lines dataset. This new dataset has also been filtered to only contains barriers that should be snapped. 
+
+However... neither the new dataset or the old dataset have inherited the information of the watercourse that the barrier has been snapped too. Information such as the name of the watercourse, the sub basin it is in, the basin, zone, etc.
+
+To obtain this information we can use a very similar function to above, the `st_nearest_feature()` function. Which, for each row, provides the index of the closest feature in the other dataset. It is important to note here that the second dataset in this function will be the un-summarised watercourse dataset, because we still need the stream order information.
+
+```{r}
+#| label: find nearest feature
+
+if (!nrow(nearest_points) == 0){
+
+  #find the nearest feature
+  snap_to_points$NearestFeature <- st_nearest_feature(snap_to_points, target_network_sf)
+  
+}
+
+```
+
+We can then use the row index to perform a left join, which allows each point to inherit the information of the closest watercourse.
+
+```{r}
+#| label: join by row index
+
+if (!nrow(nearest_points) == 0){
+
+  #pull out the row index in the watercourse dataset for its own col
+  target_network_sf <- target_network_sf |> 
+    mutate(RowIndex = row_number())
+  
+  #join the datasets by adding the unique watercourse information to the preexisting barriers based on the row index (which ever feature was the closest)
+  snap_to_points <- left_join(snap_to_points, 
+                              st_drop_geometry(target_network_sf), 
+                              by = c("NearestFeature" = "RowIndex"))
+  
+  #edit the data to keep just what we need
+  snap_to_points <- snap_to_points |> 
+    select(-c(GeographicArea, StreamOrder, SpecialId, NearestFeature))
+  
+}
+
+```
+
+To confirm, that everything worked we will do a quick visual. Red = snapped points, Blue = original points.
+
+```{r}
+#| label: visualise to confirm
+#| output: true
+
+if (!nrow(nearest_points) == 0){
+
+  tmap_mode("view")
+  
+  tm_shape(target_network_sf) +
+    tm_lines() +
+    tm_shape(snap_to_points) +
+    tm_dots(col = "red") +
+    tm_shape(pre_existing_points) +
+    tm_dots(col = "blue")
+  
+  #clean up
+  rm(lines_from_point_to_watercourse)
+}
+
+```
+
+```{r}
+#| label: turn off interactive viewing
+
+tmap_mode("plot")
+
+rm(pre_existing_points)
+
+```
+
+The pre-existing barriers can now be put on hold while we deal with identifying new barriers.
+
+## New Barriers Dataset
+
+Below we load in the roads and rails for the entirety of Queensland.
+
+```{r}
+#| label: read in the additional data needed for extra barriers
+
+#read in road and rail
+road <- st_read(glue("{data_path_2}/queensland_roads_and_tracks.gpkg")) |> 
+  name_cleaning()
+
+rail <- st_read(glue("{data_path_2}/rail_network.gpkg")) |> 
+  name_cleaning()
+
+```
+
+### Refining New Barriers Data
+
+If we were to intersect every single watercourse in the testing region, with every single road, we would have `r nrow(st_intersection(road, target_network_sf))` different points of interest to inspect. Which might not seem like alot, but considering this is just one tiny area of the N3 region, does not bode well.
+
+So we have to look at methods of eliminating some of the POIs before they even become a POI. As detailed in [Issue #90](https://github.com/Northern-3/spatial-analyses/issues/90) we can eliminate instances of highway x stream order >4, and all streams of order 1 as these are deemed to be low priority and/or unlikely to be a barrier. The streams of strahler order 1 has already been done in script one when creating the river network, and to find the highway x stream order >4 POIs we can use the intersection function.
+
+#### Intersect Transport and Watercourse
+
+We can intersect our data to find the highway x stream order >4 combinations and remove them. This is very straight forward, simply intersecting the data and discarding points that have both of the features.
+
+We can also apply this same logic to railway x stream order >4 combinations (next code chunk).
+
+```{r}
+#| label: intersect the road and watercourse data
+
+#intersect road and watercourse and remove instances of highway x stream order >4
+road_points <- st_intersection(target_network_sf, road) |> 
+  filter(RoadType != "Highway" | (RoadType == "Highway" & StreamOrder < 5) | is.na(RoadType))
+
+```
+
+This leaves us with `r nrow(road_points)` POIs, which is much better to work with. However, we still do need to add in the rail network.
+
+```{r}
+#| label: do the same for rail
+
+#intersect rail and watercourse
+rail_points <- st_intersection(target_network_sf, rail) |> 
+  filter(StreamOrder < 5)
+
+```
+
+Which brings the total up to `r nrow(road_points) + nrow(rail_points)`.
+
+#### Combine Intersections
+
+We can then combine the road and rail intersections, only keeping the relevant information.
+
+```{r}
+#| label: edit data for combining
+
+#edit
+road_points <- road_points |> 
+  select(Region, BasinOrZone, SubBasinOrSubZone, RoadType) |> #, unique_river_id, length, road_type) |> 
+  rename(Construct = RoadType)
+
+#edit
+rail_points <- rail_points |> 
+  select(Region, BasinOrZone, SubBasinOrSubZone, FeatureType) |> #, unique_river_id, length, feature_type) |> 
+  rename(Construct = FeatureType)
+
+#bind data
+intersection_points <- rbind(rail_points, road_points)
+
+#clean up datasets
+rm(road, road_points, rail, rail_points)
+
+```
+
+For some reason someimtes some of the points also come in the multipoint geometry type (i.e. contains 2 or more points within one geometry), which can be a bit confusing when looking at the data, so we will quickly take care of that.
+
+To demonstrate the issue. The number of rows of data we have before is : `r nrow(intersection_points)`
+
+```{r}
+#| label: remove multipoint type
+
+#first make everything a multipoint type
+intersection_points <- st_cast(intersection_points, "MULTIPOINT")
+
+#then make everything a point type.
+intersection_points <- st_cast(intersection_points, "POINT")
+
+```
+
+And the number of rows of data we have after is : `r nrow(intersection_points)`
+
+# Combine All Barrier Datasets
+
+Each of the datasets we have created and edited can now be combined into one large (potential) barriers dataset.
+
+```{r}
+#| label: combine prexisting and new data
+
+if (!nrow(nearest_points) == 0){
+  
+  #bind all points
+  all_points <- rbind(intersection_points, snap_to_points)
+
+}
+
+all_points <- intersection_points
+
+#clean up
+rm(intersection_points, snap_to_points)
+
+```
+
+However this combination will certainly introduce overlaps. To address overlaps we will:
+
+- create a list that details every point that is within 50m of another point (list by index)
+- convert the list into a matrix, and then a vector
+- select unique values from this vector - which provides a set of index numbers to remove from the main dataset.
+
+This will reduce the number of points from: `r nrow(all_points)`
+
+```{r}
+#| label: remove overlapping points
+
+#update crs to a meter friendly version
+all_points <- st_transform(all_points, "EPSG:7855")
+
+#create a list of points that are within 50 of one another
+within_50m <- st_is_within_distance(all_points, dist = 50, sparse = T)
+
+#get the second to 9th elements of each vector in the list the 1st element is itself (always within 50m of itself), the 2nd to nth 
+#elements are other points within 50. We assume it is unlikely to be more than 4 overlaps, so 9 will certainly catch anything.
+within_50m <- map(within_50m, function(x) x[2:10])
+
+#convert this list of lists to a matrix then covert the matrix to a vector and look for every unique value
+to_remove <- do.call(rbind, within_50m) |> 
+  as.vector() |> unique()
+
+#remove NA values (so we can filter by index)
+to_remove <- to_remove[!is.na(to_remove)]
+
+if (length(to_remove) == 0) {# do nothing, there is nothing to remove
+  
+  #filter rows by index
+  } else {all_points <- all_points[-to_remove,]
+  
+}
+
+#clean up
+rm(within_50m, to_remove)
+
+```
+
+to: `r nrow(all_points)`.
+
+# Add Segements and Vertices
+
+The final step is to use the riverdist package to add segment and vertex information to the barriers dataset. To do this we need to save the data and then reload it in using the specific riverdist functions
+
+Once the river network has been loaded in and cleaned, we can use it to load and save the barrier data that was prepared earlier using the riverdist package. The reason we load and re save is to add the river segment and vertex information for each barrier.
+
+```{r}
+#| label: save and re load barriers
+
+#add a row number to track each barrier
+all_points <- all_points |> mutate(RowId = row_number())
+
+#save the targeted barriers to the script 2 output folder, this has to be as a shapefile
+st_write(all_points, glue("{save_path}/{focus_sub_basin_saving}_network_{net_num}_potential_barriers.shp"), delete_dsn = T)
+
+#read the test case back but this time using the riverdist package, this requires the river network to already be completed and cleaned up
+target_points <- pointshp2segvert(path = save_path, 
+                                  layer = glue("{focus_sub_basin_saving}_network_{net_num}_potential_barriers"), 
+                                  rivers = target_network_clean)
+
+#rename some variables to help with readability later on
+target_points <- target_points |> 
+  rename(BarrierSegment = seg,
+         BarrierVertex = vert)
+
+##select key columns and add them to back to our original dataset
+target_points_select <- target_points |> 
+  select(BarrierSegment, BarrierVertex, RowId)
+
+#add the segment and vertex information to the main dataset
+all_points <- left_join(all_points, target_points_select)
+
+#re save the data now with the new information
+st_write(all_points, glue("{save_path}/{focus_sub_basin_saving}_network_{net_num}_potential_barriers.gpkg"), delete_dsn = T)
+
+```
+
+# Save Barriers
+
+All potential barriers in the focus area have now been identified, we can save this dataset ready to be picked up by the next script.
+
+```{r}
+#| label: save to file
+
+#save
+st_write(all_points, glue("{save_path}/{focus_sub_basin_saving}_network_{net_num}_potential_barriers.gpkg"), delete_dsn = T)
+
+```

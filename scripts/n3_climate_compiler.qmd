@@ -1,0 +1,1851 @@
+---
+title: "Climate Technical Report Compiler"
+subtitle: "A Healthy Waters Partnership Analysis"
+description: "This script is written to compile all of the results as calculated by each of the separate climate scripts."
+author: "Adam Shand" 
+format: docx
+params: 
+  target_fyear: 2024
+  region: "Mackay Whitsunday Isaac"
+---
+
+::: {.callout-note}
+This script has been written as a proof of concept for an R-based technical report compiler. The following document has been completely created with R.
+:::
+
+# Executive Summary
+
+## Environmental Stressors in the Townsville Dry Tropics Region
+
+```{r}
+#| label: load packages and set up required variables
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, janitor, readxl, huxtable)#, sf, tmap, exactextractr, terra, RColorBrewer, ggplot2, ncdf4)
+
+#set project variables
+current_fyear <- params$target_fyear
+target_region <- params$region
+
+#set base paths to each of the data folders
+rainfall_base_path <- here(glue("outputs/n3_climate_rainfall/{current_fyear}"))
+temperature_base_path <- here(glue("outputs/n3_climate_air-temperature/{current_fyear}"))
+sst_base_path <- here(glue("outputs/n3_climate_sea-surface-temperature/{current_fyear}"))
+dhw_base_path <- here(glue("outputs/n3_climate_dhw/{current_fyear}"))
+landuse_base_path <- here(glue("outputs/n3_climate_land-use/"))
+
+
+#join into one list
+all_paths <- list(rainfall_base_path, temperature_base_path, sst_base_path, dhw_base_path, landuse_base_path)
+
+```
+
+```{r}
+#| label: pull in data from each scripts output folder
+
+#initiate two empty lists
+my_csv_list <- list()
+my_xlsx_list <- list()
+
+for (i in all_paths){#for each path
+  
+  #find what tables exists at the path and add them to a list
+  my_csv_list <- c(my_csv_list, list.files(i, pattern = ".csv", full.names = T))
+  my_xlsx_list <- c(my_xlsx_list, list.files(i, pattern = ".xlsx", full.names = T))
+ 
+}
+
+#read in the csv files, then read the xlsx files and add on top
+my_files <- lapply(my_csv_list, read.csv)
+my_files <- c(my_files, lapply(my_xlsx_list, read_xlsx))
+
+```
+
+```{r}
+#| label: extract variables of interest for rain
+
+#extract annual rainfall values and ltm rainfall values
+rainfall_annual <- my_files[[1]] |> 
+  filter(Fyear == current_fyear, Region == target_region)
+
+rainfall_annual_summary <- rainfall_annual |> 
+  select(Region, Basin, AnnualMeanRainfall, AnnualLtm) |> 
+  unique()
+
+#extract monthly rainfall values
+rainfall_monthly <- my_files[[7]] |> 
+  filter(Region == target_region)
+
+#and write up text descriptions
+code_to_text <- list("1" = "Lowest 1%", "2" = "Very much below average", "3" = "Below average", "4" = "Average",
+                     "5" = "Above average", "6" = "Very much above average", "7" = "Highest 1%")
+
+```
+
+```{r}
+#| label: build bullet point 1
+
+for (i in 1:nrow(rainfall_annual_summary)){
+  
+  if (i == 1){#for the very first entry
+    
+    bullet_1 <- glue("Total rainfall was {rainfall_annual_summary$AnnualMeanRainfall[i]}mm in the {rainfall_annual_summary$Basin[i]} basin,")
+    
+  } else if(i != nrow(rainfall_annual_summary)){#if we are not looking at the very last entry
+      
+    bullet_1 <- glue("{bullet_1} {rainfall_annual_summary$AnnualMeanRainfall[i]}mm in the {rainfall_annual_summary$Basin[i]} basin,")
+    
+  } else {#for the final entry add "and" and a full stop
+    
+    bullet_1 <- glue("{bullet_1} and {rainfall_annual_summary$AnnualMeanRainfall[i]}mm in the {rainfall_annual_summary$Basin[i]} basin.")
+    
+  }
+  
+}
+
+```
+
+```{r}
+#| label: build bullet point 2
+
+#extract all monthly codes
+month_codes <- sort(unique(rainfall_monthly$AnnualMeanRainfallPercentileRank))
+
+for (i in 1:length(month_codes)){
+  if (i == 1){#start the bullet point
+    bullet_2 <- glue("Across all basins annual rainfall was classified as: \"{code_to_text[month_codes[i]]}\"")
+    
+  } else if (i != length(month_codes)){#for any additional entry excluding the last one add with a comma
+    bullet_2 <- glue("{bullet_2}, \"{code_to_text[month_codes[i]]}\"")
+  } else {#for the final entry add "or"
+    bullet_2 <- glue("{bullet_2}, or \"{code_to_text[month_codes[i]]}\"")
+  }        
+}
+
+#check if all basins are above, or all are below, or a bit of both
+if (all(rainfall_annual_summary$AnnualMeanRainfall > rainfall_annual_summary$AnnualLtm)){
+  rain_outcome <- "above"
+} else if (all(rainfall_annual_summary$AnnualMeanRainfall < rainfall_annual_summary$AnnualLtm)){
+  rain_outcome <- "below"
+} else {
+  rain_outcome <- "both above and below"
+}
+  
+#continue bullet point 2
+for (i in 1:nrow(rainfall_annual_summary)){
+  
+  if (i == 1){#for the very first entry add joining text and first value
+    
+    bullet_2 <- glue("{bullet_2} and was {rain_outcome} the long-term mean (calculated from the most recent 30-year block of data: 1991 to 2020) of {rainfall_annual_summary$AnnualLtm[i]}mm,")
+    
+  } else if (i != nrow(rainfall_annual_summary)){#if we are not looking at the very last entry
+      
+    bullet_2 <- glue("{bullet_2} {rainfall_annual_summary$AnnualLtm[i]}mm,")
+    
+  } else {#for the final entry add "and" and a full stop
+    
+    bullet_2 <- glue("{bullet_2} and {rainfall_annual_summary$AnnualLtm[i]}mm respectively.")
+    
+  }
+  
+}
+
+```
+
+```{r}
+#| label: build bullet point 3
+
+#find the min and max month codes and extract their descriptions
+rain_min_monthly <- code_to_text[[min(rainfall_monthly[3:14])]]
+rain_max_monthly <- code_to_text[[max(rainfall_monthly[3:14])]]
+
+if (rain_min_monthly == rain_max_monthly){#write bullet point 3
+  
+  bullet_3 <- glue("Monthly rainfall remained \"{rain_min_monthly}\" for each respective monthly mean throughout the year.")
+  
+} else {
+  
+  bullet_3 <- glue("Monthly rainfall ranged from \"{rain_min_monthly}\" to \"{rain_max_monthly}\" for the respective monthly means throughout the year.")
+  
+}
+
+```
+
+```{r}
+#| label: extract variables of interest for air temp
+
+#extract annual temperature values and ltm temperature values
+temperature_annual <- my_files[[2]] |> 
+  filter(Fyear == current_fyear, Region == target_region) 
+
+temperature_annual_summary <- temperature_annual |> 
+  select(Region, Basin, AnnualMeanTemperature, AnnualLtm) |> 
+  unique()
+
+#extract monthly temperature values
+temperature_monthly <- my_files[[8]] |> 
+  filter(Region == target_region)
+
+```
+
+```{r}
+#| label: build bullet point 4
+
+for (i in 1:nrow(temperature_annual_summary)){
+  
+  if (i == 1){#for the very first entry
+    
+    bullet_4 <- glue("The annual mean air temperature was {temperature_annual_summary$AnnualMeanTemperature[i]}°C in the {temperature_annual_summary$Basin[i]} basin,")
+    
+  } else if(i != nrow(temperature_annual_summary)){#if we are not looking at the very last entry
+      
+    bullet_4 <- glue("{bullet_4} {temperature_annual_summary$AnnualMeanTemperature[i]}°C in the {temperature_annual_summary$Basin[i]} basin,")
+    
+  } else {#for the final entry add "and" and a full stop
+    
+    bullet_4 <- glue("{bullet_4} and {temperature_annual_summary$AnnualMeanTemperature[i]}°C in the {temperature_annual_summary$Basin[i]} basin.")
+    
+  }
+  
+}
+
+```
+
+```{r}
+#| label: build bullet point 5
+
+#extract all monthly codes
+month_codes <- sort(unique(temperature_monthly$AnnualMeanTemperaturePercentileRank))
+
+#expand bullet 5
+for (i in 1:length(month_codes)){
+  if (i == 1){#start the bullet point
+    bullet_5 <- glue("Across all basins annual mean air temperature was classified as: \"{code_to_text[month_codes[i]]}\"")
+    
+  } else if (i != length(month_codes)){#for any additional entry excluding the last one add with a comma
+    bullet_5 <- glue("{bullet_5}, \"{code_to_text[month_codes[i]]}\"")
+  } else {#for the final entry add "or"
+    bullet_5 <- glue("{bullet_5}, or \"{code_to_text[month_codes[i]]}\"")
+  }        
+}
+
+#check if all basins are above, or all are below, or a bit of both
+if (all(temperature_annual_summary$AnnualMeanTemperature > temperature_annual_summary$AnnualLtm)){
+  temperature_outcome <- "above"
+} else if (all(temperature_annual_summary$AnnualMeanTemperature < temperature_annual_summary$AnnualLtm)){
+  temperature_outcome <- "below"
+} else {
+  temperature_outcome <- "both above and below"
+}
+  
+#continue bullet point 5
+for (i in 1:nrow(temperature_annual_summary)){
+  
+  if (i == 1){#for the very first entry add joining text and first value
+    
+    bullet_5 <- glue("{bullet_5} and was {temperature_outcome} the long-term mean (calculated from the oldest 30-year block of data available: 1911 to 1940) of {temperature_annual_summary$AnnualLtm[i]}°C,")
+    
+  } else if(i != nrow(temperature_annual_summary)){#if we are not looking at the very last entry
+      
+    bullet_5 <- glue("{bullet_5} {temperature_annual_summary$AnnualLtm[i]}°C,")
+    
+  } else {#for the final entry add "and" and a full stop
+    
+    bullet_5 <- glue("{bullet_5} and {temperature_annual_summary$AnnualLtm[i]}°C respectively.")
+    
+  }
+  
+}
+
+```
+
+```{r}
+#| label: build bullet point 6
+
+#find the min and max month codes and extract their descriptions
+temperature_min_monthly <- code_to_text[[min(temperature_monthly[3:14])]]
+temperature_max_monthly <- code_to_text[[max(temperature_monthly[3:14])]]
+
+if (temperature_min_monthly == temperature_max_monthly){#write bullet point 6
+  
+  bullet_6 <- glue("Monthly mean air temperature remained \"{temperature_min_monthly}\" for each respective monthly mean throughout the year.")
+  
+} else {
+  
+  bullet_6 <- glue("Monthly mean air temperature ranged from \"{temperature_min_monthly}\" to \"{temperature_max_monthly}\" for the respective monthly means throughout the year.")
+  
+}
+
+```
+
+```{r}
+#| label: extract variables of interest for sst
+
+#extract annual temperature values and ltm temperature values
+sst_annual <- my_files[[3]] |> 
+  filter(Fyear == current_fyear, Region == target_region) 
+
+sst_annual_summary <- sst_annual |> 
+  select(Region, AnnualMeanSst, AnnualLtm) |> 
+  unique()
+
+#extract monthly temperature values
+sst_monthly <- my_files[[9]] |> 
+  filter(Region == target_region)
+
+```
+
+```{r}
+#| label: build bullet point 7
+
+bullet_7 <- glue("The annual mean sea surface temperature was {sst_annual_summary$AnnualMeanSst}°C in the {sst_annual_summary$Region} region.")
+
+```
+
+```{r}
+#| label: build bullet point 8
+
+#extract all monthly codes
+month_codes <- sort(unique(sst_monthly$AnnualMeanSstPercentileRank))
+
+bullet_8 <- glue("Annual mean sea surface temperature was classified as: \"{code_to_text[month_codes]}\"")
+    
+#check if region is above, or below
+if (sst_annual_summary$AnnualMeanSst > sst_annual_summary$AnnualLtm){
+  sst_outcome <- "above"
+} else {
+  sst_outcome <- "below"
+} 
+
+#continue bullet point 8
+bullet_8 <- glue("{bullet_8} and was {sst_outcome} the long-term mean (calculated from the oldest 30-year block of data available: 1990 to 2020) of {sst_annual_summary$AnnualLtm}°C.")
+
+
+```
+
+```{r}
+#| label: build bullet point 9
+
+#find the min and max month codes and extract their descriptions
+sst_min_monthly <- code_to_text[[min(sst_monthly[3:14])]]
+sst_max_monthly <- code_to_text[[max(sst_monthly[3:14])]]
+
+if (sst_min_monthly == sst_max_monthly){#write bullet point 9
+  
+  bullet_9 <- glue("Monthly mean sea surface temperature remained \"{sst_min_monthly}\" for each respective monthly mean throughout the year.")
+  
+} else {
+  
+  bullet_9 <- glue("Monthly mean sea surface temperature ranged from \"{sst_min_monthly}\" to \"{sst_max_monthly}\" for the respective monthly means throughout the year.")
+  
+}
+
+```
+
+
+```{r}
+#| label: extract variables of interest for DHW
+
+#extract the region and most recent year
+dhw_annual <- my_files[[4]] |> 
+  filter(Region == target_region,
+         Year == max(Year))
+
+#create a translation table
+dhw_code_to_text_1 <- list("1" = "Low likelihood of bleaching", "2" = "Bleaching warning likely", 
+                         "3" = "Bleaching possible", "4" = "Bleaching probable",
+                         "5" = "Severe bleaching likely")
+
+dhw_code_to_text_2 <- list("1" = "0 - 2", "2" = "2 - 4", 
+                         "3" = "4 - 6", "4" = "6 - 8",
+                         "5" = ">8")
+
+```
+
+
+```{r}
+#| label: build bullet point 10
+
+bullet_10 <- glue("The risk of coral bleaching ranged from \"{dhw_code_to_text_1[dhw_annual$Min]}\" to \"{dhw_code_to_text_1[dhw_annual$Max]}\", with most of the marine zone experiencing {dhw_code_to_text_2[dhw_annual$Mean]} Degree Heating Weeks.")
+
+```
+
+```{r}
+#| label: extract variables of interest for landuse
+
+#extract the region and most recent year
+landuse_annual <- my_files[[5]] |> 
+  filter(Region == target_region,
+         Year == max(Year))
+
+#get the largest landuse type for each basin and overall region by area
+largest_lu <- landuse_annual |> 
+  group_by(Region, Basin, Year) |> 
+  slice(which.max(LanduseKm2)) |> 
+  ungroup()
+
+#extract the unique landuse types found in the table
+unique_lu <- unique(largest_lu$Landuse)
+
+```
+
+
+```{r}
+#| label: build bullet point 11
+
+if (length(unique_lu) == 1){
+  
+  bullet_11 <- glue("{unique_lu} remains the single largest land use type by area across the region with a total area of {largest_lu$LanduseKm2[i]}km2 ({largest_lu$LanduseProportionOfTotalPercent[i]}%). Basins are as follow; ")
+  
+} else {
+  
+  region_lu <- largest_lu |> filter(is.na(Basin))
+  
+  bullet_11 <- glue("{unique_lu} remain the largest {as.english(length(unique_lu))} land use types by area across the region, dominated by {region_lu$Landuse} with an area of {region_lu$LanduseKm2[i]}km2 ({region_lu$LanduseProportionOfTotalPercent[i]}%).Basins are as follows; ")
+
+}
+
+#get the specific types
+for (i in 1:nrow(largest_lu)){
+    
+  if (!is.na(largest_lu$Basin[i]) & i != nrow(largest_lu)-1){#for all basins that aren't NA (i.e. the region)
+    
+    bullet_11 <- glue("{bullet_11}{largest_lu$Basin[i]}: {largest_lu$LanduseKm2[i]}km2 ({largest_lu$LanduseProportionOfTotalPercent[i]}%), ")
+    
+  } else if (i == nrow(largest_lu)-1){#for the second last row, add "and" and a fullstop
+    
+    bullet_11 <- glue("{bullet_11}and {largest_lu$Basin[i]}: {largest_lu$LanduseKm2[i]}km2 ({largest_lu$LanduseProportionOfTotalPercent[i]}%).")
+    
+  } else {} #do nothing
+  
+}
+
+```
+
+Environmental stressors such as extreme climate and intensive land use are an influential factor for almost every indicator measured in the Technical Report. For the 2022–2023 report period, the `r target_region` region experienced a variety of climatic conditions. Overall, the region could be described as having been rainier, and hotter than usual. The land use category data showed a large amount of urban/intensive and conservation land uses. Key points are summarised below:
+
+ - `r bullet_1`
+ - `r bullet_2`
+    + `r bullet_3`
+ - `r bullet_4`
+ - `r bullet_5`
+    + `r bullet_6`
+ - `r bullet_7`
+ - `r bullet_8`
+    + `r bullet_9`
+ - `r bullet_10` 
+ - `r bullet_11`
+
+# Main Body
+
+## Land Use
+
+```{r}
+#| label: create dynamic list of landuse references
+
+if (str_detect(target_region, "Mackay")){#the Mackay team will have 6 images
+
+  fig_references <- "@fig-landuse1 to @fig-landuse6"
+
+} else if (str_detect(target_region, "Wet")){#wet tropics 9
+  
+  fig_references <- "@fig-landuse1 to @fig-landuse9"
+  
+} else {#and dry tropics 3
+  
+  fig_references <- "@fig-landuse1 to @fig-landuse3"
+  
+}
+
+```
+
+Land use data describes what the dominant use for the land is, with nationally consistent descriptions set by the Australian Land Use and Management (ALUM) Classification system (Insert Ref: Department of Agriculture, Fisheries and Forestry 2023). Land use in the `r target_region` region in 2021 is summarised in @tbl-landuse-full, and `r fig_references`.
+
+```{r}
+#| label: manipulate land use table for presenting
+
+#extract vector of basins
+basin_vec <- c("Landuse", rep(unique(na.omit(landuse_annual$Basin)), each = 2))
+
+#create a vector of units
+units_vec <- c(NA, rep(c("km2", "%"), floor(length(basin_vec)/2)))
+
+#extract information from the table of interest
+lu_table_present <- landuse_annual |>
+  select(Basin, Landuse, LanduseKm2, 
+         LanduseProportionOfTotalPercent) |> 
+  unique() |>
+  filter(!is.na(Basin)) |>
+  pivot_wider(names_from = Basin, values_from = c(LanduseKm2, LanduseProportionOfTotalPercent), names_vary = "slowest") |> 
+  mutate(across(everything(), as.character))
+
+#add names to each of the vectors that match the table
+names(basin_vec) <- names(lu_table_present)
+names(units_vec) <- names(lu_table_present)
+
+#add the two vectors to the top of the table then replace the table column names
+lu_table_present <- bind_rows(basin_vec, units_vec, lu_table_present)
+
+#set i
+i <- 2
+
+#depending on the number of basins determines how many merges we do
+while (i <= length(basin_vec)){
+  
+  lu_table_present <- lu_table_present |> 
+  rename(!!glue("{basin_vec[i]}") := i)
+  
+  i <- i +2
+  
+}
+
+#read in the custom function to style tables
+source("../functions/cond_form_tables.R")
+
+if (str_detect(target_region, "Mackay")){
+  
+  #run function then add additional formatting
+  lu_table_present <- cond_form_tables(lu_table_present, header_rows = 3, landscape = T) |>
+    merge_cells(1:3, 1) |> 
+    merge_cells(1:2, 2:3) |> 
+    merge_cells(1:2, 4:5) |> 
+    merge_cells(1:2, 6:7) |> 
+    merge_cells(1:2, 8:9) |> 
+    merge_cells(1:2, 10:11) |>
+    set_align(everywhere, everywhere, "center") |> 
+    set_valign(everywhere, everywhere, "middle")
+  
+} else if (str_detect(target_region, "Dry")){
+  
+  #run function then add additional formatting
+  lu_table_present <- cond_form_tables(lu_table_present, header_rows = 3, landscape = T) |>
+    merge_cells(1:3, 1) |> 
+    merge_cells(1:2, 2:3) |> 
+    merge_cells(1:2, 4:5) |> 
+    set_align(everywhere, everywhere, "center") |> 
+    set_valign(everywhere, everywhere, "middle")
+  
+} else {
+  
+  #run function then add additional formatting
+  lu_table_present <- cond_form_tables(lu_table_present, header_rows = 3, landscape = T) |>
+    merge_cells(1:3, 1) |> 
+    merge_cells(1:2, 2:3) |> 
+    merge_cells(1:2, 4:5) |> 
+    merge_cells(1:2, 6:7) |> 
+    merge_cells(1:2, 8:9) |> 
+    merge_cells(1:2, 10:11) |>
+    merge_cells(1:2, 12:13) |>
+    merge_cells(1:2, 14:15) |>
+    merge_cells(1:2, 16:17) |>
+    set_align(everywhere, everywhere, "center") |> 
+    set_valign(everywhere, everywhere, "middle")
+}
+
+```
+
+::: {.landscape}
+
+```{r}
+#| label: tbl-landuse-full
+#| output: true
+#| tbl-cap: Total area and percentage of landuse classes in the XYZ region in 2021.
+
+lu_table_present
+
+```
+
+:::
+
+```{r}
+
+#get a list of all landuse maps
+landuse_map_path <- list.files(glue("{all_paths[[5]]}/maps/{target_region}/"), full.names = T)
+
+#str detect those with the latest year
+landuse_map_path <- landuse_map_path[str_detect(landuse_map_path, "2021")]
+
+```
+
+```{r}
+#| label: fig-landuse1
+#| fig-cap: "landuse in the XYZ basin of the XYZ region in 2021."
+#| output: true
+
+knitr::include_graphics(landuse_map_path[1], error = F, rel_path = F)
+
+```
+
+```{r}
+#| label: fig-landuse2
+#| fig-cap: "landuse in the XYZ basin of the XYZ region in 2021."
+#| output: true
+
+knitr::include_graphics(landuse_map_path[2], error = F, rel_path = F)
+
+```
+
+```{r}
+#| label: fig-landuse3
+#| fig-cap: "landuse in the XYZ basin of the XYZ region in 2021."
+#| output: true
+
+if (target_region != "Dry Tropics"){
+  
+  knitr::include_graphics(landuse_map_path[3], error = F, rel_path = F)
+
+}
+
+```
+
+```{r}
+#| label: fig-landuse4
+#| fig-cap: "landuse in the XYZ basin of the XYZ region in 2021."
+#| output: true
+
+if (target_region != "Dry Tropics"){
+  
+  knitr::include_graphics(landuse_map_path[4], error = F, rel_path = F)
+
+}
+
+```
+
+```{r}
+#| label: fig-landuse5
+#| fig-cap: "landuse in the XYZ basin of the XYZ region in 2021."
+#| output: true
+
+if (target_region != "Dry Tropics"){
+  
+  knitr::include_graphics(landuse_map_path[5], error = F, rel_path = F)
+
+}
+
+```
+
+```{r}
+#| label: fig-landuse6
+#| fig-cap: "landuse in the XYZ basin of the XYZ region in 2021."
+#| output: true
+
+if (target_region != "Dry Tropics"){
+  
+  knitr::include_graphics(landuse_map_path[6], error = F, rel_path = F)
+
+}
+
+```
+
+```{r}
+#| label: fig-landuse7
+#| fig-cap: "landuse in the XYZ basin of the XYZ region in 2021."
+#| output: true
+
+if (target_region == "Wet Tropics"){
+  
+  knitr::include_graphics(landuse_map_path[7], error = F, rel_path = F)
+
+}
+
+```
+
+```{r}
+#| label: fig-landuse8
+#| fig-cap: "landuse in the XYZ basin of the XYZ region in 2021."
+#| output: true
+
+if (target_region == "Wet Tropics"){
+
+  knitr::include_graphics(landuse_map_path[8], error = F, rel_path = F)
+
+}
+
+```
+
+```{r}
+#| label: fig-landuse9
+#| fig-cap: "landuse in the XYZ basin of the XYZ region in 2021."
+#| output: true
+
+if (target_region == "Wet Tropics"){
+  
+  knitr::include_graphics(landuse_map_path[9], error = F, rel_path = F)
+
+}
+```
+
+## Climate
+
+A changing climate and extreme weather can have a major impact on the health of the environment both globally and within the Townsville Dry Tropics region. These forces directly and indirectly put pressure on local waterways and can influence the results presented in this report (Insert Ref: IPCC 2022, United Nations 2023). Between 1st July `r current_fyear-1` and 30th June `r current_fyear`, the `r target_region` region recorded **Insert generic weather statement** (Insert Ref: Bureau of Meteorology 2023). Key influences for the `r current_fyear-1`-`r current_fyear` reporting period are summarised below.
+
+### Rainfall
+
+```{r}
+#| label: prep two variations of the same rainfall sentence
+
+#find the min and max month codes and extract their descriptions
+rain_min_monthly <- code_to_text[[min(rainfall_monthly[3:14])]]
+rain_max_monthly <- code_to_text[[max(rainfall_monthly[3:14])]]
+
+if (rain_min_monthly == rain_max_monthly){#write bullet point 3
+  
+  rain_sentence <- glue("with monthly rainfall remaining as \"{rain_min_monthly}\" for each respective monthly mean throughout the year.")
+  
+} else {
+  
+  rain_sentence <- glue("with monthly rainfall ranging from \"{rain_min_monthly}\" to \"{rain_max_monthly}\" for the respective monthly means throughout the year")
+  
+}
+
+if (abs(min(rainfall_monthly[3:14]) - max(rainfall_monthly[3:14])) >= 3){#decide is variation was large or not
+  
+  rain_variation <- "highly variable"
+  
+} else {
+  
+  rain_variation <- "largely consistent"
+}
+
+```
+
+Monthly rainfall across the `r target_region` region was `r rain_variation`, `r rain_sentence`. The monthly averages are calculated from the most recent 30-year block of data: 1991 to 2020 @tbl-rainfall-monthly.
+
+```{r}
+#| label: prep rainfall table
+
+#remove and rename columns
+rainfall_monthly <- rainfall_monthly |> 
+  select(-Region) |> 
+  rename(Annual = AnnualMeanRainfallPercentileRank)
+
+#move the column names into a new first row fo the table
+rainfall_monthly <- rbind(as.character(names(rainfall_monthly)), rainfall_monthly)
+
+#rename specific columns for the merge
+rainfall_monthly <- rainfall_monthly |> 
+  rename(!!as.character(current_fyear-1) := 2,
+         !!as.character(current_fyear) := 8)
+
+#run function then add additional formatting
+rainfall_monthly <- cond_form_tables(rainfall_monthly, header_rows = 2, landscape = F, rain_colour = T) |>
+  merge_cells(1:2, 1) |> 
+  merge_cells(1, 2:7) |> 
+  merge_cells(1, 8:13) |> 
+  merge_cells(1:2, 14) |> 
+  set_align(everywhere, everywhere, "center") |> 
+  set_valign(everywhere, everywhere, "middle")
+ 
+```
+
+```{r}
+#| label: tbl-rainfall-monthly
+#| output: true
+#| tbl-cap: Monthly rainfall percentiles in the XYZ region grouped into seven categories.
+
+rainfall_monthly
+
+```
+
+```{r}
+#| label: create dynamic list of rainfall references
+
+if (str_detect(target_region, "Mackay")){#the Mackay team will have 5 images
+
+  rain_fig_references <- "@fig-monthly-rainfall1 to @fig-monthly-rainfall5"
+
+} else if (str_detect(target_region, "Wet")){#wet tropics 8
+  
+  rain_fig_references <- "@fig-monthly-rainfall1 to @fig-monthly-rainfall8"
+  
+} else {#and dry tropics 2
+  
+  rain_fig_references <- "@fig-monthly-rainfall1 to @fig-monthly-rainfall2"
+  
+}
+
+```
+
+In each basins this translated to **Insert generic observation(s)** (as shown in `r rain_fig_references`). 
+
+```{r}
+#| label: get path to rainfall plots
+
+#get a list of all landuse maps
+rainfall_plot_path <- list.files(glue("{all_paths[[1]]}/plots/"), full.names = T)
+
+#create list of words to match
+words_to_match <- str_to_lower(rainfall_annual_summary$Basin) |> 
+  str_remove("'") |> 
+  str_replace_all(" ", "-") |> 
+  str_c(collapse = "|")
+
+#str detect those in the correct region
+rainfall_plot_path <- rainfall_plot_path[str_detect(rainfall_plot_path, words_to_match)]
+
+#str detect the correct style of graph
+rainfall_plot_path <- rainfall_plot_path[str_detect(rainfall_plot_path, "monthly")]
+
+```
+
+```{r}
+#| label: fig-monthly-rainfall1
+#| fig-cap: "Monthly rainfall in the XYZ Basin in comparison to the long-term mean (calculated from 1991 to 2020). The Blue line indicates rainfall for the current financial year. The black line indicates the long-term rainfall. The dark green shading represents the 30th to 70th percentiles of the long-term mean, the medium green shading represents the 10th to 90th percentiles of the long-term mean, and the light green shading represents the 1st to 99th percentiles of the long-term mean"
+#| output: true
+
+knitr::include_graphics(rainfall_plot_path[1], error = F, rel_path = F)
+
+```
+
+```{r}
+#| label: fig-monthly-rainfall2
+#| fig-cap: "Monthly rainfall in the XYZ Basin in comparison to the long-term mean (calculated from 1991 to 2020). The Blue line indicates rainfall for the current financial year. The black line indicates the long-term rainfall. The dark green shading represents the 30th to 70th percentiles of the long-term mean, the medium green shading represents the 10th to 90th percentiles of the long-term mean, and the light green shading represents the 1st to 99th percentiles of the long-term mean"
+#| output: true
+
+knitr::include_graphics(rainfall_plot_path[2], error = F, rel_path = F)
+
+```
+
+```{r}
+#| label: fig-monthly-rainfall3
+#| fig-cap: "Monthly rainfall in the XYZ Basin in comparison to the long-term mean (calculated from 1991 to 2020). The Blue line indicates rainfall for the current financial year. The black line indicates the long-term rainfall. The dark green shading represents the 30th to 70th percentiles of the long-term mean, the medium green shading represents the 10th to 90th percentiles of the long-term mean, and the light green shading represents the 1st to 99th percentiles of the long-term mean"
+#| output: true
+
+if (target_region != "Dry Tropics"){
+
+  knitr::include_graphics(rainfall_plot_path[3], error = F, rel_path = F)
+
+}
+
+```
+
+```{r}
+#| label: fig-monthly-rainfall4
+#| fig-cap: "Monthly rainfall in the XYZ Basin in comparison to the long-term mean (calculated from 1991 to 2020). The Blue line indicates rainfall for the current financial year. The black line indicates the long-term rainfall. The dark green shading represents the 30th to 70th percentiles of the long-term mean, the medium green shading represents the 10th to 90th percentiles of the long-term mean, and the light green shading represents the 1st to 99th percentiles of the long-term mean"
+#| output: true
+
+if (target_region != "Dry Tropics"){
+  
+  knitr::include_graphics(rainfall_plot_path[4], error = F, rel_path = F)
+
+}
+
+```
+
+```{r}
+#| label: fig-monthly-rainfall5
+#| fig-cap: "Monthly rainfall in the XYZ Basin in comparison to the long-term mean (calculated from 1991 to 2020). The Blue line indicates rainfall for the current financial year. The black line indicates the long-term rainfall. The dark green shading represents the 30th to 70th percentiles of the long-term mean, the medium green shading represents the 10th to 90th percentiles of the long-term mean, and the light green shading represents the 1st to 99th percentiles of the long-term mean"
+#| output: true
+
+if (target_region != "Dry Tropics"){
+  
+  knitr::include_graphics(rainfall_plot_path[5], error = F, rel_path = F)
+
+}
+
+```
+
+```{r}
+#| label: fig-monthly-rainfall6
+#| fig-cap: "Monthly rainfall in the XYZ Basin in comparison to the long-term mean (calculated from 1991 to 2020). The Blue line indicates rainfall for the current financial year. The black line indicates the long-term rainfall. The dark green shading represents the 30th to 70th percentiles of the long-term mean, the medium green shading represents the 10th to 90th percentiles of the long-term mean, and the light green shading represents the 1st to 99th percentiles of the long-term mean"
+#| output: true
+
+if (target_region == "Wet Tropics"){
+  
+  knitr::include_graphics(rainfall_plot_path[6], error = F, rel_path = F)
+
+}
+
+```
+
+```{r}
+#| label: fig-monthly-rainfall7
+#| fig-cap: "Monthly rainfall in the XYZ Basin in comparison to the long-term mean (calculated from 1991 to 2020). The Blue line indicates rainfall for the current financial year. The black line indicates the long-term rainfall. The dark green shading represents the 30th to 70th percentiles of the long-term mean, the medium green shading represents the 10th to 90th percentiles of the long-term mean, and the light green shading represents the 1st to 99th percentiles of the long-term mean"
+#| output: true
+
+if (target_region == "Wet Tropics"){
+  
+  knitr::include_graphics(rainfall_plot_path[7], error = F, rel_path = F)
+
+}
+
+```
+
+```{r}
+#| label: fig-monthly-rainfall8
+#| fig-cap: "Monthly rainfall in the XYZ Basin in comparison to the long-term mean (calculated from 1991 to 2020). The Blue line indicates rainfall for the current financial year. The black line indicates the long-term rainfall. The dark green shading represents the 30th to 70th percentiles of the long-term mean, the medium green shading represents the 10th to 90th percentiles of the long-term mean, and the light green shading represents the 1st to 99th percentiles of the long-term mean"
+#| output: true
+
+if (target_region == "Wet Tropics"){
+  
+  knitr::include_graphics(rainfall_plot_path[8], error = F, rel_path = F)
+
+}
+
+```
+
+```{r}
+#| label: extract information for ltm rainfall table
+
+#filter and rename columns
+rainfall_annual_ltm <- rainfall_annual |> 
+  select(Basin, AnnualMeanRainfall, AnnualLtm, annual_anomaly, annual_percentage_of_ltm) |> 
+  rename(`Annual Rainfall` = AnnualMeanRainfall,
+         `Long-term mean 1991-2020 (ltm)` = AnnualLtm,
+         `Anomaly (+/- ltm)` = annual_anomaly,
+         `Percentage of the ltm` = annual_percentage_of_ltm) |> 
+  unique()
+  
+```
+
+```{r}
+#| label: create summary text for rainfall table
+
+for (i in 1:nrow(rainfall_annual_summary)){
+  
+  if (i == 1){#for the very first entry add joining text and first value
+    
+    rain_summary_text <- glue("This was {rain_outcome} the long-term mean (calculated from the most recent 30-year block of data: 1991 to 2020) of {rainfall_annual_summary$AnnualLtm[i]}mm,")
+    
+  } else if(i != nrow(rainfall_annual_summary)){#if we are not looking at the very last entry
+      
+    rain_summary_text <- glue("{rain_summary_text} {rainfall_annual_summary$AnnualLtm[i]}mm,")
+    
+  } else {#for the final entry add "and" and a full stop
+    
+    rain_summary_text <- glue("{rain_summary_text} and {rainfall_annual_summary$AnnualLtm[i]}mm respectively")
+    
+  }
+  
+}
+
+
+```
+
+`r bullet_1`. `r rain_summary_text` @tbl-rain-ltm.
+
+```{r}
+#| label: tbl-rain-ltm
+#| tbl-cap: Annual rainfall summary statistics for the XYZ Region
+#| output: true
+
+#create table
+cond_form_tables(rainfall_annual_ltm, header_rows = 1, landscape = F) |>
+  set_align(everywhere, everywhere, "center") |> 
+  set_valign(everywhere, everywhere, "middle")
+
+```
+
+Annual rainfall was greatest in **XYZ** location with **XYZ**mm, while the least amount of rainfall was recorded at **XYZ** location with **XYZ**mm (@fig-annual-rainfall). Historic annual rainfall trends and season specific annual trends for each basin are presented in Appendix A.
+
+```{r}
+#| label: find rainfall region map
+
+#get a list of all landuse maps
+rainfall_map_path <- list.files(glue("{all_paths[[1]]}/maps/"), full.names = T)
+
+#create the word to match
+words_to_match <- str_to_lower(str_replace_all(target_region, " ", "-"))
+
+#str detect those in the correct region
+rainfall_map_path <- rainfall_map_path[str_detect(rainfall_map_path, words_to_match)]
+
+#str detect the correct style of graph
+rainfall_map_path <- rainfall_map_path[str_detect(rainfall_map_path, "facet")]
+
+```
+
+```{r}
+#| label: fig-annual-rainfall
+#| fig-cap: "Total annual rainfall for the XYZ region for year-year, and the anomaly of the year-year rainfall from the long-term mean (i.e., how much more or less (mm) was the year-year rainfall in comparison to the long-term historic average. Rainfall values were derived by summing monthly averages calculated across spatial grid sub-sets of each basin. The long-term mean was calculated from the most recent 30-year block (climate normal), which is 1991-2020. The scale for the anomaly rainfall map is based on the absolute min and max anomaly values recorded within the 30-year reference period inclusive of the current financial year."
+#| output: true
+
+knitr::include_graphics(rainfall_map_path[1], error = F, rel_path = F)
+
+```
+
+### Air Temperature
+
+```{r}
+#| label: prep two variations of the same temperature sentence
+
+#find the min and max month codes and extract their descriptions
+temperature_min_monthly <- code_to_text[[min(temperature_monthly[3:14])]]
+temperature_max_monthly <- code_to_text[[max(temperature_monthly[3:14])]]
+
+if (temperature_min_monthly == temperature_max_monthly){#write bullet point 3
+  
+  temperature_sentence <- glue("with monthly air temperature remaining as \"{temperature_min_monthly}\" for each respective monthly mean throughout the year.")
+  
+} else {
+  
+  temperature_sentence <- glue("with monthly air temperature ranging from \"{temperature_min_monthly}\" to \"{temperature_max_monthly}\" for the respective monthly means throughout the year")
+  
+}
+
+if (abs(min(temperature_monthly[3:14]) - max(temperature_monthly[3:14])) >= 3){#decide if variation was large or not
+  
+  temperature_variation <- "highly variable"
+  
+} else {
+  
+  temperature_variation <- "largely consistent"
+}
+
+```
+
+Monthly air temperature across the `r target_region` region was `r temperature_variation`, `r temperature_sentence`. The monthly averages which are compared to the current year of data are calculated from the oldest 30-year block of data available in the dataset (from 1911 to 1940). The selection of this data was in effort to establish a “pre-industrial” baseline for comparison @tbl-temperature-monthly. 
+
+```{r}
+#| label: prep temperature table
+
+#remove and rename columns
+temperature_monthly <- temperature_monthly |> 
+  select(-Region) |> 
+  rename(Annual = AnnualMeanTemperaturePercentileRank)
+
+#move the column names into a new first row fo the table
+temperature_monthly <- rbind(as.character(names(temperature_monthly)), temperature_monthly)
+
+#rename specific columns for the merge
+temperature_monthly <- temperature_monthly |> 
+  rename(!!as.character(current_fyear-1) := 2,
+         !!as.character(current_fyear) := 8)
+
+#run function then add additional formatting
+temperature_monthly <- cond_form_tables(temperature_monthly, header_rows = 2, landscape = F, temperature_colour = T) |>
+  merge_cells(1:2, 1) |> 
+  merge_cells(1, 2:7) |> 
+  merge_cells(1, 8:13) |> 
+  merge_cells(1:2, 14) |> 
+  set_align(everywhere, everywhere, "center") |> 
+  set_valign(everywhere, everywhere, "middle")
+ 
+```
+
+```{r}
+#| label: tbl-temperature-monthly
+#| output: true
+#| tbl-cap: Monthly air temperature percentiles in the XYZ region grouped into seven categories.
+
+temperature_monthly
+
+```
+
+```{r}
+#| label: create dynamic list of air temperature references
+
+if (str_detect(target_region, "Mackay")){#the Mackay team will have 5 images
+
+  temperature_fig_references <- "@fig-monthly-temperature1 to @fig-monthly-temperature5"
+
+} else if (str_detect(target_region, "Wet")){#wet tropics 8
+  
+  temperature_fig_references <- "@fig-monthly-temperature1 to @fig-monthly-temperature8"
+  
+} else {#and dry tropics 2
+  
+  temperature_fig_references <- "@fig-monthly-temperature1 to @fig-monthly-temperature2"
+  
+}
+
+```
+
+In each basins this translated to **Insert generic observation(s)** (as shown in `r temperature_fig_references`). 
+
+```{r}
+#| label: get path to temperature plots
+
+#get a list of all landuse maps
+temperature_plot_path <- list.files(glue("{all_paths[[2]]}/plots/"), full.names = T)
+
+#create list of words to match
+words_to_match <- str_to_lower(temperature_annual_summary$Basin) |> 
+  str_remove("'") |> 
+  str_replace_all(" ", "-") |> 
+  str_c(collapse = "|")
+
+#str detect those in the correct region
+temperature_plot_path <- temperature_plot_path[str_detect(temperature_plot_path, words_to_match)]
+
+#str detect the correct style of graph
+temperature_plot_path <- temperature_plot_path[str_detect(temperature_plot_path, "monthly")]
+
+```
+
+```{r}
+#| label: fig-monthly-temperature1
+#| fig-cap: "Monthly air temperature in the XYZ Basin in comparison to the long-term mean (calculated from 1911 to 1940). The red line indicates air temperature for the current financial year. The black line indicates the long-term air temperature. The dark orange shading represents the 30th to 70th percentiles of the long-term mean, the medium orange shading represents the 10th to 90th percentiles of the long-term mean, and the light orange shading represents the 1st to 99th percentiles of the long-term mean."
+#| output: true
+
+knitr::include_graphics(temperature_plot_path[1], error = F, rel_path = F)
+
+```
+
+```{r}
+#| label: fig-monthly-temperature2
+#| fig-cap: "Monthly air temperature in the XYZ Basin in comparison to the long-term mean (calculated from 1911 to 1940). The red line indicates air temperature for the current financial year. The black line indicates the long-term air temperature. The dark orange shading represents the 30th to 70th percentiles of the long-term mean, the medium orange shading represents the 10th to 90th percentiles of the long-term mean, and the light orange shading represents the 1st to 99th percentiles of the long-term mean."
+#| output: true
+
+knitr::include_graphics(temperature_plot_path[2], error = F, rel_path = F)
+
+```
+
+```{r}
+#| label: fig-monthly-temperature3
+#| fig-cap: "Monthly air temperature in the XYZ Basin in comparison to the long-term mean (calculated from 1911 to 1940). The red line indicates air temperature for the current financial year. The black line indicates the long-term air temperature. The dark orange shading represents the 30th to 70th percentiles of the long-term mean, the medium orange shading represents the 10th to 90th percentiles of the long-term mean, and the light orange shading represents the 1st to 99th percentiles of the long-term mean."
+#| output: true
+
+if (target_region != "Dry Tropics"){
+
+  knitr::include_graphics(temperature_plot_path[3], error = F, rel_path = F)
+
+}
+
+```
+
+```{r}
+#| label: fig-monthly-temperature4
+#| fig-cap: "Monthly air temperature in the XYZ Basin in comparison to the long-term mean (calculated from 1911 to 1940). The red line indicates air temperature for the current financial year. The black line indicates the long-term air temperature. The dark orange shading represents the 30th to 70th percentiles of the long-term mean, the medium orange shading represents the 10th to 90th percentiles of the long-term mean, and the light orange shading represents the 1st to 99th percentiles of the long-term mean."
+#| output: true
+
+if (target_region != "Dry Tropics"){
+  
+  knitr::include_graphics(temperature_plot_path[4], error = F, rel_path = F)
+
+}
+
+```
+
+```{r}
+#| label: fig-monthly-temperature5
+#| fig-cap: "Monthly air temperature in the XYZ Basin in comparison to the long-term mean (calculated from 1911 to 1940). The red line indicates air temperature for the current financial year. The black line indicates the long-term air temperature. The dark orange shading represents the 30th to 70th percentiles of the long-term mean, the medium orange shading represents the 10th to 90th percentiles of the long-term mean, and the light orange shading represents the 1st to 99th percentiles of the long-term mean."
+#| output: true
+
+if (target_region != "Dry Tropics"){
+  
+  knitr::include_graphics(temperature_plot_path[5], error = F, rel_path = F)
+
+}
+
+```
+
+```{r}
+#| label: fig-monthly-temperature6
+#| fig-cap: "Monthly air temperature in the XYZ Basin in comparison to the long-term mean (calculated from 1911 to 1940). The red line indicates air temperature for the current financial year. The black line indicates the long-term air temperature. The dark orange shading represents the 30th to 70th percentiles of the long-term mean, the medium orange shading represents the 10th to 90th percentiles of the long-term mean, and the light orange shading represents the 1st to 99th percentiles of the long-term mean."
+#| output: true
+
+if (target_region == "Wet Tropics"){
+  
+  knitr::include_graphics(temperature_plot_path[6], error = F, rel_path = F)
+
+}
+
+```
+
+```{r}
+#| label: fig-monthly-temperature7
+#| fig-cap: "Monthly air temperature in the XYZ Basin in comparison to the long-term mean (calculated from 1911 to 1940). The red line indicates air temperature for the current financial year. The black line indicates the long-term air temperature. The dark orange shading represents the 30th to 70th percentiles of the long-term mean, the medium orange shading represents the 10th to 90th percentiles of the long-term mean, and the light orange shading represents the 1st to 99th percentiles of the long-term mean."
+#| output: true
+
+if (target_region == "Wet Tropics"){
+  
+  knitr::include_graphics(temperature_plot_path[7], error = F, rel_path = F)
+
+}
+
+```
+
+```{r}
+#| label: fig-monthly-temperature8
+#| fig-cap: "Monthly air temperature in the XYZ Basin in comparison to the long-term mean (calculated from 1911 to 1940). The red line indicates air temperature for the current financial year. The black line indicates the long-term air temperature. The dark orange shading represents the 30th to 70th percentiles of the long-term mean, the medium orange shading represents the 10th to 90th percentiles of the long-term mean, and the light orange shading represents the 1st to 99th percentiles of the long-term mean."
+#| output: true
+
+if (target_region == "Wet Tropics"){
+  
+  knitr::include_graphics(temperature_plot_path[8], error = F, rel_path = F)
+
+}
+
+```
+
+```{r}
+#| label: extract information for temperature ltm table
+
+#filter and rename columns
+temperature_annual_ltm <- temperature_annual |> 
+  select(Basin, AnnualMeanTemperature, AnnualLtm, AnnualAnomaly, AnnualPercentageOfLtm) |> 
+  rename(`Annual Air Temperature` = AnnualMeanTemperature,
+         `Long-term mean 1911-1940 (ltm)` = AnnualLtm,
+         `Anomaly (+/- ltm)` = AnnualAnomaly,
+         `Percentage of the ltm` = AnnualPercentageOfLtm) |> 
+  unique()
+  
+```
+
+```{r}
+#| label: create summary text for temperature table
+
+for (i in 1:nrow(temperature_annual_summary)){
+  
+  if (i == 1){#for the very first entry add joining text and first value
+    
+    temperature_summary_text <- glue("This was {temperature_outcome} the long-term mean (calculated from the most recent 30-year block of data: 1991 to 2020) of {temperature_annual_summary$AnnualLtm[i]}°C,")
+    
+  } else if(i != nrow(rainfall_annual)){#if we are not looking at the very last entry
+      
+    temperature_summary_text <- glue("{temperature_summary_text} {temperature_annual_summary$AnnualLtm[i]}°C,")
+    
+  } else {#for the final entry add "and" and a full stop
+    
+    temperature_summary_text <- glue("{temperature_summary_text} and {temperature_annual_summary$AnnualLtm[i]}°C respectively")
+    
+  }
+  
+}
+
+
+```
+
+`r bullet_4`. `r temperature_summary_text` @tbl-temperature-ltm.
+
+```{r}
+#| label: tbl-temperature-ltm
+#| tbl-cap: Annual air temperature summary statistics for the XYZ Region
+#| output: true
+
+#create table
+cond_form_tables(temperature_annual_ltm, header_rows = 1, landscape = F) |>
+  set_align(everywhere, everywhere, "center") |> 
+  set_valign(everywhere, everywhere, "middle")
+
+```
+
+Annual air temperature was greatest in **XYZ** location at **XYZ**°C, while the lowest temperature was recorded at **XYZ** location at **XYZ**°C (@fig-annual-temperature). Historic air temperature trends for each basin are presented in Appendix B.
+
+```{r}
+#| label: find temperature region map
+
+#get a list of all landuse maps
+temperature_map_path <- list.files(glue("{all_paths[[2]]}/maps/"), full.names = T)
+
+#create the word to match
+words_to_match <- str_to_lower(str_replace_all(target_region, " ", "-"))
+
+#str detect those in the correct region
+temperature_map_path <- temperature_map_path[str_detect(temperature_map_path, words_to_match)]
+
+#str detect the correct style of graph
+temperature_map_path <- temperature_map_path[str_detect(temperature_map_path, "facet")]
+
+```
+
+```{r}
+#| label: fig-annual-temperature
+#| fig-cap: Mean annual air temperature for the XYZ Region for year-year, and the anomaly of the year-year air temperature from the long-term mean (i.e., how much more or less (C) was the year-year air temperature in comparison to the long-term historic average. Air temperature values were derived by taking the mean of monthly averages calculated across spatial grid sub-sets of each basin. The long-term mean was calculated from the oldest 30-year block (climate normal), which is 1911-1940. The scale for the anomaly air temperature map is based on the absolute min and max anomaly values recorded within the 30-year reference period, or, within the past 5-years (as the greatest anomalies mostly occurred during recent reporting years)."
+#| output: true
+
+knitr::include_graphics(temperature_map_path[1], error = F, rel_path = F)
+
+```
+
+### Sea Surface Temperature
+
+```{r}
+#| label: prep two variations of the same sst sentence
+
+#find the min and max month codes and extract their descriptions
+sst_min_monthly <- code_to_text[[min(sst_monthly[3:14])]]
+sst_max_monthly <- code_to_text[[max(sst_monthly[3:14])]]
+
+if (sst_min_monthly == sst_max_monthly){#write bullet point 3
+  
+  sst_sentence <- glue("with monthly sea surface temperatures remaining as \"{sst_min_monthly}\" for each respective monthly mean throughout the year.")
+  
+} else {
+  
+  sst_sentence <- glue("with monthly sea surface temperatures ranging from \"{sst_min_monthly}\" to \"{sst_max_monthly}\" for the respective monthly means throughout the year")
+  
+}
+
+if (abs(min(sst_monthly[3:14]) - max(sst_monthly[3:14])) >= 3){#decide if variation was large or not
+  
+  sst_variation <- "highly variable"
+  
+} else {
+  
+  sst_variation <- "largely consistent"
+}
+
+```
+
+Monthly sea surface temperature across the `r target_region` region was `r sst_variation`, `r sst_sentence`. The monthly averages which are compared to the current year of data are calculated from the most recent 30-year block of data available in the dataset (from 1991 to 2020).
+
+```{r}
+#| label: prep sst table
+
+#remove and rename columns
+sst_monthly <- sst_monthly |> 
+  rename(Annual = AnnualMeanSstPercentileRank)
+
+#move the column names into a new first row fo the table
+sst_monthly <- rbind(as.character(names(sst_monthly)), sst_monthly)
+
+#rename specific columns for the merge
+sst_monthly <- sst_monthly |> 
+  rename(!!as.character(current_fyear-1) := 2,
+         !!as.character(current_fyear) := 8)
+
+#run function then add additional formatting
+sst_monthly <- cond_form_tables(sst_monthly, header_rows = 2, landscape = F, temperature_colour = T) |>
+  merge_cells(1:2, 1) |> 
+  merge_cells(1, 2:7) |> 
+  merge_cells(1, 8:13) |> 
+  merge_cells(1:2, 14) |> 
+  set_align(everywhere, everywhere, "center") |> 
+  set_valign(everywhere, everywhere, "middle")
+ 
+```
+
+```{r}
+#| label: tbl-sst-monthly
+#| output: true
+#| tbl-cap: Monthly sea surface temperature percentiles in the XYZ region grouped into seven categories.
+
+sst_monthly
+
+```
+
+In each basins this translated to **Insert generic observation(s)** (as shown in @fig-monthly-sst1). 
+
+```{r}
+#| label: get path to sst plots
+
+#get a list of all landuse maps
+sst_plot_path <- list.files(glue("{all_paths[[3]]}/plots/"), full.names = T)
+
+#create list of words to match
+words_to_match <- str_to_lower(unique(sst_annual_summary$Region)) |> 
+  str_remove("'") |> 
+  str_replace_all(" ", "-") |> 
+  str_c(collapse = "|")
+
+#str detect those in the correct region
+sst_plot_path <- sst_plot_path[str_detect(sst_plot_path, words_to_match)]
+
+#str detect the correct style of graph
+sst_plot_path <- sst_plot_path[str_detect(sst_plot_path, "monthly")]
+
+```
+
+```{r}
+#| label: fig-monthly-sst1
+#| fig-cap: "Monthly sea surface temperature in the XYZ marine environment in comparison to the long-term mean (calculated from 1991 to 2020). The red line indicates the temperature for the current financial year. The black line indicates the long-term temperature. The dark orange shading represents the 30th to 70th percentiles of the long-term mean, the medium orange shading represents the 10th to 90th percentiles of the long-term mean, and the light orange shading represents the 1st to 99th percentiles of the long-term mean."
+#| output: true
+
+knitr::include_graphics(sst_plot_path[1], error = F, rel_path = F)
+
+```
+
+```{r}
+#| label: extract information for sst ltm table
+
+#filter and rename columns
+sst_annual_ltm <- sst_annual |> 
+  select(Region, AnnualMeanSst, AnnualLtm, AnnualAnomaly, AnnualPercentageOfLtm) |> 
+  rename(`Annual sea Surface Temperature` = AnnualMeanSst,
+         `Long-term mean 1991-2020 (ltm)` = AnnualLtm,
+         `Anomaly (+/- ltm)` = AnnualAnomaly,
+         `Percentage of the ltm` = AnnualPercentageOfLtm) |> 
+  unique()
+  
+```
+
+```{r}
+#| label: create summary text for sst table
+
+for (i in 1:nrow(sst_annual_summary)){
+  
+  if (i == 1){#for the very first entry add joining text and first value
+    
+    sst_summary_text <- glue("This was {sst_outcome} the long-term mean (calculated from the most recent 30-year block of data: 1991 to 2020) of {sst_annual_summary$AnnualLtm[i]}°C,")
+    
+  } else if(i != nrow(sst_annual_summary)){#if we are not looking at the very last entry
+      
+    sst_summary_text <- glue("{sst_summary_text} {sst_annual_summary$AnnualLtm[i]}°C,")
+    
+  } else {#for the final entry add "and" and a full stop
+    
+    sst_summary_text <- glue("{sst_summary_text} and {sst_annual_summary$AnnualLtm[i]}°C respectively")
+    
+  }
+  
+}
+
+
+```
+
+`r bullet_7` `r sst_summary_text` @tbl-sst-ltm.
+
+```{r}
+#| label: tbl-sst-ltm
+#| tbl-cap: Annual sea surface temperature summary statistics for the XYZ Region
+#| output: true
+
+#create table
+cond_form_tables(sst_annual_ltm, header_rows = 1, landscape = F) |>
+  set_align(everywhere, everywhere, "center") |> 
+  set_valign(everywhere, everywhere, "middle")
+
+```
+
+Annual sea surface temperature was greatest in **XYZ** location at **XYZ**°C, while the lowest temperature was recorded at **XYZ** location at **XYZ**°C (@fig-annual-sst). Historic sea surface temperature trends for each basin are presented in Appendix C.
+
+```{r}
+#| label: find sst region map
+
+#get a list of all landuse maps
+sst_map_path <- list.files(glue("{all_paths[[3]]}/maps/"), full.names = T)
+
+#create the word to match
+words_to_match <- str_to_lower(str_replace_all(target_region, " ", "-"))
+
+#str detect those in the correct region
+sst_map_path <- sst_map_path[str_detect(sst_map_path, words_to_match)]
+
+#str detect the correct style of graph
+sst_map_path <- sst_map_path[str_detect(sst_map_path, "facet")]
+
+```
+
+```{r}
+#| label: fig-annual-sst
+#| fig-cap: "Total annual sea surface temperature for the XYZ Region for year-year, and the anomaly of the year-year sea surface temperature from the long-term mean (i.e., how much more or less (C) was the year-year sea surface temperature in comparison to the long-term historic average. Sea surface temperature values were derived by taking the mean of monthly averages calculated across spatial grid sub-sets of each basin. The long-term mean was calculated from the most recent 30-year block (climate normal), which is 1991-2020. The scale for the annual sea surface temperature map is based on the actual sea surface temperature recorded for the financial year across the entire XYZ Region. The scale for the anomaly sea surface temperature map is based on the absolute min and max anomaly values recorded within the 30-year reference period inclusive of the current financial year."
+#| output: true
+
+knitr::include_graphics(temperature_map_path[1], error = F, rel_path = F)
+
+```
+
+### Degree Heating Weeks (Coral Bleaching)
+
+Mass coral bleaching has been linked to prolonged periods of heat stress (Insert Ref: Glynn and D'Croz 1990). NOAA’s Coral Reef Watch degree heating week (DHW) dataset provides a measure of this heat stress and acts as a proxy to coral bleaching (Insert Ref: NOAA 2023). In `r current_fyear-1`-`r current_fyear`, in the `r target_region` marine region `r str_to_lower(bullet_10)` (@fig-dhw). **Insert Further generic comment** Historic degree heating week are presented in Appendix D.
+
+```{r}
+#| label: find dhw region map
+
+#get a list of all landuse maps
+dhw_map_path <- list.files(glue("{all_paths[[4]]}/"), full.names = T)
+
+#create the word to match
+words_to_match <- str_to_lower(str_replace_all(target_region, " ", "-"))
+
+#str detect those in the correct region
+dhw_map_path <- dhw_map_path[str_detect(dhw_map_path, words_to_match)]
+
+#str detect the correct style of graph
+dhw_map_path <- dhw_map_path[!str_detect(dhw_map_path, "-to-")]
+
+```
+
+```{r}
+#| label: fig-dhw
+#| fig-cap: "Total annual degree heating weeks (bleaching events) in the XYZ marine region for the year-year financial year."
+#| output: true
+
+knitr::include_graphics(dhw_map_path[1], error = F, rel_path = F)
+
+```
+
+# Appendix
+
+## Appendix A. Long Term Rainfall Trends
+
+::: {.landscape}
+
+```{r}
+#| label: rainfall appendix path
+
+#get a list of all landuse maps
+rainfall_appendix_path <- list.files(glue("{all_paths[[1]]}/plots/"), full.names = T)
+
+##create list of words to match
+words_to_match <- str_to_lower(rainfall_annual_summary$Basin) |> 
+  str_remove("'") |> 
+  str_replace_all(" ", "-") |> 
+  str_c(collapse = "|")
+
+#str detect those in the correct region
+rainfall_appendix_path <- rainfall_appendix_path[str_detect(rainfall_appendix_path, words_to_match)]
+
+#str detect the correct style of graph
+rainfall_appendix_path <- rainfall_appendix_path[!str_detect(rainfall_appendix_path, "monthly")]
+
+```
+
+```{r}
+#| label: fig-seasonal-rainfall1
+#| fig-cap: "XYZ Basin season-specific annual rainfall trends since 1990."
+#| output: true
+
+knitr::include_graphics(rainfall_appendix_path[1], error = F, rel_path = F)
+
+```
+
+```{r}
+#| label: fig-yearly-rainfall1
+#| fig-cap: "XYZ Basin long-term annual rainfall trends."
+#| output: true
+
+knitr::include_graphics(rainfall_appendix_path[2], error = F, rel_path = F)
+
+```
+
+```{r}
+#| label: fig-seasonal-rainfall2
+#| fig-cap: "XYZ Basin season-specific annual rainfall trends since 1990."
+#| output: true
+
+knitr::include_graphics(rainfall_appendix_path[3], error = F, rel_path = F)
+
+```
+
+```{r}
+#| label: fig-yearly-rainfall2
+#| fig-cap: "XYZ Basin long-term annual rainfall trends."
+#| output: true
+
+knitr::include_graphics(rainfall_appendix_path[4], error = F, rel_path = F)
+
+```
+
+```{r}
+#| label: fig-seasonal-rainfall3
+#| fig-cap: "XYZ Basin season-specific annual rainfall trends since 1990."
+#| output: true
+
+if (target_region != "Dry Tropics"){
+  
+  knitr::include_graphics(rainfall_appendix_path[5], error = F, rel_path = F)
+
+}
+
+```
+
+```{r}
+#| label: fig-yearly-rainfall3
+#| fig-cap: "XYZ Basin long-term annual rainfall trends."
+#| output: true
+
+if (target_region != "Dry Tropics"){
+  
+  knitr::include_graphics(rainfall_appendix_path[6], error = F, rel_path = F)
+
+}
+
+```
+
+```{r}
+#| label: fig-seasonal-rainfall4
+#| fig-cap: "XYZ Basin season-specific annual rainfall trends since 1990."
+#| output: true
+
+if (target_region != "Dry Tropics"){
+  
+  knitr::include_graphics(rainfall_appendix_path[7], error = F, rel_path = F)
+
+}
+
+```
+
+```{r}
+#| label: fig-yearly-rainfall4
+#| fig-cap: "XYZ Basin long-term annual rainfall trends."
+#| output: true
+
+if (target_region != "Dry Tropics"){
+  
+  knitr::include_graphics(rainfall_appendix_path[8], error = F, rel_path = F)
+
+}
+
+```
+
+```{r}
+#| label: fig-seasonal-rainfall5
+#| fig-cap: "XYZ Basin season-specific annual rainfall trends since 1990."
+#| output: true
+
+if (target_region != "Dry Tropics"){
+  
+  knitr::include_graphics(rainfall_appendix_path[9], error = F, rel_path = F)
+
+}
+
+```
+
+```{r}
+#| label: fig-yearly-rainfall5
+#| fig-cap: "XYZ Basin long-term annual rainfall trends."
+#| output: true
+
+if (target_region != "Dry Tropics"){
+  
+  knitr::include_graphics(rainfall_appendix_path[10], error = F, rel_path = F)
+
+}
+
+```
+
+```{r}
+#| label: fig-seasonal-rainfall6
+#| fig-cap: "XYZ Basin season-specific annual rainfall trends since 1990."
+#| output: true
+
+if (target_region == "Wet Tropics"){
+  
+  knitr::include_graphics(rainfall_appendix_path[11], error = F, rel_path = F)
+
+}
+
+```
+
+```{r}
+#| label: fig-yearly-rainfall6
+#| fig-cap: "XYZ Basin long-term annual rainfall trends."
+#| output: true
+
+if (target_region == "Wet Tropics"){
+  
+  knitr::include_graphics(rainfall_appendix_path[12], error = F, rel_path = F)
+
+}
+
+```
+
+```{r}
+#| label: fig-seasonal-rainfall7
+#| fig-cap: "XYZ Basin season-specific annual rainfall trends since 1990."
+#| output: true
+
+if (target_region == "Wet Tropics"){
+  
+  knitr::include_graphics(rainfall_appendix_path[13], error = F, rel_path = F)
+
+}
+
+```
+
+```{r}
+#| label: fig-yearly-rainfall7
+#| fig-cap: "XYZ Basin long-term annual rainfall trends."
+#| output: true
+
+if (target_region == "Wet Tropics"){
+  
+  knitr::include_graphics(rainfall_appendix_path[14], error = F, rel_path = F)
+
+}
+
+```
+
+:::
+
+## Appendix B. Long Term Air Temperature Trends
+
+::: {.landscape}
+
+```{r}
+#| label: air temperature appendix path
+
+#get a list of all landuse maps
+temperature_appendix_path <- list.files(glue("{all_paths[[2]]}/plots/"), full.names = T)
+
+##create list of words to match
+words_to_match <- str_to_lower(temperature_annual_summary$Basin) |> 
+  str_remove("'") |> 
+  str_replace_all(" ", "-") |> 
+  str_c(collapse = "|")
+
+#str detect those in the correct region
+temperature_appendix_path <- temperature_appendix_path[str_detect(temperature_appendix_path, words_to_match)]
+
+#str detect the correct style of graph
+temperature_appendix_path <- temperature_appendix_path[!str_detect(temperature_appendix_path, "monthly")]
+
+```
+
+```{r}
+#| label: fig-yearly-air-temperature1
+#| fig-cap: "XYZ Basin long-term annual air temperature trends."
+#| output: true
+
+knitr::include_graphics(temperature_appendix_path[1], error = F, rel_path = F)
+
+```
+
+```{r}
+#| label: fig-yearly-air-temperature2
+#| fig-cap: "XYZ Basin long-term annual air temperature trends."
+#| output: true
+
+knitr::include_graphics(temperature_appendix_path[2], error = F, rel_path = F)
+
+```
+
+```{r}
+#| label: fig-yearly-air-temperature3
+#| fig-cap: "XYZ Basin long-term annual air temperature trends."
+#| output: true
+
+if (target_region != "Dry Tropics"){
+  
+  knitr::include_graphics(temperature_appendix_path[3], error = F, rel_path = F)
+
+}
+
+```
+
+```{r}
+#| label: fig-yearly-air-temperature4
+#| fig-cap: "XYZ Basin long-term annual air temperature trends."
+#| output: true
+
+if (target_region != "Dry Tropics"){
+  
+  knitr::include_graphics(temperature_appendix_path[4], error = F, rel_path = F)
+
+}
+
+```
+
+```{r}
+#| label: fig-yearly-air-temperature5
+#| fig-cap: "XYZ Basin long-term annual air temperature trends."
+#| output: true
+
+if (target_region != "Dry Tropics"){
+  
+  knitr::include_graphics(temperature_appendix_path[5], error = F, rel_path = F)
+
+}
+
+```
+
+```{r}
+#| label: fig-yearly-air-temperature6
+#| fig-cap: "XYZ Basin long-term annual air temperature trends."
+#| output: true
+
+if (target_region == "Wet Tropics"){
+  
+  knitr::include_graphics(temperature_appendix_path[6], error = F, rel_path = F)
+
+}
+
+```
+
+```{r}
+#| label: fig-yearly-air-temperature7
+#| fig-cap: "XYZ Basin long-term annual air temperature trends."
+#| output: true
+
+if (target_region == "Wet Tropics"){
+  
+  knitr::include_graphics(temperature_appendix_path[7], error = F, rel_path = F)
+
+}
+
+```
+
+```{r}
+#| label: fig-yearly-air-temperature8
+#| fig-cap: "XYZ Basin long-term annual air temperature trends."
+#| output: true
+
+if (target_region == "Wet Tropics"){
+  
+  knitr::include_graphics(temperature_appendix_path[8], error = F, rel_path = F)
+
+}
+
+```
+
+:::
+
+## Appendix C. Long Term Sea Surface Temperature Trends
+
+::: {.landscape}
+
+```{r}
+#| label: sea surface temperature appendix path
+
+#get a list of all landuse maps
+sst_appendix_path <- list.files(glue("{all_paths[[3]]}/plots/"), full.names = T)
+
+##create list of words to match
+words_to_match <- str_to_lower(unique(sst_annual_summary$Region)) |> 
+  str_remove("'") |> 
+  str_replace_all(" ", "-") |> 
+  str_c(collapse = "|")
+
+#str detect those in the correct region
+sst_appendix_path <- sst_appendix_path[str_detect(sst_appendix_path, words_to_match)]
+
+#str detect the correct style of graph
+sst_appendix_path <- sst_appendix_path[!str_detect(sst_appendix_path, "monthly")]
+
+```
+
+```{r}
+#| label: fig-yearly-sst1
+#| fig-cap: "XYZ Region long-term annual sea surface temperature trends."
+#| output: true
+
+knitr::include_graphics(sst_appendix_path[1], error = F, rel_path = F)
+
+```
+
+:::
+
+## Appendix D. Degree Heating Week 5-year Historical Maps
+
+::: {.landscape}
+
+```{r}
+#| label: dhw appendix path
+
+#get a list of all landuse maps
+dhw_appendix_path <- list.files(glue("{all_paths[[4]]}/"), full.names = T)
+
+#create the word to match
+words_to_match <- str_to_lower(str_replace_all(target_region, " ", "-"))
+
+#str detect those in the correct region
+dhw_appendix_path <- dhw_appendix_path[str_detect(dhw_appendix_path, words_to_match)]
+
+#str detect the correct style of graph
+dhw_appendix_path <- dhw_appendix_path[str_detect(dhw_appendix_path, "-to-")]
+
+```
+
+```{r}
+#| label: fig-yearly-dhw1
+#| fig-cap: "XYZ Marine Region 5-year historical Degree Heating Week maps."
+#| output: true
+
+knitr::include_graphics(dhw_appendix_path[1], error = F, rel_path = F)
+
+```
+
+```{r}
+#| label: fig-yearly-dhw2
+#| fig-cap: "XYZ Marine Region 5-year historical Degree Heating Week maps."
+#| output: true
+
+knitr::include_graphics(dhw_appendix_path[2], error = F, rel_path = F)
+
+```
+
+:::
+

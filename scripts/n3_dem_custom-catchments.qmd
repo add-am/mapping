@@ -1,0 +1,410 @@
+---
+title: "Northern Three Spatial Analyses (DEMO: Custom Catchment Boundaries)"
+author: "Adam Shand"
+date: "`r format(Sys.time(), '%d, %B, %Y')`"
+format: html
+params:
+  project_crs: "EPSG:7844"
+execute: 
+  warning: false
+---
+
+::: {.callout-tip}
+## R Version
+For R session info at the time of rendering this script see @sec-sessioninfo.
+:::
+
+
+# Introduction
+
+This script is a demo of the ability to create/define custom catchment boundaries using a Digital Elevation Model (DEM) and an arbitrary number of pour points (i.e water sampling locations) at which to define the lower catchment boundary. A guide was used to understand the method: [Hydroinfomatics](https://vt-hydroinformatics.github.io/rgeowatersheds.html#prepare-dem-for-hydrology-analyses-1)
+
+Currently this ability is not used for any part of the report card, however may be implemented in the future to determine the exact land area that affects a sampling location.
+
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, janitor, sf, tmap, raster, terra, rayshader, whitebox)
+
+```
+
+
+Then we also need to set up key variables for the script, as well as the output location.
+
+```{r}
+#| label: create save path and establish project crs
+
+#set project crs
+proj_crs <- params$project_crs
+
+#create a file path to help with saving outputs
+save_path <- here("outputs/n3_dem_custom-catchments/")
+save_data <- here("data/n3_dem/")
+
+#bring the path to life
+dir.create(save_path)
+dir.create(save_data)
+
+#turn off s2 geometry
+sf_use_s2(FALSE)
+tmap_mode("plot")
+
+```
+
+# Load Data
+
+Now the script is set up we need to load in all of the required datasets. 
+
+```{r}
+#| label: load the data
+
+#read in the n3_region data
+n3_region <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg"))
+
+#cutdown to a test location, in this case we will pick black river
+black_river <- n3_region |> 
+  filter(sub_basin_or_sub_zone == "Black River")
+
+#convert the object type, first to a bounding box, and then to a spatVect as this is what is used best by the DEM function
+black_river <- vect(st_as_sfc(st_bbox(black_river)))
+
+```
+
+And then the DEM data.
+
+```{r}
+#| label: load in DEM data specifically
+
+#read in the custom DEM function
+source(here("functions/dem_data_pre_processing.R"))
+
+#use the function
+dem_data_pre_processing(black_river, name = "black_river", save = save_path, resolution = 30, reload = T)
+
+#save as tif (the white box library needs to read things from disk, not from the global environment)
+writeRaster(black_river_dem, glue("{save_path}/black_river_30m.tif"), overwrite = T)
+
+```
+
+before making up some arbitrary water sampling locations.
+
+```{r}
+#| label: create sampling locations
+
+
+#set out multiple points
+sample_points <- tibble(Lon = c(146.643097, 146.562725, 146.65644), 
+                        Lat = c(-19.202273, -19.295667,-19.190131))
+
+#convert to an sf object
+sample_points <- st_as_sf(sample_points, coords = c("Lon", "Lat"), crs = proj_crs)
+
+#and save (the white box library needs to read things from disk, not from the global environment)
+#note, we have to save as a shapefile, so we will save in a folder to keep things neat
+dir.create(glue("{save_path}/sample_points/"))
+write_sf(sample_points, glue("{save_path}/sample_points/sample_points.shp"), overwrite = TRUE)
+
+```
+
+# Create Custom Catchments
+
+Once all the data is ready we can begin the catchment creation process.
+
+## Hillshade
+
+The first thing we are going to do is use whitebox to create a hillshade version of the DEM. Essentially, before the hillshade, our data looks like this:
+
+```{r}
+#| label: demo DEM data
+
+#create a simple map 
+tm_shape(black_river_dem) +
+  tm_raster(style = "cont", palette = "-Greys", legend.show = TRUE) +
+  tm_scale_bar()
+
+```
+
+Where the colour is directly correlated to the elevation of the cell. Its hard to really tell what you are looking at.
+
+However, by creating a hillshade, we create a new value for each cell that takes into account a virtual sun shining on the terrain, creating shadows and highlights that the colour can be driven by:
+
+```{r}
+#| label: create a hillshade
+
+#use whitebox to open the tif, create a hillshade, and then save it
+wbt_hillshade(dem = glue("{save_path}/black_river_30m.tif"),
+              output = glue("{save_path}/black_river_30m_hillshade.tif"),
+              azimuth = 45)
+
+#load the hillshade in
+hillshade <- rast(glue("{save_path}/black_river_30m_hillshade.tif"))
+
+#and visualise it
+tm_shape(hillshade) +
+  tm_raster(style = "cont", palette = "-Greys", legend.show = FALSE) +
+  tm_scale_bar()
+
+```
+
+Straight away it is much easier to visualise. Notice the "sun" appears to be in the North, with shadows appearing on the Southern side of the ridges.
+
+## Breaches and Fills
+
+When creating the custom catchment, whitebox is basically modeling where water would flow, cell-to-cell, by comparing the height of each cell. In some cases, there might be a hole or pit that is a single cell lower than all surrounding cells. This cell would collect all the simulated water and throw off any catchment modelling.
+
+To combat this, below we search for pits, and use the breach and fill tools to alleviate these.
+
+::: {.callout-note}
+The guide linked at the top of the script does a good job of explaining these processes in more detail.
+:::
+
+```{r}
+#| label: breach and fill
+
+#first breach the original tif DEM and save the output
+wbt_breach_depressions_least_cost(dem = glue("{save_path}/black_river_30m.tif"),
+                                  output = glue("{save_path}/black_river_30m_breached.tif"),
+                                  dist = 30, fill = TRUE)
+
+#pass the breached version to be filled (important to do BREACH, then FILL)
+wbt_fill_depressions_wang_and_liu(dem = glue("{save_path}/black_river_30m_breached.tif"),
+                                  output = glue("{save_path}/black_river_30m_breached_filled.tif"))
+
+```
+
+## D8 Flow
+
+Once single cell pits have been addressed we can work out, for each cell, its "D8" values so to speak. Essentially, for each cell water can flow out of the cell in 1 of 8 directions (Up, Down, Left, Right, Up-Left, Down-Left, Up-Right, Down-Right). The D8 values can then be used to help establish a catchment boundary.
+
+```{r}
+#| label: calculate D8 flow
+
+#make sure to load in the breached and fill dataset
+wbt_d8_flow_accumulation(input = glue("{save_path}/black_river_30m_breached_filled.tif"),
+                         output = glue("{save_path}/black_river_30m_D8_flow.tif"))
+
+```
+
+The D8 flow is visualised below. Something important to realize here is that the D8 flow is still a raster with a value for every single cell, and yet streams rivers can already start to be seen. We also put the hillshade underneath to help understand.
+
+```{r}
+#| label: show D8 raster
+
+#load in as a raster
+d8 <- rast(glue("{save_path}/black_river_30m_D8_flow.tif"))
+
+#visualise
+tm_shape(hillshade) +
+  tm_raster(style = "cont", palette = "-Greys", legend.show = FALSE) +
+tm_shape(log(d8)) +
+  tm_raster(style = "cont", palette = "PuOr", legend.show = TRUE, alpha = .5) +
+  tm_scale_bar()
+
+```
+The second part of the D8 system is to create a pointer grid. This is what actually tells us where each cell goes. it "points" to the next cell that the current cell flows into.
+
+```{r}
+#| label: create D8 pointer
+
+#create D8 pointer
+wbt_d8_pointer(dem = glue("{save_path}/black_river_30m_breached_filled.tif"),
+                         output = glue("{save_path}/black_river_30m_D8_pointer.tif"))
+
+```
+
+## Stream Extraction
+
+Above we note that the streams are already visible, well now we will actually extract them from the D8 flow raster. which looks like this.
+
+```{r}
+#| label: extract streams
+
+#extract the stream lines
+wbt_extract_streams(flow_accum = glue("{save_path}/black_river_30m_D8_flow.tif"),
+                    output = glue("{save_path}/black_river_30m_streams.tif"),
+                    threshold = 6000)
+
+#load in as a raster
+streams <- rast(glue("{save_path}/black_river_30m_streams.tif"))
+
+#visualise
+tm_shape(hillshade) +
+  tm_raster(style = "cont", palette = "-Greys", legend.show = FALSE) +
+tm_shape(streams) +
+  tm_raster(style = "cont", palette = "blue", legend.show = TRUE, alpha = 1) +
+  tm_scale_bar()
+
+```
+
+## Correctly Place Sampling Locations
+
+Something that was made very clear, is if your sampling locations are even one pixel off from the main stream then the calculated catchment area is going to be some incredibly tiny group of cells.
+
+Below we use a function that snaps the coordinates of the sampling location to the nearest stream (just defined above) with a high flow associated with it (relatively to the surrounding area). It is important we understand the units of our data so we set an appropriate distance for the function to search within.
+
+```{r}
+#| label: snap sampling points
+
+#This is how you check the units of the data
+st_crs(proj_crs, parameters = TRUE)$units_gdal
+
+#snap the location of the "pour points" (AKA sampling locations)
+wbt_jenson_snap_pour_points(pour_pts = glue("{save_path}/sample_points/sample_points.shp"),
+                            streams = glue("{save_path}/black_river_30m_streams.tif"),
+                            output = glue("{save_path}/sample_points/black_river_30m_snapped_sample_points.shp"),
+                            snap_dist = 0.05)
+
+#load in snapped sampling locations
+snapped_sample_points <- read_sf(glue("{save_path}/sample_points/black_river_30m_snapped_sample_points.shp"))
+
+#change made mode to view so the user can scroll in and out
+tmap_mode("view")
+
+#visualise
+tm_shape(streams) +
+  tm_raster(legend.show = TRUE, palette = "Blues") +
+  tm_shape(snapped_sample_points) +
+  tm_dots(col = "red") + 
+  tm_shape(sample_points) +
+  tm_dots(col = "green")
+
+#change back to simple plot mode
+tmap_mode("plot")
+
+```
+
+## Final Calculations
+
+Finally we can calculate the custom catchment. This is done by combing the D8 pointer file and the snapped sampling locations (to set the "search upstream of here" component).
+
+```{r}
+#| label: create custom catchment
+
+#create the custom catchment
+wbt_watershed(d8_pntr = glue("{save_path}/black_river_30m_D8_pointer.tif"),
+              pour_pts = glue("{save_path}/sample_points/black_river_30m_snapped_sample_points.shp"),
+              output = glue("{save_path}/black_river_30m_catchment.tif"))
+
+#read back in
+custom_catchments <- rast(glue("{save_path}/black_river_30m_catchment.tif"))
+
+```
+
+By mapping the data we can immediately see something is wrong here:
+
+```{r}
+#| label: map custom catchments
+
+tm_shape(hillshade) +
+  tm_raster(style = "cont", palette = "-Greys", legend.show = FALSE) +
+  tm_shape(custom_catchments) +
+  tm_raster(legend.show = TRUE, alpha = 0.5, style = "cat") +
+  tm_shape(sample_points) +
+  tm_dots(col = "red")
+
+```
+
+Each of the custom catchments appear to be overlapping one another. In actual fact, they are cutting each other off. This is because rasters  are given as a single value for each cell, so it is either in one of the custom catchments, or it is in another, it can be in both. To fix this we have to run one calculation for each point. 
+
+::: {.callout-note}
+Something important to consider here is that this is only applicable in situations in which you expect the catchments to overlap. If we have one point on Ross River and one on Black River, we can run those at the same time because they are obviously not going to overlap in any meaningful way.
+:::
+
+You might also wonder how we can be certain of this, below we convert each catchment to a polygon and map the lowest one down the river.
+
+
+```{r}
+#| label: convert to a polygon to demonstrate error
+
+#convert to a polygon
+catch_poly <- stars::st_as_stars(custom_catchments) |> st_as_sf(merge = T)
+
+#filter for just one of the polygons (the 3rd one is the best example)
+catch_poly <- catch_poly |> 
+  filter(`black_river_30m_catchment.tif` == 3)
+
+#map
+tm_shape(catch_poly) +
+  tm_borders()
+
+```
+
+Compare this outline to the above raster...
+
+Thus, with overlapping catchments, they must be done separately. The handy part is, it is only the last step that we need to adapt:
+
+```{r}
+#| label: seperate custom catchments
+
+#split sample points in three and save each one
+for (i in snapped_sample_points$FID){
+  
+  #filter
+  temp_sam_poi <- snapped_sample_points |> filter(FID == i)
+  
+  #save
+  write_sf(temp_sam_poi, glue("{save_path}/sample_points/snapped_sample_point_{i}.shp"), overwrite = TRUE)
+  
+}
+
+#for sample point, read it in and calculate
+for (i in snapped_sample_points$FID){
+  
+  #create the custom catchment
+  wbt_watershed(d8_pntr = glue("{save_path}/black_river_30m_D8_pointer.tif"),
+                pour_pts = glue("{save_path}/sample_points/snapped_sample_point_{i}.shp"),
+                output = glue("{save_path}/black_river_30m_catchment_{i}.tif"))
+  
+}
+
+```
+
+Now each can be read back in, converted to a polygon and visualised. Ive made some ugly changes to line width so you can see the true outline of each.
+
+```{r}
+#| label: read and visualise each catchment
+
+#split sample points in three and save each one
+for (i in snapped_sample_points$FID){
+  
+  #read back in using assign
+  temp_rast <- rast(glue("{save_path}/black_river_30m_catchment_{i}.tif"))
+  
+  #convert to a polygon
+  temp_poly <- stars::st_as_stars(temp_rast) |> st_as_sf(merge = T)
+  
+  assign(glue("catchment_{i}"), temp_poly)
+  
+}
+
+#and map
+tm_shape(hillshade) +
+  tm_raster(style = "cont", palette = "-Greys", legend.show = FALSE) +
+  tm_shape(catchment_1) +
+  tm_borders(col = "blue", lwd = 8) +
+  tm_shape(catchment_0) +
+  tm_borders(col = "orange", lwd = 4) +
+  tm_shape(catchment_2) +
+  tm_borders(col = "green") +
+  tm_shape(snapped_sample_points) +
+  tm_dots(col = "red")
+
+```
+
+# Session Info {#sec-sessioninfo}
+
+Below is the session info at the time of rendering this script. Of greatest importance is to note the R version, and the "other attached packages" as these are the most significant drivers of success/failure. It is also good to check the "attached base packages" and "loaded via a namespace" packages as well. To check your session info use `sessionInfo()`.
+
+```{r}
+#| label: show session info
+
+sessionInfo()
+
+```
+
+

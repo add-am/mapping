@@ -1,0 +1,163 @@
+---
+title: "Fish Barriers Script 4 - Mapping Fish Barriers"
+subtitle: "A Healthy Waters Partnership Analysis"
+description: "Script 4 in a series of scripts designed to identify, prioritise, and rank, fish barriers on waterways in the Northern Three reporting region."
+author: "Adam Shand"
+date: "`r format(Sys.time(), '%d, %B, %Y')`"
+format: html
+params:
+  project_crs: "EPSG:7844"
+---
+
+# Introduction
+
+This is a simple script to produce a map of sampling locations for the Fish Barriers indicator category in the Freshwater environment for the Dry Tropics region.
+
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, sf, tmap, janitor, readxl, dataaimsr, grid, RColorBrewer)
+
+```
+
+
+Then set the coordinate reference system and save location.
+
+```{r}
+#| label: global vars and initial setup
+
+#set crs
+proj_crs <- params$project_crs
+
+#create a file path to help with saving things
+save_path <- here("outputs/dt_habitat_fish-barriers/")
+
+#create a data path as well
+data_path <- here("data/dt_habitat_fish-barriers/")
+
+#bring that path to life
+dir.create(save_path)
+
+#turn off S2 mapping
+sf_use_s2(FALSE)
+
+```
+
+# Load Data
+
+Next we load in the data, refer to the README in the GitHub repo if data is missing.
+
+```{r}
+#| label: load core datasets
+
+#read in the custom function to clean column names into our specific style
+source("../functions/name_cleaning.R")
+
+#read in the main fish barriers dataset and convert it to an sf object
+fish_barriers <- read_xlsx(glue("{data_path}/dt_fish_barriers_master.xlsx"),
+                           sheet = "all_data") |> 
+  name_cleaning() |>
+  st_as_sf(coords = c("Lon", "Lat"), crs = proj_crs)
+
+#save the data so we can view it in other GIS programs if needed
+st_write(fish_barriers, glue("{data_path}/dt_fish_barriers.gpkg"), delete_dsn = T)
+
+#please note if the data is not in the basin builder folder, try running the basin builder script
+n3_region <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg")) |> 
+  name_cleaning()
+
+#select specifically the dry tropics land region and group by su_basin
+dt_land <- n3_region |> 
+  filter(Environment != "Marine",
+         Region == "Dry Tropics") |> 
+  group_by(Region, BasinOrZone, SubBasinOrSubZone) |> 
+  summarise(geom = st_union(geom))
+
+#read in the n3 watercourse data and filter for the dry tropics region
+dt_wat <- st_read(here("data/n3_prep_watercourse-builder/n3_watercourse.gpkg")) |> 
+  name_cleaning() |> 
+  filter(Region == "Dry Tropics")
+
+#then retrieve the lines component, and only of stream order >= 2, <100
+dt_wat_lines <- dt_wat |> st_collection_extract("LINESTRING") |> 
+  filter(StreamOrder >= 2 & StreamOrder < 100)
+
+#and the areas component
+dt_wat_area <- dt_wat |> st_collection_extract("POLYGON")
+
+#read in qld outlines data from the gisaimsr package, filter for land and islands, update crs
+qld <- get(data("gbr_feat", package = "gisaimsr")) |> filter(FEAT_NAME %in% c("Mainland", "Island")) |> 
+  name_cleaning() |> 
+  st_transform(proj_crs)
+
+```
+
+# Edit data
+
+We need to do a small amount of manipulation for the map to be presented how we want it to be.
+
+```{r}
+#| label: edit data
+
+#intersect fish barrier data with the region dataset to obtain the correct region, environment, basin, sub basin for each barrier
+fish_barriers <- st_intersection(n3_region, fish_barriers)
+
+#filter the data so we only get data in the Dry tropics (black and Ross)
+dt_fish_barriers <- fish_barriers |> 
+  filter(Region == "Dry Tropics")
+
+#filter the data that we have identified to not be a barrier after field assessment and make passability a factor
+dt_fish_barriers <- dt_fish_barriers |> 
+  filter(!str_detect(Classification, "4"))
+
+#assign a unique colour to each classification from the "Dark2" palette
+dt_fish_barriers <- dt_fish_barriers |> 
+  mutate(Palette = case_when(Classification == "1" ~ brewer.pal(3, "Dark2")[2],
+                             Classification == "2" ~ brewer.pal(3, "Dark2")[1],
+                             Classification == "3" ~ brewer.pal(3, "Dark2")[3],
+                             T ~ NA))
+
+```
+
+# Create Map
+
+And then we can produce the required maps to be used in our technical report style.
+
+```{r}
+#| label: create map
+
+#load in custom function
+source(here("functions/report_base_map.R"))
+
+#for each basin:
+for (i in unique(dt_land$BasinOrZone)){
+  
+  #select only fish barrier data for that basin
+  target_fish_barriers <- dt_fish_barriers |> 
+    filter(BasinOrZone == i)
+  
+  #create the initial base map using the custom function
+  report_base_map(supplied_sf = target_fish_barriers, bz = i, strm_ord = 2)
+  
+  #add extra features over the top of the base map
+  final_map <- base_map +
+    tm_shape(target_fish_barriers) +
+    tm_add_legend(type = "symbol", col = unique(target_fish_barriers$Palette), 
+                  labels = unique(target_fish_barriers$Passability),
+                  title = "Fish Barrier Passability") +
+    tm_symbols(col = "Palette", shape = 13, border.lwd = 2)
+  
+  #clean up i
+  i <- str_to_lower(i)
+  
+  #save map
+  tmap_save(final_map, glue("{save_path}/{i}_fish_barriers.png"), 
+            insets_tm = base_inset, insets_vp = base_vp)
+}
+
+```

@@ -1,0 +1,230 @@
+---
+title: "Burdekin Environmental Authorities"
+subtitle: "A Healthy Waters Partnership Analysis"
+description: "This script maps all Environmental Authorites in the Burdekin region. The output of this was used in the Burdekin expansion project."
+author: "Adam Shand"
+format: html
+params:
+  project_crs: "EPSG:7844"
+---
+
+# Introduction
+
+This script has been created to map and catalog all of the current Environmental Authority locations within the Burdekin region.
+
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, sf, tmap, janitor)
+
+```
+
+
+Then we also need to set up key variables for the script, as well as the output location.
+
+```{r}
+#| label: create save path and establish project crs
+
+#set project crs
+proj_crs <- params$project_crs
+
+#create a file path to help with saving outputs
+save_outputs <- here("outputs/dt_maps_burdekin-ea/")
+read_data <- here("data/dt_maps_burdekin-ea/")
+
+#bring the path to life
+dir.create(save_outputs)
+dir.create(read_data)
+
+#turn off s2 geometry
+sf_use_s2(FALSE)
+
+```
+
+# Load Data
+
+Now the script is set up we need to load in all of the required datasets. We will need our northern three boundaries, the northern three watercourses, and the EA dataset that was downloaded from QSpatial.
+
+```{r}
+#| label: load datasets
+
+#read in the custom function to clean column names into our specific style
+source("../functions/name_cleaning.R")
+
+#read in n3 dataset
+n3_region <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg")) |> 
+  name_cleaning()
+
+#and cut down to just the burdekin
+burdekin <- n3_region |> 
+  filter(Region == "Burdekin")
+
+#read in n3 watercourse
+n3_watercourse <- st_read(here("data/n3_prep_watercourse-builder/n3_watercourse.gpkg")) |> 
+  name_cleaning()
+
+#read in environmental authority data
+ea <- st_read(glue("{read_data}/ea_locations.gpkg")) |> 
+  name_cleaning()
+
+#read in qld outlines data from the gisaimsr package, filter for land and islands, update crs
+qld <- get(data("gbr_feat", package = "gisaimsr")) |> 
+  name_cleaning() |> 
+  filter(FeatName %in% c("Mainland", "Island")) |> 
+  st_transform(proj_crs)
+
+```
+
+# Edit Data
+
+The EA dataset has been provided for the whole of Queensland, so first we need to cut it down to just the burdekin region.
+
+```{r}
+#| label: edit data
+
+#restrict EA to burdekin
+burdekin_ea <- st_intersection(ea, burdekin)
+
+```
+
+# Data Exploration
+
+Below we will begin to explore the data.
+
+##  Unique EA Holders
+
+First thing I am interested in is how many, and who, are the unique EA holders in the Burdekin.
+
+```{r}
+#| label: unique EA holders
+
+#get a vector of unique holders
+unique_holders <- sort(unique(burdekin_ea$PrimaryHolder))
+
+#save
+write_csv(as.data.frame(unique_holders), glue("{save_outputs}/unique_holders.csv"))
+
+```
+
+There are `r length(unique_holders)` unique holders, too many to print out in this doc. So they have been saved to file.
+
+## Types and Status
+
+What about types? Permit Types, and Location Types? and Status? That's easy, there are `r length(unique(burdekin_ea$permit_type))` permit types, which are: `r unique(burdekin_ea$permit_type)`, and `r length(unique(burdekin_ea$location_type))` location types, which are :`r unique(burdekin_ea$location_type)`. There are `r length(unique(burdekin_ea$status))` different statuses, which are :`r unique(burdekin_ea$status)`.
+
+::: {.callout-tip}
+"Granted" = The environmental authority has been granted and the holder is able to undertake the environmentally relevant activities authorised by the authority.
+
+"Granted—Not Effective" = The environmental authority has been granted but will not take effect until a prerequisite condition is met (e.g.: a resource tenure or development permit is issued, or a specific event occurs).
+
+"Suspended" = The environmental authority has been suspended, either voluntarily by the holder or by the administrating authority.
+:::
+
+## Current Licenses
+
+Knowing about the different types and statuses, its is probably a good idea to just consider the active ("Granted") ones for the time being.
+
+```{r}
+#| label: only active
+
+#filter for only the active licenses
+active_burd_ea <- burdekin_ea |> 
+  filter(Status == "Granted")
+
+```
+
+### ERAs
+
+There is also a column named "era", which stands for Environmentally Relevant Activity. Basically telling us what activities are happening. There are `r length(unique(active_burd_ea$era))` that we need to filter through these to select the important and relevant ones to our water quality monitoring.
+
+::: {.callout-note}
+Currently we haven't decided what ERAs are relevant, so we are have just hashed this step out for now.
+:::
+
+
+```{r}
+#| label: filter for relevant ERAs
+
+relevant_eras <- active_burd_ea
+
+#save
+write_csv(as.data.frame(unique(relevant_eras$era)), glue("{save_outputs}/unique_era.csv"))
+
+```
+
+## Licenses Near Major Watercourses
+
+Given that there are still `r nrow(relevant_eras)` rows of data, we will now limit the EAs that we consider to those that are within 500m of a watercourse with a strahler stream order of greater than 4.
+
+The function we use is `st_is_within_distance()` which has an output formatted as a list. Each item in the list is a vector, each element of the vector tells what rowID the object was within 500m of. e.g., c(1,2,3) means the EA is within 500m of the 1st 2nd and 3rd geoms of the watercourse dataset. (empty) means the EA wasn't within 500m of any watercourse. For our purposes we can simply remove any row that is (empty).
+
+```{r}
+#| label: find EAs near major watercourses
+
+#filter for only lines, in Burdekin, and those with stream order >4 <100 (because 100 = those with no stream order)
+major_wat <- n3_watercourse |> 
+  st_collection_extract("LINESTRING") |> 
+  filter(Region == "Burdekin",
+         StreamOrder > 4,
+         StreamOrder < 100)
+
+#covert both datasets to a coord ref system that uses meters
+major_wat <- st_transform(major_wat, "EPSG:7855")
+relevant_eras <- st_transform(relevant_eras, "EPSG:7855")
+
+#create an index list of EA licenses that are within 500m
+test_out <- st_is_within_distance(relevant_eras, major_wat, dist = 500, sparse = T)
+
+#covert each dataset back to our standard
+major_wat <- st_transform(major_wat, proj_crs)
+relevant_eras <- st_transform(relevant_eras, proj_crs)
+
+#convert list to a T/F vector by comparing each item of list to "integer(0)" (which is how "(empty)" is read)
+test_tf <- map_lgl(test_out, ~identical(.x, integer(0)))
+
+#use T/F to select EAs we want by row this is achieved by indexing
+close_eras <- relevant_eras[test_tf,]
+
+```
+
+### Visualise
+
+To make sure we did things right we will create a map below to check.
+
+```{r}
+#| label: visualise EAs
+#| output: true
+
+#change to interactive mode
+tmap_mode("view")
+
+#load in custom function
+source(here("functions/report_base_map.R"))
+
+#create the initial base map using the custom function
+report_base_map(regi = "Burdekin", enviro = c("Freshwater", "Estuarine"), strm = F, colour = F)
+
+#add extra features to the base map
+final_map <- base_map +
+  tm_shape(major_wat) +
+  tm_lines(col = "blue") +
+  tm_shape(close_eras, is.master = T) +
+  tm_polygons(col = "primary_holder", legend.show = F)
+
+#show map
+final_map
+
+```
+
+
+```{r}
+
+tmap_mode("plot")
+
+```
+

@@ -1,0 +1,22 @@
+﻿Zone,Site,Lat,Long,Score_Grade,Land_percent,Sea_percent
+Halifax Bay,"Big Rock Bay, Orpheus Island",-18.60821783,146.4999041,11  ( VHP ),13,87
+Halifax Bay,"Fig Tree Beach, Orpheus Island",-18.61157712,146.4997566,21  ( HP ),16,84
+Halifax Bay,"Picnic Bay, Orpheus Island",-18.63965208,146.5041208,3  ( VHP ),15,85
+Halifax Bay,"Boulder Beach North, Orpheus Island",-18.65043335,146.5025997,16  ( VHP ),16,84
+Halifax Bay,"Boulder Beach, Orpheus Island",-18.65480825,146.5033722,2  ( VHP ),12,88
+Halifax Bay,"South Beach, Orpheus Island",-18.65989202,146.4989398,12  ( VHP ),18,82
+Halifax Bay,"Fantome Island, Northern End",-18.66137194,146.5097514,36  ( HP ),13,87
+Halifax Bay,Toomulla main beach,-19.08083623,146.4766574,78  ( LP ),31,69
+Cleveland Bay,"Horseshoe Bay, Magnetic Island",-19.11666744,146.8620694,34  ( HP ),38,62
+Cleveland Bay,"Alma Bay, Magnetic Island",-19.1483234,146.8689637,68  ( LP ),49,51
+Cleveland Bay,"Nelly Bay Beach, Magnetic Island",-19.16943223,146.8473769,69  ( LP ),22,78
+Cleveland Bay,"Nelly Bay, Magnetic Island UW",-19.17067435,146.8476831,97  ( VLP ),0,100
+Cleveland Bay,"Shelly Cove, Cape Pallarenda Conservation Park",-19.18652022,146.7691006,87  ( VLP ),71,30
+Cleveland Bay,Pallarenda Beach,-19.19980768,146.7746866,69  ( LP ),79,21
+Cleveland Bay,Rowes Bay,-19.23914152,146.7904553,83  ( VLP ),79,21
+Ross,Queensland Country Bank Stadium,-19.26603683,146.8165549,22  ( HP ),100,0
+Ross,"Ross Creek, Townsville",-19.26778152,146.8127221,45  ( MP ),100,0
+Ross,"Anderson Park, Townsville",-19.29212207,146.7868575,87  ( VLP ),100,0
+Ross,Sherriff Park Townsville,-19.29880028,146.7919189,69  ( LP ),100,0
+Ross,Aplins Weir Rotary Park,-19.30366057,146.781289,66  ( LP ),100,0
+Ross,"Apex Park, Condon",-19.36465131,146.7323899,60  ( LP ),100,0

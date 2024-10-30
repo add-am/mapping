@@ -1,0 +1,458 @@
+========================================================================
+Download cart report (04 June 2024 23:19)
+========================================================================
+--[ #1 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/01/A.P1D.20230101T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230101T053000Z.aust.chl_oc3.nc
+Result:              File added (23140541 Bytes)
+
+--[ #2 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/01/A.P1D.20230102T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230102T053000Z.aust.chl_oc3.nc
+Result:              File added (27108963 Bytes)
+
+--[ #3 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/01/A.P1D.20230103T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230103T053000Z.aust.chl_oc3.nc
+Result:              File added (26498385 Bytes)
+
+--[ #4 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/01/A.P1D.20230104T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230104T053000Z.aust.chl_oc3.nc
+Result:              File added (27906699 Bytes)
+
+--[ #5 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/01/A.P1D.20230105T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230105T053000Z.aust.chl_oc3.nc
+Result:              File added (28208891 Bytes)
+
+--[ #6 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/01/A.P1D.20230106T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230106T053000Z.aust.chl_oc3.nc
+Result:              File added (19675862 Bytes)
+
+--[ #7 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/01/A.P1D.20230107T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230107T053000Z.aust.chl_oc3.nc
+Result:              File added (29691267 Bytes)
+
+--[ #8 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/01/A.P1D.20230108T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230108T053000Z.aust.chl_oc3.nc
+Result:              File added (34129985 Bytes)
+
+--[ #9 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/01/A.P1D.20230109T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230109T053000Z.aust.chl_oc3.nc
+Result:              File added (35815088 Bytes)
+
+--[ #10 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/01/A.P1D.20230110T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230110T053000Z.aust.chl_oc3.nc
+Result:              File added (32372878 Bytes)
+
+--[ #11 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/01/A.P1D.20230111T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230111T053000Z.aust.chl_oc3.nc
+Result:              File added (38368240 Bytes)
+
+--[ #12 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/01/A.P1D.20230112T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230112T053000Z.aust.chl_oc3.nc
+Result:              File added (45942250 Bytes)
+
+--[ #13 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/01/A.P1D.20230113T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230113T053000Z.aust.chl_oc3.nc
+Result:              File added (37174768 Bytes)
+
+--[ #14 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/01/A.P1D.20230114T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230114T053000Z.aust.chl_oc3.nc
+Result:              File added (30157284 Bytes)
+
+--[ #15 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/01/A.P1D.20230115T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230115T053000Z.aust.chl_oc3.nc
+Result:              File added (33978152 Bytes)
+
+--[ #16 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/01/A.P1D.20230116T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230116T053000Z.aust.chl_oc3.nc
+Result:              File added (28544416 Bytes)
+
+--[ #17 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/01/A.P1D.20230117T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230117T053000Z.aust.chl_oc3.nc
+Result:              File added (36182608 Bytes)
+
+--[ #18 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/01/A.P1D.20230118T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230118T053000Z.aust.chl_oc3.nc
+Result:              File added (26744668 Bytes)
+
+--[ #19 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/01/A.P1D.20230119T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230119T053000Z.aust.chl_oc3.nc
+Result:              File added (29763481 Bytes)
+
+--[ #20 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/01/A.P1D.20230120T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230120T053000Z.aust.chl_oc3.nc
+Result:              File added (30844054 Bytes)
+
+--[ #21 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/01/A.P1D.20230121T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230121T053000Z.aust.chl_oc3.nc
+Result:              File added (28765022 Bytes)
+
+--[ #22 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/01/A.P1D.20230122T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230122T053000Z.aust.chl_oc3.nc
+Result:              File added (29196103 Bytes)
+
+--[ #23 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/01/A.P1D.20230123T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230123T053000Z.aust.chl_oc3.nc
+Result:              File added (27919959 Bytes)
+
+--[ #24 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/01/A.P1D.20230124T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230124T053000Z.aust.chl_oc3.nc
+Result:              File added (33226789 Bytes)
+
+--[ #25 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/01/A.P1D.20230125T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230125T053000Z.aust.chl_oc3.nc
+Result:              File added (31601234 Bytes)
+
+--[ #26 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/01/A.P1D.20230126T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230126T053000Z.aust.chl_oc3.nc
+Result:              File added (33664635 Bytes)
+
+--[ #27 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/01/A.P1D.20230127T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230127T053000Z.aust.chl_oc3.nc
+Result:              File added (26042560 Bytes)
+
+--[ #28 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/01/A.P1D.20230128T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230128T053000Z.aust.chl_oc3.nc
+Result:              File added (32009233 Bytes)
+
+--[ #29 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/01/A.P1D.20230129T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230129T053000Z.aust.chl_oc3.nc
+Result:              File added (34577103 Bytes)
+
+--[ #30 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/01/A.P1D.20230130T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230130T053000Z.aust.chl_oc3.nc
+Result:              File added (31482408 Bytes)
+
+--[ #31 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/01/A.P1D.20230131T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230131T053000Z.aust.chl_oc3.nc
+Result:              File added (31431745 Bytes)
+
+--[ #32 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/02/A.P1D.20230201T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230201T053000Z.aust.chl_oc3.nc
+Result:              File added (26112909 Bytes)
+
+--[ #33 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/02/A.P1D.20230202T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230202T053000Z.aust.chl_oc3.nc
+Result:              File added (29807187 Bytes)
+
+--[ #34 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/02/A.P1D.20230203T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230203T053000Z.aust.chl_oc3.nc
+Result:              File added (24840329 Bytes)
+
+--[ #35 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/02/A.P1D.20230204T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230204T053000Z.aust.chl_oc3.nc
+Result:              File added (23744135 Bytes)
+
+--[ #36 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/02/A.P1D.20230205T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230205T053000Z.aust.chl_oc3.nc
+Result:              File added (26291309 Bytes)
+
+--[ #37 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/02/A.P1D.20230206T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230206T053000Z.aust.chl_oc3.nc
+Result:              File added (24937725 Bytes)
+
+--[ #38 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/02/A.P1D.20230207T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230207T053000Z.aust.chl_oc3.nc
+Result:              File added (28637258 Bytes)
+
+--[ #39 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/02/A.P1D.20230208T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230208T053000Z.aust.chl_oc3.nc
+Result:              File added (23976710 Bytes)
+
+--[ #40 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/02/A.P1D.20230209T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230209T053000Z.aust.chl_oc3.nc
+Result:              File added (30020266 Bytes)
+
+--[ #41 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/02/A.P1D.20230210T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230210T053000Z.aust.chl_oc3.nc
+Result:              File added (24979584 Bytes)
+
+--[ #42 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/02/A.P1D.20230211T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230211T053000Z.aust.chl_oc3.nc
+Result:              File added (31698287 Bytes)
+
+--[ #43 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/02/A.P1D.20230212T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230212T053000Z.aust.chl_oc3.nc
+Result:              File added (34253687 Bytes)
+
+--[ #44 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/02/A.P1D.20230213T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230213T053000Z.aust.chl_oc3.nc
+Result:              File added (30158730 Bytes)
+
+--[ #45 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/02/A.P1D.20230214T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230214T053000Z.aust.chl_oc3.nc
+Result:              File added (32009667 Bytes)
+
+--[ #46 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/02/A.P1D.20230215T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230215T053000Z.aust.chl_oc3.nc
+Result:              File added (32621169 Bytes)
+
+--[ #47 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/02/A.P1D.20230216T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230216T053000Z.aust.chl_oc3.nc
+Result:              File added (37159840 Bytes)
+
+--[ #48 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/02/A.P1D.20230217T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230217T053000Z.aust.chl_oc3.nc
+Result:              File added (40260020 Bytes)
+
+--[ #49 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/02/A.P1D.20230218T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230218T053000Z.aust.chl_oc3.nc
+Result:              File added (45512297 Bytes)
+
+--[ #50 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/02/A.P1D.20230219T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230219T053000Z.aust.chl_oc3.nc
+Result:              File added (46610538 Bytes)
+
+--[ #51 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/02/A.P1D.20230220T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230220T053000Z.aust.chl_oc3.nc
+Result:              File added (43496935 Bytes)
+
+--[ #52 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/02/A.P1D.20230221T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230221T053000Z.aust.chl_oc3.nc
+Result:              File added (36492634 Bytes)
+
+--[ #53 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/02/A.P1D.20230222T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230222T053000Z.aust.chl_oc3.nc
+Result:              File added (23869459 Bytes)
+
+--[ #54 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/02/A.P1D.20230223T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230223T053000Z.aust.chl_oc3.nc
+Result:              File added (30064836 Bytes)
+
+--[ #55 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/02/A.P1D.20230224T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230224T053000Z.aust.chl_oc3.nc
+Result:              File added (23684174 Bytes)
+
+--[ #56 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/02/A.P1D.20230225T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230225T053000Z.aust.chl_oc3.nc
+Result:              File added (9745671 Bytes)
+
+--[ #57 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/02/A.P1D.20230226T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230226T053000Z.aust.chl_oc3.nc
+Result:              File added (17958680 Bytes)
+
+--[ #58 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/02/A.P1D.20230227T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230227T053000Z.aust.chl_oc3.nc
+Result:              File added (15281911 Bytes)
+
+--[ #59 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/02/A.P1D.20230228T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230228T053000Z.aust.chl_oc3.nc
+Result:              File added (19562033 Bytes)
+
+--[ #60 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/03/A.P1D.20230301T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230301T053000Z.aust.chl_oc3.nc
+Result:              File added (14046625 Bytes)
+
+--[ #61 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/03/A.P1D.20230302T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230302T053000Z.aust.chl_oc3.nc
+Result:              File added (28967594 Bytes)
+
+--[ #62 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/03/A.P1D.20230303T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230303T053000Z.aust.chl_oc3.nc
+Result:              File added (30660498 Bytes)
+
+--[ #63 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/03/A.P1D.20230304T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230304T053000Z.aust.chl_oc3.nc
+Result:              File added (35666604 Bytes)
+
+--[ #64 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/03/A.P1D.20230305T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230305T053000Z.aust.chl_oc3.nc
+Result:              File added (36084278 Bytes)
+
+--[ #65 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/03/A.P1D.20230306T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230306T053000Z.aust.chl_oc3.nc
+Result:              File added (36666263 Bytes)
+
+--[ #66 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/03/A.P1D.20230307T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230307T053000Z.aust.chl_oc3.nc
+Result:              File added (39514060 Bytes)
+
+--[ #67 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/03/A.P1D.20230308T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230308T053000Z.aust.chl_oc3.nc
+Result:              File added (35156152 Bytes)
+
+--[ #68 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/03/A.P1D.20230309T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230309T053000Z.aust.chl_oc3.nc
+Result:              File added (40318283 Bytes)
+
+--[ #69 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/03/A.P1D.20230310T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230310T053000Z.aust.chl_oc3.nc
+Result:              File added (45933613 Bytes)
+
+--[ #70 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/03/A.P1D.20230311T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230311T053000Z.aust.chl_oc3.nc
+Result:              File added (50036680 Bytes)
+
+--[ #71 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/03/A.P1D.20230312T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230312T053000Z.aust.chl_oc3.nc
+Result:              File added (40298500 Bytes)
+
+--[ #72 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/03/A.P1D.20230313T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230313T053000Z.aust.chl_oc3.nc
+Result:              File added (40539996 Bytes)
+
+--[ #73 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/03/A.P1D.20230314T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230314T053000Z.aust.chl_oc3.nc
+Result:              File added (39348505 Bytes)
+
+--[ #74 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/03/A.P1D.20230315T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230315T053000Z.aust.chl_oc3.nc
+Result:              File added (40323180 Bytes)
+
+--[ #75 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/03/A.P1D.20230316T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230316T053000Z.aust.chl_oc3.nc
+Result:              File added (37940071 Bytes)
+
+--[ #76 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/03/A.P1D.20230317T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230317T053000Z.aust.chl_oc3.nc
+Result:              File added (38144419 Bytes)
+
+--[ #77 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/03/A.P1D.20230318T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230318T053000Z.aust.chl_oc3.nc
+Result:              File added (41646420 Bytes)
+
+--[ #78 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/03/A.P1D.20230319T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230319T053000Z.aust.chl_oc3.nc
+Result:              File added (41991504 Bytes)
+
+--[ #79 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/03/A.P1D.20230320T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230320T053000Z.aust.chl_oc3.nc
+Result:              File added (34951123 Bytes)
+
+--[ #80 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/03/A.P1D.20230321T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230321T053000Z.aust.chl_oc3.nc
+Result:              File added (36647346 Bytes)
+
+--[ #81 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/03/A.P1D.20230322T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230322T053000Z.aust.chl_oc3.nc
+Result:              File added (32729410 Bytes)
+
+--[ #82 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/03/A.P1D.20230323T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230323T053000Z.aust.chl_oc3.nc
+Result:              File added (38259011 Bytes)
+
+--[ #83 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/03/A.P1D.20230324T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230324T053000Z.aust.chl_oc3.nc
+Result:              File added (31670636 Bytes)
+
+--[ #84 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/03/A.P1D.20230325T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230325T053000Z.aust.chl_oc3.nc
+Result:              File added (36530009 Bytes)
+
+--[ #85 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/03/A.P1D.20230326T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230326T053000Z.aust.chl_oc3.nc
+Result:              File added (33002114 Bytes)
+
+--[ #86 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/03/A.P1D.20230327T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230327T053000Z.aust.chl_oc3.nc
+Result:              File added (34831263 Bytes)
+
+--[ #87 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/03/A.P1D.20230328T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230328T053000Z.aust.chl_oc3.nc
+Result:              File added (34608933 Bytes)
+
+--[ #88 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/03/A.P1D.20230329T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230329T053000Z.aust.chl_oc3.nc
+Result:              File added (27247650 Bytes)
+
+--[ #89 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/03/A.P1D.20230330T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230330T053000Z.aust.chl_oc3.nc
+Result:              File added (33241995 Bytes)
+
+--[ #90 ]------------------------------------
+URL:                 https://imos-data.s3-ap-southeast-2.amazonaws.com/IMOS/SRS/OC/gridded/aqua/P1D/2023/03/A.P1D.20230331T053000Z.aust.chl_oc3.nc
+Filename in archive: A.P1D.20230331T053000Z.aust.chl_oc3.nc
+Result:              File added (30830934 Bytes)
+
+========================================================================
+Size of all files: -1401180376 Bytes
+Number of files included: 90/90
+Time taken: 2 minutes, 23.689 seconds
+========================================================================

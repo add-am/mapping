@@ -1,0 +1,920 @@
+---
+title: "Climate: Sea Surface Temperature"
+subtitle: "A Healthy Waters Partnership Analysis"
+description: "This script analyses and presents sea surface temperature data in the Northern Three reporting regions. The output of this is used in the Northern Three technical reports."
+author: "Adam Shand" 
+format: html
+params: 
+  target_fyear: 2024
+  disagg_factor: 5
+  project_crs: "EPSG:7844"
+---
+
+# Introduction
+
+This script contains the methods used to wrangle, analyse and present sea surface temperature data in the Northern Three regions. For a guide on downloading sst data refer to the README document for the Spatial Analysis GitHub repo. Note that SST data should be downloaded automatically by this script.
+
+Sea surface temperature data is predominantly used within the climate section of the technical report to "set the scene" for each basin in each region. SST data works in combination with the DHW data to provide and understand of heat stress in the marine environment. The main objectives of this script are to:
+
+ - Automatically download all required SST data.
+ - Create a key table and summary statistics table.
+ - Create a simplified monthly percentiles table for the technical report.
+ - Plot long term sst data for each region.
+ - Plot the current year of sst data for each region.
+ - Map the current year of sst data for each region.
+ - Map the anomaly of the current year of sst data from the long term mean.
+
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, janitor, sf, tmap, exactextractr, terra, RColorBrewer, ggplot2, ncdf4)
+
+```
+
+
+Then we also need to set up key variables for the script, as well as the output location.
+
+```{r}
+#| label: global vars and initial setup
+
+#set project variables: crs factor and current_fyear
+proj_crs <- params$project_crs
+fac <- params$disagg_factor
+current_fyear <- params$target_fyear
+
+#create a file path to help with saving things
+save_path <- here(glue("outputs/n3_climate_sea-surface-temperature/{current_fyear}/"))
+
+#bring that path to life
+dir.create(save_path)
+
+#create a few extras off of this for plots and maps
+dir.create(glue("{save_path}/plots/"))
+dir.create(glue("{save_path}/maps/"))
+
+#turn off spherical geometry
+sf_use_s2(F)
+
+#increase timeout length for slower download speeds
+options(timeout = 360)
+
+```
+
+# Load Data
+
+Now the script is set up we need to load in all of the required datasets. This will be broken into two segments:
+
+ - Spatial data specific to the N3 region - such as the region, zone, and sub zone boundaries.
+ - Sea Surface Temperature data
+
+## Spatial Data
+
+Load data from the data folder.
+
+::: {.callout-note}
+## WT Request
+A special request from the WT team is to use their marine boundary, rather than the marine boundary as defined by the NRM groups. Thus below we need to replace to NRM WT boundary with the custom version.
+:::
+
+``` {r}
+#| label: Load data
+
+#read in the custom function to clean column names into our specific style
+source("../functions/name_cleaning.R")
+
+#read in qld outlines data from the gisaimsr package, filter for land and islands, update crs
+qld <- get(data("gbr_feat", package = "gisaimsr")) |> 
+  name_cleaning() |> 
+  filter(FeatName %in% c("Mainland", "Island")) |> 
+  st_transform(proj_crs)
+
+#read in the northern three data and cut down to marine region
+n3_region <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg")) |> 
+  name_cleaning()
+
+n3_marine <- n3_region |> 
+  filter(Environment == "Marine",
+         BasinOrZone != "Burdekin Marine",
+         Region != "Burdekin") |> 
+  rename(Zone = BasinOrZone) |> 
+  mutate(Region = case_when(Region == "Burdekin" ~ "Dry Tropics",
+                           T ~ Region)) |> 
+  group_by(Region) |> summarise(geom = st_union(geom)) |> 
+  ungroup() |> st_cast()
+
+#read in the northern three data and cut down to everything but the marine region
+n3_basins <- n3_region |>
+  filter(Environment != "Marine") |> 
+  rename(Basin = BasinOrZone) |> group_by(Region, Basin) |> summarise(geom = st_union(geom)) |> 
+  ungroup() |> st_cast()
+
+#create a point for Townsville
+tsv <- st_as_sf(data.frame(Place = "Townsville", x = "-19.2590", y = "146.8169"), coords = c("y", "x"), crs = proj_crs)
+
+```
+
+This is where the replacement will happen.
+
+```{r}
+#| label: replace WT outline with custom
+#
+#read in the custom WT outline and edit to match the main dataset
+wt_custom <- st_read(here("data/archive/wt_full_marine.gpkg")) |> 
+  name_cleaning() |> 
+  select(Name) |> 
+  rename(Region = Name)
+
+#remove old WT and add new
+n3_marine <- n3_marine |> 
+  filter(Region != "Wet Tropics") |> 
+  bind_rows(wt_custom)
+
+```
+
+## Sea Surface Temperature
+
+Load in the sea surface temperature data from NOAA's website, thanks to their handy servers we can request and load data directly inside this script.
+
+```{r}
+#| label: load in data 
+
+path1 <- here("data/n3_climate_sea-surface-temperature/n3_sst.nc")
+
+if (file.exists(path1) == T){ #if file already exists read it in
+  
+  n3_sst <- rast(path1)
+  
+  } else { #otherwise download data and build file
+    
+    #create save folder for data in case this is first time running
+    download_path <- here("data/n3_climate_sea-surface-temperature/monthly_sst/")
+    dir.create(download_path, recursive = T)
+    
+    #create start of url (changes depending on year targeted)
+    start_url <- "https://www.star.nesdis.noaa.gov/pub/socd/mecb/crw/data/5km/v3.1_op/nc/v1.0/monthly/"
+    
+    #create empty variables for file naming, data storage and layer names
+    fname <- vector()
+    sst <- terra::rast()
+    lyr_names <- vector()
+    
+    #create a vector of numbers (dates) that we want to download
+    d1 <- as.Date("19850101", "%Y%m%d")
+    
+    if (current_fyear == format(Sys.time(), '%Y')){#if looking at real year, only take up to the current month minus one
+      d2 <- as.Date(paste0(current_fyear, format(Sys.time() - 2.628e+6, '%m'), "01"), "%Y%m%d")
+      
+    } else {#otherwise take all months
+      d2 <- as.Date(paste0(current_fyear, "12", "01"), "%Y%m%d")}
+    
+    #thus here is vector to loop over
+    date_vect <- format(seq(d1, d2, by = "month"), "%Y%m")
+
+    for (i in date_vect){
+      
+      #drop month off the end for naming
+      j <- str_sub(i, end = -3)
+      
+      #finish the file name
+      fname <- glue("{download_path}/sst_{i}.nc")
+          
+      #finish the url
+      url <- glue("{start_url}{j}/ct5km_sst-mean_v3.1_{i}.nc")
+          
+      if (file.exists(fname)){ #if the file is already downloaded open it from source and add it to the raster
+        
+        sst <- c(sst, rast(fname) |> subset(1))
+        
+        } else { #otherwise download the file using the url then append to the raster
+          
+          download.file(url, fname, mode = "wb")
+         
+          sst <- c(sst, rast(fname) |> subset(1))
+            
+        }
+      
+      #keep track of layer names
+      lyr_names <- append(lyr_names, glue("sst_{i}"))
+      
+    }
+
+    #set crs
+    crs(sst) <- proj_crs
+        
+    #add names
+    names(sst) <- lyr_names
+    
+    #cut the data down to only the northern three regions
+    n3_sst <- crop(sst, ext(n3_marine))
+    
+    #save the cut down version
+    writeCDF(n3_sst, path1, overwrite = T)
+      
+    #reload layer
+    n3_sst <- rast(path1)
+    
+    #clean up
+    rm(path1, start_url, fname, sst, lyr_names, i, url)
+    
+  }
+
+```
+
+# Analyse Data
+
+Now all the data loading has been completed we can begin the analysis. Key steps that occur in this section of the script are: 
+
+ - Creation of a "Key Table" (a table that contains all layer names, dates, and associated info (e.g. financial year)).
+ - Creation of a summary table that will store all important data.
+ - Creation of a report table that contains only the essentials needed for presentation in the technical report.
+
+## Key Table
+
+The NetCDF/Raster format provides data that is stacked into layers. Each layer contains a grid of `r dim(n3_sst)[2]` (across) by
+`r dim(n3_sst)[1]` (down) cells. There are `r dim(n3_sst)[3]` layers in this data set. Each layer has its own name, characteristics, and information.
+
+Below we create a table to provide insight into each layer of data. Using the layer_date column confirm that the data is current.
+
+You can think of this table as a "key" that we will use to determine what layer names are associated with your choice of year, month, day, or financial year. Knowing the name of the layer is essential to select the layer from the data. For example, filtering by fyear_end = `r current_fyear` gives us all the relevant layer names.
+
+```{r}
+#| label: Creating Table Key
+
+#create a tibble of layer names and dates
+name_date_tbl <- tibble("LayerName" = names(n3_sst), "LayerDate" = time(n3_sst))
+
+#add extra info (fyear, year, month, etc.)
+name_date_tbl <- name_date_tbl |> mutate(Year = year(LayerDate),
+                                         Month = month(LayerDate, label = T),
+                                         Fyear = case_when(month(LayerDate) > 6 ~ Year + 1, T ~ Year))
+
+```
+
+## Summary Table
+
+The first analysis we will do is to create a summary table that provides an overview of all important aspects. This table will include information per basin on:
+
+- Monthly mean
+- Annual mean
+- Long-term temperature
+- Monthly percentile rank
+- Annual percentile rank
+- Anomaly (+/- the ltm)
+- Percentage of ltm
+
+Each of these components require a bit of work.
+
+### Means
+
+First up is mean the exact means we are going to calculate are as follows:
+
+ - Monthly Mean: This is the SPATIAL mean of all the sea surface temperature cells across the region We will calculate this using the exact_extract(). For example, if there were 3 temperature cells in the Dry Tropics Marine Region for the date of 01/01/2020, that had the values 25C, 26C, and 27C. Then the monthly mean value for the Dry Tropics Marine Region for the date of 01/01/2020 would be 26C.
+ - Annual Mean: This is calculated as the MEAN of the monthly mean values for each region. Note, because it is the mean of the SPATIAL mean monthly values, its both the mean of the month AND the spatial mean of all temperatures experienced across the entire region.
+ - Long-Term Mean (LTM): To understand if the current year had higher, or low, temperatures, we need to compare it against something. The LTM is what we compare it against. The LTM is calculated by taking the mean of the annual mean values for each basin from a 30-year block of data known as a climate normal (more on this in the LTM section below).
+ 
+#### Monthly Mean
+
+This happens first at the monthly time frame. It is important to note that the monthly MEAN is the mean of all the sea surface temperature cells across the region. I.e. This is a spatial mean.
+
+To get data from we need to specify the layers we are interested in. We use the "key table" from earlier to help here. For example, below I specify I want layers from the `r current_fyear` financial year. (This can be updated by changing the globally set current_fyear variable).
+
+```{r}
+#| label: calculate monthly mean
+
+#get mean from all layers
+sst_mean_region <- tibble(exact_extract(n3_sst, n3_marine, fun = "mean", append_cols = T))
+
+#fix column names
+names(sst_mean_region) <- sub('mean.', '', names(sst_mean_region))
+
+#pivot the data and round values, then use left_join() to add time values, year, mon, and fyear from the key table
+monthly_region_sst <- pivot_longer(sst_mean_region, cols = 3:ncol(sst_mean_region),
+                                   names_to = "LayerName", values_to = "MonthlyMeanSst") |>
+  mutate(MonthlyMeanSst = round(MonthlyMeanSst, 1)) |>
+  left_join(name_date_tbl, by = "LayerName")
+
+#remove financial years without a full set of data (sually just 1911, and sometimes the most recent fyear).
+removal_rows <- monthly_region_sst |> 
+  group_by(Region, Fyear) |> 
+  summarise(MonthCount = length(unique(Month))) |> 
+  ungroup() |> 
+  filter(MonthCount < 12)
+
+#subtract from the main table, any rows that appear in the removal table
+monthly_region_sst <- anti_join(monthly_region_sst, removal_rows, by = "Fyear")
+
+#clean up
+rm(sst_mean_region, removal_rows)
+
+```
+
+#### Annual Mean
+
+We can then easily calculate the annual air temperature by taking the mean of the monthly mean values.
+
+It is important to note that the monthly MEAN values (which as covered above, are the spatial mean of all sea surfance temperature cells within the region). Thus, the mean annual air temperature for the basin, is also a spatial mean of all air temperature cells in the basin.
+
+```{r}
+#| label: calculate annual mean
+
+#calculate financial year annual rainfall statistics
+annual_region_sst <- monthly_region_sst |> 
+  group_by(Region, Fyear) |> 
+  summarise(AnnualMeanSst = round(mean(MonthlyMeanSst), 1)) |> 
+  ungroup()
+
+#combine the monthly and annual tables
+annual_region_sst <- left_join(monthly_region_sst, annual_region_sst)
+
+#clean up
+rm(monthly_region_sst)
+
+```
+
+We now need to take a moment to store all of this historic data to the side, as for one plot later on we will need every year.
+
+```{r}
+#| label: store all years of data
+
+all_years_sst <- annual_region_sst
+
+```
+
+However, for the most part. we only need to keep the current year of data, and the 30 years of data that will be used for the LTM (below).
+
+```{r}
+#| label: keep only relevant data
+
+#remove everything we don't need
+annual_region_sst <- annual_region_sst |> 
+  filter(Fyear %in% c((1991:2020), current_fyear))
+
+```
+
+#### Long Term Mean 
+
+To understand if the current year had high, or low, sst, we need to compare it against something. The LTM is what we compare it against. The LTM is calculated by taking the mean of the annual mean values for each region from a 30-year block of data known as a climate normal.
+
+For sea surface temperature data we don't have extensive pre-industrial data. So the 30-year climate normal that we are using is 1991 to 2020 (same as the rainfall analysis).
+
+Something important to note is that, because we are working on the financial year for our results, the LTM will also be based on the financial year. So the 30-year period 1991 to 2020 is more specifically from 1st July 1990 to 30th June 2020.
+
+```{r}
+#| label: calculate LTM
+
+#select our 30 year reference period and calculate the ltm values (note we have to create this as a separate dataset to not accidentally grab the current year of data if it sits outside the LTM period).
+climate_normal <- annual_region_sst |> 
+  filter(Fyear %in% (1991:2020)) |>
+  group_by(Region) |> 
+  mutate(AnnualLtm = round(mean(AnnualMeanSst), 1)) |> 
+  group_by(Region, Month, AnnualLtm) |> 
+  summarise(MonthlyLtm = round(mean(MonthlyMeanSst), 1)) |> 
+  ungroup()
+
+#bind 30 ltm climate normal values to the main dataset
+annual_region_sst <- left_join(annual_region_sst, climate_normal)
+
+#clean up
+rm(climate_normal)
+
+```
+
+### Percentiles (Monthly and Annual)
+
+Now that the three types of means have been calculated we can work on determining the percentiles for the data.
+
+It is important to note here that the percentiles are calculated only from the same 30 years of data that are used by the LTM. This is a change from how we previously calculated percentiles (using the entire dataset).
+
+```{r}
+#| label: calculate percentiles
+
+#calculate the percentile ranks for the mean sst in each basin each month. Percentiles are calculated from all years of data
+annual_region_sst <- annual_region_sst |> 
+  group_by(Region, Month) |> 
+  mutate(MonthlyMeanSstPercentileRank = round(percent_rank(MonthlyMeanSst)*100, 1)) |> 
+  ungroup() |> 
+  group_by(Region) |> 
+  mutate(AnnualMeanSstPercentileRank = round(percent_rank(AnnualMeanSst)*100, 1)) |>  
+  ungroup()
+
+```
+
+### Anomalies
+
+Once we have calculated the LTM we can then compare the current year of data against the LTM and add the last lot of statistics to the summary table which are the current years anomaly from the ltm and percentage of the ltm.
+
+```{r}
+#| label: calculate anomaly and percentage of ltm
+
+#compare LTM and current year data
+summary_tbl <- annual_region_sst |> 
+  mutate("AnnualAnomaly" = round((AnnualMeanSst - AnnualLtm), 1),
+         "MonthlyAnomaly" = round((MonthlyMeanSst - MonthlyLtm), 1),
+         "AnnualPercentageOfLtm" = round(((AnnualMeanSst/AnnualLtm)*100), 1),
+         "MonthlyPercentageOfLtm" = round(((MonthlyMeanSst/MonthlyLtm)*100), 1)) |> 
+  ungroup()
+
+#clean up
+rm(annual_region_sst)
+
+```
+
+### Save Summary Table
+
+With the summary table (containing all relevant statistics) now completed we can save that table to our output location.
+
+Remember, this summary table should only include the 30 years of data for the LTM period, and the single year that is the current fyear for the script.
+
+```{r}
+#| label: save summary table
+
+#save to the main output folder
+write_csv(summary_tbl, glue("{save_path}/sea-surface-temperature_summary.csv"))
+
+```
+
+## Monthly Percentiles Table
+
+The final table we need to create is the simplified percentiles table that will be directly put into the technical report. This table contains the monthly basin percentiles for the current year, and the annual percentile. However before saving, the data needs to be adjusted to fit into the following groupings:
+
+-   "Lowest 1%": percentile rank $\le$ 1
+-   "Very much below average": percentile rank $\gt$ 1 to $\lt$ 10
+-   "Below average": percentile rank = 10 to $\lt$ 30
+-   "Average": percentile rank = 30 to $\lt$ 70
+-   "Above average": percentile rank = 70 to $\lt$ 90
+-   "Very much above average": percentile rank = 90 to $\lt$ 99
+-   "Highest 1%": percentile rank $\ge$ 99
+
+```{r}
+#| label: create monthly percentiles table
+
+#filter for current year and drop unnecessary columns
+monthly_percentiles_tbl <- summary_tbl |> 
+  filter(Fyear == current_fyear) |> 
+  select(c(Region, Month, MonthlyMeanSstPercentileRank, AnnualMeanSstPercentileRank))
+
+#standardise values for each group
+monthly_percentiles_tbl <-  monthly_percentiles_tbl |> 
+  mutate(across(where(is.numeric), ~ case_when(. <= 1 ~ 1,
+                                               . > 1 & . < 10 ~ 2,
+                                               . >= 10 & . < 30 ~ 3,
+                                               . >= 30 & . < 70 ~ 4,
+                                               . >= 70 & . < 90 ~ 5,
+                                               . >= 90 & . < 99 ~ 6,
+                                               . >= 99 ~ 7)))
+
+#pivot data wider for presenting
+monthly_per_wide <- pivot_wider(monthly_percentiles_tbl, names_from = Month, values_from = MonthlyMeanSstPercentileRank) |> 
+  relocate(AnnualMeanSstPercentileRank, .after = last_col())
+
+```
+
+Before we save this table, we will use a custom function to create an excel workbook that embeds coloring rules into the output. This function relies on a R package (openxlsx2) that is currently in the development stage, and may or may not run smoothly. An overview of the custom function (called cond_form_climate()) is as follows:
+
+`cond_form_climate(df, file_name, indicator)`
+
+Where: 
+
+ - df: any tbl or data.frame - although this function will obviously only work with the monthly climate tables
+ - file name: whatever you want the output file to be named
+ - indicator: can chose from three options: rainfall, air_temperature, or sea_surface_temperature (changes the colour scheme)
+
+```{r}
+#| label: load and use conditional formatting function
+
+#read in climate condition formatting function
+source(here("functions/cond_form_climate.R"))
+
+#run function, noting to specify which colour system we want to use
+cond_form_climate(monthly_per_wide, glue("{save_path}/sea-surface-temperature_monthly-percentiles"), indicator = "sea_surface_temperature")
+
+```
+
+# Visualise Data
+
+The final component of this script is to visualise sst data, using both plots and maps. Below we will create:
+
+ - Line plots of long term annual rainfall for each basin
+ - Line plots of the current year of rainfall for each basin
+ - Maps of the current year of rainfall for each basin
+ - Maps of the current years' anomaly from long term trends for each basin
+
+## All Historical Data Plot
+
+The standard plot that we create for all climate indicators is a line plot of data over time - to see long-term trends. This plot is currently included as appendix material for the technical reports.
+
+```{r}
+#| label: plotting annual mean against percentage difference from mean
+
+for (i in n3_marine$Region){
+  
+  #pick out data based on the basin name
+  region_temp <- all_years_sst |> filter(Region == i)
+  
+  #get the ltm (30-year) for the region
+  region_ltm <- summary_tbl |> filter(Region == i, Fyear %in% (1991:2020)) |> 
+    select(AnnualLtm) |> max()
+  
+  #Set up the background data frame
+  groups <- factor(c("+2.5 to +2C", "+2 to +1.5C", "+1.5 to +1C", "+1 to +0.5C", "+0.5 to 0C", "0 to -0.5C", 
+              "-0.5 to -1C", "-1 to -1.5C", "-1.5 to -2C", "-2 to -2.5C"),
+              levels = c("+2.5 to +2C", "+2 to +1.5C", "+1.5 to +1C", "+1 to +0.5C", "+0.5 to 0C", "0 to -0.5C", 
+                         "-0.5 to -1C", "-1 to -1.5C", "-1.5 to -2C", "-2 to -2.5C"))
+  
+  transformer <- c(2.5, 2, 1.5, 1, 0.5, -0.5, -1, -1.5, -2, -2.5)
+  
+  x = rep(c(min(region_temp$Fyear), max(region_temp$Fyear) + 1), each = length(groups))
+  
+  #build a data frame for the background
+  df <- data.frame(X = x, Groups = groups, Transformer = transformer)
+  
+  #create hi and low lims
+  df <- df |> mutate(Y = region_ltm + Transformer) |> 
+    mutate(Ylo = case_when(Transformer > 0 ~ Y - 0.5, TRUE ~ Y)) |> 
+    mutate(Yhi = case_when(Transformer > 0 ~ Y, TRUE ~ Y + 0.5))
+  
+  #get min, max and break values for breaks in the background
+  min_per <- min(df$Ylo)
+  max_per <- max(df$Yhi)
+  breaks <- unique(df$Yhi)
+  
+  #get max two values
+  max_2 <- head(unique(sort(df$Yhi, decreasing = T)),2)
+  
+  #use these breaks to calculate the perfect spot for an annotation label
+  label_location <- max_2[1] - (max_2[1]-max_2[2])/2
+  
+  #create colour palette
+  col_palette <- rep(brewer.pal(length(groups), "RdBu"),2)  
+  
+  #plot the background layer
+  background <- ggplot(df) +
+    geom_ribbon(aes(x = X, ymin = Ylo, ymax = Yhi, fill = Groups), alpha = 1) +
+    geom_line(aes(x = X, y = Y, color = Groups)) +
+    scale_color_manual(values = col_palette, name = "Degree's +/- \nLong-Term Mean") + 
+    scale_fill_manual(values = col_palette, name = "Degree's +/- \nLong-Term Mean")
+  
+  #create the main plot
+  percent_df_plot <- background +
+    geom_point(data = region_temp, mapping = aes(x = Fyear, y = AnnualMeanSst), colour = "black") +
+    geom_line(data = region_temp, mapping = aes(x = Fyear, y = AnnualMeanSst), colour = "black") + 
+    geom_hline(aes(yintercept = region_ltm, linetype = glue("{region_ltm}C")), colour = "red") +
+    scale_linetype_manual(name = "Long-Term Mean", values = 1) +
+    geom_vline(xintercept = 1990, linetype = "dashed", colour = "blue") +
+    geom_vline(xintercept = 2020, linetype = "dashed", colour = "blue") +
+    annotate(geom = "label", x = 2004, y = label_location, label = "30-Year Climate Normal", 
+             size = 3, hjust = 0.4, fill = "blue", colour = "white", fontface = "bold") +
+    scale_y_continuous(name = "Sea Surface Temperature (C)", limits = c(min_per, max_per), breaks = breaks, expand = c(0, 0)) +
+    scale_x_continuous(name = "Financial Year (ending)", expand = c(0, 0)) + 
+    ggtitle(glue("Mean annual sea surface temperature in the {i} region since 1985")) +
+    theme_bw() + theme(panel.grid.major = element_blank(), 
+                       panel.grid.minor = element_blank()) +
+    theme(plot.title = element_text(hjust = 0.5))
+  
+  #edit variable name for better save path
+  i_edit <- tolower(gsub(" ", "-", gsub("'", "", i)))
+  
+  #save the static plot
+  ggsave(percent_df_plot, filename = glue("{save_path}/plots/{i_edit}-region_yearly_sea-surface-temperature.png"), 
+       height = 7, width = 12)
+
+}
+
+#clean up
+rm(min_per, max_per, breaks, background, df, x, groups, transformer, target_region, 
+   target_data, col_palette)
+
+```
+
+long term annual plots are now saved, see below for an example.
+
+```{r}
+#| label: show long term annual plot
+#| output: true
+
+percent_df_plot
+
+```
+
+## Current Year Plot
+
+A newer plot that we are looking at creating is a plot of the current year (monthly) compared to the long term expected value for each month. This plot is not currently included in the technical report but may be so in the future.
+
+```{r}
+#| label: plot current year
+
+#create ltm and confidence band data
+summary_tbl <- summary_tbl |>
+  mutate(MonthNumb = case_when(Month == "Jan" ~ 7, Month == "Feb" ~ 8, Month == "Mar" ~ 9,
+                                Month == "Apr" ~ 10, Month == "May" ~ 11, Month == "Jun" ~ 12,
+                                Month == "Jul" ~ 1, Month == "Aug" ~ 2, Month == "Sep" ~ 3,
+                                Month == "Oct" ~ 4, Month == "Nov" ~ 5, Month == "Dec" ~ 6))
+
+#initialize plotting loop
+for (i in n3_marine$Region) {
+  
+  #get a 30-year normal table
+  selected_region <- summary_tbl |> filter(Region == i, Fyear %in% (1991:2020))
+  
+  #get the 99th and 1st values for each month
+  max_per <- selected_region |> 
+    group_by(MonthNumb) |> 
+    summarise(MaxSst = quantile(MonthlyMeanSst, 0.99),
+              MinSst = quantile(MonthlyMeanSst, 0.01))
+  
+  #get the 90th and 10th values for each month 
+  outer_per <- selected_region |> 
+    group_by(MonthNumb) |> 
+    summarise(MaxSst = quantile(MonthlyMeanSst, 0.9),
+              MinSst = quantile(MonthlyMeanSst, 0.1))
+  
+  #get the 30th and 70th values for each month 
+  inner_per <- selected_region |> 
+    group_by(MonthNumb) |> 
+    summarise(MaxSst = quantile(MonthlyMeanSst, 0.7),
+              MinSst = quantile(MonthlyMeanSst, 0.3))
+  
+  #get a current year table
+  cy_region <- summary_tbl |> filter(Region == i, Fyear == current_fyear)
+  
+  #plot the graph
+  plot <- ggplot() +
+    geom_ribbon(data = max_per, aes(x = MonthNumb, ymin = MinSst, ymax = MaxSst, fill = "#fae4d2")) +    # Add shaded ribbon
+    geom_ribbon(data = outer_per, aes(x = MonthNumb, ymin = MinSst, ymax = MaxSst, fill = "#fabf8c")) +  # Add shaded ribbon
+    geom_ribbon(data = inner_per, aes(x = MonthNumb, ymin = MinSst, ymax = MaxSst, fill = "#ed872d")) +  # Add shaded ribbon
+    geom_smooth(data = selected_region, aes(x = MonthNumb, y = MonthlyMeanSst, color = "black"), se = F, linewidth = 1.5) +
+    geom_line(data = cy_region, aes(x = MonthNumb, y = MonthlyMeanSst, colour = "red"), linewidth = 1.5, show.legend = T) +
+    scale_fill_identity(name = "Percentile", labels = c("30th-70th", "10th-90th", "1st-99th"), guide = "legend") +
+    scale_color_identity(name = "Temperature", labels = c("LTM", "SST"), guide = "legend") +
+    scale_x_continuous(name = "", breaks = 1:12, labels = cy_region$Month, expand = c(0, 0)) +
+    scale_y_continuous(name = "Temperature (C)", expand = c(0, 0)) +
+    ggtitle(glue("Monthly temperature in the {i} basin for the {current_fyear} financial year")) +
+    theme(panel.background = element_blank(), panel.border = element_blank(), panel.grid.major = element_blank(),
+          axis.title.x = element_blank(), axis.line = element_line(colour = "black"),
+          plot.title = element_text(hjust = 0.5))
+
+  #edit target basin variable slightly for better save path
+  i <- tolower(gsub(" ", "-", gsub("'", "", i)))
+  
+  ggsave(glue("{save_path}/plots/{i}-region_monthly_sea-surface-temperature.png"), plot, width = 10, height = 4)
+}
+
+```
+
+These plots are much simpler and might be useful for more educational/quick-read pieces.
+
+```{r}
+#| label: show cy plot
+#| output: true
+
+plot
+
+```
+
+## Current Year and Anomaly Maps
+
+Another staple of the technical report is a map of the mean annual sea surface temperature for each region for the current year. To compliment this map we will also create a map of the current years' anomaly from the long term mean annual sst for each region, and them plot them side-by-side.
+
+In the first code chunk we create each of the raster layers required.
+
+```{r}
+#| label: get map for current year
+
+#select only the current financial year
+target_period <- name_date_tbl |> filter(Fyear == current_fyear)
+
+#create a mean of current fyear map
+cy_sst_map <- mean(subset(n3_sst, target_period$LayerName))
+
+#create an empty SpatRaster to store the 30-year long term mean data
+ltm_30_stack <- rast()
+
+for (i in 1991:2020) {
+  
+  #create a name based on iteration
+  layer_name <- glue("fyear_{i-1}_{i}")
+  
+  #create a subset of the name_date_tbl for the date range
+  target_period <- name_date_tbl |> filter(Fyear == i)
+  
+  #Use subset to select layers and take the mean for the yearr
+  raster_layer <- mean(subset(n3_sst, target_period$LayerName))
+  
+  #update layer name
+  names(raster_layer) <- layer_name
+    
+  #put layers into a single stack
+  ltm_30_stack <- c(ltm_30_stack, raster_layer)
+
+}
+
+#create a ltm map
+ltm_30_sst_map <- mean(ltm_30_stack)
+
+#put the two SpatRasters into one for next operation
+anom_rast <- c(cy_sst_map, ltm_30_sst_map)
+
+#subtract ltm from cy mean to get an anomaly map
+anom_sst_map <- lapp(anom_rast, fun = function(r1, r2){return(r1 - r2)})  
+
+#rename layer
+names(anom_sst_map) <- "Sea-Surface-Temperature_Anomaly_(C)"
+
+#interpolate data to increase resolution and therefore accuracy
+if (fac > 1) {
+  cy_sst_map <- disagg(cy_sst_map, fac, "bilinear")
+  anom_sst_map <- disagg(anom_sst_map, fac, "bilinear")
+}
+
+#then mask again to get a precise border
+cy_sst_n3_crop <- mask(cy_sst_map, vect(n3_marine))
+anom_sst_n3_crop <- mask(anom_sst_map, vect(n3_marine))
+
+```
+
+### Calculate Legend Values
+
+Then we need to determine the min and max values to use for the legend for the anomaly map.
+
+It is important to note here that it was decided that the anomaly maps require a consistent legend between years (so they also share a colour scheme - i.e. shades of red in all maps is associated with the same C temperature values). It was also decided that this was not necessary for the current year air temperature maps.
+
+Work was done to experiment with a range of options to determine the best min and max values to use and it was decided to use the min and max anomalies values that have been recorded in the 30-year climate normal period.
+
+This is actually really easy to do as well (in this specific example, other options were a right pain).
+
+Extra Note - it seems that each year past 2020 has been in itself an extreme. So we will simply include these years in the assessment.
+
+```{r}
+#| label: finding the largest anomalies
+
+#create an empty raster to store the output
+all_anomalies <- rast()
+
+#for each fyear in the 30 year period, calculate the annual value, then compare it to the ltm value and save the anomalies for that year
+for (i in 1991:2023){
+  
+  #create a name based on iteration
+  layer_name <- glue("fyear_{i-1}_{i}")
+  
+  #create a subset of the name_date_tbl for the date range
+  target_period <- name_date_tbl |> filter(Fyear == i)
+  
+  #Use subset to select layers and sum into a single layer
+  raster_layer <- mean(subset(n3_sst, target_period$LayerName))
+  
+  #update layer name
+  names(raster_layer) <- layer_name
+
+  #put the two SpatRasters into one for next operation
+  comparison_rast <- c(raster_layer, ltm_30_sst_map)
+  
+  #subtract ltm from target year mean to get an anomaly map
+  comparison_rast_map <- lapp(comparison_rast, fun = function(r1, r2){return(r1 - r2)})
+  
+  #rename layer
+  names(comparison_rast_map) <- glue("fyear_{i-1}_{i}")
+  
+  #stack all the comparisons together to be looked through later
+  all_anomalies <- c(all_anomalies, comparison_rast_map)
+  
+}
+
+#interpolate data to increase resolution and therefore accuracy
+if (fac > 1) {
+  all_anomalies <- disagg(all_anomalies, fac, "bilinear")
+}
+
+#then mask again to get a precise border
+all_anomalies_n3_crop <- mask(all_anomalies, vect(n3_marine))
+
+```
+
+We also need to check if the anomaly for the current year exceeds the maximum anomaly recorded from within the 30-year climate normal. The easiest way to do this, is just to add the cy anomaly map to the full stack of anomaly maps, and if it just so happens to be the greatest (+ or -) then it will be selected.
+
+```{r}
+#| label: add cy anomaly to the stack
+
+#stack together
+all_anomalies_n3_crop <- c(all_anomalies_n3_crop, anom_sst_n3_crop)
+
+```
+
+We can then plot the current year, and current year anomaly, sst data at a region level and basin level.
+
+```{r}
+#| label: plot cy and ltm temperature map
+
+#change name of layer for plot
+names(cy_sst_n3_crop) <- "Mean SST (C)"
+names(anom_sst_n3_crop) <- "Anom. SST (C)"
+
+#create some vectors of objects in the global environment to iterate over
+map_type <- c("anom", "cy")
+pal_type <- c("-RdBu", "Reds")
+mid_type <- list(0, NULL)
+break_type <- c("anom_break", "cy_break")
+
+#using unique regions created earlier
+for (i in n3_marine$Region) {
+
+  #filter all marine zones by region
+  target_region <- n3_marine |> filter(Region == i)
+  
+  #get the associated basins
+  region_basins <- n3_basins |> filter(Region == i)
+
+  #mask to the specific region
+  cy <- trim(mask(cy_sst_n3_crop, vect(target_region)))
+  anom <- trim(mask(anom_sst_n3_crop, vect(target_region)))
+  all_anoms_stack <- trim(mask(all_anomalies_n3_crop, vect(target_region)))
+  
+  #calculate the breaks for the cy legend based on the min and max for the actually cy data
+  cy_break <- plyr::round_any(seq(from = minmax(cy)[1], to = minmax(cy)[2], length.out = 11), 0.1)
+
+  #calculate the breaks for the anom legend based on the min and max for all 30 years of ltm data
+  anom_break <- plyr::round_any(seq(from = min(as.data.frame(minmax(all_anoms_stack))), 
+                                         to = max(as.data.frame(minmax(all_anoms_stack))), 
+                                         length.out = 11), 0.1)
+  
+  for (j in 1:2){
+    
+    #create a map of the area
+    map <- tm_shape(get(map_type[j])) +
+      tm_raster(legend.reverse = T, palette = pal_type[j], midpoint = mid_type[[j]], style = "fixed", breaks = get(break_type[j])) +
+      tm_shape(qld) +
+      tm_polygons(col = "grey80", border.col = "black") +
+      tm_shape(target_region, is.master = T) +
+      tm_borders(col = "black") +
+      tm_shape(region_basins) +
+      tm_polygons(col = "grey90", border.col = "black") +
+      tm_shape(tsv) +
+      tm_symbols(size = 0.3, col = "white", border.col = "black", border.lwd = 2, shape = 23) +
+      tm_text("Place", shadow = T, xmod = -1.8, ymod = 0.1, size = 0.7) +
+      tm_layout(legend.frame = T, legend.bg.color = "White", asp = 1.1, legend.text.size = 0.7, 
+                legend.position = c("right", "bottom")) + tm_scale_bar(width = 0.15, text.size = 0.7, position = c(0.59, 0)) +
+      tm_compass(position = c("right", "top"))
+    
+    #edit variable name for better save path
+    i_edit <- tolower(gsub(" ", "-", gsub("'", "", i)))
+    
+    #save map for later
+    assign(glue("{map_type[j]}_mean_map_{i_edit}_region"), map)
+      
+    #save the map as a png
+    tmap_save(map, filename = glue("{save_path}/maps/{i_edit}-region_{map_type[j]}_sea-surface-temperature.png"))
+    
+  }
+}
+
+```
+
+With an example output that looks like this (the actually outputs look much better, without overlap etc.)
+
+```{r}
+#| label: show example map 1
+#| output: true
+
+map
+
+```
+
+Finally, we can combined all of these plots into side-by-side versions.
+
+``` {r} 
+#| label: side by side maps
+#| output: false
+
+for (i in unique(n3_marine$Region)) {
+  
+  #edit variable name for better save path
+  i <- tolower(gsub(" ", "-", gsub("'", "", i)))
+  
+  #grab two of the maps
+  x <- get(glue("cy_mean_map_{i}_region"))
+  y <- get(glue("anom_mean_map_{i}_region"))
+  
+  #combine them
+  map <- tmap_arrange(x,y)
+  
+  #save the map as a png
+  tmap_save(map, filename = glue("{save_path}/maps/{i}-region_sea-surface-temperature_facet-map.png"))
+}
+
+```
+
+here is an example of how the maps look.
+
+```{r}
+#| label: show an example of the maps
+#| output: true
+
+map
+
+```
+
+Script complete :)

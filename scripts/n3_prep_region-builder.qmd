@@ -1,0 +1,950 @@
+---
+title: "Northern Three Region Builder"
+subtitle: "A Healthy Waters Partnership Analysis"
+description: "This script collates and sythesises all relevant geospatial information in the Northern Three region. This includes basins, zones, sub basins and sub zones, environments and special geographic areas. The output is a concise single geopackage file ready for further spatial analysis."
+author: "Adam Shand"
+format: html
+params:
+  project_crs: "EPSG:7844"
+---
+
+# Introduction
+
+:::{.callout-warning}
+This script is required for every other script in the repo to run. The script should not be adjusted without a strong geospatial knowledge.
+:::
+
+This document contains the script (and walk through) used to collate, wrangle, and combine all the spatial features of the Northern Three regions. it is assumed that all required datasets have been downloaded and stored in the correct folder, for a guide on downloading each of the datasets refer to the README document for the Spatial Analysis GitHub repo. The main objectives of this script are to:
+
+ - Create the land-based region boundaries for each partnership (Wet Tropics, Dry Tropics, Mackay Whitsunday Isaac).
+ - Create semi-custom marine regional boundaries for each partnership.
+ - Create the basin boundaries within each region (WT: 9, DT: 4, MWI: 5).
+ - Create the sub basin boundaries for specific basins in each region (e.g. Black, Ross, and Russell-Mulgrave Basins).
+ - Create the equivalent marine versions of basins and sub basins (herein called zones and sub zones).
+ - Create the Environmental Value Zones for special features (e.g. assigned Paluma Dam to the Black Basin).
+ - Create the three water types zones (Freshwater, Estuarine, Marine).
+ - Assign all islands to their nearest basin neighbor where appropriate (e.g. Magnetic Island is part of the Ross Basin, Hinchinbrook is part of the Murray Basin).
+
+Some of these objectives (e.g. custom marine boundaries) rely on decisions made by the N3 regions in collaboration, rather than on robust publicly available datasets. These discussions and decisions have been documented as issues on the Spatial Analysis GitHub repo and are linked below.
+
+ - [Decision to use Drainage Basin outlines](https://github.com/Northern-3/spatial-analyses/issues/1)
+ - [Dividing Mulgrave-Russell](https://github.com/Northern-3/spatial-analyses/issues/2)
+ - [Marine Outlines](https://github.com/Northern-3/spatial-analyses/issues/16)
+ - [History of Dry Tropics borders](https://github.com/Northern-3/spatial-analyses/issues/18)
+
+# Script Set Up
+
+This script requires multiple core spatial packages, because this is the first script that should be run throughout the entire repo we will install a range of special packages using a custom function, then manually install a special package designed to handle the download and installation of all future packages.
+
+```{r}
+#| label: load packages
+
+#load and install (if required) pacman package handler packages
+if(!require("pacman")){install.packages("pacman")}
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(sf, tmap, glue, here, tidyverse, janitor)
+
+#pull in custom package handling function
+source("../functions/package_handling.R")
+
+#run package handling function for special packages
+package_handling()
+
+```
+
+We also need to set up key variables for the script such as where we are going to save the outputs, and what coordinate reference system (crs) we are going to be using. Note that the set up for the script is slightly different from all other scripts. As the only output from this script is a single .gpkg file that is a data source for all other scripts in the repository, the output is better saved in the data folder section of the repo. Therefore, for this script only, the read path and the write path are identical and there is no output folder.
+
+```{r}
+#| label: global vars and initial setup
+
+#set project variables: crs factor and current_fyear
+proj_crs <- params$project_crs
+
+#turn off spherical geom
+sf_use_s2(F)
+
+#create a file path to help with saving things
+read_and_write <- here("data/n3_prep_region-builder/")
+
+```
+
+# Load Primary Data (Basins, Sub Basins, Islands, and Water Bodies)
+
+There are multiple components that make up the Northern Three boundaries, each building on the last, and several of which must be completed before the next can even be started. To increase processing speed of larger datasets such as the EPP layers, we use some datasets to provide a bounding box when loading other datasets. This means that we can only load some of the required datasets in the code chunk below, and will need to process these before loading more. Here we bring in all data sets that don't require immediate editing to use, note that we utilize the gisaimsr package here.
+
+```{r}
+#| label: load in all other data
+
+#read in the custom function to clean column names into our specific style
+source("../functions/name_cleaning.R")
+
+#read the drainage basins and drainage basin sub areas and clean names 
+basins <- st_read(glue("{read_and_write}/raw/drainage_basins.gpkg"), quiet = T) |> 
+  st_transform(proj_crs) |> 
+  name_cleaning()
+
+sub_basins <- st_read(glue("{read_and_write}/raw/drainage_basin_sub_areas.gpkg"), quiet = T) |> 
+  st_transform(proj_crs) |> 
+  name_cleaning()
+
+#read the great barrier reef features and water bodies data sets from the aims package
+
+#gbr_feat <- get(load(file = glue("{read_and_write}/extras/gbr_feat.rda"))) |> 
+#  st_transform(proj_crs) |> 
+#  name_cleaning()
+
+#water_bodies <- get(load(file = glue("{read_and_write}/extras/wbodies.rda"))) |> 
+#  st_transform(proj_crs) |> 
+#  name_cleaning()
+
+gbr_feat <- get(data("gbr_feat", package = "gisaimsr")) |> 
+  st_transform(proj_crs) |> 
+  name_cleaning()
+
+water_bodies <- get(data("wbodies", package = "gisaimsr")) |> 
+  st_transform(proj_crs) |> 
+  name_cleaning()
+
+```
+
+# Build Primary N3 Componenets
+
+Using the data sets we loaded above we can to establish a basic area for the northern three, select the specific basins and sub basins that we are interested in, and create a bounding box defining the North-South-East-West extent of the regions.
+
+## Basins
+
+The first thing we will do is select all basins within the N3 region and throw out the rest, currently the basins we are interested in are:
+
+ - Wet Tropics: Daintree, Mossman, Barron, Johnstone, Tully, Murray, Herbert, Mulgrave-Russell
+ - Dry Tropics: Black, Ross, Haughton, Burdekin
+ - Mackay Whitsunday Isaac: Don, Proserpine, O'Connell, Pioneer, Plane
+ 
+In this code chunk we will also split the Mulgrave-Russell basin into the two sub basins, Mulgrave, and Russell. However, we will not complete the sub basin components for the Dry Tropics region here as it requires additional datasets.
+
+```{r}
+#| label: load basin data
+
+#create drainage basins list for northern three regions
+basin_list <- c("Don", "Proserpine", "O'Connell", "Pioneer", "Plane", "Daintree", "Mossman", 
+                "Barron", "Johnstone", "Tully", "Murray", "Herbert", "Ross", "Black", "Haughton", "Burdekin")
+  
+#select northern three basins
+n3_basins <- basins |> filter(BasinName %in% basin_list)
+  
+#wet tropics split mulgrave-russell into two separate sub basins, get Russell and Mulgrave River from sub_basins
+n3_basins <- sub_basins |> filter(SubName %in% c("Russell River", "Mulgrave River")) |> 
+  mutate(SubName = case_when(SubName == "Russell River" ~ "Russell", SubName == "Mulgrave River" ~ "Mulgrave")) |>  
+  rename(BasinName = SubName, BasinNumber = SubNumber) |> rbind(n3_basins)
+  
+#remove unwanted vars and add regional context
+n3_basins <- n3_basins |> select(BasinName) |> rename(Basin = BasinName)  |>  
+  mutate(Region = case_when(str_detect(Basin, "Dain|Moss|Barr|John|Tull|Murr|Herb|Mulg|Russ") ~ "Wet Tropics",
+                            str_detect(Basin, "Don|Proser|O'|Pio|Plane") ~ "Mackay Whitsunday Isaac",
+                            str_detect(Basin, "Ross|Black") ~ "Dry Tropics",
+                            str_detect(Basin, "Haug|Burde") ~ "Burdekin"), .before = Basin)
+
+#clean up
+rm(basins, sub_basins, basin_list)
+
+```
+
+## Islands
+
+By using the North-South-East-West extent of our new basin data set, we can select all islands within the N3 region. Once only these islands are selected we can measure which basin each of the islands is closest too and assign that basin to the islands. For example, Magnetic Island is closest to the Ross Basin, and will therefore become part of the Ross Basin's area. There are a few exceptions to this where marine boundaries mean that the closest basin to an island is actually a basin from another partnership. For example the Palm Islands are closest to the Herbert Basin (Wet Tropics), but are within the Dry Tropics borders. In these cases, the island's basin is manually assigned.
+
+```{r}
+#| label: load in island data
+
+#calculate the extent of the n3 basins then add a buffer to the eastern edge to ensure all relevant islands are encompassed. 
+extent <- st_bbox(n3_basins)
+extent[3] <- 155.0000
+
+#bring in all islands in the great barrier reef that are unnamed, and cast each to its own polygon
+unnamed_islands <- gbr_feat |> filter(FeatName %in% c("Island")) |> filter(Objectid == "3271") |> 
+  st_cast("POLYGON") |> st_crop(extent)
+
+#bring in all other islands (that each have their own polygon), and join the two datasets
+all_islands <- gbr_feat |> filter(FeatName %in% c("Island")) |> filter(Objectid != "3271") |> 
+  st_transform(proj_crs) |> st_crop(extent) |> rbind(unnamed_islands)
+
+#add a point geom for each of the island polygons 
+all_islands$geom2 <- st_centroid(st_geometry(all_islands))
+
+#referencing the point geom, categorize each of the islands into a specific region
+all_islands <- all_islands |> 
+    mutate(Region = case_when(st_coordinates(geom2)[,2] > -18.54 ~ "Wet Tropics",
+                              st_coordinates(geom2)[,2] < -18.54 & st_coordinates(geom2)[,2] > -19.3 
+                              & st_coordinates(geom2)[,1] > 146.36157 ~ "Dry Tropics",
+                              st_coordinates(geom2)[,2] < -19.72 & st_coordinates(geom2)[,2] > -22.13 ~ "Mackay Whitsunday Isaac")) |> drop_na(Region)
+
+#check each island and see if it partially overlaps, or if it is completely covered by, the basin dataset - remove it if it is
+all_islands <- all_islands |> 
+    mutate(Remove = st_overlaps(all_islands, n3_basins) %>% lengths > 0,
+           Remove2 = st_covered_by(all_islands, n3_basins) %>% lengths > 0) |> 
+    mutate(Remove3 = case_when(Remove == F & Remove2 == F ~ F, T ~ T)) |> 
+    filter(Remove3 == F) |> select(-c(Remove, Remove2, Remove3))
+
+#Create a integer of the nearest basin to each island
+nearest_basin <- st_nearest_feature(all_islands, n3_basins)
+
+#create a matching system for the integers
+replace_with <- unique(n3_basins$Basin)
+replace_from <- c(1:length(unique(n3_basins$Basin)))
+
+#add which basin each island belongs to
+all_islands$Basin <- c(replace_with, nearest_basin)[match(nearest_basin, c(replace_from, nearest_basin))]
+
+#override palm island group and assign them to the dry tropics, add a unique names for dt islands
+n3_islands <- all_islands |> 
+  mutate(Basin = case_when(Region == "Dry Tropics" & Basin == "Herbert" ~ "Palm Islands",
+                           Region == "Dry Tropics" & Basin == "Black" ~ "Palm Islands",
+                           Basin == "Ross" ~ "Magnetic Island", T ~ Basin)) |>
+  select(Region, Basin, geom)
+ 
+#clean up
+rm(gbr_feat, extent, unnamed_islands, all_islands, nearest_basin, replace_with, replace_from)
+
+```
+
+## Marine Water Bodies
+
+After we have got all the boundaries for our land (and island) areas we can integrate the marine water bodies data that is provided as part of the gisaimsr dataset. However, this marine data and the basin data, come from different parent organisations (AIMS and DES), and do not perfectly match up (this is not unexpected as coastlines change all the time). We use the code below to ensure each of these datasets fit together nicely.
+
+```{r}
+#| label: marine water bodies
+
+#create a buffer around the water bodies then take only the buffer, union everything as no info is needed currently
+wb_buffer_dif <- st_buffer(st_union(water_bodies), dist = 0.01) |> st_difference(st_union(water_bodies)) |> st_as_sf()
+
+#create a buffer around the land basins then take only the buffer, union everything as no info is needed currently
+n3_buffer_dif <- st_buffer(st_union(n3_basins), dist = 0.01) |> st_difference(st_union(n3_basins)) |> st_as_sf()
+
+#get the area that is shared between the two  zones (this creates a fill layer between the og basin and wb datasets), add info
+area_shared <- st_intersection(n3_buffer_dif, wb_buffer_dif) |> st_collection_extract("POLYGON") |> 
+  mutate(SubZone = "Enclosed Coastal") |> rename(geom = x)
+
+#add the shared area onto the water bodies data
+n3_water_bodies <- water_bodies |> select(MarineWate) |> rename(SubZone = MarineWate) |> rbind(area_shared) 
+
+#remove any part of the waterbodies data that overlaps with the basins
+n3_water_bodies <- st_difference(n3_water_bodies, st_union(n3_basins)) |> st_as_sf()
+
+#remove any part of the waterbodies data that overlaps with the basins
+n3_water_bodies <- st_difference(n3_water_bodies, st_union(n3_islands)) |> st_as_sf()
+
+```
+
+In essence what we did was work out where the two datasets did not overlap, and fill that space. Then work out exactly where the two datasets did overlap, and only keep one dataset for that space. Note that this is not the case for the islands dataset - which is from the same source as the water bodies dataset and thus only needs to be used to cut any excessive buffering done in the code above. The interactive map below demonstrates this, where light blue is the original water bodies, dark blue is the cut to fit water bodies, and yellow is land. Use the toggle to turn each layer on and off.
+
+```{r}
+#| label: show marine water bodies and basin outlines
+#| output: true
+
+tmap_mode("view")
+
+tm_shape(n3_basins, name = "basins") +
+  tm_polygons(col = "yellow") +
+  tm_shape(n3_islands, name = "islands") +
+  tm_polygons(col = "yellow") +
+    tm_shape(n3_water_bodies, name = "new water") +
+  tm_polygons(col = "blue") +
+  tm_shape(water_bodies, name = "old water") +
+  tm_polygons(col = "cyan")
+
+tmap_mode("plot")
+
+#clean up
+rm(water_bodies, wb_buffer_dif, n3_buffer_dif, area_shared, wb_cut)
+
+```
+
+However, as the map above clearly demonstrates, the northern and southern extends of the water are yet to be restricted to the Northern Three region. Below we create the zones and sub zones that provide this restriction.
+
+### Zones and Sub Zones
+
+Another side effect of the disparity in data sources is that the zones and sub zones (marine equivalent to basins and sub basins) that we require are not a part of the original water bodies dataset. Further the zones and sub zones that we want have been further adjusted from the nearest online-available dataset to basically be completely custom-made. For instance, the shared boundary between the Wet Tropics and Dry Tropics is the same as the NRM boundary that can be found on Qspatial. However the Dry Tropics and MWI regions use a custom boundary for their shared boundary. In the code chunk below we create the divisions between each of the three regions.
+
+```{r}
+#| label: create the custom N/S borders
+
+#extract all features as polygons rather than multi polygons (i.e. each polygon gets its own row)
+n3_water_bodies_cut <- n3_water_bodies |> st_collection_extract("POLYGON")
+
+#create lines between each region
+wt_north_border <- data.frame("lon" = c(145.3300, 145.4279, 146.0790), "lat" = c(-15.8457, -15.8457, -15.1951))
+wt_dt_border <- data.frame("lon" = c(146.2660, 146.4240, 146.4240, 147.2068), "lat" = c(-18.8980, -18.8980,-18.4085, -17.6259))
+dt_south_border <- data.frame("lon" = c(147.0217, 147.4851, 148.2989), "lat" = c(-19.1924, -19.1092, -18.2948))
+burdekin_mwi_border <- data.frame("lon" = c(147.7532638, 147.7524562, 148.81000), "lat" = c(-19.7067070, -19.7060907, -18.54870))
+mwi_south_border <- data.frame("lon" = c(149.5611, 149.5611, 149.7122, 149.7587, 150.0306, 150.0918, 150.1726, 151.3289),
+                         "lat" = c(-22.1794, -22.1829, -22.0760, -21.9461, -21.7845, -21.2490, -21.2486, -20.0923))
+
+#get vector of the lines
+border_list <- c("wt_north_border", "wt_dt_border", "dt_south_border", "burdekin_mwi_border", "mwi_south_border")
+
+for (i in border_list){#for each of the border lines
+  
+  #create a simple feature collection of the line as a multiline string (IDK why it has to be a multilinestring)
+  line_str <- get(i) |> st_as_sf(coords = 1:2) |> st_set_crs(proj_crs) |> 
+    st_union() |> st_cast("LINESTRING") |> st_sf() |> st_cast("MULTILINESTRING") |> st_union()
+  
+  #update each of the lines
+  assign(i, line_str)
+  
+  #split the water bodies data using the line string (each split is re run over the same dataset)
+  n3_water_bodies_cut <- lwgeom::st_split(n3_water_bodies_cut, line_str) |> st_collection_extract('POLYGON')
+  
+}
+
+```
+
+The map below shows where each of these lines cut through the n3 region. Note that the start and end point of each line (i.e. how far past the line overruns its last intersection) doesn't really matter, as the lines are only used to split each polygon. This will make more sense when you zoom far in and toggle each line on and off - for example, toggle off burdekin_mwi_border and inspect the underlying cut. Currently, the Dry Tropics also has two southern borders - its old one, and the new border that it is transitioning too.
+
+```{r}
+#| label: visualise the custom zone borders
+#| output: true
+
+tmap_mode("view")
+
+tm_shape(n3_water_bodies_cut) +
+  tm_polygons() +
+  tm_shape(wt_north_border) +
+  tm_lines(col = "red", lwd = 3) +
+  tm_shape(wt_dt_border) +
+  tm_lines(col = "darkorange", lwd = 3) +
+  tm_shape(dt_south_border) +
+  tm_lines(col = "yellow", lwd = 3) +
+  tm_shape(burdekin_mwi_border) +
+  tm_lines(col = "green", lwd = 3) +
+  tm_shape(mwi_south_border) +
+  tm_lines(col = "cyan", lwd = 3)
+  
+tmap_mode("plot")
+
+```
+
+However we are not done there, each of these new regions need to be given appropriate names. Unfortunately, there is no quick and easy way to do this and currently the best method is a long string of "Mutate if X" statements that were developed through trial and error.
+
+```{r}
+#|label: assign region names for marine zones
+
+#add a point geom for each of the polygons 
+n3_water_bodies_cut$geom2 <- st_centroid(st_geometry(n3_water_bodies_cut))
+
+#assign region based on where each polygon is located. This is a trial and error process to eliminate errors
+n3_marine <- n3_water_bodies_cut |> mutate(Region = case_when(
+    str_detect(SubZone, "Enc") & st_coordinates(geom2)[,2] < -15.8457 & st_coordinates(geom2)[,2] > -18.8980 ~ "Wet Tropics",
+    str_detect(SubZone, "Enc") & st_coordinates(geom2)[,2] < -18.8980 & st_coordinates(geom2)[,2] > -19.3037 & st_coordinates(geom2)[,1] < 147.0235 ~ "Dry Tropics",
+    str_detect(SubZone, "Enc") & st_coordinates(geom2)[,2] < -19.1923 & st_coordinates(geom2)[,2] > -19.8465 &
+      st_coordinates(geom2)[,1] < 147.7533 & st_coordinates(geom2)[,1] > 147.0213 ~ "Burdekin",
+    str_detect(SubZone, "Enc") & st_coordinates(geom2)[,2] < -19.8551 & st_coordinates(geom2)[,2] > -22.1240 ~ "Mackay Whitsunday Isaac",
+    str_detect(SubZone, "Enc") & st_coordinates(geom2)[,2] < -19.6981 & st_coordinates(geom2)[,2] > -19.8551 & st_coordinates(geom2)[,1] > 147.7482 ~ "Mackay Whitsunday Isaac",
+    str_detect(SubZone, "Ope") & st_coordinates(geom2)[,2] < -15.7614 & st_coordinates(geom2)[,2] > -18.8980 ~ "Wet Tropics",
+    str_detect(SubZone, "Ope") & st_coordinates(geom2)[,2] < -18.8980 & st_coordinates(geom2)[,2] > -19.1812 ~ "Dry Tropics",
+    str_detect(SubZone, "Ope") & st_coordinates(geom2)[,2] < -19.1812 & st_coordinates(geom2)[,2] > -19.4265 ~ "Burdekin",
+    str_detect(SubZone, "Ope") & st_coordinates(geom2)[,2] < -19.4265 & st_coordinates(geom2)[,2] > -22.0005 ~ "Mackay Whitsunday Isaac",
+    str_detect(SubZone, "Mid") & st_coordinates(geom2)[,2] < -15.7614 & st_coordinates(geom2)[,2] > -18.3328 ~ "Wet Tropics",
+    str_detect(SubZone, "Mid") & st_coordinates(geom2)[,2] < -18.3328 & st_coordinates(geom2)[,2] > -19.0693 ~ "Dry Tropics",
+    str_detect(SubZone, "Mid") & st_coordinates(geom2)[,2] < -19.0693 & st_coordinates(geom2)[,2] > -19.5548 ~ "Burdekin",
+    str_detect(SubZone, "Mid") & st_coordinates(geom2)[,2] < -19.5548 & st_coordinates(geom2)[,2] > -21.7845 ~ "Mackay Whitsunday Isaac",
+    str_detect(SubZone, "Off") & st_coordinates(geom2)[,2] < -15.1951 & st_coordinates(geom2)[,2] > -17.7950 ~ "Wet Tropics",
+    str_detect(SubZone, "Off") & st_coordinates(geom2)[,2] < -17.7950 & st_coordinates(geom2)[,2] > -18.4789 ~ "Dry Tropics",
+    str_detect(SubZone, "Off") & st_coordinates(geom2)[,2] < -18.4789 & st_coordinates(geom2)[,2] > -18.8889 ~ "Burdekin",
+    str_detect(SubZone, "Off") & st_coordinates(geom2)[,2] < -18.8889 & st_coordinates(geom2)[,2] > -21.2486 ~ "Mackay Whitsunday Isaac")) |>
+  filter(!is.na(Region)) |> 
+  mutate(SubZone = case_when(str_detect(SubZone, "Enc") ~ "Enclosed Coastal",
+                              str_detect(SubZone, "Ope") ~ "Open Coastal",
+                              T ~ SubZone)) |> select(-geom2)
+
+#tmap_mode("view")
+tm_shape(n3_marine) +
+  tm_polygons(col = "Region")
+
+```
+
+The same method that was used in the code chunk above will also now be used to create the internal (zone) borders for each region - e.g. the border between Halifax Bay and Cleveland Bay for DT, or the North, Whitsunday, Central, South borders for MWI. These borders are exclusively hand made and are not available online.
+
+```{r}
+#| label: create custom sub zone borders
+
+#create lines between each region
+halifax_cleveland <- data.frame("lon" = c(146.675117968, 146.91653), "lat" = c(-19.189224827, -18.63154))
+north_whit <- data.frame("lon" = c(148.47151, 148.58685), "lat" = c(-20.07056, -19.91489))
+whit_central <- data.frame("lon" = c(148.927459, 149.25506), "lat" = c(-20.534212, -20.58335))
+central_south <- data.frame("lon" = c(149.483468, 149.8913), "lat" = c(-21.533408, -21.2565))
+wt_north_central <- data.frame("lon" = c(145.918657, 146.0794), "lat" = c(-16.864201, -16.7603))
+wt_central_south <- data.frame("lon" = c(146.1487, 146.3649), "lat" = c(-17.6486, -17.6486))
+south_palm <- data.frame("lon" = c(146.2630, 146.4240, 146.4240, 146.5617), "lat" = c(-18.5021, -18.5021, -18.4085, -18.2708))
+
+#get vector of the lines
+border_list <- c("halifax_cleveland", "north_whit", "whit_central", "central_south", "wt_north_central", "wt_central_south", "south_palm")
+
+for (i in border_list){#for each of the border lines
+  
+  #create a simple feature collection of the line as a multiline string (IDK why it has to be a multilinestring and not just a linestring)
+  line_str <- get(i) |> st_as_sf(coords = 1:2) |> st_set_crs(proj_crs) |> 
+    st_union() |> st_cast("LINESTRING") |> st_sf() |> st_cast("MULTILINESTRING") |> st_union()
+  
+  #update each of the lines
+  assign(i, line_str)
+  
+  #split the water bodies data using the line string (each split is re run over the same dataset)
+  n3_marine <- lwgeom::st_split(n3_marine, line_str) |> st_collection_extract('POLYGON')
+  
+}
+
+```
+Like above, each of these new subzones need to be given appropriate names, however this is done with a variation of the method where multiple mutate statements are used consecutively to "attack" each group one at a time and still carry over the previous grouping.
+
+```{r}
+#| label: assign subzone names
+
+#add a point geom for each of the polygons 
+n3_marine$geom2 <- st_centroid(st_geometry(n3_marine))
+
+#add preliminary zone information for those which don't have special names
+n3_marine <- n3_marine |> mutate(Zone = SubZone)
+
+#assign region based on where each polygon is located
+n3_marine <- n3_marine |> 
+  mutate(Zone = case_when(str_detect(SubZone, "Enc|Open|Mid") & 
+                            str_detect(Region, "Wet") ~ "Northern", 
+                          T ~ Zone)) |> 
+  mutate(Zone = case_when(str_detect(SubZone, "Enc|Open|Mid") & 
+                            str_detect(Region, "Wet") & 
+                            st_coordinates(geom2)[,1] > 145.91915 & 
+                            st_coordinates(geom2)[,2] < -16.8642 ~ "Central", 
+                          T ~ Zone)) |> 
+  mutate(Zone = case_when(str_detect(SubZone, "Enc|Open|Mid") & 
+                            str_detect(Region, "Wet") & 
+                            st_coordinates(geom2)[,1] > 145.86671 & 
+                            st_coordinates(geom2)[,2] < -16.93366 ~ "Central", 
+                          T ~ Zone)) |> 
+  mutate(Zone = case_when(str_detect(SubZone, "Enc|Open|Mid") & 
+                            str_detect(Region, "Wet") & 
+                            st_coordinates(geom2)[,2] < -17.6486 ~ "Southern", 
+                          T ~ Zone)) |>
+  mutate(Zone = case_when(str_detect(SubZone, "Enc|Open|Mid") & 
+                            str_detect(Region, "Wet") & 
+                            st_coordinates(geom2)[,2] < -18.5021 ~ "Palm Group", 
+                          T ~ Zone)) |>
+  mutate(Zone = case_when(str_detect(SubZone, "Enc|Open|Mid") & 
+                            str_detect(Region, "Dry") ~ "Halifax Bay", 
+                          T ~ Zone)) |> 
+  mutate(Zone = case_when(str_detect(SubZone, "Enc|Open|Mid") & 
+                            str_detect(Region, "Dry") &
+                            st_coordinates(geom2)[,1] > 146.68007 & 
+                            st_coordinates(geom2)[,2] < -18.6532 ~ "Cleveland Bay", 
+                          T ~ Zone)) |> 
+  mutate(Zone = case_when(str_detect(SubZone, "Enc|Open|Mid") & 
+                            str_detect(Region, "Burd") & 
+                            st_coordinates(geom2)[,1] > 147.0217007 & 
+                            st_coordinates(geom2)[,2] > -19.206464 &
+                            st_coordinates(geom2)[,2] < -19.1924341 ~ "Burdekin",
+                          str_detect(SubZone, "Enc|Open|Mid") & 
+                            str_detect(Region, "Burd") &
+                            st_coordinates(geom2)[,1] > 147.024120 & 
+                            st_coordinates(geom2)[,2] < -19.208543 ~ "Burdekin", 
+                          T ~ Zone)) |> 
+  mutate(Zone = case_when(str_detect(SubZone, "Enc") & str_detect(Region, "Mackay") ~ "North",
+                            str_detect(SubZone, "Open") & str_detect(Region, "Mackay") ~ "North",
+                          T ~ Zone)) |>
+  mutate(Zone = case_when(str_detect(SubZone, "Enc") & 
+                            st_coordinates(geom2)[,1] > 148.476995 & 
+                            st_coordinates(geom2)[,2] < -19.97939 ~ "Whitsunday", 
+                          str_detect(SubZone, "Open") & 
+                            st_coordinates(geom2)[,1] > 148.476995 & 
+                            st_coordinates(geom2)[,2] < -19.97939 ~ "Whitsunday", T ~ Zone)) |>
+  mutate(Zone = case_when(str_detect(SubZone, "Enc") & 
+                            st_coordinates(geom2)[,1] < 148.844991 & 
+                            st_coordinates(geom2)[,2] < -20.431976 ~ "Central",
+                          str_detect(SubZone, "Enc") & 
+                            st_coordinates(geom2)[,1] < 148.889737 & 
+                            st_coordinates(geom2)[,2] < -20.495653 ~ "Central",
+                          str_detect(SubZone, "Enc") & 
+                            st_coordinates(geom2)[,2] < -20.52959 ~ "Central",
+                          str_detect(SubZone, "Open") & 
+                            st_coordinates(geom2)[,2] < -20.52622 ~ "Central", 
+                          T ~ Zone)) |> 
+  mutate(Zone = case_when(str_detect(SubZone, "Enc") & 
+                            st_coordinates(geom2)[,1] > 149.483495 & 
+                            st_coordinates(geom2)[,2] < -21.533348 ~ "South",
+                          str_detect(SubZone, "Enc") & 
+                            st_coordinates(geom2)[,1] > 149.45443 & 
+                            st_coordinates(geom2)[,2] < -21.56729 ~ "South",
+                          str_detect(SubZone, "Enc") & 
+                            st_coordinates(geom2)[,2] < -21.583174 ~ "South",
+                          str_detect(SubZone, "Open") & 
+                            st_coordinates(geom2)[,1] > 149.483495 & 
+                            st_coordinates(geom2)[,2] < -21.33330 ~ "South", 
+                          T ~ Zone))
+
+#remove old geom and add the Environment type
+n3_marine <- select(n3_marine, -geom2) |> mutate(Environment = "Marine")
+
+#clean up
+rm(n3_water_bodies, n3_water_bodies, n3_water_bodies_cut, wt_north_border, wt_dt_border, dt_south_border, 
+   burdekin_mwi_border, mwi_south_border, border_list, line_str,
+   halifax_cleveland, north_whit, whit_central, central_south, wt_north_central, wt_central_south, south_palm)
+
+```
+
+## Stitching
+
+Now we need to do is group up all our land data into one file (islands and basins), as later on down the track we will need to refer to both dataset simultaneously.
+
+Please note that right now we don't want to have the water data also held in the same file as later on we will need to refer to each data set separately.
+
+```{r}
+#| label: join all land data together
+
+#remove a few islands that are technically outside the MWI region
+n3_islands$inside_marine <- lengths(st_intersects(n3_islands, st_union(n3_marine))) > 0
+n3_islands <- n3_islands |> filter(inside_marine == T) |> select(-inside_marine)
+
+#combine everything
+n3_land <- rbind(n3_basins, n3_islands) |> group_by(Region, Basin) |> summarise(geom = st_union(geom))
+
+#do a file cut by the land data to ensure the perfect fit
+n3_marine <- st_difference(n3_marine, st_union(n3_land))
+
+#clean up
+rm(n3_islands)
+
+```
+
+Once the main borders of the N3 region have been establish it is then time to work within the region - creating further division for features such as freshwater and estuarine areas, additional sub zones, or special management areas that are unique to a particular spot (e.g. a port sub zone). All of these additional features are provided by the Environmental Protection Policy (EPP) datasets.
+
+# Load Secondary Data (EPP Layers)
+
+As covered early, some data relies on other datasets to establish a reasonable area of interest and save processing time. Here we bring in all data sets that need to be cut down to only the N3 region. Specifically, we are loading the Environmental Protection Policy (EPP) datasets.
+
+```{r}
+#| label: Complete raw data prep for EPP layers
+
+#get list of raw files and edited files
+raw <- c("epp_water_env_value_zones_qld", "epp_water_water_types_qld", "epp_water_management_intent_qld", "epp_water_schedule_outlines_qld")
+edited <- c("n3_epp_env", "n3_epp_wt", "n3_epp_mi", "n3_epp_so")
+
+for (i in 1:length(raw)){#for each raw file
+  
+  if (file.exists(glue("{read_and_write}/processed/{edited[i]}.gpkg"))) {#if the edited version exists, read that in
+    
+    print("File already exists, loading from storage.")
+    
+    assign(edited[i], st_read(glue("{read_and_write}/processed/{edited[i]}.gpkg"), quiet = T))
+    
+  } else {#otherwise read the raw version in and cut it to the n3 area
+    
+    file <- st_read(glue("{read_and_write}/raw/{raw[i]}.gpkg"), quiet = T) |> 
+      st_transform(proj_crs) |> 
+      st_crop(n3_basins) |> 
+      name_cleaning()
+
+    st_write(file, glue("{read_and_write}/processed/{edited[i]}.gpkg"))
+    
+    print("File created and loaded.")
+    
+    assign(edited[i], st_read(glue("{read_and_write}/processed/{edited[i]}.gpkg"), quiet = T))
+    
+  }
+}
+
+#clean up
+#rm(raw, edited, file)
+
+```
+
+# Build Secondary Components
+
+Using the EPP layers we will build each of the secondary components by effectively "placing data over the top" of the existing N3 region. That is to say that the total area covered by the spatial files should no longer be increasing, and instead the area covered just becomes more detailed and is divided up into multiple categories. Additional components will be be creating here are:
+
+ - Sub basins specific to the Dry Tropics Region
+ - Reclassification of Paluma Lake
+ - Assigning Freshwater and Estuarine water categories
+ - Creating special features such as Port Zones and the Magnetic Island Water zone
+
+## Sub Basins (Dry Tropics Specific)
+
+In the Dry Tropics region there are three basins (The Ross Basin, The Black Basin, and The Burdekin Basin) that need to be divided into multiple sub basins as they contain multiple unique Environments that are not best represented collectively. For example the Black Basin is wide and narrow (relative to the coastline) and consists of more than a dozen individual river systems. Below we divide the basins into sections based on boundaries used by the EPP environmental value dataset and the major rivers within. The decision on creating these boundaries has been guided by the "Black Ross Water Quality Improvement Plan", and is touched on in [Issue 18](https://github.com/Northern-3/spatial-analyses/issues/18) on the GitHub repo.
+
+Please note that the division of the Burdekin basin into sub basins uses a different EPP dataset and follows slightly different rules. This is covered in more detail in [Issue 52](https://github.com/Northern-3/spatial-analyses/issues/52).
+
+```{r}
+#| label: list env zones and sub basins
+
+#select data in dry tropics region (land only).
+dt_sub_basins <- n3_epp_env |> filter(ProjectName == "Townsville Region" & EnvValueZone != "Halifax & Cleveland Bay") |> 
+  mutate(Basin = case_when(str_detect(BasinName, "Black") ~ "Black",
+                           str_detect(BasinName, "Ross") ~ "Ross"),
+         Region = "Dry Tropics")
+
+#create a list of ENV_VALUE_ZONE that will be combined into each group
+group_list <- c("Alick|Alice|Canal|Log Creek|Black River",
+                "Healy|Althaus|Deep Creek|Bluewater|Two Mile|Christmas",
+                "Leichhardt Creek|Camp Oven|Saltwater|Station|Surveyors|Rollingstone Creek",
+                "Lorna|Crystal",
+                "Lagoon|Round Mountain|Six Mile|One Mile|Toonpan|Blacksoil|Sachs|Lake Ross|Anthill Plains",
+                "(upper)|Stony|(lower)|Louisa|Town Common",
+                "Training Area|below dam|Ross Creek|Pallarenda",
+                "Stuart Creek|Townsville State Development|Sandfly",
+                "Whites|Slippery Rocks|Alligator|Killymoon|Crocodile|Cape Cleveland",
+                "Bay|Retreat|China|Duck|Ned|Butlers|Gustav|Petersen|Magnetic|Gorge|Endeavour")
+
+#assign a value based on what group each polygon should be in, some are their own group. Then collapse each group
+dt_sb_grouped <- dt_sub_basins |> 
+    mutate(rowid_to_column(dt_sub_basins, "Id"),
+           GroupingVar = case_when(str_detect(EnvValueZone, group_list[1]) ~ nrow(dt_sub_basins) + 1,
+                                    str_detect(EnvValueZone, group_list[2]) ~ nrow(dt_sub_basins) + 2,
+                                    str_detect(EnvValueZone, group_list[3]) ~ nrow(dt_sub_basins) + 3,
+                                    str_detect(EnvValueZone, group_list[4]) ~ nrow(dt_sub_basins) + 4,
+                                    str_detect(EnvValueZone, group_list[5]) ~ nrow(dt_sub_basins) + 5,
+                                    str_detect(EnvValueZone, group_list[6]) ~ nrow(dt_sub_basins) + 6,
+                                    str_detect(EnvValueZone, group_list[7]) ~ nrow(dt_sub_basins) + 7,
+                                    str_detect(EnvValueZone, group_list[8]) ~ nrow(dt_sub_basins) + 8,
+                                    str_detect(EnvValueZone, group_list[9]) ~ nrow(dt_sub_basins) + 9,
+                                    str_detect(EnvValueZone, group_list[10]) ~ nrow(dt_sub_basins) + 10),
+           GroupingVar = coalesce(GroupingVar, Id)) |> 
+  select(-Schedule, -BasinName, -BasinNumber, -Id) |> 
+  group_by(GroupingVar) |> 
+  mutate(Contains = paste0(EnvValueZone, collapse = ", ")) |> 
+  group_by(Region, Basin, Contains) |> summarise(geom = st_union(geom))
+
+#create list of names that will be used for each group
+sub_basin <- c("Black River", "Bluewater Creek", "Rollingstone Creek", "Crystal Creek", "Ross River (Upper)", 
+              "Bohle River", "Ross River (Lower)", "Stuart Creek", "Alligator Creek", "Magnetic Island")
+ 
+#bind the names to the sf data drop magnetic island as we are bringing this over from the islands data from ealier
+dt_sub_basins <- dt_sb_grouped |> 
+  mutate(SubBasin = case_when(str_detect(Contains, group_list[1]) ~ sub_basin[1],
+                              str_detect(Contains, group_list[2]) ~ sub_basin[2],
+                              str_detect(Contains, group_list[3]) ~ sub_basin[3],
+                              str_detect(Contains, group_list[4]) ~ sub_basin[4],
+                              str_detect(Contains, group_list[5]) ~ sub_basin[5],
+                              str_detect(Contains, group_list[6]) ~ sub_basin[6],
+                              str_detect(Contains, group_list[7]) ~ sub_basin[7],
+                              str_detect(Contains, group_list[8]) ~ sub_basin[8],
+                              str_detect(Contains, group_list[9]) ~ sub_basin[9],
+                              str_detect(Contains, group_list[10]) ~ sub_basin[10]), .after = Basin) |> 
+  select(-Contains) |> filter(SubBasin != "Magnetic Island")
+
+```
+
+Each of these sub basins is shown in the map below:
+
+```{r}
+#| label: visualise sub basins
+#| output: true
+
+tmap_mode("view")
+
+tm_shape(dt_sub_basins) +
+  tm_polygons(col = "SubBasin")
+
+tmap_mode("plot")
+
+```
+
+However due to slight differences between the EPP datasets and the basin outlines we use for the entire N3 region we need to clean up some of the edges. This is particularly apparent around the eastern edge of the Alligator Creek Sub basin. Once cleaned up, the dry tropics sub zones can be put back into the main N3 dataset.
+
+```{r}
+#| label: clean up sub bains
+
+#get the difference between the dt_sub_basin area and the area for ross and black in the n3 files
+diff <- n3_basins |> filter(Basin %in% c("Ross", "Black")) |> 
+  st_difference(st_union(dt_sub_basins)) |> st_cast("POLYGON")
+
+#add a point geom for each of the polygons 
+diff$geom2 <- st_centroid(st_geometry(diff))
+
+#for each of the centroids figure out which of the dt_sub basins is closest
+diff$nearest_sub_basin <- st_nearest_feature(diff, dt_sub_basins)
+
+#get the index for each sub basin and the name of each sub basin
+replace_with <- unique(dt_sub_basins$SubBasin)
+replace_from <- c(1:length(unique(dt_sub_basins$SubBasin)))
+
+#match each case and replace with the sub basin
+diff$SubBasin <- replace_with[match(diff$nearest_sub_basin, replace_from)]
+
+#join the difference back on to the main sub basin set and union everything up
+dt_sub_basins <- diff |> select(Region, Basin, SubBasin, geom) |> rbind(dt_sub_basins) |> 
+  group_by(Region, Basin, SubBasin) |> summarise(geom = st_union(geom))
+
+# cut the extent back using the surrounding polygons
+n3_basin_subtraction <- n3_basins |> filter(Basin != "Black", Basin != "Ross") |> st_union()
+n3_water_bodies_subtraction <- n3_marine |> st_union()
+
+#subtract the surrounding polygons
+dt_sub_basins <- dt_sub_basins |> st_difference(n3_basin_subtraction) |> st_difference(n3_water_bodies_subtraction)
+
+#do minor clean up
+dt_sub_basins <- dt_sub_basins |> filter(Basin != "Black" | SubBasin != "Ross River (Upper)",
+                                         Basin != "Ross" | SubBasin != "Black River")
+
+#sub out the old Ross and black basins
+n3_land <- n3_land |> mutate(SubBasin = Basin) |> filter(Basin != "Black", Basin != "Ross")
+
+#bind the data together (i.e. sub in the new dry tropics region)
+n3_land <- rbind(n3_land, dt_sub_basins)
+
+#update the unique tracker for the islands
+n3_land <- n3_land |> mutate(Basin = case_when(Basin == "Palm Islands" ~ "Black",
+                                               Basin == "Magnetic Island" ~ "Ross",
+                                               T ~ Basin)) 
+
+#clean up
+rm(group_list, sub_basin, dt_sub_basins, dt_sb_grouped, replace_with, replace_from, 
+   n3_basin_subtraction, n3_water_bodies_subtraction, n3_basins)
+
+```
+
+## Burdekin Specific Sub Basins
+
+```{r}
+#| label: list schedule outlines for Burdekin Region
+
+#get only the Burdekin area, and edit the names
+burdekin_sub_basins <- n3_epp_so |> filter(BasinName == "Burdekin River Basin") |> 
+  mutate(Basin = "Burdekin", Region = "Dry Tropics") |> 
+  mutate(SubBasin = case_when(PlanId == "WQ1201" ~ "Upper Burdekin",
+                               PlanId == "WQ1202" ~ "Cape Campaspe",
+                               PlanId == "WQ1203" ~ "Belyando",
+                               PlanId == "WQ1204" ~ "Suttor",
+                               PlanId == "WQ1205" ~ "Broke Bogie",
+                               PlanId == "WQ1206" ~ "Lower Burdekin"),
+         Region = "Burdekin") |> 
+  select(Region, Basin, SubBasin)
+
+#sub out the old Burdekin Basin
+n3_land <- n3_land |> filter(Basin != "Burdekin")
+
+#bind the data together (i.e. sub in the new burdekin Basin)
+n3_land <- rbind(n3_land, burdekin_sub_basins)
+
+#clean up
+rm(burdekin_sub_basins, n3_epp_so)
+
+```
+
+## Paluma Lake (Dry Tropics Specific)
+
+In the Dry Tropics region the Paluma Dam has historically been considered part of the Black Basin - despite residing in the Burdekin Basin. The code below cuts a Paluma dam shaped hole in the Burdekin, places the dam in the hole, then assign the Black as the dam's parent basin.
+
+```{r}
+#| label: introduce paluma dam
+
+#select paluma
+paluma <- n3_epp_env |> filter(EnvValueZone == "Paluma Reservoir") |> 
+  mutate(Region = "Dry Tropics", Basin = "Black", SubBasin = "Paluma Lake") |> 
+  select(Region, Basin, SubBasin, geom)
+
+#cut a hole in the main data
+n3_land <- st_difference(n3_land, st_union(paluma))
+
+#insert paluma lake
+n3_land <- rbind(n3_land, paluma)
+
+#clean up
+rm(n3_epp_env, paluma)
+
+```
+
+## Freshwater and Estuarine Areas
+
+For all report cards in the Northern Three region, there is a separation of fresh and estuarine systems. We will again use the EPP datasets to overlap fresh and estuarine boundaries for the entire region, this time using the Water Types data. The code below adds these divisions.
+
+```{r}
+#| label: prep the fresh and estuarine polygons
+
+#get only the fresh and estuarine watertypes from the EPP data
+water_types <- n3_epp_wt |> filter(!str_detect(WaterType, "coast|shelf")) |> 
+  mutate(Env = case_when(str_detect(WaterType, "estua") ~  "Estuarine", T ~ "Freshwater")) |> 
+  select(Env, geom)
+  
+#get the difference between the water types area and the area for the n3 land
+diff <- n3_land |> st_difference(st_union(water_types)) |> st_cast("POLYGON")
+
+#add a point geom for each of the polygons 
+diff$geom2 <- st_centroid(st_geometry(diff))
+
+#for each of the centroids figure out which of the water types is closest
+diff$NearestWaterType <- st_nearest_feature(diff, water_types)
+
+#get the index for each water type and the name of each water type
+replace_with <- water_types$Env
+replace_from <- 1:length(water_types$Env)
+
+#match each case and replace with the sub basin
+diff$Env <- replace_with[match(diff$NearestWaterType, replace_from)]
+
+#join the difference back on to the main water type set and union everything up
+n3_water_types <- diff |> select(Env, geom) |> rbind(water_types)
+
+#cut the extent back using n3_polygons
+n3_land_subtraction <- n3_land |> st_union()
+
+#subtract the surrounding polygons
+n3_water_types <- n3_water_types |> st_intersection(n3_land_subtraction) |> 
+  st_collection_extract("POLYGON")
+
+#intersect each water type over the main dataset
+n3_fresh <- st_intersection(n3_land, st_union(filter(n3_water_types, Env == "Freshwater"))) |> 
+  st_collection_extract("POLYGON") |> mutate(Environment = "Freshwater")
+n3_estuarine <- st_intersection(n3_land, st_union(filter(n3_water_types, Env == "Estuarine"))) |> 
+  st_collection_extract("POLYGON") |> mutate(Environment = "Estuarine")
+
+#join everything together
+n3_land <- rbind(n3_fresh, n3_estuarine) |> st_make_valid()
+
+#add the missing column for land and update column names for better clarity
+n3_land <- n3_land |> mutate(GeographicArea = NA) |> 
+  rename(BasinOrZone = Basin, SubBasinOrSubZone = SubBasin) |> 
+  nngeo::st_remove_holes() |> 
+  st_make_valid() |> 
+  rename(geom = "geometry") #weirdly this code chunk makes the geom column named geometry?
+
+#clean up
+rm(water_types, diff, replace_with, replace_from, n3_land_subtraction, n3_epp_wt,
+   n3_fresh, n3_estuarine, n3_water_types)
+
+```
+
+And here is how that looks:
+
+```{r}
+#| label: visualise freshwater and estuarine
+#| output: true
+
+tmap_mode("view")
+
+tm_shape(n3_land) +
+  tm_polygons(col = "Environment")
+
+tmap_mode("plot")
+
+```
+
+## Special Features
+
+Throughout the Northern Three region there exists a a few additional "special feature zones" that appear at various grouping levels. For example, the port boundary in Cleveland Bay which is its own geographic area (a division of a sub zone), or the unique water type around Magnetic Island which is its own sub zone. Below we integrate each of these special features into the main data set.
+
+Note that there is no strict requirement on what is and isn't considered a special feature, if you want something extra added, here is where to do it. Contact Adam Shand or you can do it yourself :)
+
+### Magnetic Island Water Quality
+
+The coastal waters around magnetic island have unique water quality objectives that reflect their status as part of a world heritage listed site. The code below adds the magnetic island water boundaries for the coastal waters.
+
+```{r}
+#| label: include the magnetic Island sub zone
+
+#get the magnetic island waters
+magnetic_island <- n3_epp_mi |> 
+  filter(MiId %in% c("SD2244", "SD2243") & EnvValueZone == "Halifax & Cleveland Bay") |> select()
+
+#get the waters surrounding the magnetic island waters
+surrounding <- n3_epp_mi |> 
+  filter(MiId != "SD2244" & MiId != "SD2243" & EnvValueZone == "Halifax & Cleveland Bay") |> 
+  select() |> st_union()
+
+#buffer the magnetic island waters to fill gaps between the water and the land
+magnetic_island_buffer <- st_buffer(magnetic_island, dist = 0.003)
+
+#cut the buffer back by the land component, and the surrounding waters component to make the magnetic waters perfectly fit
+magnetic_island_cut_back <- st_difference(magnetic_island_buffer, st_union(n3_land)) |> 
+  st_cast("POLYGON") |> st_difference(surrounding)
+
+#give the magnetic island its required columns
+magnetic_island <- magnetic_island_cut_back |> mutate(Region = "Dry Tropics", Environment = "Marine",
+                                                      Zone = "Cleveland Bay", SubZone = "Magnetic Island")
+
+#cut a hole in the marine layer with the Maggie island waters
+marine_temp <- st_difference(n3_marine, st_union(magnetic_island))
+
+#put the waters in the cut out marine layer
+n3_marine <- rbind(marine_temp, magnetic_island)
+
+#clean up
+rm(magnetic_island, magnetic_island_buffer, magnetic_island_cut_back)
+
+```
+
+### Townsville Port Boundary
+
+The coastal waters around the Townsville Port also have unique water quality objectives. However these go the other way and reflect water quality objectives of a working industrial area. The code below adds the port boundaries for the coastal waters.
+
+```{r}
+#| label: include the port geographic area
+
+#get the port zone
+port_zone <- n3_epp_mi |> 
+  filter(MiId == "MD2241", EnvValueZone == "Halifax & Cleveland Bay") |> select()
+
+#get the waters surrounding the port zone
+surrounding <- n3_epp_mi|> 
+  filter(MiId == "MD2242", EnvValueZone == "Halifax & Cleveland Bay") |> select()
+
+#buffer the port_zone to fill gaps between the port zone and the land
+port_zone_buffer <- st_buffer(port_zone, dist = 0.007)
+
+#cut the buffer back by the land component, and the surrounding waters component to make the port zone perfectly fit
+port_zone_cut_back <- st_difference(port_zone_buffer, st_union(n3_land)) |> 
+  st_cast("POLYGON") |> st_difference(surrounding)
+
+#cut a hole in the marine layer with the port zone and add the geographic area
+marine_temp <- st_difference(n3_marine, port_zone_cut_back) |> st_collection_extract("POLYGON") |> 
+  mutate(GeographicArea = case_when(SubZone == "Enclosed Coastal" & Region == "Dry Tropics" 
+                                     & Zone == "Cleveland Bay" ~ "EC.Outside Port Zone",
+                                     SubZone == "Open Coastal" & Region == "Dry Tropics"
+                                     & Zone == "Cleveland Bay" ~ "OC.Outside Port Zone",
+                                     T ~ SubZone))
+
+#give the port Zone its enclosed and open delegation and add the geographic area
+port_zone <- st_intersection(port_zone_cut_back, n3_marine) 
+
+port_zone <- port_zone |> mutate(GeographicArea = case_when(SubZone == "Open Coastal" ~ "OC.Inside Port Zone",
+                                                             T ~ "EC.Inside Port Zone"))
+
+#put the port zone in the cut out marine layer
+n3_marine <- rbind(marine_temp, port_zone)
+
+#update the column names for clarity
+n3_marine <- n3_marine |> rename(BasinOrZone = Zone, SubBasinOrSubZone = SubZone) 
+
+#clean up
+rm(n3_epp_mi, port_zone, surrounding, port_zone_buffer, port_zone_cut_back, marine_temp)
+
+```
+
+# Finalise The Data
+
+Every spatial component of the Northern Three regions has now been prepped and integrated, now they just need to be cleaned for the final save.
+
+```{r}
+#| label: combine everything
+
+#combine the n3 land and marine datasets together, reorder and union all polygons that belong to the same group
+n3_land_marine <- rbind(n3_marine, n3_land) |> 
+  group_by(Region, Environment, BasinOrZone, SubBasinOrSubZone, GeographicArea) |> 
+  summarise(geom = st_union(geom)) |> 
+  st_make_valid()
+
+#clean up
+rm(n3_land, n3_marine)
+
+```
+
+
+
+# Save Data
+
+Then we can save the results
+
+```{r}
+#| label: save data
+
+#save
+st_write(n3_land_marine, glue("{read_and_write}/n3_region.gpkg"), delete_dsn = T)
+
+```
+

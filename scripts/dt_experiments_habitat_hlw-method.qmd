@@ -1,0 +1,378 @@
+---
+title: "A replication of the HLW Vegetation Method"
+subtitle: "A Healthy Waters Partnership Analysis"
+description: "This script explores the vegetation analysis method used by the Healthy Land and Water (HLW) Partnership. The outputs of this script are currently used for demonstration purposes."
+author: "Adam Shand"
+format: html
+params:
+  project_crs: "EPSG:7844"
+---
+
+# Introduction
+
+This script is designed to replicate as best as possible the Healthy Land and Water (SE QLD) Vegetation methodology. The method utilises the SLATS (State-wide Landcover and Trees Study) dataset and measures four indicators:
+
+- Woody vegetation cover excluding non-woody remnant areas
+- Woody vegetation regrowth within non-remnant areas
+- Woody remnant vegetation clearing
+- Median spatial bio condition score.
+
+::: {.callout-note}
+Currently the spatial bio condition score dataset is only available for SE QLD. Thus this script is only to understand the HLW Method used for the first three components, since we can't fully implement it right now.
+:::
+
+For detailed methods refer to the "habitat_hlw_method_2023" pdf in the "references/other_documents/" folder. For the latest round of results refer to "habitat_hlw_rc_summary_2023" document.
+        
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, sf, tmap, janitor)
+
+```
+
+
+Then we also need to set up key variables for the script, as well as the output location.
+
+```{r}
+#| label: create save path and establish project crs
+
+#set project crs
+proj_crs <- params$project_crs
+
+#create a file path to help with saving outputs
+save_outputs <- here("outputs/dt_experiments_habitat_hlw-method/")
+read_data <- here("data/dt_experiments_habitat_hlw-method/")
+
+#bring the path to life
+dir.create(save_outputs)
+dir.create(read_data)
+
+#turn off s2 geometry
+sf_use_s2(FALSE)
+
+```
+
+# Load Data
+
+Now the script is set up we need to load in all of the required datasets. For this script we will use:
+
+- the N3 region file
+- the N3 buffered riparian zone file
+- the SLATS woody extent dataset
+- the SLATS change dataset
+
+## Standard Datasets
+
+First we can read in the two "standard" datasets that are easily managed.
+
+```{r}
+#| label: load the datasets 1
+
+#read in the custom function to clean column names into our specific style
+source("../functions/name_cleaning.R")
+
+#read the n3 region dataset
+n3_region <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg")) |> 
+  name_cleaning()
+
+#filter down to a test area (lets pick Ross)
+ross <- n3_region |> 
+  filter(BasinOrZone == "Ross")
+
+#create path to where we will save the 50m buffered output
+rip_boundaries <- st_read(here("data/n3_habitat_riparian-vegetation/n3_riparian_boundaries.gpkg")) |> 
+  name_cleaning()
+
+#filter down to the test area
+ross_rip <- rip_boundaries |> 
+  filter(BasinOrZone == "Ross")
+
+#pull in full RE rip dataset
+n3_re_rip <- st_read(here("data/n3_habitat_riparian-vegetation/re_riparian_cropped/re_remnant_2021_v12_2_riparian_cropped.gpkg")) |> 
+  name_cleaning()
+
+#and filter to just Ross
+ross_re_rip <- n3_re_rip |> 
+  filter(Basin == "Ross")
+
+```
+
+## SLATS
+
+Then we can focus on the two SLATS datasets.
+
+```{r}
+#| label: load the datasets 2
+
+#read the woody extent dataset
+slats_extent <- st_read(glue("{read_data}/slats_extent_2021.gpkg")) |> 
+  name_cleaning() |> 
+  st_transform(proj_crs)
+
+#read the woody change
+slats_change <- st_read(glue("{read_data}/slats_change_2020_2021/DP_QLD_VEG_S2_SLATS_CHANGE_E2021.shp")) |> 
+  name_cleaning() |> 
+  st_transform(proj_crs)
+
+```
+
+# Edit Data
+
+For this example we will cut the data to our test area.
+
+```{r}
+#| label: cut down to test area
+
+#cut down extent and change dataset
+ross_slats_extent <- st_intersection(slats_extent, st_union(ross)) |> st_collection_extract("POLYGON")
+ross_slats_change <- st_intersection(slats_change, st_union(ross)) |> st_collection_extract("POLYGON")
+
+```
+# Visualise Data
+
+## Woody Extent
+
+First we will create a quick map to confirm everything looks how it is supposed to.
+
+```{r}
+#| label: map data 1
+#| output: true
+
+tm_shape(ross_slats_extent) +
+  tm_polygons()
+
+```
+
+ok so its there, but what information do we actually have about the extent? Only this:
+
+`r unique(ross_slats_extent$WoodyExtent2021)`
+
+Which means might not be immediately helpful. However, in the metadata we can learn that the classes are categorized in the "WoodyExtent2021" field as 1 - Woody, 2 - Non-Woody. So simply put, a boolean:
+
+
+```{r}
+#| label: map data 2
+#| output: true
+
+tm_shape(ross_slats_extent) +
+  tm_polygons(col = "WoodyExtent2021")
+
+```
+
+## Woody Change (Gain and Loss)
+
+We can also look at the extent change dataset.
+
+```{r}
+#| label: map data 3
+#| output: true
+
+tm_shape(ross_slats_change) +
+  tm_polygons()
+
+```
+
+Which is there, but it is very vague and hard to tell whats happening. From the metadata we can learn that the "Descr" (description) column can provided additional information, the unique classes in this column area:
+
+`r unique(ross_slats_change$Descr)`
+
+However in this case, there is more too it that this. By looking at full dataset we can see that there are also classifications for regrowth:
+
+`r unique(slats_change$Descr)`
+
+What we can learn from this is that the dataset is mapping all instances in which the vegetation extent from 2020 changed in comparison to the vegetation extent from 2021. In most cases we can see this is the result of clearing, and in some cases regrowth. However there are also a few classes that define the change as a correction. It is also important to highlight that within the "clearing" group there is also "missed clearing" which could also be thought of as a correction. My understanding of this is that it is still vegetation that was cleared, it was just cleared before the 2020-2021 period. Where as the corrections are locations in which there never was/never should have been vegetation, but it was mapped as if there was.
+
+We can visualise this below. However because it is so small we will create an interactive map to allow for zooming
+
+```{r}
+#| label: map data 4
+#| output: true
+
+tmap_mode("view")
+
+tm_shape(ross_slats_change) +
+  tm_polygons(col = "Descr")
+
+```
+
+```{r}
+#| label: turn off interactive mapping
+
+tmap_mode("plot")
+
+```
+
+# Analyse Data
+
+Having confirmed that we have the data, and we know what we are looking at we can now try to replicate the HLW analysis.
+
+## Woody Extent (Riparian Woody Vegetation Cover)
+
+Taken from the HLW 2023 methods document: 
+*"Riparian woody vegetation cover represents the proportion of land-area within the riparian zone mapped as woody vegetation. Riparian woody vegetation extent is estimated by the Queensland Government Department of Environment and Science (DES) using data from the State-wide Landcover and Trees Study (SLATS) (DES, 2018). The extent of woody riparian vegetation is calculated as a percentage of total riparian area. Note that areas of non-woody remnant vegetation have been excluded from the calculations of this indicator."*
+
+So should be fairly straight forward:
+
+- calculate total riparian area
+- calculate riparian area that is of class 1 (see map further up)
+- calculate a ratio
+
+```{r}
+#| label: analyse woody riparian cover
+
+#calculate the ross riparian area and convert to km2
+ross_riparian_area <- sum(st_area(ross_rip)) |> units::set_units(km^2)
+
+#intersect the ross riparian area over the woody extent layer
+ross_rip_woody_extent <- st_intersection(ross_rip, ross_slats_extent)
+
+#filter the vegetation for only woody vegetation
+ross_rip_woody_extent <- ross_rip_woody_extent |> 
+  filter(WoodyExtent2021 == 1)
+
+#calculate the area of vegetation
+ross_woody_area <- sum(st_area(ross_rip_woody_extent)) |> units::set_units(km^2)
+
+#calculate the ratio
+ross_woody_ratio <- ross_woody_area/ross_riparian_area
+
+```
+
+The results are as follows:
+
+- Total area of the Ross Riparian zone = `r ross_riparian_area`
+- Total area of woody vegetation in the Ross Riparian zone = `r ross_woody_area`
+- Ratio of woody vegetation to total area in the Ross Riparian zone = `r ross_woody_ratio`
+
+The scoring method as stated in HLW uses the percentage agreement approach and a threshold of 80% for all catchments."
+
+I.e., if the ratio is greater than 80% that is good.
+
+## Woody Vegetation Regrowth
+
+Taken from the HLW 2023 methods document: 
+*"This indicator represents the rate of riparian woody regrowth within areas mapped as non-remnant. As part of the SLATS dataset series, DES map woody vegetation change which includes areas of woody regrowth. The extent of regrowth within non-remnant areas is calculated as a percentage of total non-remnant riparian areas."*
+
+This one is a little harder to piece together, but as I understand it:
+
+- calculate the area of non-remnant riparian vegetation (unclear how - I am assuming from the RE dataset?)
+- calculate the area of regrowth that occurred from 2020-2021
+- calculate the ratio between the two
+
+```{r}
+#| label: analyse woody vegetation gain
+
+#calculate non-remnant vegetation area
+ross_non_rem <- ross_re_rip |> filter(Vegetation == "Non-Remnant Vegetation")
+
+ross_non_rem_area <- sum(st_area(ross_non_rem)) |> units::set_units(km^2)
+
+#calculate the area of regrowth that occurred (which in the case of Ross is zero because the regrowth variable doesn't even exist)
+ross_regrowth <- ross_slats_change |> 
+  filter(str_detect(Descr, "Regrowth"))
+
+ross_regrowth_area <- sum(st_area(ross_regrowth)) |> units::set_units(km^2)
+
+#calculate the ratio
+ross_gain_ratio <- ross_regrowth_area/ross_non_rem_area
+
+```
+
+The results are as follows:
+
+- Total area of non-remnant vegetation in the Ross Riparian zone = `r ross_non_rem_area`
+- Total area of woody vegetation regrowth in the Ross Riparian zone = `r ross_regrowth_area`
+- Ratio of woody vegetation regrowth to total area of non-remnant vegetation in the Ross Riparian zone = `r ross_gain_ratio`
+
+The scoring method as stated in HLW uses the percentage agreement approach and a threshold of >0% for all catchments."
+
+I.e., if the ratio is greater than zero that is good.
+
+## Woody Remnant Riparian loss
+
+Taken from the HLW 2023 methods document: 
+*"This indicator represents the rate of riparian remnant woody vegetation loss by land-clearing. As part of the SLATS dataset series DES map woody vegetation change which includes areas of woody clearing. The extent of clearing within remnant areas is calculated as a percentage of total non-remnant riparian areas."*
+
+This seems to be very similar to the vegetation regrowth measure, thus as I understand it:
+
+- calculate the area of non-remnant riparian vegetation (again, assuming from the RE dataset?)
+- calculate the area of clearing that occurred from 2020-2021
+- calculate the ratio between the two
+
+```{r}
+#| label: analyse woody vegetation loss
+
+#calculate non-remnant vegetation area
+ross_non_rem <- ross_re_rip |> filter(Vegetation == "Non-Remnant Vegetation")
+
+ross_non_rem_area <- sum(st_area(ross_non_rem)) |> units::set_units(km^2)
+
+#calculate the area of clearing that occurred
+ross_clearing <- ross_slats_change |> 
+  filter(str_detect(Descr, "Clearing"))
+
+ross_clearing_area <- sum(st_area(ross_clearing)) |> units::set_units(km^2)
+
+#calculate the ratio
+ross_loss_ratio <- ross_clearing_area/ross_non_rem_area
+
+```
+
+The results are as follows:
+
+- Total area of non-remnant vegetation in the Ross Riparian zone = `r ross_non_rem_area`
+- Total area of woody vegetation cleared in the Ross Riparian zone = `r ross_clearing_area`
+- Ratio of woody vegetation cleared to total area of non-remnant vegetation in the Ross Riparian zone = `r ross_loss_ratio`
+
+The scoring method as stated in HLW uses the percentage agreement approach and a threshold of 0% for all catchments."
+
+I.e., if the ratio is less than zero that is good.
+
+## Combining Results
+
+Further investigation of the HLW methods shows that to combine the scores from each indicator:
+
+*"The sub-indicators are equally weighted; therefore each indicator has a weight of 25%"*
+
+And that to obtain the final score for each indicator:
+
+*"The percentage agreement approach to indicator scoring was adopted for all four key indicators. The final score is based on the number of sub-catchments above or below the threshold for each respective catchment for each indicator."*
+
+Which means that for the Ross Basin, each of the sub basins within are scored against the threshold for the indicator (for example 80% for the woody vegetation cover indicator), and then the number of sub basins that are above the threshold vs below the threshold is calculated as a percentage. For example:
+
+| Basin | Sub Basin       | Percent of Woody Veg (example) | Basin's %                 |
+|-------|-----------------|--------------------------------|---------------------------|
+| Ross  | Upper Ross      | 85% (above)                    | 4 of 6 above = 4/6 = 66%  |
+|       | Lower Ross      | 81% (above)                    |                           |
+|       | Stuart          | 40% (below)                    |                           | 
+|       | Alligator       | 95% (above)                    |                           |
+|       | Bohle           | 15% (below)                    |                           |
+|       | Magnetic Island | 90% (above)                    |                           |
+
+Then once the score has been calculated like this for each of the indicators, they are equally weighted. For example:
+
+- Woody vegetation cover score = 66%
+- Woody extent regrowth score = 50%
+- Woody extent loss score = 38%
+
+- final score = (66 + 50 + 38)/3 = 51%
+
+Usually at this point we would be calculating grades (from the final score of 51%), however it seems that the HLW recent updated their method of reporting and simply scale results from 0 to 1:
+
+*"The results are compiled, analysed and summarised in an annual Report Card, which can be accessed here: reportcard.hlw.org.au. It includes: Environmental condition scores (0 to 1) previously this was reported in grades (A-F) 2000 - 2022."*
+
+So the final score would be 0.51.
+
+However is still not clear if and how they would derive a word associated with this, (i.e. from the "poor", "moderate", "good" word pool). Even though the words still appear to be in use (look at summary results, technically the middle phrase is "fair", but you get the idea).
+
+::: {.callout-note}
+This concludes the replication of the method.
+:::
+
+
+

@@ -1,0 +1,10 @@
+Region,Environment,Zone,Sub_Zone,Geographic_Area
+DT,Inshore,Cleveland Bay,CB.Enclosed Coastal,EC.Inside Port Zone
+DT,Inshore,Cleveland Bay,CB.Enclosed Coastal,EC.Outside Port Zone
+DT,Inshore,Cleveland Bay,CB.Open Coastal,OC.Inside Port Zone
+DT,Inshore,Cleveland Bay,CB.Open Coastal,OC.Outside Port Zone
+DT,Inshore,Cleveland Bay,Magnetic Island,Magnetic Island
+DT,Inshore,Halifax Bay,HB.Enclosed Coastal,H.Enclosed Coastal
+DT,Inshore,Halifax Bay,HB.Open Coastal,H.Open Coastal
+DT,Inshore,Halifax Bay,Midshelf,Midshelf
+NA,NA,NA,NA,NA

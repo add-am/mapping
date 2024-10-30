@@ -1,0 +1,174 @@
+---
+title: "Northern Three Spatial Analyses (Digital Elevation Models - Burdekin)"
+author: "Adam Shand"
+date: "`r format(Sys.time(), '%d, %B, %Y')`" 
+format: html
+params:
+  dataset_resolution: 30
+  project_crs: "EPSG:7844"
+---
+
+::: {.callout-tip}
+## R Version
+For R session info at the time of rendering this script see @sec-sessioninfo.
+:::
+
+# Introduction
+
+This is the Burdekin example version of the Digital Elevation Model process. For a guide on general usage of the functions used in this process refer to `n3_dem_example-workflow.qmd` or the rendered version of the script.
+
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, janitor, sf, tmap, raster, terra, rayshader)
+
+```
+
+
+We also need to set up key variables for the script such as where we are going to save the outputs, and what coordinate reference system (crs) we are going to be using. Note that the crs is first established under 'params' at the start of the script.
+
+```{r}
+#| label: establish global controls and settings
+#| output: false
+
+#set project variables
+proj_crs <- params$project_crs
+
+#create a file path to help with saving things
+save_path <- here("outputs/n3_dem_burdekin/")
+
+#bring that path to life
+dir.create(save_path)
+
+#turn of spherical geometry
+sf_use_s2(FALSE)
+
+```
+
+
+# Load Data
+
+Now the script is set up we need to load in all of the required datasets. This will be broken into two segments:
+- Spatial data specific to the N3 region - such as the region, basin, and sub basin boundaries.
+- Digital Elevation Model (DEM) data
+
+## Spatial Data
+
+Spatial data for the northern three regions should be readily available in the repo, the dataset is created by the n3_region-builder.qmd script in the repo that should be the first script run for new users. If the dataset is not available refer back to the README document in the GitHub repo. The other parts of spatial data here should go off without a hitch if the region-builder script has been run.
+
+```{r}
+#| label: load N3 spatial data
+
+#read in the northern three spatial files
+n3_region <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg")) |> 
+  filter(is.na(stream_order))
+
+#get a bounding box of the n3 region then convert it into a spatVect for later
+n3_box <- st_as_sfc(st_bbox(n3_region)) |> vect()
+
+```
+
+## DEM data
+
+We can use the custom built `dem_data_pre_processing.R` function for this step. Refer to the n3_dem_example-workflow script for more information.
+
+```{r}
+#| label: load and cut down DEM datasets
+
+#set area of interest
+focus_area <- n3_region |> filter(basin_or_zone == "Haughton") |> 
+  st_union() 
+
+#then converting to a SpatVector
+focus_area <- vect(focus_area)
+
+#read in the function
+source(here("functions/dem_data_pre_processing.R"))
+
+#use the function, refer to text chuck above for guidance.
+dem_data_pre_processing(focus_area, name = "haughton", save = save_path, resolution = 30, reload = T)
+
+```
+
+# Visualise Data
+
+We can now begin to visualise our dem.
+
+## Create Base Elements
+
+We can then convert the SpatRaster into the base components needed for a 3D model. A function called `n3_dem_base()` has been created to help in this process, and will handle the base map elements creation. For a detailed look at the function refer to the generic dem_workflow script.
+
+```{r}
+#| label: create base map elements using function
+
+#read in the function
+source(here("functions/dem_base_map.R"))
+
+#use the function, try not to use spaces in the name
+dem_base_map(haughton_30m_dem, sea_level = 0, z_scale = 15, name = "haughton", save = save_path, reload = FALSE)
+
+```
+
+This function shouldn't need to be edited unless it breaks. If so, the best way to learn about the function is to go and read above the underlying R packages that the function uses [here](https://www.tylermw.com/).
+
+## Create A Map
+
+Once an array and matrix have been created a 3D map can be made from the objects as follows:
+
+```{r}
+#| label: plot the 3D map
+
+#run the 3d map
+plot_3d(haughton_array, haughton_matrix, windowsize = c(50, 50, 1920, 1080), zscale = 10,
+        theta = 0, phi = 36.77, fov = 20, zoom = 0.61, soliddepth = 0, water = T, wateralpha = 0.2)
+
+```
+
+```{r}
+#| label: close the rgl window 1
+
+#close the rgl window
+rgl::close3d()
+
+```
+
+## Save A Map
+
+Once you are happy with the map, it is time to save. This is a fairly standard procedure and uses the `render_snapshot()` function. Note that the rgl window has to be open to save (and that labels have to be added to the rgl window before saving - they cant be saved to the underlying array and matrix).
+
+```{r}
+#| label: save the map
+
+#run the 3d map
+plot_3d(haughton_array, haughton_matrix, windowsize = c(50, 50, 1920, 1080), zscale = 10,
+        theta = 0, phi = 36.77, fov = 20, zoom = 0.61, soliddepth = -500, water = T, wateralpha = 0.2)
+
+#save the map
+render_snapshot(glue("{save_path}/haughton_example"))
+
+#save as a video
+#render_movie(glue("{save_path}/dry_tropics_example.mp4"), frames = 1200, fps = 30)
+
+#close the rgl window
+rgl::close3d()
+
+```
+
+And with that, the script is complete. Have fun modelling!
+
+# Session Info {#sec-sessioninfo}
+
+Below is the session info at the time of rendering this script. Of greatest importance is to note the R version, and the "other attached packages" as these are the most significant drivers of success/failure. It is also good to check the "attached base packages" and "loaded via a namespace" packages as well. To check your session info use `sessionInfo()`.
+
+```{r}
+#| label: show session info
+
+sessionInfo()
+
+```
+

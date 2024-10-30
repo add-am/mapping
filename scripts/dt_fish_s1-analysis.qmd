@@ -1,0 +1,300 @@
+---
+title: "Freshwater Fish Script 1 - Sample Site Analysis"
+subtitle: "A Healthy Waters Partnership Analysis"
+description: "Script 1 in a series of scripts designed to analyse and score freshwater fish sampled in the Dry Tropics region."
+author: "Adam Shand"
+format: html
+---
+
+# Introduction
+
+This is a simple script to calculate scores and grades for the freshwater Fish indicator category in the Freshwater environment for the Dry Tropics region.
+
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, sf, tmap, janitor, readxl)
+
+```
+
+
+Then set the coordinate reference system and save location.
+
+```{r}
+#| label: global vars and initial setup
+
+#create a file path to help with saving things
+save_path <- here("outputs/dt_fish_s1-analysis/")
+
+#create a data path as well
+data_path <- here("data/dt_fish/raw/")
+
+#bring that path to life
+dir.create(here(save_path))
+
+```
+
+# Load Data
+
+Once our work space is set up we then need to bring in data. This is currently all stored in the one master spreadsheet.
+
+```{r}
+#| label: bring in data
+
+#read in the custom function to clean column names into our specific style
+source("../functions/name_cleaning.R")
+
+#load metadata about the species, their full names, and their "type" (indigenous or not)
+species_type <- read_excel(glue("{data_path}/dt_freshwater_fish_master.xlsx"),
+                      sheet = "Species_Codes", na = c("", "NA", "NULL", "null")) |> 
+  name_cleaning()
+
+#load observation data
+dt_fish_raw <- read_excel(glue("{data_path}/dt_freshwater_fish_master.xlsx"),
+                          sheet = "DESI", na = c("", "NA", "NULL", "null")) |> 
+  name_cleaning()
+
+```
+
+# Edit Data
+
+we will then need to edit and manipulate the data as it is not provided in the easiest format to work with in a computer program (human readability was prioritised). Below we will pivot the data longer (move the spp names from column headers to a specific column), and remove all rows in which no observations of the species occurred (this will reduce the size of the table from ~1647 to ~242 rows).
+
+```{r}
+#| label: edit data
+
+#pivot data longer (move all species columns into one, and all observations into one), then merge the metadata on
+dt_fish <- pivot_longer(dt_fish_raw, cols = 16:ncol(dt_fish_raw), 
+                        names_to = "Species", values_to = "Observations") |> 
+  merge(species_type) |> 
+  filter(Observations != 0)
+
+#we can then put this aside to be used by the visualisation script later. note it goes to the "processed" folder in the main data folder
+write_csv(dt_fish, glue("{data_path}/../processed/fish_data.csv"))
+
+```
+
+# Calculate Results
+
+Then we can begin calculating results.
+
+## POISE and PONIS Indicator Categories
+
+Starting with the Proportion of Indigenous Species Expected (POISE) and Proportion of Non-Indigenous Species (PONIS) indicator categories.
+
+```{r}
+#| label: calculate results
+
+#calculate some numbers and statistics or different types of fish at each site
+dt_fish_results_site <- dt_fish |> 
+  group_by(Site) |> 
+  mutate(SiteTotNumFish = sum(Observations), #The total number of all fish found at each site
+         SiteNumUniqIndSpp = sum(Type == "Indigenous"), #Number of different indigenous species found at each site
+         SiteTotNumNoIFish = sum(ifelse(Type != "Indigenous", Observations, 0)), #Number of non indigenous fish found at each site
+         SiteTotNumAliFish = sum(ifelse(Type == "Alien", Observations, 0)),# Number of alien fish found at each site
+         SiteTotNumTraFish = sum(ifelse(Type == "Translocated", Observations, 0)), #Number of translocated fish found at each site
+         SitePonis = SiteTotNumNoIFish/SiteTotNumFish,
+         SitePoise = SiteNumUniqIndSpp/PredictedNumberOfIndigenousSpecies) |> 
+  ungroup()
+
+#and then do the same thing at a basin level
+dt_fish_results_basin <- dt_fish_results_site |> 
+  group_by(Basin) |> 
+  mutate(BasinNumUniqIndSpp = n_distinct(Species)) |> 
+  select(-c(Species, Type, Observations, GenusSpecies, VernacularName)) |> 
+  unique() |> 
+  mutate(BasinTotNumFish = sum(SiteTotNumFish),
+         BasinTotNumNoIFish = sum(SiteTotNumNoIFish),
+         BasinTotNumAliFish = sum(SiteTotNumAliFish),
+         BasinTotNumTraFish = sum(SiteTotNumTraFish),
+         BasinPropTrans = median(PropTrans),
+         BasinPropAlien = median(PropAlien),
+         BasinPonis = median(SitePonis, na.rm = T),
+         BasinPoise = median(SitePoise, na.rm = T)) |> 
+  ungroup()
+
+```
+
+## Standardised Scores
+
+Then we can standardise the scores for each of these indicator categories.
+
+```{r}
+#| label: standardise scores
+
+#create standardised score function for the POISE Indicator category
+standardised_POISE_score <- function(POISE_val){
+
+    score <- ifelse(POISE_val > 0.8, 81 + abs((19 + ((POISE_val - 1) * (19 / 0.2)))),
+                    ifelse(POISE_val > 0.67, 61 + abs((19.9 + ((POISE_val - 0.7999) * (19.9 / 0.1329)))),
+                           ifelse(POISE_val > 0.53, 41 + abs((19.9 + ((POISE_val - 0.6669) * (19.9 / 0.1339)))),
+                                  ifelse(POISE_val > 0.4, 21 + abs((19.9 + ((POISE_val - 0.5329) * (19.9 / 0.1329)))),
+                                         abs(20.9 + ((POISE_val - 0.3999) * (20.9 / 0.3999)))))))
+                    
+}
+
+#create standardised score function for the PONIS indicator category
+standardised_PONIS_score <- function(PONIS_val){
+
+    score <- ifelse(PONIS_val <0.03, 81 + abs((19 - ((PONIS_val - 0) * (19 / 0.025)))),
+                    ifelse(PONIS_val < 0.05, 61 + abs((19.9 - ((PONIS_val - 0.0251) * (19.9 / 0.0249)))),
+                           ifelse(PONIS_val < 0.1, 41 + abs((19.9 - ((PONIS_val - 0.051) * (19.9 / 0.049)))),
+                                  ifelse(PONIS_val < 0.2, 21 + abs((19.9 - ((PONIS_val - 0.101) * (19.9 / 0.099)))),
+                                         abs(20.9 - ((PONIS_val - 0.201) * (20.9 / 0.799)))))))
+                    
+}
+
+#run each of the functions
+dt_fish_results <- dt_fish_results_basin |> 
+  mutate(StandPoise = standardised_POISE_score(BasinPoise),
+         StandPonis = standardised_PONIS_score(BasinPonis))
+         
+```
+
+## Fish Index
+
+Before calculating the final fish index score for each basin.
+
+```{r}
+#| label: calculate the fish index
+
+#calculate the fish index by taking the mean of each indicator
+dt_fish_results <- dt_fish_results |> 
+  rowwise() |> 
+  mutate(fish_index = mean(c(StandPoise, StandPonis))) |> 
+  ungroup() |> 
+  mutate(across(contains(c("Stand","fish")), round))
+
+```
+
+# Presentation
+
+Now results are calculated we can work on producing outputs that match our technical report requirements.
+
+Because the fish index is presented in quite a simple way only one table is necessary. All the relevant information can be extracted from it easily.
+
+### Table
+
+```{r}
+#| label: create summary statistics table table
+
+#first we need to calculate one more number
+dt_fish_results <- dt_fish_results |> 
+  mutate(BasinTotNumIndFish = BasinTotNumFish - BasinTotNumNoIFish) |> 
+  relocate(BasinTotNumIndFish, .after = BasinTotNumFish)
+
+#then select only the key components for the main table
+summary_stats_table <- dt_fish_results |> 
+  select(contains(c("Basin", "Stand", "Index"))) |> 
+  mutate(across(where(is.numeric), ~round(.x, 3))) |> 
+  unique() |> 
+  arrange(desc(Basin))
+
+#load in custom function
+source(here("functions/cond_form_rc_grades.R"))
+
+#save data
+cond_form_rc_grades(summary_stats_table, glue("{save_path}/main_report_summary_stats"), cols = c(12, 14), method = "Numeric")
+
+#save the full dataset to be used by the visualisation later. note it goes to the "processed" folder in the main data folder
+write_csv(dt_fish_results, glue("{data_path}/../processed/fish_results.csv"))
+
+#clean up
+rm(dt_fish_results_site, dt_fish_results_basin)
+
+```
+
+However we will still create some secondary exports that summarises:
+
+Sites:
+
+```{r}
+#| label: save site summary table
+
+#convert our dataset to a spatial file and add numbers for each site
+dt_site_summary <- dt_fish |> 
+  select(Basin, Site) |> 
+  unique() |> 
+  group_by(Basin) |> 
+  arrange(desc(Basin), Site) |> 
+  mutate(SiteNumber = row_number()) |> 
+  ungroup()
+
+#filter for what we need
+dt_site_summary <- dt_site_summary |> 
+  select(Basin, Site, SiteNumber) |> 
+  unique()
+
+#save
+write_csv(dt_site_summary, glue("{save_path}/appendix_site_summary.csv"))
+
+```
+
+Species:
+
+```{r}
+#| label: save species summary table
+
+#create a species summary table
+dt_species_summary <- dt_fish |> 
+  select(Basin, VernacularName, Type) |> 
+  unique() |> 
+  arrange(Basin) |> 
+  group_by(VernacularName, Type) |> 
+  summarise(Basin = paste(Basin, collapse = "/")) |> 
+  relocate(Basin, .before = VernacularName) |> 
+  arrange(desc(Basin)) |> 
+  ungroup() |> 
+  mutate(SpeciesKey = row_number())
+
+#save with the row number included
+write_csv(dt_species_summary, glue("{save_path}/appendix_species_summary.csv"))
+
+```
+
+and presence/absence:
+
+```{r}
+#| label: create presence absence table
+
+#select the main rows
+dt_presence_summary <- dt_fish |> 
+  select(Basin, Site, VernacularName) |> 
+  merge(dt_site_summary)
+
+#cut down the key table we just created
+dt_species_key <- dt_species_summary |> 
+  select(VernacularName, SpeciesKey)
+
+#and merge 
+dt_presence_summary <- merge(dt_presence_summary, dt_species_key) |> 
+  select(-VernacularName, -Site) |> 
+  mutate(presence = 1) |> 
+  arrange(SpeciesKey)
+
+#pivot data
+dt_presence_summary <- dt_presence_summary |> 
+  pivot_wider(names_from = SpeciesKey, values_from = presence) |> 
+  mutate(across(everything(), ~replace_na(.x, 0))) |> 
+  arrange(desc(Basin), SiteNumber)
+
+#split into Ross and Black
+ross_presence <- dt_presence_summary |> 
+  filter(Basin == "Ross")
+
+black_presence <- dt_presence_summary |> 
+  filter(Basin == "Black")
+
+#and save, using a custom coloring function
+source(here("functions/cond_form_fish_pres_abs.R"))
+
+#save data
+cond_form_fish_pres_abs(ross_presence, glue("{save_path}/appendix_ross_presence"), cols = c(3, ncol(ross_presence)))
+cond_form_fish_pres_abs(black_presence, glue("{save_path}/appendix_black_presence"), cols = c(3, ncol(black_presence)))
+
+```

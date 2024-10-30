@@ -1,0 +1,387 @@
+---
+title: "Simplified Technical Report Tables"
+subtitle: "A Healthy Waters Partnership Analysis"
+description: "This script explores the possibility of embedding and exporting tables from within the R engine, and more specifically, from within the Quarto framework. The outputs of this script are currently used for demonstration purposes."
+author: "Adam Shand"
+format: docx
+params:
+  project_crs: "EPSG:7844"
+---
+
+# Introduction
+
+This script is an experimental script written to test a variety of table output options from an R script. The R packages we are looking at for this analysis are:
+
+ - openxlsx2
+ - kable (and kableExtra)
+ - huxtable
+ 
+However it is important to note that before this selection of packages was reached, several additional packages were piloted such as "gt", "reactable", "openxlsx", "DT", etc. Upon reviewing each of these packages, core flaws were identified that limited their feasibility.
+
+The general objectives that we are trying to achieve are:
+
+ 1. Manipulate tables as "normal" using tidyverse syntax
+ 2. Save tables to a csv file with no formatting
+ 3. Save tables to a xslx file **with** conditional formatting
+ 4. Present tables in Quarto outputs with conditional formatting, specifically:
+      - HTML
+      - docx (word)
+
+## Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, janitor, openxlsx2, kableExtra, huxtable, flextable)
+
+```
+
+```{r}
+#| label: global vars and initial setup
+
+#create a file path to help with saving things
+save_path <- here("outputs/dt_experiments_tables/")
+
+#create a data path as well
+data_path <- here("data/dt_experiments_tables/")
+
+#bring that path to life
+dir.create(save_path)
+dir.create(data_path)
+
+```
+
+# Load Example Data
+
+First lets bring in some example tables to conduct our comparison on.
+
+```{r}
+#| label: load in example table
+
+#read in the custom function to clean column names into our specific style
+source("../functions/name_cleaning.R")
+
+#load in each table
+example_table_1 <- read_csv(glue("{data_path}/example_table_1.csv")) |> 
+  name_cleaning()
+
+example_table_2 <- read_csv(glue("{data_path}/example_table_2.csv")) |> 
+  name_cleaning()
+
+example_table_3 <- read_csv(glue("{data_path}/example_table_3.csv")) |> 
+  name_cleaning()
+
+```
+
+These tables, each demonstrate different challenges we will face. Example Table 1 contains natural numbers from 0 to 100, which represent the range of values we would expect to see in a standard reporting table creating within our workflow. Example Table 1 also contains several "trip ups" - such as negative numbers, NA values, character values, and values greater than 100. These are designed to test the unknown/error handling capacity of each of the methods that we will explore.
+
+Example Table 2 expands on this, with additional columns and rows that add context to the table.
+
+Example Table 3 explores a niche subset of tables that are sometimes used that report values between a range of -1 to +1, all other challenges remain the same.
+
+# Openxlsx2
+
+The openxlsx2 package has been specifically designed to save tables from R to the .xlsx excel format. However it does not offer any capacity to print these tables inline, to html, or to word. Lets review each of the processes we wanted to complete again:
+
+ 1. Manipulate tables as "normal" using tidyverse syntax (yes)
+ 2. Save tables to a csv file with no formatting (using standard tidyverse functions yes)
+ 3. Save tables to a xslx file **with** conditional formatting (yes)
+ 4. Present tables in Quarto outputs with conditional formatting, specifically:
+      - HTML (no)
+      - docx (word) (no)
+
+Although this package does not cover all of our needs, it does cover the niche requirement of saving to xlsx. Thus I have written functions that utilise openxlsx2 for saving tables to xlsx, these are demonstrated below:
+
+## Export to Excel With Colour
+
+Saving the table with colour can be achieved using the .xlsx workbook file format (which retains formatting/styling options) and a custom function as such:
+
+```{r}
+#| label: export using custom function 1
+
+#load in custom function
+source(here("functions/cond_form_rc_grades.R"))
+
+#save data
+cond_form_rc_grades(example_table_1, glue("{save_path}/example_table_colour"), 1:ncol(example_table_1), method = "Numeric")
+
+```
+
+Here is a screenshot of before and after, note the variety of NA type values that are ignored:
+
+![coloured Table Original](coloured_example_table_original.png)
+
+
+![Coloured Table](coloured_example_table.png)
+
+It is also very simple to change where the colouring is applied. For example, lets pretend the first three columns are variables such as site, basin, and zone. These columns shouldn't be colored, and this can be achieved by changing the starting point for the function:
+
+```{r}
+#| label: export using custom function 2
+
+#save data
+cond_form_rc_grades(example_table_1, glue("{save_path}/example_table_colour_half"), 4:ncol(example_table_1), method = "Numeric")
+
+```
+
+which looks like this:
+
+![Coloured Table 2](coloured_half_example_table.png)
+
+It is also equally possible to handle multiple header rows containing non numeric values. Consider the following table:
+
+```{r}
+#| label: export using custom function 3
+
+#read in a more complex dataset
+example_table_2 <- read_csv(glue("{data_path}/example_table_2.csv"))
+
+```
+
+![Coloured Table 3](coloured_example_table_2_original.png)
+
+which, thanks to the first two rows, forces all indicator columns to be character. Although, given that we are colouring by comparing the score value against a range of values (i.e. is x < or > y), we actually need columns to be numeric. However, when converting to numeric, the character values in rows one and two are replaced with NA:
+
+```{r}
+#| label: export using custom function 4
+
+na_example <- example_table_2 |> mutate(across(everything(), as.numeric))
+
+```
+
+![Coloured Table 4](coloured_example_table_2_na.png)
+
+However the colour function accounts for this and replace NA values in the output, with its original value that was read from the input. True NAs remain NAs, and character values that get wiped will be restored. There isnt even any need to specify where the colour rules should begin using this method.
+
+```{r}
+#| label: export using custom function 5
+
+#save data
+cond_form_rc_grades(example_table_2, glue("{save_path}/example_table_colour_complex"), 4:ncol(example_table_2), method = "Numeric")
+
+```
+
+
+![Coloured Table 5](coloured_example_table_complex.png)
+
+# Kable
+
+The kable and kableExtra packages have been written with the main purpose of being simple and easy to use for HTML outputs. However with the draw back of very limited support for any other situation. If we were to once again review our processes that we wanted to complete:
+
+ 1. Manipulate tables as "normal" using tidyverse syntax (yes)
+ 2. Save tables to a csv file with no formatting (using standard tidyverse functions yes)
+ 3. Save tables to a xslx file **with** conditional formatting (no)
+ 4. Present tables in Quarto outputs with conditional formatting, specifically:
+      - HTML (yes)
+      - docx (word) (very very basic)
+      
+Given that several R packages provide the ability to save table to a html format, the viability of this table is limited. However we will demonstrate a use case below to explore how user friendly the package is.
+
+## Print to HTML
+
+Below we demonstrate how kable can print a table to a html formatted document, with conditional formatting.
+
+```{r}
+#| label: print table inline 1
+
+#set all to numeric
+example_table_1_numeric <- example_table_1 |> mutate(across(everything(), as.numeric))
+
+#create colouring function
+colour_rules <- function(x) {
+  
+  ifelse(is.na(x), "#FFFFFF", #white for NA
+         ifelse(x < 0, "#FFFFFF", #white for negative
+                ifelse(x < 21, "#FF0000", #red
+                       ifelse(x < 41, "#FFC000", #orange
+                              ifelse(x < 61, "#FFFF00", #yellow
+                                     ifelse(x < 81, "#92D050", #light green
+                                            ifelse(x <= 100, "#00B050", "#FFFFFF"))))))) #dark green, white
+}
+
+#change the table into a "Kable Table"
+formatted_table <- kable(example_table_1_numeric, "html")
+
+# Apply conditional formatting for each column
+for (i in seq_along(example_table_1_numeric)) {
+  formatted_table <- formatted_table |> #reassign table to itself each time
+    column_spec(i, background = colour_rules(example_table_1_numeric[i])) #for each column, colour according to the function rules
+}
+
+```
+
+```{r}
+#| label: print table inline 2
+#| output: true
+
+#visualise table
+#formatted_table |> 
+#  kable_classic(full_width = F, html_font = "Cambria") |> #change font and table size
+#  kable_styling(bootstrap_options = "condensed") #condense the rows slightly
+
+```
+
+However this method does not retain character values. This may become more apparent with the more complex example table 2:
+
+```{r}
+#| label: print table inline 3
+
+#set all to numeric
+example_table_2_numeric <- example_table_2 |> mutate(across(everything(), as.numeric))
+
+#change the table into a "Kable Table"
+formatted_table <- kable(example_table_2_numeric, "html")
+
+# Apply conditional formatting for each column
+for (i in seq_along(example_table_2_numeric)) {
+  formatted_table <- formatted_table |> #reassign table to itself each time
+    column_spec(i, background = colour_rules(example_table_2_numeric[i])) #for each column, colour according to the function rules
+}
+
+```
+
+```{r}
+#| label: print table inline 4
+#| output: true
+
+#visualise table
+#formatted_table |> 
+ # kable_classic(full_width = F, html_font = "Cambria") |> #change font and table size
+ # kable_styling(bootstrap_options = "condensed") #condense the rows slightly
+
+```
+
+The reason for this is that each column in an R data frame must be of a single type (e.g. character, numeric, boolean), and the actual formatting of the table is taking place within the R engine. It may be possible to make each column a list, which can contain multiple types, but this package is supposed to be reducing complexity not increasing it.
+
+## Print to Word
+
+```{r}
+#| label: tbl-exampledata-1
+#| output: true
+#| tbl-cap: This is a table caption.
+
+kable(example_table_1)
+
+```
+
+# Huxtable
+
+The final option of the lot is the huxtable package. This package boasts the most support, and when we refer to our requirements:
+
+ 1. Manipulate tables as "normal" using tidyverse syntax (yes)
+ 2. Save tables to a csv file with no formatting (using standard tidyverse functions yes)
+ 3. Save tables to a xslx file **with** conditional formatting (no)
+ 4. Present tables in Quarto outputs with conditional formatting, specifically:
+      - HTML (yes)
+      - docx (word) (yes)
+
+We can see that in combination with the openxlsx2 package it covers every requirement that we have. To demonstrate its flexibility, several examples are presented below.
+
+## Inline HTML
+
+first up is a demonstration of inline HTML. A simple, unformatted table can be created as follows:
+
+```{r}
+#| label: unformatted hux
+#| output: true
+
+#convert the standard dataframe to a hux table
+example_table_1_hux <- as_hux(example_table_1)
+
+#print as a hux table to html
+example_table_1_hux
+
+```
+
+Simple styling can be set as follows:
+
+```{r}
+#| label: styled hux 1
+#| output: true
+
+#style
+example_table_1_hux |> 
+  #set_all_padding(100) |> 
+  set_outer_padding(0) |>  
+  set_bold(row = 1, col = everywhere) |> 
+  set_top_border(row = 1, col = everywhere) |> 
+  set_bottom_border(row = 1, col = everywhere) |> 
+  set_bottom_border(row = nrow(example_table_1_hux), col = everywhere)# |> 
+  #set_width(0.4)
+  #set_caption("Example Table 1: Hux")
+
+```
+
+Which works just as well on the more complicated table:
+
+
+::: {.landscape}
+
+And by the way, here is an example of landscape layout and of a custom function to style the table.
+
+```{r}
+#| label: styled hux 2
+#| output: true
+
+#edit table slightly for styling purposes
+example_table_2 <- example_table_2 |> 
+  rename(Region = "...1", 
+         Environment = "...2", 
+         Basin = "...3", 
+         "2021-2022" = "21-22...4",
+         "2020-2021" = "20-21",
+         "2019-2020" = "19-20")
+
+#read in the custom function to style tables
+source("../functions/cond_form_tables.R")
+
+#run function then add additional formatting
+cond_form_tables(example_table_2, header_rows = 2, landscape = T, score_colour = T) |> 
+  merge_cells(1:3, 1) |> 
+  merge_cells(1:3, 2) |>
+  merge_cells(1:3, 3) |>
+  merge_cells(4:12, 1) |> 
+  merge_cells(4:12, 2) |> 
+  merge_cells(4:8, 3) |> 
+  merge_cells(9:12, 3) |> 
+  merge_cells(1, 4:13) |> 
+  merge_cells(2, 4:8) |> 
+  merge_cells(2, 9:12) |> 
+  merge_cells(2, 13:15) |> 
+  set_align(everywhere, everywhere, "center") |> 
+  set_valign(everywhere, everywhere, "middle")
+
+```
+
+:::
+
+However by far the more interesting component is the conditional formatting that we can apply, which is actually ridiculously easy (@tbl-exampledata)
+
+```{r}
+#| label: tbl-exampledata
+#| output: true
+#| tbl-cap: "This is a table caption."
+
+example_table_1_hux |> 
+  map_background_color(by_ranges(breaks = c(0, 21 ,41, 61, 81, 100),
+                                 values = c("#FF0000", "#FFC000",  "#FFFF00", "#92D050", "#00B050"),
+                                 extend = F)) |> 
+  set_bold(row = 1, col = everywhere) |> 
+  set_top_border(row = 1, col = everywhere) |> 
+  set_bottom_border(row = 1, col = everywhere) |> 
+  set_bottom_border(row = nrow(example_table_1_hux), col = everywhere) |> 
+  set_width(1)
+
+```
+
+# Final Decision
+
+Broadly speaking, no one package can do all that is required., thus two packages can be selected. Of the three packages assessed, only the openxlsx2 package can handle conditional outputs to the .xlsx file type. From the remaining two options, huxtable is by far the better option as it can print to both html and docx formats (although does require minor adjustments between each).
+
+Therefore, the final selection of packages to use for handling all table outputs from R scripts is (as of 27/09/2024):
+
+ - openxlsx2
+ - huxtable

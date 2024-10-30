@@ -1,0 +1,9 @@
+Code,Date,FY,Indicator,Units,Values,Supplier,Geographic_Area,Region,Environment,Zone,Sub_Zone,Sample_Type,Water_Type,Management,Lat,Long,Inside_Port_Zone,WQO,LOR,Failure,Stat
+CB15,2021-08-19,2022,NOX,mg.L,0.001,POTL,OC.Outside Port Zone,DT,Inshore,Cleveland Bay,CB.Open Coastal,grab,open coastal,MD,-19.2263196,146.8233212,N,0.002,0.002,high,median
+CB15,2021-11-26,2022,NOX,mg.L,0.001,POTL,OC.Outside Port Zone,DT,Inshore,Cleveland Bay,CB.Open Coastal,grab,open coastal,MD,-19.2263196,146.8233212,N,0.002,0.002,high,median
+CB15,2022-03-03,2022,NOX,mg.L,0.001,POTL,OC.Outside Port Zone,DT,Inshore,Cleveland Bay,CB.Open Coastal,grab,open coastal,MD,-19.2263196,146.8233212,N,0.002,0.002,high,median
+CB15,2022-06-06,2022,NOX,mg.L,0.001,POTL,OC.Outside Port Zone,DT,Inshore,Cleveland Bay,CB.Open Coastal,grab,open coastal,MD,-19.2263196,146.8233212,N,0.002,0.002,high,median
+P05,2021-08-19,2022,NOX,mg.L,0.001,POTL,OC.Outside Port Zone,DT,Inshore,Cleveland Bay,CB.Open Coastal,grab,open coastal,MD,-19.22081405,146.8475424,N,0.002,0.002,high,median
+P05,2021-11-26,2022,NOX,mg.L,0.001,POTL,OC.Outside Port Zone,DT,Inshore,Cleveland Bay,CB.Open Coastal,grab,open coastal,MD,-19.22081405,146.8475424,N,0.002,0.002,high,median
+P05,2022-03-03,2022,NOX,mg.L,0.001,POTL,OC.Outside Port Zone,DT,Inshore,Cleveland Bay,CB.Open Coastal,grab,open coastal,MD,-19.22081405,146.8475424,N,0.002,0.002,high,median
+P05,2022-06-06,2022,NOX,mg.L,0.001,POTL,OC.Outside Port Zone,DT,Inshore,Cleveland Bay,CB.Open Coastal,grab,open coastal,MD,-19.22081405,146.8475424,N,0.002,0.002,high,median

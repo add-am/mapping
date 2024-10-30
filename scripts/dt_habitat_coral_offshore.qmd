@@ -1,0 +1,160 @@
+---
+title: "Offshore Marine Coral Analyssi"
+subtitle: "A Healthy Waters Partnership Analysis"
+description: "This script analyses, scores and presents coral data in the offshore marine environment in the Dry Tropics region."
+author: "Adam Shand"
+format: html
+params:
+  project_crs: "EPSG:7844"
+---
+
+# Introduction
+
+This is a simple script to produce a map of sampling locations for the Coral indicator category in the Offshore Marine Zone for the Dry Tropics region.
+
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, sf, tmap, janitor, dataaimsr)
+
+```
+
+Then set the coordinate reference system and save location.
+
+```{r}
+#| label: global vars and initial setup
+
+#set crs
+proj_crs <- params$project_crs
+
+#create a file path to help with saving things
+save_path <- here("outputs/dt_habitat_coral-offshore/")
+
+#create a data path as well
+data_path <- here("data/dt_habitat_coral-offshore/")
+
+#bring that path to life
+dir.create(save_path)
+
+#turn off s2 geometry
+sf_use_s2(F)
+
+```
+
+# Load Data
+
+Next we load in the data, refer to the README in the GitHub repo if data is missing.
+
+```{r}
+#| label: load in wetland data
+
+#read in the custom function to clean column names into our specific style
+source("../functions/name_cleaning.R")
+
+#please note if the data is not in the basin builder folder, try running the basin builder script
+dry_tropics <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg")) |> 
+  name_cleaning() |> 
+  st_transform(proj_crs) |> 
+  filter(Environment == "Marine", Region == "Dry Tropics")
+
+#read in qld outlines data from the gisaimsr package, filter for land and islands, update crs
+qld <- get(data("gbr_feat", package = "gisaimsr")) |> 
+  name_cleaning() |> 
+  filter(FeatName %in% c("Mainland", "Island")) |> 
+  st_transform(proj_crs)
+
+#read in reef data and update crs
+reefs <- get(data("gbr_feat", package = "gisaimsr")) |> 
+  name_cleaning() |> 
+  filter(FeatName == "Reef") |> 
+  st_transform(proj_crs)
+
+#create a townsville point coord
+tsv <- st_as_sf(data.frame(place = "Townsville", x = "-19.2590", y = "146.8169"), coords = c("y", "x"), crs = proj_crs)
+
+```
+
+# Maipulate Data
+
+The names in the reef dataset are too excessive and can visually clutter our map, in this code chunk we clean up the reef names.
+
+```{r}
+#| label: clean up data
+
+#crop reefs to only in Dry Tropics region and take only polygons
+temp_reefs <- st_intersection(reefs, dry_tropics) |> st_collection_extract("POLYGON")
+
+#create list of reefs we care about and their x and y label modifications. Order is Name = Xmod, Ymod)
+reef_list <- list("Chicken Reef" = c(1, 1.2),
+                  "Davies Reef" = c(0, 0.8),
+                  "Dip Reef" = c(0, 0.8),
+                  "Helix Reef" = c(0, -0.5),
+                  "John Brewer Reef" = c(-1, 0.8),
+                  "Kelso Reef" = c(0, 0.8),
+                  "Knife Reef" = c(0, 0.8), 
+                  "Myrmidon Reef" = c(0, 0.8),
+                  "Rib Reef" = c(-0.5, 0.7))
+
+#filter by name to only get the offshore reefs we want, group, summarise and mutate reef data
+dt_reefs <- temp_reefs |> filter(GbrName %in% names(reef_list)) |> select(GbrName) |> 
+  mutate(Zone = "offshore", GbrName = as.character(GbrName)) |> 
+  rename(Reef = GbrName) |> mutate(Xmod = NA, Ymod = NA)
+
+#loop over the list and add each item
+for (i in 1:length(reef_list)){
+  
+  dt_reefs <- dt_reefs |> mutate(Xmod = case_when(Reef == names(reef_list)[i] ~ reef_list[[i]][1], T ~ Xmod),
+                                 Ymod = case_when(Reef == names(reef_list)[i] ~ reef_list[[i]][2], T ~ Ymod))
+}
+
+#get only the offshore zone
+offshore <- dry_tropics |> filter(BasinOrZone == "Offshore")
+
+```
+
+# Create Map
+
+And finally we can produce the required maps to be used in our technical report style.
+
+```{r}
+#| label: create map
+
+#create a map of the area
+map <- tm_shape(qld) +
+  tm_polygons(col = "grey80", border.col = "black") +
+  tm_shape(reefs) +
+  tm_borders(col = "grey60", alpha = 0.6) +
+  tm_shape(dry_tropics, is.master = T) +
+  tm_borders(col = "black") +
+  tm_shape(tsv) +
+  tm_symbols(size = 0.5, col = "white", border.col = "black", border.lwd = 2, shape = 23) +
+  tm_text("place", shadow = T, xmod = -2.5, ymod = 0.1) +
+  tm_shape(dt_reefs) +
+  tm_polygons(col = "Reef", palette = "Set3", border.col = "black", legend.show = F) +
+  tm_shape(dt_reefs) +
+  tm_text("Reef", shadow = T, xmod = "Xmod", ymod = "Ymod", size = 0.8) +
+  tm_layout(asp = 1.1) +
+  tm_scale_bar(width = 0.15, text.size = 0.7, position = c(0.02, 0)) +
+  tm_compass(position = c("right", "top"))
+
+#save the map as a png
+tmap_save(map, filename = glue("{save_path}/coral_offshore-marine.png"))
+
+```
+
+Script complete :) Below is an interactive example of the maps created.
+
+```{r}
+#| label: interactive map example
+#| output: true
+
+tmap_mode("view")
+
+map
+
+```

@@ -1,0 +1,1247 @@
+---
+title: "Burdekin Water Quality Metric Development"
+subtitle: "A Healthy Waters Partnership Analysis"
+description: "This script explores the workflow required to perform water quality analysis when the water quality objectives are determined based on the flow rate at the time of sampling. The outputs of this script are currently used for demonstration purposes with respect to the effort and time taken to acheive the outcome."
+author: "Adam Shand"
+format: docx
+params:
+  project_crs: "EPSG:7844"
+---
+
+# Introduction
+
+The Burdekin region is vast, with dispersed communities, resources, and data. The successful completion of the Burdekin Expansion project into the Burdekin region relies on an accurate understanding of the time and effort required to develop appropriate data analysis methods, obtain and management data sources, conduct the analysis, and report the results. Not least of which includes all types of freshwater and estuarine water quality.
+
+This document is a case study into the estimated resources required to develop and maintain an effective water quality data analysis method in the entire Burdekin region. This case study uses two test sites: 
+
+ - Barratta Creek at Northcote, 
+ - and Burdekin River at Sellheim, 
+ 
+and works through each step required in a formal technical report. The case study also explores challenges and difficulties experienced during the process.
+
+```{r}
+#| label: load packages and set up folder/file system
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, sf, tmap, janitor, readxl, busdater, huxtable, officer)
+
+#set project crs
+proj_crs <- params$project_crs
+
+#create a file path to help with saving outputs
+save_outputs <- here("outputs/dt_experiments_water-quality_burdekin/")
+read_data <- here("data/dt_experiments_water-quality_burdekin/")
+
+#bring the path to life
+dir.create(save_outputs)
+dir.create(read_data)
+
+#turn off s2 geometry
+sf_use_s2(FALSE)
+
+#read in the custom function to clean column names into our specific style
+source("../functions/name_cleaning.R")
+
+```
+
+# Method
+
+The method that was selected for use in the Burdekin Expansion water quality data analysis is based on the Wet Tropics Waterways Partnerships' current water quality analysis. In contrast to the Healthy Water Partnership's water quality analysis method, this water quality method utilises high flow and low flow water quality objectives. The decision to use this method was based on the high and low flow events that characterise the Burdekin region and the availability of high and low flow water quality objectives.
+
+A general overview of the method selected is as follows:
+
+ 1. Obtain water quality data (e.g. Total Nitrogen)
+ 2. Obtain water quality objectives (both high and low flow)
+ 3. Obtain watercourse flow data (hourly)
+ 4. Obtain high/low flow cut off values (e.g. 'X' cumecs)
+ 5. Clean datasets
+ 6. Characterise the number of days per year that were high or low flow
+ 7. Calculate water quality scaling factors based on all available historical data
+ 8. Assign each water sample as high or low flow based on the closest hourly flow value
+ 9. Perform Quality Control and Quality Assurance checks
+ 10. Score each water quality sample against the appropriate water quality objective and scaling factor
+ 11. Weight the high and low flow scores based on the number of high and low flow days
+ 12. Calculate indicator category scores by averaging appropriate indicators
+ 13. Calculate index scores by averaging appropriate indicator categories
+
+## Obtaining Water Quality Data
+
+Currently there is only one viable source of water quality data identified in the Burdekin region, the Catchment Loads Monitoring Program (CLMP). This is due to the requirement that the data is a) long-term, and b) regular (not event based). This requirement unfortunately eliminates many project-based water quality datasets that may be centered around flood monitoring or may only last for a few years.
+
+CLMP data is accessed through "Tahbil", an online publicly accessible data access portal. The two sites used for this project were both sourced from Tahbil:
+
+ - Barratta Creek at Northcote
+ - Burdekin River at Sellheim
+ 
+```{r}
+#| label: read in water quality data
+
+#read in water quality data for barratta 
+barratta_wq_values <- read_csv(glue("{read_data}/clmp_barratta.csv")) |> 
+  name_cleaning() |> 
+  rename(SubBasin = Catchment)
+
+#read in water quality data for sellheim
+sellheim_wq_values <- read_csv(glue("{read_data}/clmp_sellheim.csv")) |> 
+  name_cleaning() |> 
+  rename(SubBasin = Catchment)
+
+```
+ 
+Although the online portal does currently offer 32 total sample sites, not all of these sites are viable for the analysis. Screenshots of the Tahbil site are presented below in (@fig-tahbil-1) and (@fig-tahbil-2).
+
+```{r}
+#| label: fig-tahbil-1
+#| fig-cap: A screenshot of the Tahbil portal interface. Note the large number of options for location (left), and site (middle). This screenshot also demonstrates a severe lack of water quality data in the northern, western, and southern reaches of the Burdekin region.
+#| out-height: 6cm
+#| output: true
+
+knitr::include_graphics("../references/images/burdekin_expasion_images/image_1_tahbil.png", error = F, rel_path = T)
+
+```
+```{r}
+#| label: fig-tahbil-2
+#| fig-cap: A zoomed in screenshot of the Tahbil portal interface. Note the large number of available sites, and extensive results.
+#| out-height: 6cm
+#| output: true
+
+knitr::include_graphics("/references/images/burdekin_expasion_images/image_2_tahbil.png", error = F, rel_path = F)
+
+```
+
+## Obtain Water Quality Objectives
+
+Water quality objectives are sourced from the Environmental Protection (Water and Wetland Biodiversity) Policy 2019 documents. To find the specific values:
+
+ - head to the [EPP Portal](https://environment.desi.qld.gov.au/management/water/policy)
+ - Navigate to "Burdekin, Haughton and Don basins"
+ - For barratta objectives:
+      + open "Haughton River Basin" (Schedule 1 - Document column)
+      + find "Barratta Creek upper catchment fresh waters"
+ - For sellheim objectives:
+      + open Burdekin River (upper) Sub-Basins" (Schedule 1 - Document column)
+      + find "Burdekin River (above Dam) sub-catchment waters", "MD"
+      
+Values found in these documents are then manually transcribed into an excel spreadsheet. Screenshots of the tables are presented below in (@fig-epp-1) and (@fig-epp-2).
+
+```{r}
+#| label: fig-epp-1
+#| fig-cap: A screenshot of the Environmental Protection Policy water quality objectives for the Barratta Creek Catchment. Note the units shown for each indicator, and the instructions that 'for single value WQO's, medians of test data should be less than or equal to the WQO'.
+#| out-height: 6cm
+#| output: true
+
+knitr::include_graphics("/references/images/burdekin_expasion_images/image_3_epp.png", error = F, rel_path = F)
+
+```
+```{r}
+#| label: fig-epp-2
+#| fig-cap: A screenshot of the Environmental Protection Policy water quality objectives for the Burdekin River above Dam sub-catchment. Note the units shown for each indicator, and the instructions that 'for single value WQO's, medians of test data should be less than or equal to the WQO'.
+#| out-height: 6cm
+#| output: true
+
+knitr::include_graphics("/references/images/burdekin_expasion_images/image_4_epp.png", error = F, rel_path = F)
+
+```
+
+## Obtain Watercourse Flow Values
+
+Watercourse flow values are obtained from the Water Monitoring Information Portal (WMIP). Much like the CLMP data, the WMIP data is provided across a range of sites. However, some locations are not directly shared between the two programs. This presents challenges when matching the CLMP data to the best WMIP data option. Maps demonstrating the variation between the programs are presented below in (@fig-map-1) and (@fig-map-2).
+
+```{r}
+#| label: load in the flow data
+
+#read in flow data for barratta and sellheim
+barratta_flow_values <- read_csv(glue("{read_data}/flow_barratta.csv")) |> 
+  name_cleaning()
+
+#note that the sellheim site was changed, so there is an "old" dataset and a "new" dataset
+sellheim_flow_values_new <- read_csv(glue("{read_data}/flow_sellheim_new.csv")) |> 
+  name_cleaning()
+
+sellheim_flow_values_old <- read_csv(glue("{read_data}/flow_sellheim_old.csv")) |> 
+  name_cleaning()
+
+```
+
+```{r}
+#| label: load site information for each of the datasets
+
+#load in clmp data and convert to sf object
+clmp_sites <- read_csv(here("data/dt_experiments_water-quality_burdekin/clmp_sites.csv")) |> 
+  name_cleaning() |> 
+  st_as_sf(coords = c("Longitude", "Latitude"), crs = proj_crs) |> 
+  select(SiteName) |> 
+  mutate(DataType = "CLMP")
+
+#load in wmip data and convert to sf object
+wmip_sites <- read_csv(here("data/dt_experiments_water-quality_burdekin/wmip_sites.csv")) |> 
+  name_cleaning() |> 
+  st_as_sf(coords = c("Long", "Lat"), crs = proj_crs) |> 
+  select(Name) |> 
+  rename(SiteName = Name) |> 
+  mutate(DataType = "WMIP")
+
+#combine the sites
+all_sites <- rbind(clmp_sites, wmip_sites)
+
+```
+
+```{r}
+#| label: load in peripheral datasets to make a nice map
+
+#read in qld outlines data from the gisaimsr package, filter for land and islands, update crs
+#qld <- get(data("gbr_feat", package = "gisaimsr")) |> filter(FEAT_NAME %in% c("Mainland", "Island")) |> 
+  #name_cleaning() |> 
+  #st_transform(proj_crs)
+
+qld <- st_read(here("data/n3_prep_region-builder/qld_boundary.gpkg")) |> 
+  name_cleaning()
+
+#read in the n3_region file to create a nice backdrop and inset map
+burdekin <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg")) |> 
+  filter(Region == "Burdekin",
+         Environment == "Freshwater")
+
+```
+
+```{r}
+#| label: load custom functions to make base map components
+
+#load in custom function to create the water related layers of the map
+source(here("functions/maps_water_layer.R"))
+
+#create the base water layer
+maps_water_layer(stream_order = c(4,9), water_lines = T, water_polygons = T, 
+                 region = "Burdekin", enviro = "Freshwater", fast = T)
+
+#load in custom function to create the inset map
+source(here("functions/maps_inset_layer.R"))
+
+maps_inset_layer(supplied_sf = all_sites, background = burdekin, aspect = 0.9)
+
+```
+
+```{r}
+#| label: visualise differences between the two datasets 1
+
+map <- tm_shape(qld) +
+  tm_polygons(col = "grey80") +
+  tm_shape(burdekin) +
+  tm_polygons(col = "grey90", border.col = "black") +
+  water_map +
+  tm_shape(all_sites) +
+  tm_dots(col = "DataType", size = 0.8, jitter = 0.2, palette = c("red", "green"),
+          alpha = 0.6, border.col = "Black", border.lwd = 1, shape = 21) +
+  tm_layout(legend.bg.color = "white", legend.frame = "black", asp = 1.1, 
+            legend.position = c("right", "bottom"))
+
+
+#save map
+tmap_save(map, glue("{save_outputs}/clmp_and_wmip_sites_1.png"), insets_tm = inset_map, insets_vp = inset_viewport)
+
+```
+
+```{r}
+#| label: fig-map-1
+#| fig-cap: The location of all Burdekin and Haughton Basin CLMP (red) and WMIP (green) monitoring locations. Note the concentration of CLMP sites in the eastern part of the basin, compared to the expansive network of WMIP sites.
+#| out-height: 10cm
+#| output: true
+
+knitr::include_graphics(glue("{save_outputs}/clmp_and_wmip_sites_1.png"), error = F, rel_path = F)
+
+```
+
+```{r}
+#| label: visualise differences between the two datasets 2
+
+#re do inset with specifically the clmp sites
+maps_inset_layer(supplied_sf = clmp_sites, background = burdekin, aspect = 0.9)
+
+map <- tm_shape(qld) +
+  tm_polygons(col = "grey80") +
+  tm_shape(burdekin) +
+  tm_polygons(col = "grey90", border.col = "black") +
+  tm_shape(clmp_sites, is.master = T) +
+  tm_dots(alpha = 0) +
+  water_map +
+  tm_shape(all_sites) +
+  tm_dots(col = "DataType", size = 0.8, jitter = 0.2, palette = c("red", "green"),
+          alpha = 0.6, border.col = "Black", border.lwd = 1, shape = 21) +
+  tm_layout(legend.bg.color = "white", legend.frame = "black", asp = 1.1, 
+            legend.position = c("right", "bottom"))
+
+#save map
+tmap_save(map, glue("{save_outputs}/clmp_and_wmip_sites_2.png"), insets_tm = inset_map, insets_vp = inset_viewport)
+
+```
+
+```{r}
+#| label: fig-map-2
+#| fig-cap: A zoomed in map of the same CLMP and WMIP sites. Note that even sites in close proximity may not share the exact same watercourse.
+#| out-height: 10cm
+#| output: true
+
+knitr::include_graphics(glue("{save_outputs}/clmp_and_wmip_sites_2.png"), error = F, rel_path = F)
+
+```
+
+```{r}
+
+rm(clmp_sites, wmip_sites, all_sites, map, inset_map, inset_viewport, water_map)
+
+```
+
+## Obtain High Flow and Low Flow Cutoff Values
+
+High flow and low flow cut off values are also obtained from the Environmental Protection (Water and Wetland Biodiversity) Policy 2019 documents. WQOs are provided under high and low flow conditions already, and the criteria defining what is considered high or low flow at the specific site is also defined.
+
+In the case of the test sites, the values are as follows:
+
+ - Barratta Creek at Northcote: 3.6m3/s
+ - and Burdekin River at Sellheim: 175.9m3/s
+ 
+Any flow reading above the value is classified as "high", and anything below is classified as "low".
+
+```{r}
+#| label: load in flow data
+
+#read in all metadata (e.g. flow and objectives
+all_metadata <- read_csv(glue("{read_data}/high_and_low_flow_objectives.csv")) |> 
+  name_cleaning()
+
+```
+
+## Clean Data
+
+Once data is obtained it must then be cleaned, checked, and edited to be usable in the analysis. This includes selecting the columns of interest, removing rows of metadata embedded within the file, updating column names, changing the format of time values, adding contextual information, standarising units, and more. Before and after tables demonstrating some of these initial changes are presented below in (@tbl-before) and (@tbl-after).
+
+```{r}
+#| label: streamline flow data
+
+#remove extra header information from each dataset
+barratta_flow_clean <- barratta_flow_values |> 
+  slice(-1:-3) |> 
+  filter(!str_detect(Time, "Data")) |> 
+  select(1:2) |> 
+  mutate(Site = "Barratta", .before = Time)
+
+sellheim_flow_clean_new <- sellheim_flow_values_new |> 
+  slice(-1:-3) |> 
+  filter(!str_detect(Time, "Data")) |> 
+  select(1:2) |> 
+  mutate(Site = "Sellheim", .before = Time)
+
+sellheim_flow_clean_old <- sellheim_flow_values_old |> 
+  slice(-1:-3) |> 
+  filter(!str_detect(Time, "Data")) |> 
+  select(1:2) |> 
+  mutate(Site = "Sellheim", .before = Time)
+
+#and update column names
+names(barratta_flow_clean) <- c("Site", "Time", "Flow")
+names(sellheim_flow_clean_new) <- c("Site", "Time", "Flow")
+names(sellheim_flow_clean_old) <- c("Site", "Time", "Flow")
+
+#bind datasets
+flow_data <- rbind(barratta_flow_clean, sellheim_flow_clean_new, sellheim_flow_clean_old)
+
+#edit the date time column into two separate columns then recombine in the correct format and then add a financial year and a date only column
+flow_data <- flow_data |> 
+  separate_wider_delim(Time, names = c("Time", "Date"), delim = " ") |> 
+  unite(DateTime, c(Date, Time), sep = " ") |> 
+  mutate(DateTime = dmy_hms(DateTime),
+         FinancialYear = get_fy(DateTime),
+         Date = date(DateTime),
+         Flow = as.numeric(Flow))
+
+#select a subset of data for demonstration
+barratta_flow_values_example <- head(barratta_flow_values, 5)
+flow_data_example <- head(flow_data, 5)
+
+#read in the custom function to style tables
+source("../functions/cond_form_tables.R")
+
+```
+
+```{r}
+#| label: tbl-before
+#| output: true
+#| tbl-cap: The barratta flow values table before any data cleaning has been applied.
+
+cond_form_tables(barratta_flow_values_example, header_rows = 1, landscape = F, colour = F) 
+
+```
+
+```{r}
+#| label: tbl-after
+#| output: true
+#| tbl-cap: The barratta flow values table after data cleaning has been applied.
+
+cond_form_tables(flow_data_example, header_rows = 1, landscape = F, colour = F) 
+
+```
+
+```{r}
+#| label: remove datasets
+
+#clean up
+rm(barratta_flow_values, sellheim_flow_values_new, sellheim_flow_values_old,  barratta_flow_clean, 
+   sellheim_flow_clean_new, sellheim_flow_clean_old, barratta_flow_values_example, flow_data_example)
+
+```
+
+```{r}
+#| label: streamline values data
+
+#keep only WQO we have data for
+all_metadata <- all_metadata |> 
+  filter(Indicator %in% c("Amm N", "Oxid N", "Total N", "FRP", "TSS")) |> 
+  mutate(Objective = as.numeric(Objective))
+
+#the two datasets already share all information so we can immediately join them
+wq_data <- rbind(barratta_wq_values, sellheim_wq_values)
+
+#edit the datetime column and remove cols we dont care about
+wq_data <- wq_data |> 
+  mutate(DateTime = dmy_hm(DateTime),
+        FinancialYear = get_fy(DateTime),
+         Date = date(DateTime),) |> 
+  select(Region, Basin, SubBasin, SiteName, Latitude, Longitude, DateTime, Date, FinancialYear,
+         Analyte, Value, Unit)
+
+#keep only variables we have objectives for
+wq_data <- wq_data |> 
+  filter(Analyte %in% c("Ammonium nitrogen as N", "Oxidised nitrogen as N", "Total nitrogen as N",
+                        "Filterable Reactive phosphorus as P", "Total suspended solids"))
+
+#clean up
+rm(barratta_wq_values, sellheim_wq_values)
+
+```
+
+```{r}
+#| label: extract column names and unique cell values
+
+flow_names <- colnames(flow_data)
+meta_names <- colnames(all_metadata)
+wq_names <- colnames(wq_data)
+
+meta_indicators <- unique(all_metadata$Indicator)
+wq_indicators <- unique(wq_data$Analyte)
+
+```
+
+```{r}
+#| label: unify all names and fix the issues we highlight below
+
+lookup <- c(Indicator = "Analyte", IndicatorUnit = "Unit", IndicatorValue = "Value",
+            FlowValue = "Flow", Site = "SiteName")
+
+#rename the key columns
+wq_data <- wq_data |> 
+   rename(any_of(lookup))
+all_metadata <- all_metadata |> 
+   rename(any_of(lookup))
+flow_data <- flow_data |> 
+   rename(any_of(lookup))
+
+#then rename variables within certain columns
+wq_data <- wq_data |> 
+  mutate(Indicator = case_when(str_detect(Indicator, "Amm") ~ "Amm N",
+                             str_detect(Indicator, "Oxi") ~ "Oxid N",
+                             str_detect(Indicator, "Total n") ~ "Total N",
+                             str_detect(Indicator, "Filt") ~ "FRP",
+                             str_detect(Indicator, "susp") ~ "TSS", 
+                             T ~ NA),
+         IndicatorUnit = "mg/L",
+         Site = case_when(str_detect(Site, "Barra") ~ "Barratta", T ~ "Sellheim"))
+
+```
+
+Data cleaning must also occur between datasets and within specific columns, due to the data being sourced from multiple providers. 
+
+- Flow column names are: `r flow_names`
+- Metadata column names are: `r meta_names`
+- Water quality column names are: `r wq_names`
+- Metadata indicator names are: `r meta_indicators`
+- Water quality indicator names are: `r wq_indicators`
+
+
+```{r}
+
+rm(flow_names, meta_names, wq_names, meta_indicators, wq_indicators, lookup)
+
+```
+
+As well as for the specific units for each indicator, as presented in @tbl-unit-1.
+
+```{r}
+#| label: prep the unit tables
+
+#get each table separately
+meta_indicator_unit <- all_metadata |> 
+  distinct(Indicator, IndicatorUnit) |> 
+  rename("Metadata Indicator" = Indicator,
+         "Metadata Unit" = IndicatorUnit)
+
+wq_indicator_unit <- wq_data |> 
+  distinct(Indicator, IndicatorUnit) |> 
+  rename("Water Quality Indicator" = Indicator,
+         "Water Quality Unit" = IndicatorUnit)
+
+#then combine and order alphabetically
+presentation_table_indicator_unit <- cbind(meta_indicator_unit, wq_indicator_unit) |> 
+  arrange(`Water Quality Indicator`)
+
+```
+
+```{r}
+#| label: tbl-unit-1
+#| output: true
+#| tbl-cap: Each indicator and its associated units as recorded in the water quality dataset sourced from the Tahbil database, and the metadata dataset as transcribed from the EPP documents.
+
+cond_form_tables(presentation_table_indicator_unit, header_rows = 1, landscape = F, colour = F) 
+
+```
+
+```{r}
+
+rm(meta_indicator_unit, wq_indicator_unit, presentation_table_indicator_unit)
+
+```
+
+```{r}
+#| label: check and fix units that we highlighted above
+
+#update value and unit, multiply all water quality values except TSS by 1000, and don't forget to update the units.
+wq_data <- wq_data |> 
+  mutate(IndicatorValue = case_when(Indicator == "TSS" ~ IndicatorValue, T ~ IndicatorValue*1000),
+         IndicatorUnit = case_when(Indicator == "TSS" ~ IndicatorUnit, T ~ "ug/L"))
+
+```
+
+## Characterise Daily Flow
+
+According to the Wet Tropics Waterways methodology, daily flow is calculated by comparing mean daily discharge at each monitoring site and applying the mean daily base-flow (MDBF) cut off value (Orr et al. 2014), or an estimated cut off value. It is generally expected that the majority of days are classified as "low flow" (@tbl-flow-count-1) (@fig-flow-daily-1), however within any "low flow" day, the hourly flow could be classified as "high flow" as long as the daily mean was less than the cut off value (@fig-flow-daily-2). The importance of this distinction is highlighted under [Scaling Factors](@sec-scaling-factors).
+
+```{r}
+#| label: determine high and low flow days
+
+#extract specifically the date from the date time column then group data by day and get mean flow
+flow_data_daily <- flow_data |> 
+  group_by(Site, Date) |> 
+  summarise(FlowValue = mean(FlowValue, na.rm = T)) |> 
+  ungroup()
+
+#check against our high and low flow cut offs
+flow_data_daily <- flow_data_daily |> 
+  mutate(FlowType = case_when(FlowValue < 3.6 & Site == "Barratta" ~ "Low", 
+                              FlowValue >= 3.6 & Site == "Barratta" ~ "High",
+                              FlowValue < 175.9 & Site == "Sellheim" ~ "Low", 
+                              FlowValue >= 175.9 & Site == "Sellheim" ~ "High"))
+
+#extract an example table
+flow_data_daily_example <- flow_data_daily |> 
+  count(Site, FlowType)
+
+```
+
+```{r}
+#| label: tbl-flow-count-1
+#| output: true
+#| tbl-cap: The number of high flow and low flow days recorded at each of the testing sites. It is expected that the majority of days are "low flow".
+
+cond_form_tables(flow_data_daily_example, header_rows = 1, landscape = F, colour = F) 
+
+```
+
+```{r}
+
+rm(flow_data_daily_example)
+
+```
+
+```{r}
+#| label: logic check
+
+#make sure every value is at least 1 (for log scale)
+flow_temp <- flow_data_daily |> 
+  mutate(FlowValue = case_when(FlowValue < 1 ~ FlowValue + 1,
+                               T ~ FlowValue),
+         Yinter = case_when(str_detect(Site, "Bar") ~ 3.6, T ~ 175.9))
+
+```
+
+```{r}
+#| label: fig-flow-daily-1
+#| fig-cap: A plot of high flow (red) and low flow (blue) days recorded at each of the testing sites. Note that some values 
+#| output: true
+
+ggplot(flow_temp, aes(x = Date, y = FlowValue, color = FlowType, group = FlowType)) +
+  geom_line() +
+  geom_hline(aes(yintercept = Yinter), color = "grey50", linetype = "dashed") +
+  scale_y_log10() +
+  theme_bw() +
+  labs(y = "Daily Mean Flow (m3/s)") +
+  facet_wrap(~Site)
+
+```
+
+```{r}
+#| label: extract example days
+
+#pick an example couple of days
+flow_daily_example <- flow_data |> 
+  filter(Date %in% c("1975-01-07", "1975-01-08", "1975-01-09"), Site == "Barratta") |> 
+  mutate(Yinter = 3.6,
+         FlowType = case_when(FlowValue < 3.6 ~ "Low", 
+                              FlowValue >= 3.6 ~ "High"))
+
+```
+
+```{r}
+#| label: fig-flow-daily-2
+#| fig-cap: A plot of a single day of flow values. Note that within a day flow could be both high flow (red) and low flow (blue) days recorded at each of the testing sites. Note that some values 
+#| output: true
+
+ggplot(flow_daily_example, aes(x = DateTime, y = FlowValue, color = FlowType)) +
+  geom_line() +
+  geom_hline(aes(yintercept = Yinter), color = "grey50", linetype = "dashed") +
+  theme_bw() +
+  labs(y = "Hourly Flow (m3/s)")
+
+```
+
+```{r}
+
+rm(flow_daily_example, flow_temp)
+
+```
+
+
+## Calculate Scaling Factors {#scaling-factors}
+
+Water quality data are scored by comparing the median of the measured values of the indicator against the WQO for the indicator. A scaling factor is then used to standardise the result of this comparison. As per the Wet Tropics Waterways methodology, scaling factors are calculated as follows:
+
+_"The historical GBR CLMP data were pooled from all basins (seven sites). The data were separated into high-flow and base-flow periods using an approximation method, where any ‘eventflow’ data (indicated by consecutive samples within a single day or over consecutive days) represented samples taken above the event-flow threshold, and that conversely, any discrete ‘ambient’ samples (approximately monthly) were taken below the event-flow threshold (and therefore represented base-flow). The 90th percentile was set as the SF and was calculated for each data set (Table 22)."_
+
+```{r}
+#| label: get only 1 wq sample per day
+
+#average multiple samples per day and take the mean time of the samples as well
+wq_data <- wq_data |> 
+  mutate(DateTime = as.numeric(DateTime)) |> #convert to a numeric representation
+  group_by(Site, Indicator, Date) |> 
+  mutate(IndicatorValue = mean(IndicatorValue), #get the mean value
+         DateTime = mean(DateTime), #and the mean time
+         DateTime = as.POSIXct(DateTime)) |> #convert back to a time format
+  ungroup() |> 
+  distinct()
+
+```
+
+```{r}
+#| label: merge flow and value
+
+#only keep flow data that shares a day with the wq data
+flow_data_wq <- flow_data |> 
+  filter(Date %in% unique(wq_data$Date))
+
+#merge flow and value by Date and Site
+wq_and_flow <- merge(wq_data, flow_data_wq, by = c("Site", "Date"), all = T)
+
+#for each row, find the smallest difference between the two time stamps (one from each of the dataset)
+wq_and_flow <- wq_and_flow |> 
+  group_by(Site, Date, Indicator) |>
+  slice(which.min(abs(difftime(DateTime.x, DateTime.y, units = "hour")))) |> 
+  ungroup()
+
+#clean up the output
+wq_and_flow <- wq_and_flow |> 
+  select(!c(DateTime.y, FinancialYear.y)) |> 
+  rename(DateTime = DateTime.x,
+         FinancialYear = FinancialYear.x)
+
+#clean up
+rm(wq_data, flow_data_wq)
+
+```
+
+```{r}
+#| label: repeate high/low flow exercise
+
+#check against our high and low flow cut offs
+wq_and_flow <- wq_and_flow |> 
+  mutate(FlowType = case_when(FlowValue < 3.6 & Site == "Barratta" ~ "Low", 
+                              FlowValue >= 3.6 & Site == "Barratta" ~ "High",
+                              FlowValue < 175.9 & Site == "Sellheim" ~ "Low", 
+                              FlowValue >= 175.9 & Site == "Sellheim" ~ "High"))
+
+```
+
+```{r}
+#| label: calculate scaling factor
+
+#calculate scaling factors for each variable at each site
+scaling_factor <- wq_and_flow |> 
+  group_by(Site, Indicator, FlowType, Date) |> 
+  summarise(DailyMedian = median(IndicatorValue, na.rm = T)) |> 
+  group_by(Site, Indicator, FlowType) |> 
+  mutate(ScalingFactor = quantile(DailyMedian, probs = 0.9, na.rm = T)) |> 
+  ungroup()
+
+```
+
+Thus, the specific timing of the water quality sample relatively to the nearest hour of flow data is of great significance. As shown in @fig-flow-daily-3 should the sample on January 19th occurred earlier it may have been taken during "high flow" conditions.
+
+```{r}
+#| label: demonstrate variation within a day
+
+#pick an example couple of days
+flow_daily_example <- flow_data |> 
+  filter(Date %in% c("2012-01-18", "2012-01-19", "2012-01-20", "2012-01-21"), Site == "Barratta") |> 
+  mutate(Yinter = 3.6,
+         FlowType = case_when(FlowValue < 3.6 ~ "Low", 
+                              FlowValue >= 3.6 ~ "High"))
+
+#extract the same days from the water quality data
+wq_daily_example <- wq_and_flow |> 
+  filter(Date %in% c("2012-01-18", "2012-01-19", "2012-01-21"), 
+         Site == "Barratta",
+         Indicator == "Amm N")
+
+#and split into separate high and low flow datasets (makes the ggplot easier)
+high_flow <- flow_daily_example |> 
+  mutate(FlowValue = case_when(FlowType == "Low" ~ NA, T ~ FlowValue),
+         FlowType = case_when(FlowType == "Low" ~ NA, T ~ FlowType))
+
+low_flow <- flow_daily_example |> 
+  filter(FlowType == "Low")
+
+```
+
+```{r}
+#| label: fig-flow-daily-3
+#| fig-cap: A plot of a single day of flow values. Note that within a day flow could be both high flow (red) and low flow (blue) days recorded at each of the testing sites. Note that some values 
+#| output: true
+
+ggplot() +
+  geom_line(data = high_flow, aes(x = DateTime, y = FlowValue, color = "High Flow")) +
+  geom_line(data = low_flow, aes(x = DateTime, y = FlowValue, color = "Low Flow")) +
+  geom_hline(yintercept = 3.6, color = "grey50", linetype = "dashed") +
+  geom_point(data = wq_daily_example, 
+             mapping = aes(x = DateTime, y = FlowValue, color = "Amm N"),
+             size = 3, shape = 21) +
+  theme_bw() +
+  labs(y = "Hourly Flow (m3/s)",
+       color = "Legend") +
+  scale_color_manual(values = c("High Flow" = "red", "Low Flow" = "blue", "Amm N" = "black"),
+                     guide = guide_legend(override.aes = list(
+                       linetype = c("blank", "solid", "solid"),
+                       shape = c(21, NA, NA))))
+
+
+```
+
+```{r}
+
+rm(flow_daily_example, wq_daily_example, high_flow, low_flow)
+
+```
+
+Once calculated the 90th percentile can then be added to the metadata table (@tbl-metdata-1).
+
+```{r}
+#| label: extract SF information
+
+#select only the unique scaling factor rows
+scaling_factor_temp <- scaling_factor |> 
+  select(Site, Indicator, ScalingFactor, FlowType) |> 
+  distinct()
+
+#inner join the temp SF data frame to our metadata
+all_metadata <- inner_join(all_metadata, scaling_factor_temp)
+
+all_metadata_print <- all_metadata |> 
+  select(-c(FlowCutSign)) |> 
+  rename(FlowValue = FlowCutValue,
+         SF = ScalingFactor)
+
+#select some example data
+all_meta_example <- head(all_metadata_print, 10)
+
+#clean up
+rm(scaling_factor_temp)
+
+```
+
+```{r}
+#| label: tbl-metdata-1
+#| output: true
+#| tbl-cap: A exert (Barratta only) of the metadata required to conduct the water quality analysis. 
+
+cond_form_tables(all_meta_example, header_rows = 1, landscape = F, colour = F) 
+
+```
+
+```{r}
+
+rm(all_metadata_print)
+
+```
+
+## Assign Water Quality Samples as High or Low Flow {#sec-assignwq}
+
+Due to the method used to calculate the scaling factors, the water quality samples have already been assigned the appropriate high or low flow conditions. No further work is needed to complete this step.
+
+## QA/QC Checks
+
+Once data has been provided its appropriate context and metadata, it must undergo stringent Quality Control and Quality Assurance checks.
+
+:::{.callout-note}
+For the purposes of this demonstration the QA/QC steps will be skipped. These steps are identical to those already implemented in the current Healthy Waters Partnership's water quality analysis method.
+:::
+
+## Score Water Quality Data
+
+The scoring methodology of water quality data is as follows:
+
+ 1. Split all water quality data into high flow or low flow based on the nearest hourly flow reading
+ 2. Calculate mean daily values for both high and low flow groups (sometimes several samples are taken per site per day)
+ 3. Pool mean daily values from all sites within a watercourse together
+ 4. For each watercourse, calculate monthly medians, per indicator per high and low flow.
+ 5.	For each watercourse, calculate annual medians from monthly medians, per indicator per flow.
+ 6.	For each watercourse, use the annual medians, WQOs, 80th (or 20th for Low DO) percentiles, and SFs to calculate the standardised condition score (0-100) per indicator per flow (@fig-wq-score-1, @fig-wq-score-2)
+ 7. Weight the score for high flow and the score for low flow according to the ratio of high flow and low flow days
+ 8.	Sum the weighted scores together
+ 9.	For each watercourse, calculate indicator category scores by averaging indicator scores. E.g.:
+      - (TP + DIN)/2 = Nutrients
+      -	(Turbidity + DO)/2 = Physical Chemical Properties
+ 10. For each indicator and indicator category, group watercourse scores by sub basin and average to calculate sub basin indicator and indicator category scores.
+ 11. For each indicator and indicator category, group watercourse scores by basin and average to calculate basin indicator and indicator category scores.
+ 12. For each basin, average indicator category scores to calculate the water quality index score.
+
+
+```{r}
+#| label: fig-wq-score-1
+#| fig-cap: The rules, formulas and scoring range for indicators in the freshwater basins and estuarines for the report card.
+#| out-height: 6cm
+#| output: true
+
+knitr::include_graphics("/references/images/burdekin_expasion_images/image_5_wq-scoring.png", error = F, rel_path = F)
+
+```
+
+```{r}
+#| label: fig-wq-score-2
+#| fig-cap: The middle point represents the annual median, the top whisker the 80th percentile and the bottom whisker the 20th percentile. If the median complies with WQOs, the score will be within either the “Good” or “Very Good” ranges, if the median does not comply it will be in the “Moderate”, “Poor” or “Very Poor” ranges. Medians that do not meet the WQOs are scaled between the WQOs using a scaling factor (SF) nominally defined as the 90th (or 10th) percentile of the historic water quality data.
+#| out-height: 6cm
+#| output: true
+
+knitr::include_graphics("/references/images/burdekin_expasion_images/image_6-wq-scoring.png", error = F, rel_path = F)
+
+```
+
+Below are some examples throughout the water quality data analysis method.
+
+```{r}
+#| label: calculate monthly medians by flow
+
+#create a month column
+wq_and_flow <- wq_and_flow |> 
+  mutate(Month = month(Date))
+
+#calculate monthly mean and median values
+wq_and_flow <- wq_and_flow |> 
+  group_by(Site, Indicator, FlowType, Month) |> 
+  mutate(MonthlyMedian = median(IndicatorValue, na.rm = T)) |> 
+  ungroup()
+
+#extract an example table
+wq_and_flow_example_table <- wq_and_flow |> 
+  filter(Month == 2,
+         Indicator == "Amm N",
+         FinancialYear == 2023,
+         Site == "Barratta") |> 
+  select(Site, DateTime, Indicator, IndicatorValue, FlowValue, FlowType, MonthlyMedian)
+
+```
+
+```{r}
+#| label: tbl-monthly-medians
+#| output: true
+#| tbl-cap: A exert (Barratta only) of the monthly medians calculated based on high flow and low flow data. 
+
+cond_form_tables(wq_and_flow_example_table, header_rows = 1, landscape = F, colour = F) 
+
+```
+
+```{r}
+
+rm(wq_and_flow_example_table)
+
+```
+
+```{r}
+#| label: calculate annual median, 20th, and 80th percentile by flow
+
+#calculate annual statistics
+wq_and_flow <- wq_and_flow |> 
+  group_by(Site, Indicator, FlowType, FinancialYear) |> 
+  mutate(AnnualMedian = median(MonthlyMedian, na.rm = T),
+         AnnualTwentieth = quantile(MonthlyMedian, probs = 0.2, na.rm = TRUE),
+         AnnualEightieth = quantile(MonthlyMedian, probs = 0.8, na.rm = TRUE)) |> 
+  ungroup()
+
+#extract an example table
+wq_and_flow_example_table <- wq_and_flow |> 
+  filter(FlowType == "Low",
+         Indicator == "Amm N",
+         FinancialYear == 2023,
+         Site == "Barratta") |> 
+  select(Site, Month, FlowType, MonthlyMedian, AnnualMedian) |> 
+  distinct()
+
+```
+
+```{r}
+#| label: tbl-annual-medians
+#| output: true
+#| tbl-cap: A exert (Barratta only) of the annual medians calculated based on high flow and low flow data. 
+
+cond_form_tables(wq_and_flow_example_table, header_rows = 1, landscape = F, colour = F) 
+
+```
+
+```{r}
+
+rm(wq_and_flow_example_table)
+
+```
+
+```{r}
+#| label: create the scoring and grading formula
+
+#create standardised score function
+standardised_score <- function(Indicator, Value, WQO, SF, Eightieth, Twentieth){
+
+  if (Indicator != "Low_DO"){ #if the indicator is not low DO use the standard scoring system (high = fail)
+    
+    score <- ifelse(Value > WQO, pmax(60.9 - (60.9 * (abs((Value - WQO)/(SF - WQO)))), 0),
+                    ifelse(Value <= WQO & Eightieth > WQO, 80.99 - (19.9 * (abs((Eightieth - WQO)/(Eightieth - Value)))), 90))
+    
+  } else { #else for the low DO indicator use a different scoring system (low = fail)
+    
+    score <- ifelse(Value < WQO, pmax(60.9 - (60.9 * (abs((Value - WQO)/(SF - WQO)))), 0),
+                    ifelse(Value >= WQO & Twentieth < WQO, 80.99 - (19.9 * (abs((WQO - Twentieth)/(Value - Twentieth)))), 90))
+    
+  }
+}
+
+#load in custom function
+source(here("functions/cond_form_rc_grades.R"))
+
+```
+
+```{r}
+#| label: score and grade example results
+
+#extract only the essential information
+wq_score <- wq_and_flow |> 
+  select(Region, Basin, SubBasin, Site, FinancialYear, Indicator, FlowType, AnnualMedian, AnnualTwentieth, AnnualEightieth) |> 
+  distinct()
+
+#extract specific metadata
+metadata_short <- all_metadata |> 
+  select(Site, Indicator, FlowType, Objective, ScalingFactor)
+
+#join on the required metadata for scoring, this allows us to calculate rowwise
+wq_score <- wq_score |> 
+  inner_join(metadata_short)
+
+#run scoring function
+wq_score <- wq_score |> 
+  rowwise() |> 
+  mutate(Score = standardised_score(Indicator, AnnualMedian, Objective, ScalingFactor, AnnualEightieth, AnnualTwentieth)) |> 
+  ungroup()
+
+#extract an example table
+wq_score_example_table <- wq_score |> 
+  filter(Indicator == "Amm N",
+         FinancialYear == 2023) |>  
+  select(Site, FlowType, FinancialYear, Indicator, Score, Objective, ScalingFactor)
+
+```
+
+```{r}
+#| label: tbl-scored-data
+#| output: true
+#| tbl-cap: A exert of the water quality scores calculated based on high flow and low flow data. 
+
+cond_form_tables(wq_score_example_table, header_rows = 1, landscape = F, colour = F) 
+
+```
+
+```{r}
+
+rm(wq_score_example_table)
+
+```
+
+```{r}
+#| label: weight and combine scores
+
+#get the financial year
+flow_data_daily <- flow_data_daily |> 
+  mutate(FinancialYear = get_fy(Date))
+
+#keep only data that share a Financial year with the WQ data
+flow_data_daily <- flow_data_daily |> 
+  filter(FinancialYear %in% unique(wq_and_flow$FinancialYear))
+
+#group by financial year and count high and low flow days
+flow_data_daily <- flow_data_daily |> 
+  select(!FlowValue) |> 
+  group_by(Site, FinancialYear, FlowType) |> 
+  summarise(Count = n()) |> 
+  ungroup()
+
+#create a ratio for each year at each site
+flow_fy_ratio <- flow_data_daily |> 
+  group_by(Site, FinancialYear) |> 
+  mutate(Total = sum(Count),
+         Ratio = round(Count/Total, 2)) |> 
+  ungroup()
+
+#extract an example table
+flow_ratio_example <- flow_fy_ratio |> 
+  filter(FinancialYear == 2023)
+
+```
+
+```{r}
+#| label: tbl-flow-ratio
+#| output: true
+#| tbl-cap: A exert of the flow ratio data based on financial year. 
+
+cond_form_tables(flow_ratio_example, header_rows = 1, landscape = F, colour = F) 
+
+```
+
+```{r}
+
+rm(flow_ratio_example)
+
+```
+
+```{r}
+#| label: add weights to dataset
+
+#join ratio to the score and calcuated weighted scores
+wq_score <- wq_score |> 
+  left_join(select(flow_fy_ratio, !c(Count, Total)), by = c("Site", "FlowType", "FinancialYear")) |> 
+  mutate(WeightedScore = Score*Ratio)
+
+#group and sum
+wq_score <- wq_score |> 
+  group_by(Region, Basin, SubBasin, Site, FinancialYear, Indicator) |> 
+  mutate(FinalScore = sum(WeightedScore)) |> 
+  ungroup()
+
+#extract an example table
+wq_weighted_example_table <- wq_score |> 
+  filter(Indicator == "Amm N",
+         FinancialYear == 2023) |>  
+  select(Site, FlowType, FinancialYear, Indicator, Score, Ratio, WeightedScore, FinalScore)
+
+```
+
+```{r}
+#| label: tbl-weighted-data
+#| output: true
+#| tbl-cap: A exert of the weighted water quality scores calculated based on high flow and low flow data. 
+
+cond_form_tables(wq_weighted_example_table, header_rows = 1, landscape = F, colour = F) 
+
+```
+
+```{r}
+
+rm(wq_weighted_example_table)
+
+```
+
+```{r}
+#| label: run grading functions
+
+#run grading and saving function
+cond_form_rc_grades(wq_score, glue("{save_outputs}/example_scores"), cols = ncol(wq_score), method = "numeric")
+
+#make a pretty version
+wq_pretty <- wq_score |> 
+  select(Site, FinancialYear, Indicator, FinalScore) |> 
+  unique() |> 
+  pivot_wider(names_from = Indicator, values_from = FinalScore)
+
+#save
+cond_form_rc_grades(wq_pretty, glue("{save_outputs}/example_scores_pretty"), cols = 3:7, method = "numeric")
+
+```
+
+```{r}
+#| label: create the function to create an inline version of the coloured table
+
+#set all to numeric and select example rows
+wq_coloured <- wq_pretty |> 
+  mutate(across(3:7, as.numeric)) |> 
+  filter(FinancialYear > 2020)
+
+```
+
+```{r}
+#| label: tbl-coloured-table-1
+#| tbl-cap: A exert of the weighted water quality scores with colours assigned based on their score.
+#| output: true
+
+cond_form_tables(wq_coloured, header_rows = 1, landscape = F, colour = T) 
+
+```
+
+```{r}
+#| label: prepare data
+
+#pivot data wider and convert columns to factors to set up for the impending calculation
+wq_score_wide <- wq_score |> 
+  select(Region, Basin, SubBasin, Site, FinancialYear, Indicator, FinalScore) |> 
+  unique() |> 
+  pivot_wider(names_from = Indicator, values_from = FinalScore)
+
+```
+
+```{r}
+#| label: calculate indicator category and index scores
+
+#calculate indicator categories and indices scores
+wq_score_wide <- wq_score_wide |> 
+  rowwise() |> 
+  name_cleaning() |> 
+  mutate(Nutrients = mean(c(AmmN, Frp, OxidN, TotalN), na.rm = T),
+         Phys_Chem = mean(c(Tss), na.rm = T),
+         Overall_WQ = mean(c(Nutrients, Phys_Chem), na.rm = T),
+         across(where(is.numeric), ~ifelse(is.infinite(.), NA, .))) |>
+  ungroup()
+
+```
+
+```{r}
+#| label: create another example table
+
+#set all to numeric and select example rows
+wq_coloured <- wq_score_wide |> 
+  mutate(across(6:13, as.numeric)) |> 
+  filter(FinancialYear > 2020)
+
+```
+
+::: landscape
+
+```{r}
+#| label: tbl-coloured-table-2
+#| tbl-cap: A exert of the weighted water quality scores with colours assigned based on their score.
+#| output: true
+
+
+
+cond_form_tables(wq_coloured, header_rows = 1, landscape = T, colour = T) 
+
+```
+
+:::
+
+# Discussion
+
+There are several key findings to discuss or address as a result of this exploratory analysis, these may be additional features yet to be included, issues identified with the analysis so far, or the level of effort required to implement changes. Each topic is addressed below.
+
+## Timing
+
+One of the mains goals outlined by this report was to determine an estimated effort/time required to develop and implement a fully functioning water quality analysis methodology that is tailored specifically to the Burdekin Region. This methodology would be robust, self-sufficient, and based on practices proven by similar methods implemented in surrounding regions such as Townsville, Mackay, and the Wet Tropics. A detailed log of the time and effort spent to develop each aspect of this report has been documented below, along with further extrapolation of the time required to develop the completed water quality analysis.
+
+### Data
+
+_Hours taken: 10h_     
+_Additional hours for a complete analysis: 10h_
+
+All required data used in this report had to be identified and accessed. This includes the water quality data (CLMP), flow data (WMIP), water quality objectives (EPP), high flow/low flow cut off values (EPP), and scaling factors (90th percentiles).
+
+ - Several hours were spent reviewing each data source and written documentation regarding access to the data. 
+ - Limited time was spent actually "reading in" the data to be used in the analysis method.
+ - Additional time would be required to identify the appropriate flow data site (WMIP) for each water quality site (CLMP). 
+      + This is a manual process that scales linearly with the number of sites used in the analysis. 
+      + No time efficiency benefits can be gained due to "scripts" or "automation".
+      + Time is saved due to being familiar with the process as a result of this report.
+      
+### Translate Existing Methods
+
+_Hours taken: 20h_     
+_Additional hours for a complete analysis: 10h_
+
+Some aspects of the current Healthy Waters Partnership Method could be directly translated and implemented into this report. This included methods such as the scoring function, data "read in" protocols, and dataframe management such as cleaning.
+
+ - The major of time spent on this aspect was directed at updating existing processes or adding minor changes. This is due to improvements in author understanding, and small discrepancies in existing and new data. Examples include:
+      + Introducing forced, standardised column naming (rather than manually adhering to rules)
+      + Changing indicator names (e.g. previously analysed PP, now analyzing Ammonium)
+      + Writing code specifically tailored to this report (behind-the-scenes edits such as code folding)
+ - Additional time would be required to expand the method to the entire Burdekin Region.
+      + If additional indicators, units, or sites are added the appropriate error checks needs to be conducted.
+      + This component benefits from scripts/automation and would take significantly less time to expand.
+      
+### Write New Methods
+
+_Hours taken: 30h_     
+_Additional hours for a complete analysis: 10h_
+
+Some aspects of the proposed Burdekin water quality analysis method have not been implemented in the current Healthy Waters Partnership report. This includes steps such as separating water quality samples into high flow and low flow observations, scoring new indicators, and aggregating high flow and low flow scores.
+
+ - Although several of these steps have been implemented by other reporting groups (e.g. Wet Tropics), these implementations are either manual (Wet Tropics) or in-sufficiently detailed to be directly applicable to this analysis.
+ - The majority of time spent on this aspect involved creating logical and documented methods for utilising high flow and low flow water quality observations, as well as creating informative material to educate new readers.
+ - Additional time would be required to expand the method to the entire Burdekin Region, however this component benefits from scripts/automation and would take significantly less time to expand.
+ 
+### Develop Novel Reporting Methods
+
+_Hours taken: 30h_     
+_Additional hours for a complete analysis: TBA_
+
+The objective of creating this Burdekin water quality analysis exploratory report identified a broader objective of developing a novel reporting method. Generally speaking, when conducting any form of data analysis (such as a water quality analysis), the process takes places within the coding program "R". Once the analysis (R script) has been completed, all outputs (tables, figures, maps, results) are saved to file. These outputs are then copied from their file location and manually pasted into a final reporting document where introductions, discussions, findings are written (usually a word document). 
+
+Unlike the standard workflow described above, the nature of this exploratory report was two fold:
+
+ 1. Write a "normal" data analysis method, who's outputs would be included into a report
+ 2. Write an analysis of the actual method, exploring time taken, and explaining processes
+ 
+To accomplish both of these objectives the data analysis process (occurring with the R script) and the report writing process (previously occurring in Word), have been combined into one document that runs within R, and produces one technical report in the Word file type. Creating the analysis and report in this way saves time when discussing methodological choices, reduces complications regarding constantly updating results as methods are improved, limits the possibility of human error due to copy paste, introduces standardised and reproducible reporting formats, and satisfies the needs of both the data analyst (usually an R specialist), and the end user (most often only familiar with Word).
+
+ - The amount of work required for this aspect of the report is highly variable:
+      + should the finished product follow standard procedures (the copy paste method), no additional time would be required - however significant time would be lost due to the slow and error prone nature of the copy paste method.
+      + should this novel appropriate be implemented (or partially implemented), additional time may exceed 40h - however significant time would be saved once completed.
+      
+### Other Aspects
+
+_Hours taken: 0h_     
+_Additional hours for a complete analysis: 60h_
+
+There are several steps of a completed Burdekin water quality analysis that were not addressed within this exploratory report. This include steps such as quality assurance and quality control checks, the exploratory data analysis stage, spatial aggregation of sites through to basins, and the visualisation and mapping of results.
+
+Each of these steps are not unique to the Burdekin water quality analysis method, nor are they a cornerstone of completing an exploratory analysis. Thus each of these steps has been left un-addressed. The introduction of each of these steps would require a translation of the existing processes already implemented in the Healthy Waters Partnership's analysis. An estimate of the time spent can be inferred from the "Translate Existing Methods" section above, and is thus roughly:
+
+## Missing Features
+
+There are a number of missing features yet to be included in the Burdekin water quality analysis. Each of this features, the reason for not including them, and the time required to include them, are covered under "Other Aspects" above.
+
+## Methodology Errors
+
+Throughout the course of the Burdekin water quality analysis exploration several methodology "questions" have been identified, these include:
+
+ - Spatial aggregation. The Burdekin region and its basins are extremely large, however the number of samples used to represent each of these basins is very small, or zero. It is unclear as to how the spatial aggregation of these limited samples is to be done, and how the basins score was calculated is to be explained.
+ - Water quality aggregation. When reporting, "water quality" is provided as a index composed of the "nutrients" and "physical-chemical properties" indicator categories. Each of these indicator categories is traditionally comprised of multiple indicators such as Ammonium, FRP, and TP. If an indicator category only consists of one indicator, it cannot be calculated. In the Burdekin region, the "physical-chemical properties" indicator category is only comprised of TSS and thus should not be calculated - and neither should "water quality". It is still unclear how this aggregation is to be addressed.
+ - Reconciling scaling factors. The method used to calculated scaling factors for this report was to use the 90th percentile of all available historical data. This is in contrast to the method currently used by the Healthy Waters Partnership, which is to use values set by expert opinion. Although it is not incorrect to use two different methods, it is unclear as to which method is objectively better. Further, it is unclear if the scaling factor should be updated each year to include the latest available information - which would cause the shifting baseline problem.
+

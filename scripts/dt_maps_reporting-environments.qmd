@@ -1,0 +1,290 @@
+---
+title: "Northern Three Spatial Analyses (N3 Generic Maps)"
+subtitle: "A Healthy Waters Partnership Analysis"
+description: "This script creates a water quality sites map in the Burdekin region. The output of this was used in the Burdekin expansion project."
+author: "Adam Shand"
+format: html
+params:
+  project_crs: "EPSG:7844"
+---
+
+# Introduction
+
+The purpose of this script is to create maps for each of the environments reported on in the Dry Tropics region, i.e.:
+
+ - Freshwater
+ - Estuarine
+ - Inshore
+ - Offshore
+
+These maps are unlikely to feature prominently in the technical reports, but can provide additional context for each section as it is covered.
+
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, sf, tmap, janitor, grid)
+
+```
+
+
+We also need to set up key variables for the script such as where we are going to save the outputs, and what coordinate reference system (crs) we are going to be using.
+
+```{r}
+#| label: global vars and initial setup
+
+#set project variables: crs factor
+proj_crs <- params$project_crs
+
+#create a file path to help with saving things
+save_path <- here("outputs/dt_maps_reporting-environments/")
+
+#this script does not use any unique data
+
+#bring that path to life
+dir.create(save_path)
+
+#turn off spherical geometry
+sf_use_s2(F)
+
+```
+
+# Load Data
+
+Now the script is set up we need to load in all of the required datasets. Spatial data for the northern three regions should be readily available in the repo, the dataset is created by the n3_region-builder.qmd script in the repo that should be the first script run for new users. If the dataset is not available refer back to the README document in the GitHub repo. The other parts of spatial data here should go off without a hitch if the region-builder script has been run.
+
+```{r}
+#| label: load the n3 region
+
+#read in the custom function to clean column names into our specific style
+source("../functions/name_cleaning.R")
+
+#read in the northern three spatial files 
+n3_region <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg")) |> 
+  name_cleaning()
+
+#select only the dry tropics region
+dt_region <- n3_region |> 
+  filter(Region == "Dry Tropics")
+
+#read in the watercourse dataset
+n3_watercourse <- st_read(here("data/n3_prep_watercourse-builder/n3_watercourse.gpkg")) |> 
+  name_cleaning()
+
+#filter for only dry tropics watercourses
+dt_watercourse <- n3_watercourse |> 
+  filter(Region == "Dry Tropics")
+
+#then retrieve the lines component and remove stream order <1
+dt_wat_lines <- dt_watercourse |> 
+  st_collection_extract("LINESTRING") |> 
+  filter(StreamOrder >= 1)
+
+#and the areas component
+dt_wat_area <- dt_watercourse |> 
+  st_collection_extract("POLYGON")
+
+#load a Queensland outline from the aims package
+qld <- get(data("gbr_feat", package = "gisaimsr")) |> 
+  name_cleaning() |> 
+  filter(FeatName %in% c("Mainland", "Island")) |> 
+  st_transform(proj_crs)
+
+```
+
+# Visualise Data
+
+There are multiple "levels" of maps that we will create, these include:
+
+ - Regions: (1) - Dry Tropics, an overview map of the entire region
+ - Environments: (3) Fresh, Estuarine, and Marine maps
+    + These environment maps will include basins and sub basin outlines
+ 
+## Region Maps
+
+First we will create the region maps.
+
+```{r}
+#| label: create region map
+
+#create a combined column for coloring (i.e. combine basin and environment)
+data_to_map <- dt_region |> 
+  unite(Palette, c(BasinOrZone, Environment), sep = " ", remove = F) |> 
+  mutate(across(Palette, factor),
+         Palette = fct_relevel(Palette, "Ross Freshwater", "Ross Estuarine", "Black Freshwater", 
+                               "Black Estuarine", "Cleveland Bay Marine", "Halifax Bay Marine",
+                               "Offshore Marine"))
+
+#create a bbox of the extent of the data we are looking at
+data_bbox <- st_as_sfc(st_bbox(dt_region))
+    
+#create the inset map
+inset_map <- tm_shape(qld) +
+  tm_polygons(col = "grey80", border.col = "black") +
+  tm_shape(data_to_map) +
+  tm_polygons(col = "grey90", border.col = "black") +
+  tm_shape(st_buffer(data_bbox, 0.1)) +
+  tm_borders(lwd = 2, col = "red")
+
+#create a map of the area add the island layer over the top to grey them out
+map <- tm_shape(qld) +
+  tm_polygons(col = "grey80", border.col = "black") +
+  tm_shape(data_to_map, is.master = T) +
+  tm_fill(col = "Palette", title = "", palette = "Paired") +
+  tm_shape(data_to_map) +
+  tm_borders(col = "black") +
+  tm_shape(dt_wat_lines) +
+  tm_lines(col = "dodgerblue", lwd = 0.5) +
+  tm_shape(dt_wat_area) +
+  tm_polygons(col = "aliceblue", border.col = "dodgerblue", lwd = 0.5) +
+  tm_layout(legend.frame = T, legend.bg.color = "White", asp = 1.1, 
+            legend.text.size = 0.7, legend.position = c("left", "bottom")) +
+  tm_scale_bar(width = 0.15, text.size = 0.7, position = c(0.24, 0))
+  
+#figure out the aspect of the inset map and the view port
+xy <- st_bbox(qld)
+asp2 <- (xy$ymax - xy$ymin)/(xy$xmax - xy$xmin)
+w <- 0.2
+h <- asp2 * w
+vp <- grid::viewport(x = 0.985, y = 0.97, width = w, height = h, just = c("right", "top"))
+    
+#edit names
+edit_region <- str_replace_all(str_to_lower(unique(dt_region$Region)), " ", "_")
+      
+#save the map as a png
+tmap_save(map, filename = glue("{save_path}/{edit_region}_map.png"),
+          insets_tm = inset_map, insets_vp = vp)
+
+```
+
+## Basin and Sub Basin Maps
+
+Then we create basin/sub basin maps
+
+```{r}
+#| label: create basin and sub basin maps
+
+#get a vector of environments
+environments <- unique(dt_region$Environment)
+
+#get a vector of basins
+basins <- unique(dt_region$BasinOrZone)
+
+for (i in environments){#for each environment
+  for (j in basins){#for each basin
+    
+    #select basin/zone 
+    broad_target <- dt_region |> 
+      filter(BasinOrZone == j)
+    
+    #rename sub basin or sub zone to the correct version
+    if (i == "Marine"){
+      
+      #change column name
+      broad_target$'Geographic Area: All' <- broad_target$GeographicArea
+      
+      #update a variable to track this
+      col_target <- "Geographic Area: All"
+      
+    } else { 
+      
+      #change column name
+      broad_target$'Sub Basin: All' <- broad_target$SubBasinOrSubZone
+      
+      #update a variable to track this
+      col_target <- "Sub Basin: All"
+      
+      #crop waterways to be within broad target
+      focus_wat_lines <- dt_wat_lines |> st_intersection(st_union(broad_target)) |> 
+        st_collection_extract("LINESTRING")
+      focus_wat_area <- dt_wat_area |> st_intersection(st_union(broad_target))
+      
+    }
+    
+    #refine data to specific environment
+    focus_target <- broad_target |> 
+      filter(Environment == i)
+    
+    if (nrow(focus_target) == 0){#if there are 0 rows end this loop
+      
+    } else {
+    
+      #create a focus area
+      focus_bbox <- st_bbox(focus_target)
+      focus_area <- st_as_sfc(focus_bbox)
+      
+      #create an inset map
+      inset_map <- tm_shape(qld) +
+        tm_polygons(col = "grey80", border.col = "black") +
+        tm_shape(dt_region, is.master = T) +
+        tm_polygons(col = "grey90", border.col = "black") +
+        tm_shape(focus_area) +
+        tm_borders(lwd = 2, col = "red")
+        
+      #create the main map
+      map <- tm_shape(qld) +
+        tm_polygons(col = "grey80", border.col = "black") +
+        tm_shape(dt_region) +
+        tm_polygons(col = "grey95", border.col = "black") +
+        tm_shape(broad_target) +
+        tm_polygons(col = col_target, border.col = "black", alpha = 0.3, palette = "Pastel1", legend.show = F) +
+        tm_shape(focus_target, is.master = T) +
+        tm_polygons(col = col_target, border.col = "black", alpha = 1, palette = "Pastel1") +
+        tm_shape(focus_wat_lines) +
+        tm_lines(col = "dodgerblue", lwd = 0.5) +
+        tm_shape(focus_wat_area) +
+        tm_polygons(col = "aliceblue", border.col = "dodgerblue", lwd = 0.5) +
+        tm_layout(legend.bg.color = "white", legend.frame = "black", asp = 1.1, legend.position = c("left", "bottom"))
+
+      #if the map is an estuarine map add an extra highlight to draw attention the the very small estuarine zone
+      if (i == "Estuarine"){
+        
+        #create a secondary estuarine outline
+        est_outline <- focus_target |> 
+          group_by(BasinOrZone) |> 
+          summarise(geom = st_union(geom)) |> 
+          ungroup() |> st_cast() |> st_make_valid()
+
+        #add the outline
+        map <- map +
+          tm_shape(st_buffer(est_outline, 0.005)) +
+          tm_borders(lwd = 2, col = "red")
+      }
+       
+      #get the bbox of the entire area
+      xy <- st_bbox(dt_region)
+           
+      #figure out the aspect of the inset map and the view port
+      asp2 <- (xy$ymax - xy$ymin)/(xy$xmax - xy$xmin)
+      w <- 0.2
+      h <- asp2 * w
+      vp <- viewport(x = 0.98, y = 0.97, width = w, height = h, just = c("right", "top"))
+          
+      #edit names
+      ji <- paste(str_to_lower(j), str_to_lower(i), sep = "_")
+            
+      #save the map as a png
+      tmap_save(map, filename = glue("{save_path}/{ji}_map.png"),
+                insets_tm = inset_map, insets_vp = vp)
+      
+    }
+    
+  }
+  
+}
+
+
+```
+
+Here is an example of how one of the maps looks, noting that the actual outputted version looks much nicer.
+
+```{r}
+#| label: show example map
+
+map
+
+```

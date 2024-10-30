@@ -1,0 +1,149 @@
+---
+title: "Burdekin LGAs and NRMs"
+subtitle: "A Healthy Waters Partnership Analysis"
+description: "This script maps the LGA and NRMs found within the Burdekin region. The output of this was used in the Burdekin expansion project."
+author: "Adam Shand"
+format: html
+params:
+  project_crs: "EPSG:7844"
+---
+
+# Introduction
+
+This is a simple script to produce a map of the Burdekin NRM region and the LGA's within it.
+
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, sf, tmap, janitor, osmdata)
+
+```
+
+
+Then set the coordinate reference system and save/load locations.
+
+```{r}
+#| label: global vars and initial setup
+
+#set crs
+proj_crs <- params$project_crs
+
+#create a file path to help with saving things
+save_path <- here("outputs/dt_maps_burdekin-lga-nrm/")
+
+#create a data path as well, this script only uses generic data
+data_path <- here("data/dt_maps/")
+
+#bring that path to life
+dir.create(save_path)
+
+#turn off s2 geometry
+sf_use_s2(F)
+
+```
+
+# Load Data
+
+Next we load in the data, refer to the README in the GitHub repo if data is missing.
+
+```{r}
+#| label: load in coral data
+
+#read in the custom function to clean column names into our specific style
+source("../functions/name_cleaning.R")
+
+#please note if the data is not in the basin builder folder, try running the basin builder script
+burd_basin <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg")) |>
+  name_cleaning() |> 
+  st_transform(proj_crs) |> 
+  filter(Environment != "Marine", BasinOrZone %in% c("Black", "Burdekin", "Don", "Haughton", "Ross")) |> 
+  rename(SubBasin = SubBasinOrSubZone) |> 
+  mutate(SubBasin = case_when(BasinOrZone == "Black" ~ "Black",
+                               BasinOrZone == "Ross" ~ "Ross",
+                               SubBasin == "Broke Bogie" ~ "Bowen Bogie",
+                               T ~ SubBasin)) |> 
+  select(SubBasin) |> 
+  group_by(SubBasin) |> 
+  summarise(geom = st_union(geom)) |> 
+  st_cast("POLYGON")
+
+#read in qld outlines data from the gisaimsr package, filter for land and islands, update crs
+#qld <- get(data("gbr_feat", package = "gisaimsr")) |> 
+#  name_cleaning() |> 
+#  filter(FeatName %in% c("Mainland", "Island")) |> 
+#  st_transform(proj_crs)
+
+qld <- st_read(here("data/n3_prep_region-builder/qld_boundary.gpkg")) |> 
+  name_cleaning()
+
+#read in lgas
+lga <- st_read(glue("{data_path}/lga.gpkg")) |> 
+  name_cleaning()
+
+#pull out palm separately
+palm_lga <- lga |> 
+  filter(Lga == "Palm Island Aboriginal Shire")
+
+lga <- lga |> 
+  st_transform(proj_crs) |> 
+  st_filter(burd_basin, .predicates = st_intersects) |> 
+  rbind(palm_lga)
+
+nrm <- st_read(glue("{data_path}/nrm.gpkg")) |> 
+  name_cleaning() |> 
+  st_transform(proj_crs) |> 
+  filter(Name == "Burdekin")
+
+#get extent of area to target
+osm_ext <- st_bbox(burd_basin)
+
+#query the osm database for points of interest
+poi <- opq(osm_ext, timeout = 100) |> add_osm_feature(key = "place", value = c("town", "city")) |> osmdata_sf()
+
+#transform and filter data to only get specific data types
+poi <- st_transform(poi$osm_points, crs = proj_crs) |> 
+  st_intersection(st_union(burd_basin)) |> 
+  name_cleaning()
+
+```
+
+# Map
+
+And create the required map.
+
+```{r}
+#| label: map
+#| output: true
+
+#create the map
+burd_map <- tm_shape(qld) +
+  tm_polygons(col = "grey80", border.col = "Black") +
+  tm_grid(alpha = 0, labels.show = T, labels.cardinal = T, col = "Black") +
+  tm_xlab("Longitude", size = 1.1) +
+  tm_ylab("Latitude", size = 1.1) +
+  tm_shape(lga, is.master = T) +
+  tm_polygons(border.col = "black", col = "Lga") +
+  tm_shape(nrm) +
+  tm_borders(col = "red") +
+  tm_shape(qld) +
+  tm_borders(col = "Black") +
+  tm_shape(burd_basin, is.master = T) +
+  tm_borders(col = "blue") +
+  tm_shape(burd_basin) +
+  tm_text(text = "SubBasin", just = "centre", col = "black", size = 1.5, alpha = 0.4) +
+  tm_shape(poi) +
+  tm_dots(shape = 23, col = "red", border.col = "black", size = 0.2) +
+  tm_shape(poi) +
+  tm_text(text = "Name", size = 0.7, just = "right", shadow = T, auto.placement = T) +
+  tm_layout(legend.outside = T, legend.title.size = 3, legend.text.size = 1.5) +
+  tm_add_legend(type = "line", col = "red", labels = "Burdekin NRM")
+  
+#save
+tmap_save(burd_map, filename = glue("{save_path}/burd_map.png"), width = 24, height = 16)
+
+```

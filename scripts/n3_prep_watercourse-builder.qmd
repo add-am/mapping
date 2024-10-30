@@ -1,0 +1,264 @@
+---
+title: "Northern Three Watercourse Builder"
+subtitle: "A Healthy Waters Partnership Analysis"
+description: "This script collates and sythesises all relevant watercourse geospatial information in the Northern Three region. The output is a concise single geopackage file ready for further spatial analysis."
+author: "Adam Shand"
+format: html
+params:
+  project_crs: "EPSG:7844"
+---
+
+# Introduction
+
+:::{.callout-warning}
+This script is required for almost any other script in the repo to run. The script should not be adjusted without a strong geospatial knowledge.
+:::
+
+This document contains the script (and walk through) used to collate, wrangle, and combine all the spatial features of the watercourses (lakes, rivers, creeks, streams, etc.) found in the Northern Three regions. it is assumed that all required datasets have been downloaded and stored in the correct folder, for a guide on downloading each of the datasets refer to the README document for the Spatial Analysis GitHub repo. Creating the watercourses dataset as a decision made in Apr 2024 after identifying the need for a consistent and easily accessible set of watercourse features. These features are applicable are directly used in the fish barriers and riparian vegetation scripts, and are used as a visual aid across several other scripts including all water quality, habitat, and fish scripts. An issue has been raised and completed that details the processes used to identify the correct raw spatial files to use for this section and can be found under [Issue 72](https://github.com/Northern-3/spatial-analyses/issues/72) on the GitHub repo.
+
+Creating the final dataset will be achieved by downloading a suite of watercourse datasets, merging the watercourse datasets, intersecting the product with the N3 boundary, and then combining the two.
+
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, janitor, sf, tmap)
+
+```
+
+We also need to set up key variables for the script such as where we are going to save the outputs, and what coordinate reference system (crs) we are going to be using. Note that the set up for the script is slightly different from all other scripts. As the only output from this script is a single .gpkg file that is a data source for all other scripts in the repository, the output is better saved in the data folder section of the repo. Therefore, for this script only, the read path and the write path are identical and there is no output folder.
+
+```{r}
+#| label: global vars and initial setup
+
+#set project variables: crs factor and current_fyear
+proj_crs <- params$project_crs
+
+#turn off spherical geometry
+sf_use_s2(F)
+
+#create a file path to help with saving things
+read_and_write <- here("data/n3_prep_watercourse-builder/")
+
+```
+
+# Load Data
+
+In this section we will load the data required. This is split into two parts.
+
+ - the land component of the N3 region - which should be easily extracted from the output of the n3_prep_region-builder script.
+ - all watercourse components - which form the bulk and purpose of this script.
+ 
+## N3 Land
+
+```{r}
+#| label: load the n3 land data
+
+#read in the custom function to clean column names into our specific style
+source("../functions/name_cleaning.R")
+
+#read the data, clean names and filter for just the land component
+n3_land <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg")) |> 
+  st_transform(proj_crs) |> 
+  name_cleaning() |> 
+  filter(Environment != "Marine")
+
+```
+
+# Watercourses
+
+The relevant watercourse datasets are:
+
+ - watercourse_lines_northern
+ - watercourse_lines_central
+ - riparian_corridors
+ - lakes
+ - watercourse_areas
+
+### Lines
+
+First we will get the watercourse lines. Important to note here is that we will change the stream order value for any stream with a value of NA, to 0. This is done after investigation found that NA was assigned to any watercourse upstream of 1st order streams. We want to change these to 0 because later on we will have true NA values in this column and I don't want them to be mixed up.
+
+We will also add a new column that specifies where this dataset comes from. This will help further down the line when we are trying to replicate specific previous works (such as the riparian vegetation analysis) where we don't want to change the underlying dataset.
+
+:::{.callout-warning}
+This is a big dataset and the process will take some time. A cut down version is saved to improve reruns.
+:::
+
+```{r}
+#| label: watercourse lines
+
+#create a path to where the file should/will be
+wat_line_output <- glue("{read_and_write}/processed/n3_watercourse_lines.gpkg")
+
+#check if the cut down version already exists
+if (file.exists(wat_line_output)){
+  
+  #read the file in if it does exist
+  n3_watercourse_lines <- st_read(wat_line_output)
+  
+} else { #otherwise, create the file
+  
+  #load in the watercourse dataset it is currently in two parts as the entire dataset is way too large, 
+  #then filter away drainage basins we don't use
+  watercourse_lines_northern <- st_read(glue("{read_and_write}/raw/watercourse_lines_northern.gpkg")) |> 
+    name_cleaning() |> 
+    filter(!DrainageBasin %in% c("Endeavour", "Normanby", "Jeannie", "Lockhart", "Jacky Jacky", 
+                                  "Olive-Pascoe", "Stewart"))
+  
+  #do the same here
+  watercourse_lines_central <- st_read(glue("{read_and_write}/raw/watercourse_lines_central.gpkg")) |> 
+    name_cleaning() |>
+    filter(!DrainageBasin %in% c("Fitzroy", "Baffle", "Calliope", "Curtis Island", "Boyne", 
+                                  "Waterpark", "Shoalwater", "Styx"))
+  
+  #the datasets share all the same cols so they can immediately be bound together, then we can drop all
+  #those columns because we aren't actually interested in anything but stream order
+  watercourse_lines <- rbind(watercourse_lines_northern, watercourse_lines_central) |> 
+    select(StrmOrder)
+  
+  #overlay n3 region boundaries to add new columns containing region, basin, sub basin, etc
+  n3_watercourse_lines <- watercourse_lines |> st_intersection(n3_land)
+  
+  #change rows with NA STRM order to be 0 - upon inspecting dataset the NA seems to represent all tributaries
+  #upstream of stream order 1. There are alot and I don't want to accidentally miss them later on
+  n3_watercourse_lines <- n3_watercourse_lines |> 
+    mutate(StrmOrder = case_when(is.na(StrmOrder) ~ 0,
+                                  T ~ StrmOrder))
+  
+  #remove geometries that are just points rather than lines (these are geomtries that extended into the marine zone)
+  n3_watercourse_lines <- n3_watercourse_lines |> 
+    filter(!str_detect(st_geometry_type(geom), "POINT"))
+  
+  #add an additional column that specifies where this data came from
+  n3_watercourse_lines <- n3_watercourse_lines |> 
+    mutate(Source = "watercourse_lines")
+  
+  #save because this process takes quite a while
+  st_write(n3_watercourse_lines, wat_line_output, append = F)
+  
+  #clean up
+  rm(watercourse_lines_northern, watercourse_lines_central, watercourse_lines)
+  
+}
+
+#clean up
+rm(wat_line_output)
+
+```
+
+### Areas, Corridors, and Lakes
+
+To create a complete dataset of water features we don't just need lines, but also areas as well. Below we load in three separate datasets that each contribute to this aspect. For each dataset we will add a dummy column for the stream order with a value of 9999 (obviously not a real stream order) so we can identify these particular water bodies later.
+
+Note that these files are not as large and don't take as long to process, so we wont worry about saving the edited versions.
+
+We will also add a new column that specifies where this dataset comes from. This will help further down the line when we are trying to replicate specific previous works (such as the riparian vegetation analysis) where we don't want to change the underlying dataset.
+
+```{r}
+#| label: load in water areas
+
+#open the riparian corridors dataset, this only comes as a gdb file so we have to do it slightly differently
+n3_rip_corridors <- st_read(glue("{read_and_write}/raw/riparian_corridors.gdb"),
+                          layer = st_layers(glue("{read_and_write}/raw/riparian_corridors.gdb"))[[1]]) |>
+  st_transform(proj_crs) |> 
+  name_cleaning() |> 
+  st_intersection(n3_land) |> #add new columns containing region, basin, sub basin, etc
+  select(Region, Environment, BasinOrZone, SubBasinOrSubZone) |> 
+  mutate(StrmOrder = 9999)
+
+#add an additional column that specifies where this data came from
+n3_rip_corridors <- n3_rip_corridors |> 
+  mutate(Source = "riparian_corridors")
+
+#load in the lakes dataset and intersect the n3 region to add new columns containing region, basin, sub basin, etc
+n3_lakes <- st_read(glue("{read_and_write}/raw/lakes.gpkg")) |> 
+  st_intersection(n3_land) |> #add new columns containing region, basin, sub basin, etc
+  name_cleaning() |>
+  select(Region, Environment, BasinOrZone, SubBasinOrSubZone) |> 
+  mutate(StrmOrder = 9999) 
+
+#add an additional column that specifies where this data came from
+n3_lakes <- n3_lakes |> 
+  mutate(Source = "lakes")
+         
+#do the same with the watercourse areas dataset
+n3_watercourse_areas <- st_read(glue("{read_and_write}/raw/watercourse_areas.gpkg")) |> 
+  st_intersection(n3_land) |> #add new columns containing region, basin, sub basin, etc
+  name_cleaning() |>
+  select(Region, Environment, BasinOrZone, SubBasinOrSubZone) |> 
+  mutate(StrmOrder = 9999)
+
+#add an additional column that specifies where this data came from
+n3_watercourse_areas <- n3_watercourse_areas |> 
+  mutate(Source = "watercourse_areas") |> 
+  name_cleaning()
+         
+#load in the custom Ross lake outline
+ross_lake_extra <- st_read(glue("{read_and_write}/raw/lakes_ross_extra.gpkg")) |> 
+  st_intersection(n3_land) |> #add new columns containing region, basin, sub basin, etc
+  name_cleaning() |>
+  select(Region, Environment, BasinOrZone, SubBasinOrSubZone) |> 
+  mutate(StrmOrder = 9999)
+
+#add an additional column that specifies where this data came from
+ross_lake_extra <- ross_lake_extra |> 
+  name_cleaning() |>
+  mutate(Source = "ross_lake_extra")
+
+```
+
+### All Watercourses
+
+We can then directly combine the watercourse area datasets with the watercourse lines dataset.
+
+```{r}
+#| label: combine all watercourse data
+
+#bind the watercourse datasets together, reorder and union all polygons that belong to the same group
+n3_watercourse <- bind_rows(n3_watercourse_lines, n3_watercourse_areas, n3_lakes, 
+                            n3_rip_corridors, ross_lake_extra) |> 
+  rename(StreamOrder = StrmOrder) |> 
+  relocate(StreamOrder, .after = GeographicArea)
+
+#clean up
+rm(n3_lakes, n3_rip_corridors, n3_watercourse_areas, n3_watercourse_lines, ross_lake_extra)
+
+```
+
+# Finalise The Data
+
+we can now finalise the data by combining everything ready to be saved.
+
+```{r}
+#| label: combine everything
+
+#clean up the watercourses by extracting only polygons and linestrings (have to do this one by one) then combining
+n3_watercourse_polygons <- n3_watercourse |> 
+  st_collection_extract(type = c("POLYGON"))
+n3_watercourse_lines <- n3_watercourse |> 
+  st_collection_extract(type = c("LINESTRING"))
+
+#combine
+n3_watercourse <- rbind(n3_watercourse_polygons, n3_watercourse_lines)
+
+#clean up
+rm(n3_watercourse_polygons, n3_watercourse_lines)
+
+```
+
+# Save Data
+
+Then we can save the results
+
+```{r}
+#| label: save data
+
+#save
+st_write(n3_watercourse, glue("{read_and_write}/n3_watercourse.gpkg"), delete_dsn = T)
+
+```

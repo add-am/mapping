@@ -1,0 +1,258 @@
+---
+title: "Inshore Coral Script 2 - Data Visualisation"
+subtitle: "A Healthy Waters Partnership Analysis"
+description: "Script 2 in a series of scripts designed to analyse, score, and present inshore marine coral data in the Dry Tropics region."
+author: "Adam Shand"
+format: html
+params:
+  project_crs: "EPSG:7844"
+---
+
+# Introduction
+
+This is a simple script to produce a map of sampling locations for the Coral indicator category in the Inshore Marine Zone for the Dry Tropics region.
+
+# Script Set Up
+
+This script requires multiple core spatial packages, each of which is loaded below.
+
+```{r}
+#| label: load packages
+
+#use pacman function to load and install (if required) all other packages
+pacman::p_load(tidyverse, glue, here, sf, tmap, janitor, dataaimsr, grid)
+
+```
+
+
+Then set the coordinate reference system and save location.
+
+```{r}
+#| label: global vars and initial setup
+
+#set crs
+proj_crs <- params$project_crs
+
+#create a file path to help with saving things
+save_path <- here("outputs/dt_habitat_coral_inshore-s2-maps/")
+
+#create a data path as well
+data_path <- here("data/dt_habitat_coral_inshore/")
+
+#bring that path to life
+dir.create(save_path)
+
+#turn off s2 geometry
+sf_use_s2(F)
+
+```
+
+# Load Data
+
+Next we load in the data, refer to the README in the GitHub repo if data is missing.
+
+```{r}
+#| label: load in coral data
+
+#read in the custom function to clean column names into our specific style
+source("../functions/name_cleaning.R")
+
+#get only the dry tropics area
+dry_tropics <- st_read(here("data/n3_prep_region-builder/n3_region.gpkg")) |> 
+  name_cleaning() |> 
+  filter(Region == "Dry Tropics")
+
+#get specifically a marine version and customise some of the names
+dt_marine <- dry_tropics |> 
+  filter(Environment == "Marine", BasinOrZone != "Offshore") |> 
+  mutate(GeographicArea = case_when(GeographicArea == "Open Coastal" ~ "H.Open Coastal",
+                                     GeographicArea == "Enclosed Coastal" ~ "H.Enclosed Coastal",
+                                     T ~ GeographicArea))
+
+#get specifically a land version for the background
+dt_land <- dry_tropics |> 
+  filter(Environment != "Marine") |> 
+  group_by(BasinOrZone) |> 
+  summarise(geom = st_union(geom)) |> 
+  ungroup() |> st_cast() |> st_make_valid()
+
+#get only the dry tropics waterways
+dt_watercourses <- st_read(here("data/n3_prep_watercourse-builder/n3_watercourse.gpkg")) |> 
+  name_cleaning() |>
+  filter(Region == "Dry Tropics",
+         !StreamOrder %in% c(0,1))
+
+#read in qld outlines data from the gisaimsr package, filter for land and islands, update crs
+qld <- get(data("gbr_feat", package = "gisaimsr")) |> 
+  name_cleaning() |>
+  filter(FeatName %in% c("Mainland", "Island")) |> 
+  st_transform(proj_crs)
+
+#read in reef data and update crs
+reefs <- get(data("gbr_feat", package = "gisaimsr")) |> 
+  name_cleaning() |>
+  filter(FeatName == "Reef") |> 
+  st_transform(proj_crs)
+
+#load in custom reef outlines to supplement the main data
+custom_reefs <- st_read(glue("{data_path}/custom_reefs.gpkg")) |> 
+  name_cleaning() |> 
+  st_transform(proj_crs)
+
+#create a point for Townsville
+tsv <- st_as_sf(data.frame(place = "Townsville", x = "-19.2590", y = "146.8169"), coords = c("y", "x"), crs = proj_crs)
+
+```
+
+# Maipulate Data
+
+The names in the reef dataset are too excessive and can visually clutter our map, in this code chunk we clean up the reef names.
+
+```{r}
+#| label: clean up data
+
+#crop reefs to only in Dry Tropics region and take only polygons
+temp_reefs <- st_intersection(reefs, st_union(dt_marine)) |> st_collection_extract("POLYGON")
+
+#create list for reefs (old and new names) and x and y mods, the order is: Old name = New name, Xmod, Ymod
+reef_list<- list("Alma Bay" = c("Alma Bay", 1.8, 0),
+                 "Magnetic Island Reef (No 1)" = c("Nelly Bay", 1.7, 0),
+                 "Magnetic Island Reef (No 2)" = c("Geoffrey Bay (2 sites)", 3, -0.5),
+                 "Magnetic Island Reef (No 3)" = c("Florence Bay", 2.4, 0),
+                 "Middle Reef" = c("Middle Reef", 2.5, 0),
+                 "Havannah Reef" = c("Havannah South", -3, 0),
+                 "Havannah_N" = c("Havannah North", 3, 0),
+                 "Palms West 1" = c("Palms West 1", -2.4, 0),
+                 "Pelorus (North Palm or Yanooa) Reef" = c("Palms West 2", -2.4, 0.5),
+                 "Orpheus (Goolboddi) Island Reef (No 5)" = c("Palms East", 2.2, 0),
+                 "Pandora Reef" = c("Pandora North", 2.4, 0.2),
+                 "Pandora Reef South" = c("Pandora South", -2.4, -0.2))
+
+#filter by name to get reefs we want, add missing reefs and missing columns
+dt_reefs <- temp_reefs |> filter(GbrName %in% names(reef_list)) |> select(GbrName) |>
+  rbind(custom_reefs) |> 
+  mutate(Reef = NA, Xmod = NA, Ymod = NA)
+
+#loop over the list and add each item
+for (i in 1:length(reef_list)){
+  
+  dt_reefs <- dt_reefs |> mutate(Reef = case_when(GbrName == names(reef_list)[i] ~ reef_list[[i]][1], T ~ Reef),
+                                 Xmod = case_when(GbrName == names(reef_list)[i] ~ as.numeric(reef_list[[i]][2]), T ~ Xmod),
+                                 Ymod = case_when(GbrName == names(reef_list)[i] ~ as.numeric(reef_list[[i]][3]), T ~ Ymod),
+                                 Zone = case_when(GbrName %in% names(reef_list)[1:5] ~ "Cleveland Bay", T ~ "Halifax Bay"))
+
+}
+
+```
+
+# Create Map
+
+And finally we can produce the required maps to be used in our technical report style.
+
+```{r}
+#| label: create map
+
+#create target vector to loop lover
+target_vect <- unique(dt_marine$BasinOrZone)
+
+#create a similar vect for land basins
+land_vect <- rev(unique(dt_land$BasinOrZone))
+
+#create a bbox of the entire dry tropics area
+dt_bbox <- st_bbox(dt_land)
+
+for (i in 1:length(target_vect)){
+  
+  #filter sites
+  filtered_sites <- dt_reefs |> filter(Zone == target_vect[i])
+  
+  #define focus area for waterways
+  focus_area <- dt_land |> filter(BasinOrZone == land_vect[i])
+  
+  #define focus area for marine sites and rename column
+  focus_marine <- dt_marine |> filter(BasinOrZone == target_vect[i]) |> rename("Geographic Area: All" = GeographicArea)
+  
+  #create a box of the focus area
+  focus_bbox <- st_as_sfc(st_bbox(focus_marine))
+  
+  #crop waterways to be within focus area
+  focus_dt_water <- dt_watercourses |> st_intersection(st_union(focus_area))
+  
+  #create secondary box of the sites
+  focus2_bbox <- st_buffer(st_as_sfc(st_bbox(filtered_sites)), 0.01)
+  
+  #create an inset map
+  inset_map <- tm_shape(qld) +
+    tm_polygons(col = "grey80", border.col = "black") +
+    tm_shape(dt_marine, is.master = T) +
+    tm_polygons(col = "grey90", border.col = "black") +
+    tm_shape(dt_land) +
+    tm_polygons(col = "grey90", border.col = "black") +
+    tm_shape(focus_bbox) +
+    tm_borders(lwd = 2, col = "red") +
+    tm_shape(focus2_bbox) +
+    tm_borders(lwd = 2, col = "blue")
+  
+  #create the main map
+  map <- tm_shape(focus2_bbox) +
+    tm_borders(alpha = 0) +
+    tm_shape(qld) +
+    tm_polygons(col = "grey80", border.col = "black") +
+    tm_shape(dt_marine) +
+    tm_polygons(col = "white", border.col = "black") +
+    tm_shape(focus_marine) +
+    tm_polygons(col = "grey90", border.col = "grey90") +
+    tm_shape(dt_land) +
+    tm_polygons(col = "grey90", border.col = "black") +
+    tm_shape(focus_marine) +
+    tm_polygons(col = "Geographic Area: All", border.col = "black", alpha = 0.5, palette = "Pastel1") +
+    tm_shape(focus_dt_water) +
+    tm_lines(col = "dodgerblue") +
+    tm_shape(focus_dt_water) +
+    tm_polygons(col = "aliceblue", border.col = "dodgerblue") +
+    tm_shape(tsv) +
+    tm_symbols(size = 0.3, col = "white", border.col = "black", border.lwd = 2, shape = 23) +
+    tm_text("place", shadow = T, auto.placement = T, size = 0.8) +
+    tm_shape(filtered_sites) +
+    tm_polygons(col = "Reef", palette = "-Spectral", border.col = "black", legend.show = F) +
+    tm_shape(st_buffer(filtered_sites, as.numeric(sprintf("0.%s", i))), is.master = T) +
+    tm_borders(alpha = 0) +
+    tm_shape(filtered_sites) +
+    tm_text("Reef", shadow = T, xmod = "Xmod", ymod = "Ymod", size = 0.8) +
+    tm_layout(legend.bg.color = "white", legend.frame = "black", asp = 1.1)
+  
+  #figure out the aspect of the inset map and the view port
+  asp2 <- (dt_bbox$ymax - dt_bbox$ymin)/(dt_bbox$xmax - dt_bbox$xmin)
+  w <- 0.2
+  h <- asp2 * w
+  vp <- viewport(x = 0.98, y = 1, width = w, height = h, just = c("right", "top"))
+
+  #save map
+  tmap_save(map, glue("{save_path}/inshore-marine_{tolower(target_vect[i])}-coral.png"), 
+            insets_tm = inset_map, insets_vp = vp)
+
+}
+
+```
+
+Below is an interactive example of the maps created.
+
+```{r}
+#| label: interactive map example
+
+tmap_mode("view")
+
+map
+
+```
+
+# Session Info {#sec-sessioninfo}
+
+Below is the session info at the time of rendering this script. Of greatest importance is to note the R version, and the "other attached packages" as these are the most significant drivers of success/failure. It is also good to check the "attached base packages" and "loaded via a namespace" packages as well. To check your session info use `sessionInfo()`.
+
+```{r}
+#| label: show session info
+
+sessionInfo()
+
+```

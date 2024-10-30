@@ -1,0 +1,1 @@
+This is a placeholder to ensure the rainfall folder is uploaded to GitHub.
